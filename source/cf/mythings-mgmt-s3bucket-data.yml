@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Data Bucket - Version %%VERSION%%'
+
+Resources:
+    mtmDataBucketAccessPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        DeletionPolicy: Retain
+        Properties:
+            Description: "My Things Management policy to access the Data Bucket."
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            # TODO BE MORE RESTRICTIVE
+                            - "s3:*"
+                        Resource:
+                            - !Join ["/", [!GetAtt mtmDataBucket.Arn, "*"]]
+    mtmDataBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Retain
+        Properties:
+            CorsConfiguration:
+                CorsRules:
+                    -
+                        AllowedOrigins:
+                            - "*"
+                        AllowedMethods:
+                            - "HEAD"
+                            - "GET"
+                        AllowedHeaders:
+                            - "*"
+Outputs:
+    # mtmDataBucketAccessPolicy:
+    #     Description: "IAM Policy to access the My Things Management Data bucket"
+    #     Value: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucketAccessPolicy
+    mtmDataBucket:
+        Description: 'My Things Management Data Bucket'
+        Value: !Ref mtmDataBucket
+    mtmDataBucketArn:
+        Description: 'My Things Management Data Bucket ARN'
+        Value: !GetAtt mtmDataBucket.Arn

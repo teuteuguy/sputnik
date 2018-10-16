@@ -1,0 +1,42 @@
+{
+    "name": "mythings-mgmt-gg-blueprint-service",
+    "description": "The greengrass blueprint microservice for the My Things Management",
+    "main": "index.js",
+    "license": "Amazon Software License (ASL)",
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "moment": "*",
+        "randomstring": "*",
+        "underscore": "*",
+        "shortid": "*",
+        "authorizer": "file:../../resources/authorizer/",
+        "logger": "file:../../resources/logger/"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "yarn install",
+        "test": "env DEVICE_TYPES_TBL='dt-table' DEVICES_TBL='d-table' SIMULATOR_QUEUE='smpl-queue' mocha lib/*.spec.js",
+        "prestart": "yarn install",
+        "start": "node index.js",
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq `jq -cr '.name' package.json`.zip .",
+        "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
+        "build": "yarn run build:init && yarn install --production && yarn run build:zip && yarn run build:dist",
+        "fast-build": "rm -rf dist && yarn run build:zip && yarn run build:dist",
+        "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
+    },
+    "bundledDependencies": [
+        "aws-sdk",
+        "moment",
+        "underscore"
+    ]
+}

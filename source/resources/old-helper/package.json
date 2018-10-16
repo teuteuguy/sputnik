@@ -1,0 +1,41 @@
+{
+    "name": "mythings-mgmt-custom-resource-helper",
+    "description": "UI Framework custom resource helper Lambda function",
+    "main": "index.js",
+    "author": {
+        "name": "aws-solutions-builder"
+    },
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "moment": "*",
+        "underscore": "*",
+        "password-generator": "*",
+        "node-uuid": "*",
+        "usage-metrics": "file:../usage-metrics/"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "npm-run-all": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "yarn install",
+        "test": "mocha lib/*.spec.js",
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq `jq -cr '.name' package.json`.zip .",
+        "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
+        "build": "yarn run build:init && yarn install --production && yarn run build:zip && yarn run build:dist"
+    },
+    "bundledDependencies": [
+        "moment",
+        "underscore",
+        "password-generator",
+        "node-uuid"
+    ]
+}

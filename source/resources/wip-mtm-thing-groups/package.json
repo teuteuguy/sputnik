@@ -1,0 +1,23 @@
+{
+    "name": "mythings-mgmt-custom-resource-helper-thing-groups",
+    "description": "Cloudformation Custom Resource Helper for My Things Management Thing Groups AND common thing groups management for services",
+    "main": "mtm-thing-groups.js",
+    "author": {
+        "name": "teuteuguy"
+    },
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "underscore": "*"
+    },
+    "devDependencies": {
+    },
+    "scripts": {
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq `jq -cr '.name' package.json`.zip .",
+        "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
+        "build": "yarn run build:init && yarn install --production && yarn run build:zip && yarn run build:dist"
+    },
+    "bundledDependencies": [
+    ]
+}

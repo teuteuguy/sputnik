@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - CF Custom Resource Helper Thing Groups Lambda - Version %%VERSION%%'
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+Resources:
+    mtmCustomResourceThingGroupsHelperRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'lambda.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+            Policies:
+                - PolicyName: 'mtmCustomResourceThingGroupsHelperPolicy'
+                  PolicyDocument:
+                      Version: '2012-10-17'
+                      Statement:
+                          - Effect: 'Allow'
+                            Action:
+                                - 'logs:CreateLogGroup'
+                                - 'logs:CreateLogStream'
+                                - 'logs:PutLogEvents'
+                            Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/mythings-mgmt-custom-resource-helper-thing-groups:*']]
+                          - Effect: 'Allow'
+                            Action:
+                                - 'iot:*'
+                            Resource:
+                                - '*'
+
+    mtmCustomResourceThingGroupsHelper:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'mythings-mgmt-custom-resource-helper-thing-groups'
+            Description: 'My Things Management Custom resource helper for deploying the app'
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-custom-resource-helper-thing-groups.zip']]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt mtmCustomResourceThingGroupsHelperRole.Arn
+            Timeout: 300
+            MemorySize: 256
+
+Outputs:
+    mtmCustomResourceThingGroupsHelperArn:
+        Description: 'Custom Resource Thing Groups Helper ARN'
+        Value: !GetAtt mtmCustomResourceThingGroupsHelper.Arn

@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Micro Service Lambda - Deployments - Version %%VERSION%%'
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    mtmSettingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    mtmDevicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the devices
+    mtmDeviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    mtmBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the blueprints
+    mtmDeploymentsTable:
+        Type: String
+        Description: DynamoDB Table for storing the deployments
+
+Resources:
+
+    mtmLambdaServiceDeploymentsRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Principal:
+                            Service:
+                                - 'lambda.amazonaws.com'
+                        Action:
+                                - 'sts:AssumeRole'
+            Path: '/'
+
+    mtmLambdaServiceDeploymentsPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'My Things Management policy for the deployments microservice Lambda function.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogGroup'
+                            - 'logs:CreateLogStream'
+                            - 'logs:PutLogEvents'
+                        Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref mtmLambdaServiceDeployments, ':*']]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'dynamodb:BatchGetItem'
+                            - 'dynamodb:BatchWriteItem'
+                            - 'dynamodb:DeleteItem'
+                            - 'dynamodb:GetItem'
+                            - 'dynamodb:PutItem'
+                            - 'dynamodb:Query'
+                            - 'dynamodb:Scan'
+                            - 'dynamodb:UpdateItem'
+                        Resource:
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDevicesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceTypesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmBlueprintsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeploymentsTable]]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            # TODO: Too permissive for now.
+                            - 'iot:*'
+                            - 'greengrass:*'
+                        Resource:
+                            - '*'
+            Roles:
+                - !Ref 'mtmLambdaServiceDeploymentsRole'
+
+    mtmLambdaServiceDeployments:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'mythings-mgmt-deployments-service'
+            Description: 'My Things Management deployments microservice'
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-deployments-service.zip']]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt mtmLambdaServiceDeploymentsRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    TABLE_DEVICES: !Ref mtmDevicesTable
+                    TABLE_DEVICE_TYPES: !Ref mtmDeviceTypesTable
+                    TABLE_BLUEPRINTS: !Ref mtmBlueprintsTable
+                    TABLE_DEPLOYMENTS: !Ref mtmDeploymentsTable
+                    TABLE_SETTINGS: !Ref mtmSettingsTable
+                    AWS_ACCOUNT: !Ref 'AWS::AccountId'
+                    LOGGING_LEVEL: 2
+
+
+Outputs:
+    mtmLambdaServiceDeploymentsArn:
+        Description: 'Deployments Service ARN'
+        Value: !GetAtt mtmLambdaServiceDeployments.Arn

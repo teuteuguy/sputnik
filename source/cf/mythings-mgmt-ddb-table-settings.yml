@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - DynamoDB Table - Settings - Version %%VERSION%%'
+
+Resources:
+    mtmSettingsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "id"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "mythings-mgmt-settings"
+
+Outputs:
+    mtmSettingsTable:
+        Description: "DynamoDB Settings Table"
+        Value: !Ref mtmSettingsTable

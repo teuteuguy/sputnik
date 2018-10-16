@@ -1,0 +1,48 @@
+{
+    "name": "mythings-mgmt-admin-service",
+    "description": "The administration microservice for the My Things Management",
+    "main": "index.js",
+    "license": "Amazon Software License (ASL)",
+    "version": "0.0.1",
+    "private": "true",
+    "dependencies": {
+        "moment": "*",
+        "randomstring": "*",
+        "underscore": "*",
+        "password-generator": "*",
+        "authorizer": "file:../../resources/authorizer/",
+        "logger": "file:../../resources/logger/"
+    },
+    "devDependencies": {
+        "aws-sdk": "*",
+        "chai": "*",
+        "sinon": "*",
+        "sinon-chai": "*",
+        "mocha": "*",
+        "aws-sdk-mock": "*",
+        "proxyquire": "*"
+    },
+    "scripts": {
+        "pretest": "yarn install",
+        "test": "mocha lib/*.spec.js",
+        "prestart": "yarn install",
+        "start": "node index.js",
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq `jq -cr '.name' package.json`.zip . -x template.yml",
+        "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
+        "build": "yarn run build:init && yarn install --production && yarn run build:zip && yarn run build:dist",
+        "local:test": "sam local invoke 'AdminService' -e ../tests/admin/get-user-event.json --env-vars ../tests/env-vars.json",
+        "local:api": "sam local start-api --env-vars ../tests/env-vars.json"
+    },
+    "bundledDependencies": [
+        "aws-sdk",
+        "moment",
+        "underscore",
+        "colors",
+        "jsonwebtoken",
+        "jwk-to-pem",
+        "request",
+        "password-generator",
+        "js-base64"
+    ]
+}

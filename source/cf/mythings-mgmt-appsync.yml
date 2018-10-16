@@ -1,0 +1,538 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - AppSync - Version %%VERSION%%'
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: My Things Management S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: My Things management Source key prefix.
+    mtmUserPoolId:
+        Type: String
+        Description: My Things Management User Pool Id.
+    mtmSettingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    mtmDeviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    mtmBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the blueprints
+    mtmDevicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the devices
+    mtmDeploymentsTable:
+        Type: String
+        Description: DynamoDB Table for storing the deployments
+    mtmLambdaServiceFactoryResetArn:
+        Type: String
+        Description: Factory Reset Micro Service ARN
+    mtmLambdaServiceSettingsArn:
+        Type: String
+        Description: Settings Micro Service ARN
+    mtmLambdaServiceStatsArn:
+        Type: String
+        Description: Stats Micro Service ARN
+    mtmLambdaServiceDevicesArn:
+        Type: String
+        Description: Devices Micro Service ARN
+    mtmLambdaServiceDeploymentsArn:
+        Type: String
+        Description: Deployments Micro Service ARN
+
+Resources:
+
+    # ROLE
+    mtmAppSyncRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'appsync.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+            Policies:
+                -
+                    PolicyName: 'mtmAppSyncDynamoDBPolicy'
+                    PolicyDocument:
+                        Version: '2012-10-17'
+                        Statement:
+                            -
+                                Effect: 'Allow'
+                                Action:
+                                    - 'dynamodb:BatchGetItem'
+                                    - 'dynamodb:BatchWriteItem'
+                                    - 'dynamodb:DeleteItem'
+                                    - 'dynamodb:GetItem'
+                                    - 'dynamodb:PutItem'
+                                    - 'dynamodb:Query'
+                                    - 'dynamodb:Scan'
+                                    - 'dynamodb:UpdateItem'
+                                Resource:
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', !Ref mtmSettingsTable ]]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', !Ref mtmDeviceTypesTable ]]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', !Ref mtmBlueprintsTable ]]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', !Ref mtmDevicesTable ]]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', !Ref mtmDeploymentsTable ]]
+                -
+                    PolicyName: 'mtmAppSyncLambdaPolicy'
+                    PolicyDocument:
+                        Version: '2012-10-17'
+                        Statement:
+                            -
+                                Effect: 'Allow'
+                                Action:
+                                    - 'lambda:InvokeFunction'
+                                Resource:
+                                    - !Ref mtmLambdaServiceFactoryResetArn
+                                    - !Ref mtmLambdaServiceSettingsArn
+                                    - !Ref mtmLambdaServiceStatsArn
+                                    - !Ref mtmLambdaServiceDevicesArn
+                                    - !Ref mtmLambdaServiceDeploymentsArn
+
+    # API
+    mtmAppSyncGraphQLApi:
+        Type: 'AWS::AppSync::GraphQLApi'
+        Properties:
+            Name: My Things Management AppSync API
+            AuthenticationType: AMAZON_COGNITO_USER_POOLS
+            UserPoolConfig:
+                UserPoolId: !Ref mtmUserPoolId
+                AwsRegion: !Ref 'AWS::Region'
+                DefaultAction: DENY
+
+    # DATA SOURCES - DynamoDB
+    mtmAppSyncDataSourceSettingsDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceSettingsDynamoDB
+            Description: The Settings DynamoDB table App Sync Data source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref mtmSettingsTable
+    mtmAppSyncDataSourceDeviceTypesDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceDeviceTypesDynamoDB
+            Description: The Device Types DynamoDB table App Sync Data Source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref mtmDeviceTypesTable
+    mtmAppSyncDataSourceBlueprintsDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceBlueprintsDynamoDB
+            Description: The Blueprints DynamoDB table App Sync Data Source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref mtmBlueprintsTable
+    mtmAppSyncDataSourceDevicesDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceDevicesDynamoDB
+            Description: The Devices DynamoDB table App Sync Data Source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref mtmDevicesTable
+    mtmAppSyncDataSourceDeploymentsDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceDeploymentsDynamoDB
+            Description: The Deployments DynamoDB table App Sync Data Source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref mtmDeploymentsTable
+
+    # DATA SOURCES - Lambda
+    mtmAppSyncDataSourceFactoryResetLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceFactoryResetLambda
+            Description: The Factory Reset Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref mtmLambdaServiceFactoryResetArn
+    mtmAppSyncDataSourceSettingsLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceSettingsLambda
+            Description: The Settings Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref mtmLambdaServiceSettingsArn
+    mtmAppSyncDataSourceStatsLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceStatsLambda
+            Description: The Stats Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref mtmLambdaServiceStatsArn
+    mtmAppSyncDataSourceDevicesLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceDevicesLambda
+            Description: The Devices Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref mtmLambdaServiceDevicesArn
+    mtmAppSyncDataSourceDeploymentsLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            Name: mtmAppSyncDataSourceDeploymentsLambda
+            Description: The Deployments Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref mtmAppSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref mtmLambdaServiceDeploymentsArn
+
+    # RESOLVERS - QUERIES - DeviceTypes
+    mtmAppSyncResolverQueryGetDeviceTypes:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDeviceTypes
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeviceTypesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-types-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'response-mapping-template-device-types-get.gql']]
+    mtmAppSyncResolverQueryGetDeviceType:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDeviceType
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeviceTypesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-type-get.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+    # RESOLVERS - QUERIES - Settings
+    mtmAppSyncResolverQueryGetSetting:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getSetting
+            DataSourceName: !GetAtt mtmAppSyncDataSourceSettingsDynamoDB.Name
+            RequestMappingTemplate: |
+                {
+                    "version" : "2017-02-28",
+                    "operation" : "GetItem",
+                    "key" : {
+                        "id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
+                    }
+                }
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+    # RESOLVERS - QUERIES - Stats
+    mtmAppSyncResolverQueryGetStat:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getStat
+            DataSourceName: !GetAtt mtmAppSyncDataSourceStatsLambda.Name
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - QUERIES - Thing Group Auto Registration
+    mtmAppSyncResolverQueryGetThingAutoRegistrationState:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getThingAutoRegistrationState
+            DataSourceName: !GetAtt mtmAppSyncDataSourceSettingsLambda.Name
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "getThingAutoRegistrationState", "arguments": $util.toJson($context.arguments) } }'
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - QUERIES - Blueprints
+    mtmAppSyncResolverQueryGetBlueprints:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getBlueprints
+            DataSourceName: !GetAtt mtmAppSyncDataSourceBlueprintsDynamoDB.Name
+            RequestMappingTemplate: |
+                {
+                    "version" : "2017-02-28",
+                    "operation" : "Scan",
+                    #if( $ctx.args.limit )
+                        "limit": $ctx.args.limit,
+                    #end
+                    #if( ${ctx.args.nextToken} )
+                        "nextToken": "${ctx.args.nextToken}"
+                    #end
+                }
+            ResponseMappingTemplate: |
+                {
+                    "blueprints": $util.toJson($ctx.result.items),
+                    #if( ${ctx.result.nextToken} )
+                        "nextToken": "${ctx.result.nextToken}",
+                    #end
+                }
+    mtmAppSyncResolverQueryGetBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getBlueprint
+            DataSourceName: !GetAtt mtmAppSyncDataSourceBlueprintsDynamoDB.Name
+            RequestMappingTemplate: |
+                {
+                    "version" : "2017-02-28",
+                    "operation" : "GetItem",
+                    "key" : {
+                        "id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
+                    }
+                }
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+    # RESOLVERS - QUERIES - Devices
+    mtmAppSyncResolverQueryGetDevices:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDevices
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-devices-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'response-mapping-template-devices-get.gql']]
+    mtmAppSyncResolverQueryGetDevicesOfDeviceType:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDevicesOfDeviceType
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-devices-of-device-type-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'response-mapping-template-devices-of-device-type-get.gql']]
+    mtmAppSyncResolverQueryGetDevicesWithBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDevicesWithBlueprint
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-devices-with-blueprint-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'response-mapping-template-devices-with-blueprint-get.gql']]
+    mtmAppSyncResolverQueryGetDevice:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDevice
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-get.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverQueryGetDeviceStats:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDeviceStats
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-stats-get.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - QUERIES - Deployments
+    mtmAppSyncResolverQueryGetDeployments:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getDeployments
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeploymentsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-deployments-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'response-mapping-template-deployments-get.gql']]
+
+    # RESOLVERS - MUTATIONS - Devices
+    mtmAppSyncResolverMutationAddDevice:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: addDevice
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-add.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+    mtmAppSyncResolverMutationDeleteDevice:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: deleteDevice
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverMutationUpdateDevice:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateDevice
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDevicesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-update.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - MUTATIONS - DeviceTypes
+    mtmAppSyncResolverMutationAddDeviceType:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: addDeviceType
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeviceTypesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-type-add.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverMutationDeleteDeviceType:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: deleteDeviceType
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeviceTypesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-type-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverMutationUpdateDeviceType:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateDeviceType
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeviceTypesDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-device-type-update.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+    # RESOLVERS - MUTATIONS - Blueprints
+    mtmAppSyncResolverMutationAddBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: addBlueprint
+            DataSourceName: !GetAtt mtmAppSyncDataSourceBlueprintsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-blueprint-add.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverMutationDeleteBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: deleteBlueprint
+            DataSourceName: !GetAtt mtmAppSyncDataSourceBlueprintsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-blueprint-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    mtmAppSyncResolverMutationUpdateBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateBlueprint
+            DataSourceName: !GetAtt mtmAppSyncDataSourceBlueprintsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-blueprint-update.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+    # RESOLVERS - MUTATIONS - FactoryReset
+    mtmAppSyncResolverMutationFactoryResetDeviceTypes:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: factoryReset
+            DataSourceName: !GetAtt mtmAppSyncDataSourceFactoryResetLambda.Name
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - MUTATIONS - ThingAutoRegistration
+    mtmAppSyncResolverMutationSetThingAutoRegistrationState:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: setThingAutoRegistrationState
+            DataSourceName: !GetAtt mtmAppSyncDataSourceSettingsLambda.Name
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "setThingAutoRegistrationState", "enabled": $context.arguments.enabled } }'
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # RESOLVERS - MUTATIONS - Deployments
+    mtmAppSyncResolverMutationAddDeployment:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: mtmAppSyncSchema
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: addDeployment
+            DataSourceName: !GetAtt mtmAppSyncDataSourceDeploymentsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'request-mapping-template-deployment-add.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # SCHEMA
+    mtmAppSyncSchema:
+        Type: 'AWS::AppSync::GraphQLSchema'
+        Properties:
+            ApiId: !GetAtt mtmAppSyncGraphQLApi.ApiId
+            DefinitionS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'api-schema.gql']]
+
+Outputs:
+    mtmAppSyncGraphQLApi:
+        Description: 'My Things Management AppSync API'
+        Value: !Ref mtmAppSyncGraphQLApi
+    mtmAppSyncGraphQLUrl:
+        Description: 'My Things Management AppSync Endpoint URL'
+        Value: !GetAtt mtmAppSyncGraphQLApi.GraphQLUrl

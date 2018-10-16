@@ -1,0 +1,19 @@
+#set( $validTypes = ["UNKNOWN", "SDK", "A:freeRTOS", "GREENGRASS"] )
+#set( $temp = "UNKNOWN" )
+#foreach($t in $validTypes)
+    #if($t == $ctx.args.type)
+        #set( $temp = $t )
+    #end
+#end
+#set( $ctx.args.type = $temp )
+#set( $values = $util.dynamodb.toMapValues($ctx.args) )
+$!{values.put("createdAt", $util.dynamodb.toDynamoDB($util.time.nowISO8601()))}
+$!{values.put("updatedAt", $values.get("createdAt"))}
+{
+    "version" : "2017-02-28",
+    "operation" : "PutItem",
+    "key" : {
+        "id" : $util.dynamodb.toStringJson($util.autoId())
+    },
+    "attributeValues" : $util.toJson($values)
+}

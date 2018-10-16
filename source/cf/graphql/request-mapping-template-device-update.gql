@@ -1,0 +1,29 @@
+#set( $expression = "SET #uA = :uA, #n = :n" )
+{
+    "version" : "2017-02-28",
+    "operation" : "UpdateItem",
+    "key" : {
+        "thingId" : $util.dynamodb.toStringJson($ctx.args.thingId)
+    },
+    "update" : {
+        "expressionValues": {
+            #if( $ctx.args.deviceTypeId )
+                ## Add deviceTypeId to expression
+                #set( $expression = "$expression, deviceTypeId = :deviceTypeId" )
+                ":deviceTypeId" : $util.dynamodb.toStringJson($ctx.args.deviceTypeId),
+            #end
+            #if( $ctx.args.blueprintId )
+                ## Add blueprintId to expression
+                #set( $expression = "$expression, blueprintId = :blueprintId" )
+                ":blueprintId" : $util.dynamodb.toStringJson($ctx.args.blueprintId),
+            #end
+            ":n" : $util.dynamodb.toStringJson($ctx.args.name),
+            ":uA" : $util.dynamodb.toStringJson($util.time.nowISO8601())
+        },
+        "expression" : "$expression",
+        "expressionNames": {
+            "#uA": "updatedAt",
+            "#n": "name"
+        }
+    }
+}

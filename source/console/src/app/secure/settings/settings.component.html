@@ -1,0 +1,115 @@
+<!-- Row -->
+<div class="row" *ngIf="isAdminUser">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body p-b-0">
+                <h4 class="card-title">Settings</h4>
+                <h6 class="card-subtitle">Configuraiton settings used for the general application, micro services and
+                    reseting to application defaults.</h6>
+            </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab"
+                        aria-controls="general" aria-selected="true">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="thing-auto-registration-tab" data-toggle="tab" href="#thing-auto-registration"
+                        role="tab" aria-controls="thing-auto-registration" aria-selected="false">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="factoryreset-tab" data-toggle="tab" href="#factoryreset" role="tab"
+                        aria-controls="factoryreset" aria-selected="false">Factory Reset</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="about"
+                        aria-selected="false">About</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane p-20 fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="alert alert-danger" *ngIf="appConfigError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3>
+                        {{appConfigErrorMessage}}
+                    </div>
+                    <form class="fm-t-40" *ngIf="!appConfigError">
+                        <div class="form-group">
+                            <label>Mapbox Token</label>
+                            <input type="text" class="form-control form-control-line" name="mapboxToken" id="mapboxToken"
+                                #mapboxToken="ngModel" [(ngModel)]="appConfig.setting.mapboxToken" required ngModel />
+                            <div class="form-control-feedback">
+                                <small>The Mapbox Token used to display maps for the Automotive module.</small>
+                            </div>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label>My Things Management API Endpoint</label>
+                            <input type="text" class="form-control form-control-line" name="apiEndpoint" id="apiEndpoint"
+                                #apiEndpoint="ngModel" [(ngModel)]="appConfig.setting.apiEndpoint" required ngModel
+                                readonly />
+                            <div class="form-control-feedback">
+                                <small>The secure endpoint for the My Things Management API.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Congito User Pool Id</label>
+                            <input type="text" class="form-control form-control-line" name="idp" id="idp" #idp="ngModel"
+                                [(ngModel)]="appConfig.setting.idp" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The unique identifier for the Amazon Cognito User Pool.</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Installation UUID</label>
+                            <input type="text" class="form-control form-control-line" name="uuid" id="uuid" #uuid="ngModel"
+                                [(ngModel)]="appConfig.setting.uuid" required ngModel readonly />
+                            <div class="form-control-feedback">
+                                <small>The unique identifier assigned to the installation.</small>
+                            </div>
+                        </div> -->
+                        <div>
+                            <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="save(appConfig)">Save</button>
+                            <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel(appConfig)">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane p-20 fade" id="thing-auto-registration" role="tabpanel" aria-labelledby="thing-auto-registration-tab">
+                    <div class="alert alert-danger" *ngIf="thingAutoRegistrationConfigError">
+                        <h3 class="text-danger"><i class="fa fa-exclamation-circle"></i> Oops!</h3>
+                        {{thingAutoRegistrationConfigErrorMessage}}
+                    </div>
+                    TODO: separate the enabling from connection
+                    <form class="fm-t-40" *ngIf="!thingAutoRegistrationConfigError">
+                        <div class="input-group-text">
+                            <div class="form-check" style="padding: 0px; margin-bottom: -4px;">
+                                <input type="checkbox" id="thingAutoRegistrationState" style="padding-left: 18px;"
+                                    (change)="toggleThingAutoRegistration()" [checked]="thingAutoRegistrationState">
+                                <label class="form-check-label" for="thingAutoRegistrationState" style="padding-left: 25px;">Automatically
+                                    add newly connecting devices to the My Things Management managed groups?</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane p-20 fade" id="factoryreset" role="tabpanel" aria-labelledby="factoryreset-tab">
+                    <div class="fm-t-40">
+                        <button type="button" class="btn btn-danger btn-rounded m-r-15" (click)="factoryreset()">Factory
+                            Reset</button>
+                    </div>
+                    <form class="fm-t-40" *ngFor="let t of factoryResetTables" style="margin-top: 10px;">
+                        <div class="input-group-text">
+                            <div class="form-check" style="padding: 0px; margin-bottom: -4px;">
+                                <input type="checkbox" id="{{t.table}}" style="padding-left: 18px;" [checked]="t.done"
+                                    disabled>
+                                <label class="form-check-label" for="{{t.table}}" style="padding-left: 25px;">{{t.table}}</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane p-20 fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="fm-t-40">
+                        About
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

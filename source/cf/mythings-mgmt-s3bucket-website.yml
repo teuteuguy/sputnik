@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Website Bucket - Version %%VERSION%%'
+
+Resources:
+    mtmWebsiteBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Retain
+        Properties:
+            WebsiteConfiguration:
+                IndexDocument: 'index.html'
+                ErrorDocument: 'index.html'
+
+    # Uncomment this to make bucket public
+    # mtmWebsiteBucketPolicy:
+    #     Type: 'AWS::S3::BucketPolicy'
+    #     Properties:
+    #         Bucket:
+    #             !Ref 'mtmWebsiteBucket'
+    #         PolicyDocument:
+    #             Statement:
+    #                 Action: 's3:GetObject'
+    #                 Effect: 'Allow'
+    #                 Resource: !Join ['', ['arn:aws:s3:::', !Ref mtmWebsiteBucket, '/*']]
+    #                 Principal: '*'
+
+Outputs:
+    mtmWebsiteBucket:
+        Description: 'My Things Management Website Bucket'
+        Value: !Ref mtmWebsiteBucket
+    mtmWebsiteBucketArn:
+        Description: 'My Things Management Website Bucket ARN'
+        Value: !GetAtt mtmWebsiteBucket.Arn
+    mtmWebsiteUrl:
+        Description: 'My Things Management Website URL'
+        Value: !GetAtt mtmWebsiteBucket.WebsiteURL

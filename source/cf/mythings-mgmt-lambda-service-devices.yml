@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Micro Service Lambda - Devices - Version %%VERSION%%'
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    mtmSettingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    mtmDevicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the devices
+
+Resources:
+
+    mtmLambdaServiceDevicesRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Principal:
+                            Service:
+                                - 'lambda.amazonaws.com'
+                        Action:
+                                - 'sts:AssumeRole'
+            Path: '/'
+
+    mtmLambdaServiceDevicesPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'My Things Management policy for the devices microservice Lambda function.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogGroup'
+                            - 'logs:CreateLogStream'
+                            - 'logs:PutLogEvents'
+                        Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref mtmLambdaServiceDevices, ':*']]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'dynamodb:BatchGetItem'
+                            - 'dynamodb:BatchWriteItem'
+                            - 'dynamodb:DeleteItem'
+                            - 'dynamodb:GetItem'
+                            - 'dynamodb:PutItem'
+                            - 'dynamodb:Query'
+                            - 'dynamodb:Scan'
+                            - 'dynamodb:UpdateItem'
+                        Resource:
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDevicesTable]]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            # TODO: Too permissive for now.
+                            - 'iot:*'
+                            - 'greengrass:*'
+                        Resource:
+                            - '*'
+            Roles:
+                - !Ref 'mtmLambdaServiceDevicesRole'
+
+    mtmLambdaServiceDevices:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'mythings-mgmt-devices-service'
+            Description: 'My Things Management devices microservice'
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-devices-service.zip']]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt mtmLambdaServiceDevicesRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    TABLE_DEVICES: !Ref mtmDevicesTable
+                    TABLE_SETTINGS: !Ref mtmSettingsTable
+                    LOGGING_LEVEL: 2
+
+
+Outputs:
+    mtmLambdaServiceDevicesArn:
+        Description: 'Devices Service ARN'
+        Value: !GetAtt mtmLambdaServiceDevices.Arn

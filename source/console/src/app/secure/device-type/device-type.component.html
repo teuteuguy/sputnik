@@ -1,0 +1,59 @@
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Device Type Definition</h4>
+                <h6 class="card-subtitle">Customize how device data of this customized type is sent to AWS IoT.</h6>
+                <form class="fm-t-40">
+                    <div class="form-group">
+                        <label>Device Type Name</label>
+                        <input type="text" class="form-control form-control-line" name="typename" id="typename"
+                            #typename="ngModel" [(ngModel)]="dtype.name" required ngModel />
+                        <!-- [readonly]="dtype.custom === false" -->
+                        <!-- [readonly]="this.typeId !== 'new'" -->
+                        <div class="form-control-feedback">
+                            <small>The common name of the device type.</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="form-control-label">Type:</label>
+                        <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="dtype.type"
+                            required ngModel>
+                            <option ng-selected="dtype.type === 'UNKNOWN'">UNKNOWN</option>
+                            <option ng-selected="dtype.type === 'SDK'">SDK</option>
+                            <option ng-selected="dtype.type === 'A:freeRTOS'">A:freeRTOS</option>
+                            <option ng-selected="dtype.type === 'GREENGRASS'">GREENGRASS</option>
+                        </select>
+                        <div class="form-control-feedback">
+                            <small>Data type of the message attribute.</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="form-control-label">Spec:</label>
+                        <textarea class="form-control" rows="20" id="spec" style="font-family: monospace; font-size: 90%;"
+                            (keyup)="editJsonOnKey($event, 4, dtype, 'spec')" name="spec" id="spec" #name="ngModel"
+                            [(ngModel)]="dtype.spec" required ngModel>{{dtype.spec | stringify:4}}</textarea>
+                        <div class="form-control-feedback">
+                            <small>JSON document to use for the blueprint.
+                                <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
+                            </small>
+                        </div>
+                    </div>
+                    <!-- <div>
+                        <label>Sample Message Payload</label>
+                    </div>
+                    <pre style="font-size: 14px;">{{getDataSample()}}</pre> -->
+                    <div class="m-t-20 m-b-20">
+                        <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="saveDeviceType()">Save</button>
+                        <button type="button" class="btn btn-secondary btn-rounded m-r-15" (click)="cancel()">Cancel</button>
+                        <button type="button" class="btn btn-danger btn-rounded" (click)="delete()">Delete</button>
+                    </div>
+                    <div *ngIf="hasError" class="alert alert-danger alert-rounded">
+                        <i class="mdi mdi-exclamation"></i> {{errorMsg}}</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

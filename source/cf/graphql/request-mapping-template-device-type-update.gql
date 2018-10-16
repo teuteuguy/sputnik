@@ -1,0 +1,33 @@
+#set( $validTypes = ["UNKNOWN", "SDK", "A:freeRTOS", "GREENGRASS"] )
+#set( $temp = "UNKNOWN" )
+#foreach($t in $validTypes)
+    #if($t == $ctx.args.type)
+        #set( $temp = $t )
+    #end
+#end
+#set( $ctx.args.type = $temp )
+#set( $expression = "SET #n = :n, #t = :t, updatedAt = :updatedAt" )
+{
+    "version" : "2017-02-28",
+    "operation" : "UpdateItem",
+    "key" : {
+        "id" : $util.dynamodb.toStringJson($ctx.args.id)
+    },
+    "update" : {
+        "expressionValues": {
+            ":n" : $util.dynamodb.toStringJson($ctx.args.name),
+            ":t" : $util.dynamodb.toStringJson($ctx.args.type),
+            ":updatedAt" : $util.dynamodb.toStringJson($util.time.nowISO8601())
+            #if($ctx.args.spec)
+                #set( $expression = "$expression, spec = :spec" )
+                ,
+                ":spec" : $util.dynamodb.toMapJson($ctx.args.spec)
+            #end
+        },
+        "expression" : "$expression",
+        "expressionNames": {
+            "#n": "name",
+            "#t": "type"
+        }
+    }
+}

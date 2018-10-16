@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "My Things Management - Micro Service Lambda - Thing Group Auto Registration - Version %%VERSION%%"
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    mtmDevicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the application devices
+    mtmSettingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+
+Resources:
+
+    mtmLambdaServiceThingAutoRegistrationRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    mtmLambdaServiceThingAutoRegistrationPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'My Things Management policy for the Thing Group Auto Registration microservice Lambda function.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref mtmLambdaServiceThingAutoRegistration, ":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:BatchGetItem"
+                            - "dynamodb:BatchWriteItem"
+                            - "dynamodb:DeleteItem"
+                            - "dynamodb:GetItem"
+                            - "dynamodb:PutItem"
+                            - "dynamodb:Query"
+                            - "dynamodb:Scan"
+                            - "dynamodb:UpdateItem"
+                        Resource:
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDevicesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            # TODO: Too permissive for now.
+                            - "iot:*"
+                            - "greengrass:*"
+                        Resource:
+                            - "*"
+            Roles:
+                - !Ref 'mtmLambdaServiceThingAutoRegistrationRole'
+
+    mtmLambdaServiceThingAutoRegistration:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "mythings-mgmt-thing-auto-registration-service"
+            Description: "My Things Management Thing Group Auto Registration microservice"
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ["/", [!Ref sourceKeyPrefix, "mythings-mgmt-thing-auto-registration-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt mtmLambdaServiceThingAutoRegistrationRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    TABLE_DEVICES: !Ref mtmDevicesTable
+                    TABLE_SETTINGS: !Ref mtmSettingsTable
+                    LOGGING_LEVEL: 2
+
+    mtmIoTThingAutoRegistrationTopicRule:
+        Type: "AWS::IoT::TopicRule"
+        Properties:
+            TopicRulePayload:
+                RuleDisabled: false
+                Sql: >-
+                    SELECT * from '$aws/events/presence/#'
+                Actions:
+                    - Lambda:
+                        FunctionArn: !GetAtt mtmLambdaServiceThingAutoRegistration.Arn
+
+    mtmIoTThingAutoRegistrationLambdaInvocationPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "mtmIoTThingAutoRegistrationTopicRule" ] ]
+            Action: lambda:InvokeFunction
+            Principal: iot.amazonaws.com
+            FunctionName: !GetAtt mtmLambdaServiceThingAutoRegistration.Arn
+            SourceAccount: !Ref AWS::AccountId
+
+
+Outputs:
+    mtmLambdaServiceThingAutoRegistrationArn:
+        Description: "Thing Auto Registration Service ARN"
+        Value: !GetAtt mtmLambdaServiceThingAutoRegistration.Arn
+    mtmIoTThingAutoRegistrationTopicRuleName:
+        Description: "ThingAutoRegistration Topic Rule Name"
+        Value: !Ref mtmIoTThingAutoRegistrationTopicRule
