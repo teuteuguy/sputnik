@@ -5,8 +5,11 @@ const moment = require('moment');
 const iot = new AWS.Iot();
 const _ = require('underscore');
 
-// TODO: move the triggering via SQS.
-// Basically queue the connected topic and trigger on the queu.
+const listPrincipalThingsDetailed = require('./lib/listPrincipalThingsDetailed');
+
+// TODO: Move the actual rule action to SQS so as to separate the calls and buffer via SQS.
+// TODO: The principal will refer to a cert. But this does not actually refer to the thing.
+//          We can assume the thing via it's attachement to the cert, but we need to combine it with the client id.
 
 function describeThingsForPrincipal(principal) {
     return iot.describeCertificate({
@@ -50,6 +53,19 @@ function handler(event, context, callback) {
 
     // Get the certificate for the principal
     let _things;
+    let _cert;
+    iot.describeCertificate({
+        certificateId: principal
+    }).promise().then(cert => {
+        _cert = cert;
+        return listPrincipalThingsDetailed(cert.certificateDescription.certificateArn);
+    }).catch(err => {
+        console.log(err, err.stack); // an error occurred
+        callback(null, null);
+    });
+
+
+
     describeThingsForPrincipal(event.principalIdentifier).then(things => {
         _things = things;
         return documentClient.get({

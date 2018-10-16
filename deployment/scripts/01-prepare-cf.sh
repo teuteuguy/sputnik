@@ -12,6 +12,8 @@ set -e
 echo "01-prepare-cf.sh--------------------------------------------------------------"
 echo "[Packing] Cloud formation template"
 echo "------------------------------------------------------------------------------"
+echo "rm -rf $2/cf"
+rm -rf $2/cf
 echo "cp -R $1/cf $2"
 cp -R $1/cf $2
 UUID=`uuidgen`

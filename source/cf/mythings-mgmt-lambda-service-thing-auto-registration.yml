@@ -95,7 +95,7 @@ Resources:
             TopicRulePayload:
                 RuleDisabled: false
                 Sql: >-
-                    SELECT * from '$aws/events/presence/#'
+                    SELECT topic() as topic, * from '$aws/events/presence/#'
                 Actions:
                     - Lambda:
                         FunctionArn: !GetAtt mtmLambdaServiceThingAutoRegistration.Arn
