@@ -13,7 +13,10 @@ export default gql`
                 connectionState {
                     state
                     at
+                    certificateId
+                    certificateArn
                 }
+                greengrassGroupId
                 createdAt
                 updatedAt
             }

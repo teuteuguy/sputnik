@@ -3,6 +3,7 @@
     "operation" : "Invoke",
     "payload": {
         "cmd": "addDevice",
-        "thingName": "$context.arguments.thingName"
+        "thingName": "$context.arguments.thingName",
+        "isGreengrass": "$context.arguments.isGreengrass"
     }
 }

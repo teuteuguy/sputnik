@@ -6,7 +6,7 @@ export class DeviceTypeMapping {
 export class Blueprint {
     id: string;
     name = 'UNKNOWN';
-    type: string;
+    type: 'UNKNOWN';
     compatibility: string[] = [];
     deviceTypeMappings: DeviceTypeMapping[];
     spec: any;

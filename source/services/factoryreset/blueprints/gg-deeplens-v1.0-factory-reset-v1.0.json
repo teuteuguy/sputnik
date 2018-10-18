@@ -6,7 +6,7 @@
     "deviceTypeMappings": [{
         "substitute": "ARTIFACTS",
         "value": {
-            "deeplensv1.0": "deeplensv1.0-awscam-artifacts"
+            "deeplensv1.0": "artifacts"
         }
     }],
     "spec": {

@@ -7,7 +7,9 @@
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "underscore": "*"
+        "mtm-utils": "file:../../resources/mtm-utils",
+        "underscore": "*",
+        "uuid": "^3.3.2"
     },
     "devDependencies": {},
     "scripts": {

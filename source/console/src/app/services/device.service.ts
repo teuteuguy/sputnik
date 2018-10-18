@@ -98,9 +98,9 @@ export class DeviceService extends AppSyncService {
         return super.query(getDeviceStats, {}).then(result => <Stats>result.data.getDeviceStats);
     }
 
-    public addDevice(thingName: String) {
+    public addDevice(thingName: String, isGreengrass) {
         return super
-            .mutation(addDevice, { thingName: thingName })
+            .mutation(addDevice, { thingName: thingName, isGreengrass: isGreengrass })
             .then(result => {
                 return <Device>result.data.device;
             });

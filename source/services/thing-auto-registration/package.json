@@ -7,6 +7,7 @@
     "private": "true",
     "dependencies": {
         "moment": "*",
+        "mtm-utils": "../../resources/mtm-utils/",
         "underscore": "*"
     },
     "devDependencies": {},

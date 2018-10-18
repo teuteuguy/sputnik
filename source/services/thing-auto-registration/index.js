@@ -1,9 +1,11 @@
 const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
-const moment = require('moment');
-
 const iot = new AWS.Iot();
+const gg = new AWS.Greengrass();
+const moment = require('moment');
 const _ = require('underscore');
+
+const listGreengrassGroupIdsForThingArn = require('mtm-utils').listGreengrassGroupIdsForThingArn;
 
 const listPrincipalThingsDetailed = require('./lib/listPrincipalThingsDetailed');
 
@@ -11,34 +13,6 @@ const listPrincipalThingsDetailed = require('./lib/listPrincipalThingsDetailed')
 // TODO: The principal will refer to a cert. But this does not actually refer to the thing.
 //          We can assume the thing via it's attachement to the cert, but we need to combine it with the client id.
 
-function describeThingsForPrincipal(principal) {
-    return iot.describeCertificate({
-        certificateId: principal
-    }).promise().then(cert => {
-
-        // Get the things attached to the cert
-        return iot.listPrincipalThings({
-            principal: cert.certificateDescription.certificateArn,
-            maxResults: 10
-        }).promise();
-
-    }).then(things => {
-        things = things.things;
-
-        return Promise.all(
-            things.map(thing => {
-                return iot.describeThing({
-                    thingName: thing
-                }).promise();
-            })
-        );
-
-    }).then(things => {
-        console.log('describeThingsForPrincipal: Found and Described: ' + things.length + ' things for the principal: ' + principal);
-        things.forEach(t => console.log('    - thingName: ' + t.thingName + ' (' + t.thingId + ')'));
-        return things;
-    });
-}
 
 // {
 //     "clientId": "iotconsole-1539277498927-0",
@@ -48,152 +22,158 @@ function describeThingsForPrincipal(principal) {
 //     "principalIdentifier": "c997d377eec157293d10e4f0a75445eba59533ad9a2b802ffc217f55179c599b"
 // }
 function handler(event, context, callback) {
-
     console.log('Event:', JSON.stringify(event, null, 2));
 
     // Get the certificate for the principal
     let _things;
     let _cert;
-    iot.describeCertificate({
-        certificateId: principal
-    }).promise().then(cert => {
-        _cert = cert;
-        return listPrincipalThingsDetailed(cert.certificateDescription.certificateArn);
-    }).catch(err => {
-        console.log(err, err.stack); // an error occurred
-        callback(null, null);
-    });
+    let _settings;
 
+    console.log('First describe the certificate for the incoming principal.');
 
-
-    describeThingsForPrincipal(event.principalIdentifier).then(things => {
-        _things = things;
-        return documentClient.get({
+    Promise.all([
+        documentClient.get({
             TableName: process.env.TABLE_SETTINGS,
             Key: {
                 id: 'services'
             }
-        }).promise();
-    }).then(setting => {
+        })
+        .promise().then(result => _settings = result.Item),
+        iot.describeCertificate({
+            certificateId: event.principalIdentifier
+        }).promise().then(result => _cert = result)
+    ]).then(results => {
 
-        return Promise.all(_things.map(thing => {
-            if (setting.Item.setting.autoRegistration === true) {
-                // Check if the thing already exists in our DB
-                console.log('Getting device:', thing.thingId);
-                return documentClient.get({
-                    TableName: process.env.TABLE_DEVICES,
-                    Key: {
-                        thingId: thing.thingId
-                    }
-                }).promise().then(result => {
-                    console.log('Got device:', result);
+        if (_settings.setting.autoRegistration === false) {
+            console.log('Auto registration is turned off. Exiting.');
+            return false;
+        } else {
+            console.log('Found certificate:', _cert);
+            console.log('Second, find all the things attached to the given cert.');
 
-                    if (result.Item) {
-                        console.log('Device already in DB');
-                        return documentClient.update({
+            return listPrincipalThingsDetailed(_cert.certificateDescription.certificateArn).then(results => _things = results);
+        }
+    }).then(things => {
+        if (_things === false) {
+            return false;
+        } else {
+
+            console.log('Found', _things.length, 'things.');
+            console.log('Third, lets update each device in our database to capture the certificate status.');
+
+            return Promise.all(
+                _things.map(thing => {
+
+                    // Check if the thing already exists in our DB
+                    console.log('Is device', thing.thingId, 'in our DB?');
+
+                    let _device;
+
+                    return documentClient
+                        .get({
                             TableName: process.env.TABLE_DEVICES,
                             Key: {
                                 thingId: thing.thingId
-                            },
-                            UpdateExpression: 'set #ua = :ua, #cs = :cs',
-                            ExpressionAttributeNames: {
-                                '#ua': 'updatedAt',
-                                '#cs': 'connectionState'
-                            },
-                            ExpressionAttributeValues: {
-                                ':ua': moment().utc().format(),
-                                ':cs': {
-                                    state: event.eventType,
-                                    at: moment().utc().format()
+                            }
+                        })
+                        .promise().then(device => {
+                            _device = device;
+
+                            console.log('Check if the device is a Greengrass device?');
+                            return listGreengrassGroupIdsForThingArn(thing.thingArn);
+                        }).then(groupIds => {
+
+                            console.log('Found device:', _device, 'for thindId', thing.thingId);
+                            console.log('Found groupIds:', groupIds, 'for thingArn', thing.thingArn);
+
+                            if (_device.Item) {
+                                console.log('Lets update it.');
+                                let updateParams = {
+                                    TableName: process.env.TABLE_DEVICES,
+                                    Key: {
+                                        thingId: thing.thingId
+                                    },
+                                    UpdateExpression: 'set #ua = :ua, #c = :c',
+                                    ExpressionAttributeNames: {
+                                        '#ua': 'updatedAt',
+                                        '#c': 'connectionState'
+                                    },
+                                    ExpressionAttributeValues: {
+                                        ':ua': moment()
+                                            .utc()
+                                            .format(),
+                                        ':c': {
+                                            certificateId: _cert.certificateDescription.certificateId,
+                                            certificateArn: _cert.certificateDescription.certificateArn,
+                                            state: event.eventType,
+                                            at: moment().utc().format()
+                                        }
+                                    }
+                                };
+                                if (groupIds.length !== 0) {
+                                    console.log('Thing', thing.thingName, 'is a greengrass device.');
+                                    // updateParams.UpdateExpression += ', greengrassGroupId = ' + groupIds[0];
+                                    updateParams.UpdateExpression += ', #ggId = :ggId';
+                                    updateParams.ExpressionAttributeNames['#ggId'] = 'greengrassGroupId';
+                                    updateParams.ExpressionAttributeValues[':ggId'] = groupIds[0];
+                                } else {
+                                    console.log('Thing', thing.thingName, 'is NOT a greengrass device.');
+                                    // updateParams.UpdateExpression += ", greengrassGroupId = 'NOT_A_GREENGRASS_DEVICE'";
+                                    updateParams.UpdateExpression += ', #ggId = :ggId';
+                                    updateParams.ExpressionAttributeNames['#ggId'] = 'greengrassGroupId';
+                                    updateParams.ExpressionAttributeValues[':ggId'] = 'NOT_A_GREENGRASS_DEVICE';
                                 }
+                                return documentClient.update(updateParams).promise();
+                            } else {
+                                console.log('Lets create it');
+                                let createParams = {
+                                    TableName: process.env.TABLE_DEVICES,
+                                    Item: {
+                                        thingId: thing.thingId,
+                                        thingName: thing.thingName,
+                                        thingArn: thing.thingArn,
+                                        name: thing.thingName,
+                                        type: 'UNKNOWN',
+                                        deviceTypeId: 'UNKNOWN',
+                                        blueprintId: 'UNKNOWN',
+                                        connectionState: {
+                                            certificateId: _cert.certificateDescription.certificateId,
+                                            certificateArn: _cert.certificateDescription.certificateArn,
+                                            state: event.eventType,
+                                            at: moment().utc().format()
+                                        },
+                                        lastDeploymentId: 'UNKNOWN',
+                                        createdAt: moment()
+                                            .utc()
+                                            .format(),
+                                        updatedAt: moment()
+                                            .utc()
+                                            .format()
+                                    }
+                                };
+                                if (groupIds.length !== 0) {
+                                    console.log('Thing', thing.thingName, 'is a greengrass device.');
+                                    createParams.greengrassGroupId = groupIds[0];
+                                } else {
+                                    console.log('Thing', thing.thingName, 'is NOT a greengrass device.');
+                                    createParams.greengrassGroupId = 'NOT_A_GREENGRASS_DEVICE';
+                                }
+
+                                return documentClient.put(createParams).promise();
                             }
-                        }).promise();
-                    } else {
-                        console.log('Device not in DB');
-                        return documentClient.put({
-                            TableName: process.env.TABLE_DEVICES,
-                            Item: {
-                                thingId: thing.thingId,
-                                thingName: thing.thingName,
-                                thingArn: thing.thingArn,
-                                name: thing.thingName,
-                                deviceTypeId: 'UNKNOWN',
-                                blueprintId: 'UNKNOWN',
-                                connectionState: {
-                                    state: event.eventType,
-                                    at: moment().utc().format()
-                                },
-                                createdAt: moment().utc().format(),
-                                updatedAt: moment().utc().format()
-                            }
-                        }).promise();
-                    }
-                });
-            } else {
-                console.log('Auto registration is OFF');
-                return false;
-            }
-        }));
+
+                        }).then(device => {
+                            console.log('Device created or updated:', device);
+                            return device;
+                        });
+                }));
+        }
     }).then(results => {
-        console.log('Done with', results);
         callback(null, null);
     }).catch(err => {
         console.log(err, err.stack); // an error occurred
         callback(null, null);
     });
-
-
-    // // let _things = null;
-    // // let _foundThings = null;
-    // // console.log('Prep:');
-    // return Promise.all([
-    //     describeThingsForPrincipal(event.principalIdentifier).then(things => _things = things)
-    // ]).then(results => {
-
-    //     console.log('Checking if the things are already being tracked by My Things Management?');
-
-    //     return mtmThingGroups.addThingToThingGroup()
-
-    //     return Promise.all(_things.map(thing => {
-    //         return iot.listThingGroupsForThing({
-    //             thingName: thing.thingName
-    //         }).promise().then(thingGroupsForThing => {
-    //             const thingGroups = thingGroupsForThing.thingGroups.map(thingGroup => thingGroup.groupName);
-    //             console.log(thing.thingName, 'is in:', ...thingGroups);
-    //             if (_.findIndex(thingGroups, (group) => (group === GROUP_NAMES.MTM_NON_MANAGED || group === GROUP_NAMES.MTM_NON_MANAGED)) === -1) {
-    //                 console.log(thing.thingName, 'is NOT yet managed');
-    //                 return Promise.all([iot.describeThingGroup({
-    //                     thingGroupName: GROUP_NAMES.MTM_NON_MANAGED
-    //                 }).promise(), iot.addThingToThingGroup({
-    //                     thingName: thing.thingName,
-    //                     thingGroupName: GROUP_NAMES.MTM_NON_MANAGED
-    //                 }).promise()]).then(results => {
-    //                     const nbDevices = parseInt(results[0].thingGroupProperties.attributePayload.attributes.nbDevices);
-    //                     return iot.updateThingGroup({
-    //                         thingGroupName: GROUP_NAMES.MTM_NON_MANAGED,
-    //                         thingGroupProperties: {
-    //                             attributePayload: {
-    //                                 attributes: {
-    //                                     'nbDevices': '' + (nbDevices + 1)
-    //                                 }
-    //                             }
-    //                         }
-    //                     }).promise();
-    //                 });
-    //             } else {
-    //                 console.log(thing.thingName, 'is already managed');
-    //                 return;
-    //             }
-    //         });
-    //     }));
-
-    // }).then(results => {
-    //     console.log('Done with', results);
-    //     callback(null, null);
-    // }).catch(err => {
-    //     console.log(err, err.stack); // an error occurred
-    //     callback(null, null);
-    // });
 }
 
 exports.handler = handler;

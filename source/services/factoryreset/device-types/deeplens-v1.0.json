@@ -5,8 +5,8 @@
     "spec": {
         "ResourceDefinitionVersion": {
             "Resources": [{
-                "Id": "deeplensv1.0-awscam-artifacts",
-                "Name": "deeplensv1.0-awscam-artifacts",
+                "Id": "artifacts",
+                "Name": "dc_admin_artifacts_resource",
                 "ResourceDataContainer": {
                     "LocalVolumeResourceData": {
                         "SourcePath": "/opt/awscam/artifacts/",
@@ -17,8 +17,8 @@
                     }
                 }
             }, {
-                "Id": "deeplensv1.0-awscam-stream",
-                "Name": "deeplensv1.0-awscam-stream",
+                "Id": "stream",
+                "Name": "dc_admin_stream_resource",
                 "ResourceDataContainer": {
                     "LocalVolumeResourceData": {
                         "DestinationPath": "/opt/awscam/out",
@@ -29,8 +29,8 @@
                     }
                 }
             }, {
-                "Id": "deeplensv1.0-awscam-home-dir",
-                "Name": "deeplensv1.0-awscam-home-dir",
+                "Id": "home",
+                "Name": "dc_admin_home_resource",
                 "ResourceDataContainer": {
                     "LocalVolumeResourceData": {
                         "DestinationPath": "/home/aws_cam/",

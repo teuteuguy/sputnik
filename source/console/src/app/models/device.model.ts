@@ -1,6 +1,8 @@
 export class ConnectionState {
     state: string;
     at: string;
+    certificateId: string;
+    certificateArn: string;
     constructor(values: Object = {}) {
         Object.assign(this, values);
     }
@@ -14,6 +16,7 @@ export class Device {
     deviceTypeId: string;
     blueprintId: string;
     connectionState: ConnectionState;
+    lastDeploymentId: string;
     createdAt: string;
     updatedAt: string;
 

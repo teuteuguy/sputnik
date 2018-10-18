@@ -1,6 +1,8 @@
 type ConnectionState {
     state: String!
     at: AWSDateTime!
+    certificateArn: String!
+    certificateId: String!
 }
 type Device {
     thingId: String!
@@ -10,6 +12,8 @@ type Device {
     deviceTypeId: String!
     blueprintId: String!
     connectionState: ConnectionState
+    greengrassGroupId: String!
+    lastDeploymentId: String
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
@@ -93,7 +97,7 @@ type Query {
     getDeployments(limit: Int, nextToken: String): PaginatedDeployments @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
-    addDevice(thingName: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
+    addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
     deleteDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators"])
     updateDevice(thingId: String!, name: String!, deviceTypeId: String!, blueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
 

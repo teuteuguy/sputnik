@@ -6,43 +6,6 @@ const moment = require('moment');
 
 const lib = 'addDevice';
 
-// function addDevice() {
-//     let params = {
-//         TableName: process.env.TABLE_DEVICES,
-//         Limit: 75
-//     };
-
-//     if (lastEvalKey) {
-//         params.ExclusiveStartKey = lastEvalKey;
-//     }
-
-//     params.ProjectionExpression = 'thingId, userId, deviceTypeId, connectionState, blueprintId';
-
-//     return documentClient.scan(params).promise().then(results => {
-//         let _stats = _.countBy(results.Items, (device) => {
-//             return device.connectionState.state;
-//         });
-//         if (!_stats.hasOwnProperty('connected')) {
-//             _stats.connected = 0;
-//         }
-//         if (!_stats.hasOwnProperty('disconnected')) {
-//             _stats.disconnected = 0;
-//         }
-//         _stats.total = results.Items.length;
-
-//         if (results.LastEvaluatedKey) {
-//             return getDeviceStatsRecursive(result.LastEvaluatedKey).then(data => {
-//                 _stats.connected += data.connected;
-//                 _stats.disconnected += data.disconnected;
-//                 _stats.total += data.total;
-//                 return _stats;
-//             });
-//         } else {
-//             return _stats;
-//         }
-//     });
-// }
-
 module.exports = function(event, context, callback) {
     if (event.cmd !== lib) {
         return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
@@ -54,6 +17,9 @@ module.exports = function(event, context, callback) {
     //     "thingName": "toto",
     //     "thingId": "ef17a1e7-eb50-4d64-a359-df4894ba90a0"
     // }
+
+    // TODO: deal with creating a greengrass group if required.
+    // TODO: deal with certificates!
 
     iot.createThing({
         thingName: event.thingName
@@ -88,11 +54,16 @@ module.exports = function(event, context, callback) {
                     deviceTypeId: 'UNKNOWN',
                     blueprintId: 'UNKNOWN',
                     connectionState: {
+                        // TODO: probably generate the certs here at one point.
+                        certificateId: 'NOTSET',
+                        certificateArn: 'NOTSET',
                         state: 'created',
                         at: moment()
                             .utc()
                             .format()
                     },
+                    greengrassGroupId: 'NOT_A_GREENGRASS_DEVICE',
+                    lastDeploymentId: 'UNKNOWN',
                     createdAt: moment()
                         .utc()
                         .format(),

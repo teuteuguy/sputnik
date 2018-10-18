@@ -9,16 +9,18 @@ const lib = 'listPrincipalThingsDetailed';
 function _listPrincipalThings(certificateArn, nextToken) {
     return iot.listPrincipalThings({
         principal: certificateArn,
-        maxResults: 1,
+        maxResults: 75,
         nextToken: nextToken
     }).promise().then(data => {
         let _things = data.things;
+        console.log('_listPrincipalThings:', _things);
         if (data.nextToken) {
             return _listPrincipalThings(certificateArn, data.nextToken).then(things => {
                 return _things.concat(things);
             })
         } else {
-            return data;
+            console.log('_listPrincipalThings: return', data.things);
+            return data.things;
         }
     });
 }
@@ -27,7 +29,7 @@ function _listPrincipalThings(certificateArn, nextToken) {
 module.exports = function (certificateArn) {
 
     return _listPrincipalThings(certificateArn).then(things => {
-        console.log(things);
+        console.log('listPrincipalThingsDetailed: things', things);
         return Promise.all(
             things.map(thing => {
                 return iot.describeThing({
@@ -36,7 +38,7 @@ module.exports = function (certificateArn) {
             })
         );
     }).then(things => {
-        console.log('describeThingsForPrincipal: Found and Described: ' + things.length + ' things for the principal: ' + principal);
+        console.log(lib + ':', 'Found and Described: ' + things.length + ' things for the certificateArn: ' + certificateArn);
         things.forEach(t => console.log('    - thingName: ' + t.thingName + ' (' + t.thingId + ')'));
         return things;
     });

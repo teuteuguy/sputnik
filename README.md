@@ -29,6 +29,10 @@ chmod +x ./build-s3-dist.sh \n
 aws s3 cp ./dist/ s3://my-bucket-name-<aws_region>/iot-device-simulator/<my-version>/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name \n
 ```
 
+# Known issues
+
+Menu is broken because of Angular UI. Needs improving.
+
 # Disclaimer
 
 This is based off of the AWS IoT Device Simulator.
