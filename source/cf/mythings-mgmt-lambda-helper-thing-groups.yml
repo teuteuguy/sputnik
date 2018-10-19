@@ -8,7 +8,7 @@ Parameters:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
 Resources:
-    mtmCustomResourceThingGroupsHelperRole:
+    customResourceThingGroupsHelperRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -22,7 +22,7 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
             Policies:
-                - PolicyName: 'mtmCustomResourceThingGroupsHelperPolicy'
+                - PolicyName: 'customResourceThingGroupsHelperPolicy'
                   PolicyDocument:
                       Version: '2012-10-17'
                       Statement:
@@ -38,7 +38,7 @@ Resources:
                             Resource:
                                 - '*'
 
-    mtmCustomResourceThingGroupsHelper:
+    customResourceThingGroupsHelper:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'mythings-mgmt-custom-resource-helper-thing-groups'
@@ -48,11 +48,11 @@ Resources:
                 S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-custom-resource-helper-thing-groups.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt mtmCustomResourceThingGroupsHelperRole.Arn
+            Role: !GetAtt customResourceThingGroupsHelperRole.Arn
             Timeout: 300
             MemorySize: 256
 
 Outputs:
-    mtmCustomResourceThingGroupsHelperArn:
+    customResourceThingGroupsHelperArn:
         Description: 'Custom Resource Thing Groups Helper ARN'
-        Value: !GetAtt mtmCustomResourceThingGroupsHelper.Arn
+        Value: !GetAtt customResourceThingGroupsHelper.Arn

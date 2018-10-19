@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'My Things Management - DynamoDB Table - Settings - Version %%VERSION%%'
 
 Resources:
-    mtmSettingsTable:
+    settingsTable:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
@@ -22,6 +22,6 @@ Resources:
             TableName: "mythings-mgmt-settings"
 
 Outputs:
-    mtmSettingsTable:
+    settingsTable:
         Description: "DynamoDB Settings Table"
-        Value: !Ref mtmSettingsTable
+        Value: !Ref settingsTable

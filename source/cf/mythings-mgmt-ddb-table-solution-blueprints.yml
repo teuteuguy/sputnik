@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'My Things Management - DynamoDB Table - Device Blueprints - Version %%VERSION%%'
+Description: 'My Things Management - DynamoDB Table - Solution Blueprints - Version %%VERSION%%'
 
 Resources:
 
-    deviceBlueprintsTable:
+    solutionBlueprintsTable:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
@@ -20,9 +20,9 @@ Resources:
                 WriteCapacityUnits: 5
             SSESpecification:
                 SSEEnabled: true
-            TableName: "mythings-mgmt-device-blueprints"
+            TableName: "mythings-mgmt-solution-blueprints"
 
-    deviceBlueprintsDynamoDBScalingRole:
+    solutionBlueprintsDynamoDBScalingRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -59,32 +59,9 @@ Resources:
                                     - "dynamodb:DescribeGlobalTable"
                                     - "dynamodb:UpdateGlobalTable"
                                 Resource:
-                                    - !GetAtt deviceBlueprintsTable.Arn
-
-    deviceBlueprintsReadCapacityScalableTarget:
-        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-        Properties:
-            MaxCapacity: 100
-            MinCapacity: 5
-            ResourceId: !Join ["/", ["table",  !Ref "deviceBlueprintsTable"]]
-            RoleARN: !GetAtt deviceBlueprintsDynamoDBScalingRole.Arn
-            ScalableDimension: dynamodb:table:ReadCapacityUnits
-            ServiceNamespace: dynamodb
-
-    deviceBlueprintsReadScalingPolicy:
-        Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-        Properties:
-            PolicyName: deviceBlueprintsReadScalingPolicy
-            PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref deviceBlueprintsReadCapacityScalableTarget
-            TargetTrackingScalingPolicyConfiguration:
-                TargetValue: 70.0
-                ScaleInCooldown: 60
-                ScaleOutCooldown: 60
-                PredefinedMetricSpecification:
-                    PredefinedMetricType: DynamoDBReadCapacityUtilization
+                                    - !GetAtt solutionBlueprintsTable.Arn
 
 Outputs:
-    deviceBlueprintsTable:
-        Description: "DynamoDB Device Blueprints Table"
-        Value: !Ref deviceBlueprintsTable
+    solutionBlueprintsTable:
+        Description: "DynamoDB Solution Blueprints Table"
+        Value: !Ref solutionBlueprintsTable

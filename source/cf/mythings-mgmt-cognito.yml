@@ -8,10 +8,10 @@ Parameters:
         Type: String
         Description: Email address for My Things Management administrator.
         AllowedPattern: "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
-    mtmDataBucketArn:
+    dataBucketArn:
         Type: String
         Description: ARN of the My Things Management Data Bucket.
-    mtmWebsiteURL:
+    websiteURL:
         Type: String
         Description: My Things Management Website URL.
 
@@ -22,7 +22,7 @@ Mappings:
             FullName: "My Things Management"
 
 Resources:
-    mtmIdentityPoolAuthRole:
+    identityPoolAuthRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -37,12 +37,12 @@ Resources:
                                 - "sts:AssumeRoleWithWebIdentity"
                         Condition:
                             StringEquals:
-                                "cognito-identity.amazonaws.com:aud": !Sub "${mtmIdentityPool}"
+                                "cognito-identity.amazonaws.com:aud": !Sub "${identityPool}"
                             "ForAnyValue:StringLike":
                                 "cognito-identity.amazonaws.com:amr": "authenticated"
             Path: "/"
 
-    mtmIdentityPoolAuthPolicy:
+    identityPoolAuthPolicy:
         Type: "AWS::IAM::ManagedPolicy"
         Properties:
             Description: "Policy for the My Things Management identity pool authorized identities."
@@ -54,7 +54,7 @@ Resources:
                         Action:
                             - "mobileanalytics:PutEvents"
                             - "cognito-identity:*"
-                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${mtmIdentityPool}"
+                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${identityPool}"
                     -
                         Effect: "Allow"
                         Action:
@@ -75,11 +75,11 @@ Resources:
                             # TODO BE MORE RESTRICTIVE
                             - "s3:*"
                         Resource:
-                            - !Join ["/", [!Ref mtmDataBucketArn, "*"]]
+                            - !Join ["/", [!Ref dataBucketArn, "*"]]
             Roles:
-                - !Ref mtmIdentityPoolAuthRole
+                - !Ref identityPoolAuthRole
 
-    mtmIdentityPoolUnauthRole:
+    identityPoolUnauthRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -94,12 +94,12 @@ Resources:
                                 - "sts:AssumeRoleWithWebIdentity"
                         Condition:
                             StringEquals:
-                                "cognito-identity.amazonaws.com:aud": !Sub "${mtmIdentityPool}"
+                                "cognito-identity.amazonaws.com:aud": !Sub "${identityPool}"
                             "ForAnyValue:StringLike":
                                 "cognito-identity.amazonaws.com:amr": "unauthenticated"
             Path: "/"
 
-    mtmIdentityPoolUnauthPolicy:
+    identityPoolUnauthPolicy:
         Type: "AWS::IAM::ManagedPolicy"
         Properties:
             Description: "Policy for the My Things Management identity pool unauthorized identities."
@@ -110,7 +110,7 @@ Resources:
                         Effect: "Allow"
                         Action:
                             - "mobileanalytics:PutEvents"
-                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${mtmIdentityPool}"
+                        Resource: !Sub "arn:aws:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/${identityPool}"
                     -
                         Effect: "Allow"
                         Action:
@@ -123,9 +123,9 @@ Resources:
                         Resource:
                             - "*"
             Roles:
-                - !Ref mtmIdentityPoolUnauthRole
+                - !Ref identityPoolUnauthRole
 
-    mtmWebsiteCognitoIoTPolicy:
+    websiteCognitoIoTPolicy:
         Type: "AWS::IoT::Policy"
         DeletionPolicy: Retain
         Properties:
@@ -140,7 +140,7 @@ Resources:
                     Resource:
                     - "*"
 
-    mtmUserPool:
+    userPool:
         Type: "AWS::Cognito::UserPool"
         Properties:
             UserPoolName: "mythings-mgmt-pool"
@@ -156,7 +156,7 @@ Resources:
                             </p>
                             <p>
                             Please sign in to the My Things Management dashboard with your email address and temporary password provided above at:
-                            ${mtmWebsiteURL}
+                            ${websiteURL}
                             </p>
                             <p>
                             <br />
@@ -184,7 +184,7 @@ Resources:
                     Name: "email"
                     Required: True
 
-    mtmWebsiteCognitoClient:
+    websiteCognitoClient:
         Type: "AWS::Cognito::UserPoolClient"
         Properties:
             ClientName: "mythings-mgmt-website"
@@ -207,23 +207,23 @@ Resources:
                 - "phone_number"
                 - "phone_number_verified"
             RefreshTokenValidity: 1
-            UserPoolId: !Ref mtmUserPool
+            UserPoolId: !Ref userPool
 
-    mtmAdminCognitoGroup:
+    adminCognitoGroup:
         Type: "AWS::Cognito::UserPoolGroup"
         Properties:
             Description: "Administrator group for managing My Things Management web interface"
             GroupName: "Administrators"
-            UserPoolId: !Ref mtmUserPool
+            UserPoolId: !Ref userPool
 
-    mtmMemberCognitoGroup:
+    memberCognitoGroup:
         Type: "AWS::Cognito::UserPoolGroup"
         Properties:
             Description: "Member group for access to the My Things Management web interface"
             GroupName: "Members"
-            UserPoolId: !Ref mtmUserPool
+            UserPoolId: !Ref userPool
 
-    mtmAdminCognitoUser:
+    adminCognitoUser:
         Type: "AWS::Cognito::UserPoolUser"
         Properties:
             DesiredDeliveryMediums:
@@ -240,45 +240,45 @@ Resources:
                     Name: email_verified
                     Value: True
             Username: !Join ["_", !Split [".", !Join ["_", !Split ["@", !Ref AdministratorEmail]]]]
-            UserPoolId: !Ref mtmUserPool
+            UserPoolId: !Ref userPool
 
-    mtmAdminGroupAssignment:
+    adminGroupAssignment:
         Type: "AWS::Cognito::UserPoolUserToGroupAttachment"
         Properties:
-            GroupName: !Ref mtmAdminCognitoGroup
-            Username: !Ref mtmAdminCognitoUser
-            UserPoolId: !Ref mtmUserPool
+            GroupName: !Ref adminCognitoGroup
+            Username: !Ref adminCognitoUser
+            UserPoolId: !Ref userPool
 
-    mtmIdentityPool:
+    identityPool:
         Type: "AWS::Cognito::IdentityPool"
         Properties:
             IdentityPoolName: "MyThings_Management_Pool"
             CognitoIdentityProviders:
-              - ClientId: !Ref mtmWebsiteCognitoClient
-                ProviderName: !GetAtt mtmUserPool.ProviderName
+              - ClientId: !Ref websiteCognitoClient
+                ProviderName: !GetAtt userPool.ProviderName
             AllowUnauthenticatedIdentities: true
 
-    mtmIdentityPoolRoleAttachment:
+    identityPoolRoleAttachment:
         Type: "AWS::Cognito::IdentityPoolRoleAttachment"
         Properties:
-            IdentityPoolId: !Sub "${mtmIdentityPool}"
+            IdentityPoolId: !Sub "${identityPool}"
             Roles:
-                unauthenticated: !GetAtt mtmIdentityPoolUnauthRole.Arn
-                authenticated: !GetAtt mtmIdentityPoolAuthRole.Arn
+                unauthenticated: !GetAtt identityPoolUnauthRole.Arn
+                authenticated: !GetAtt identityPoolAuthRole.Arn
 
 Outputs:
-    mtmWebsiteCognitoIoTPolicy:
+    websiteCognitoIoTPolicy:
         Description: "IoT Policy to access resources"
-        Value: !Ref mtmWebsiteCognitoIoTPolicy
-    mtmUserPoolArn:
+        Value: !Ref websiteCognitoIoTPolicy
+    userPoolArn:
         Description: "My Things Management User Pool"
-        Value: !GetAtt mtmUserPool.Arn
-    mtmUserPoolId:
+        Value: !GetAtt userPool.Arn
+    userPoolId:
         Description: "My Things Management User Pool ID"
-        Value: !Ref mtmUserPool
-    mtmWebsiteCognitoClientId:
+        Value: !Ref userPool
+    websiteCognitoClientId:
         Description: "My Things Management Website Cognito Client Id"
-        Value: !Ref mtmWebsiteCognitoClient
-    mtmIdentityPool:
+        Value: !Ref websiteCognitoClient
+    identityPool:
         Description: "My Things Management Identity Pool"
-        Value: !Ref mtmIdentityPool
+        Value: !Ref identityPool

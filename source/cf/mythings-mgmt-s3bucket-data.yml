@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'My Things Management - Data Bucket - Version %%VERSION%%'
 
 Resources:
-    mtmDataBucketAccessPolicy:
+    dataBucketAccessPolicy:
         Type: "AWS::IAM::ManagedPolicy"
         DeletionPolicy: Retain
         Properties:
@@ -16,8 +16,8 @@ Resources:
                             # TODO BE MORE RESTRICTIVE
                             - "s3:*"
                         Resource:
-                            - !Join ["/", [!GetAtt mtmDataBucket.Arn, "*"]]
-    mtmDataBucket:
+                            - !Join ["/", [!GetAtt dataBucket.Arn, "*"]]
+    dataBucket:
         Type: AWS::S3::Bucket
         DeletionPolicy: Retain
         Properties:
@@ -32,12 +32,12 @@ Resources:
                         AllowedHeaders:
                             - "*"
 Outputs:
-    # mtmDataBucketAccessPolicy:
+    # dataBucketAccessPolicy:
     #     Description: "IAM Policy to access the My Things Management Data bucket"
-    #     Value: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucketAccessPolicy
-    mtmDataBucket:
+    #     Value: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicy
+    dataBucket:
         Description: 'My Things Management Data Bucket'
-        Value: !Ref mtmDataBucket
-    mtmDataBucketArn:
+        Value: !Ref dataBucket
+    dataBucketArn:
         Description: 'My Things Management Data Bucket ARN'
-        Value: !GetAtt mtmDataBucket.Arn
+        Value: !GetAtt dataBucket.Arn

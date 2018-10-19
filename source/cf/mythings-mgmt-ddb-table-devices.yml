@@ -3,7 +3,7 @@ Description: 'My Things Management - DynamoDB Table - DeviceTypes - Version %%VE
 
 Resources:
 
-    mtmDevicesTable:
+    devicesTable:
         Type: 'AWS::DynamoDB::Table'
         DeletionPolicy: 'Delete'
         Properties:
@@ -51,7 +51,7 @@ Resources:
                 SSEEnabled: true
             TableName: 'mythings-mgmt-devices'
 
-    mtmDevicesDynamoDBScalingRole:
+    devicesDynamoDBScalingRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -88,26 +88,26 @@ Resources:
                                     - 'dynamodb:DescribeGlobalTable'
                                     - 'dynamodb:UpdateGlobalTable'
                                 Resource:
-                                    - !GetAtt mtmDevicesTable.Arn
-                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: mtmDevicesTable, '/index/deviceTypeId']]
-                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: mtmDevicesTable, '/index/deviceBlueprintId']]
+                                    - !GetAtt devicesTable.Arn
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: devicesTable, '/index/deviceTypeId']]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: devicesTable, '/index/deviceBlueprintId']]
 
-    mtmDevicesWriteCapacityScalableTarget:
+    devicesWriteCapacityScalableTarget:
         Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
         Properties:
             MaxCapacity: 100
             MinCapacity: 10
-            ResourceId: !Join ['/', ['table',  !Ref 'mtmDevicesTable']]
-            RoleARN: !GetAtt mtmDevicesDynamoDBScalingRole.Arn
+            ResourceId: !Join ['/', ['table',  !Ref 'devicesTable']]
+            RoleARN: !GetAtt devicesDynamoDBScalingRole.Arn
             ScalableDimension: dynamodb:table:WriteCapacityUnits
             ServiceNamespace: dynamodb
 
-    mtmDevicesWriteScalingPolicy:
+    devicesWriteScalingPolicy:
         Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
         Properties:
-            PolicyName: mtmDevicesWriteScalingPolicy
+            PolicyName: devicesWriteScalingPolicy
             PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref mtmDevicesWriteCapacityScalableTarget
+            ScalingTargetId: !Ref devicesWriteCapacityScalableTarget
             TargetTrackingScalingPolicyConfiguration:
                 TargetValue: 70.0
                 ScaleInCooldown: 60
@@ -115,22 +115,22 @@ Resources:
                 PredefinedMetricSpecification:
                     PredefinedMetricType: DynamoDBWriteCapacityUtilization
 
-    mtmDevicesReadCapacityScalableTarget:
+    devicesReadCapacityScalableTarget:
         Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
         Properties:
             MaxCapacity: 100
             MinCapacity: 10
-            ResourceId: !Join ['/', ['table',  !Ref 'mtmDevicesTable']]
-            RoleARN: !GetAtt mtmDevicesDynamoDBScalingRole.Arn
+            ResourceId: !Join ['/', ['table',  !Ref 'devicesTable']]
+            RoleARN: !GetAtt devicesDynamoDBScalingRole.Arn
             ScalableDimension: dynamodb:table:ReadCapacityUnits
             ServiceNamespace: dynamodb
 
-    mtmDevicesReadScalingPolicy:
+    devicesReadScalingPolicy:
         Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
         Properties:
-            PolicyName: mtmDevicesReadScalingPolicy
+            PolicyName: devicesReadScalingPolicy
             PolicyType: TargetTrackingScaling
-            ScalingTargetId: !Ref mtmDevicesReadCapacityScalableTarget
+            ScalingTargetId: !Ref devicesReadCapacityScalableTarget
             TargetTrackingScalingPolicyConfiguration:
                 TargetValue: 70.0
                 ScaleInCooldown: 60
@@ -140,6 +140,6 @@ Resources:
 
 
 Outputs:
-    mtmDevicesTable:
+    devicesTable:
         Description: 'DynamoDB Devices Table'
-        Value: !Ref mtmDevicesTable
+        Value: !Ref devicesTable

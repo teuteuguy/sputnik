@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'My Things Management - DynamoDB Table - Deployments - Version %%VERSION%%'
 
 Resources:
-    mtmDeploymentsTable:
+    deploymentsTable:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
@@ -28,6 +28,6 @@ Resources:
             TableName: "mythings-mgmt-deployments"
 
 Outputs:
-    mtmDeploymentsTable:
+    deploymentsTable:
         Description: "DynamoDB Deployments Table"
-        Value: !Ref mtmDeploymentsTable
+        Value: !Ref deploymentsTable

@@ -7,13 +7,13 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
-    mtmDeviceTypesTable:
+    deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
 
 Resources:
 
-    mtmLambdaServiceStatsRole:
+    lambdaServiceStatsRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -28,7 +28,7 @@ Resources:
                                 - "sts:AssumeRole"
             Path: "/"
 
-    mtmLambdaServiceStatsPolicy:
+    lambdaServiceStatsPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'My Things Management policy for the stats microservice Lambda function.'
@@ -41,7 +41,7 @@ Resources:
                             - "logs:CreateLogGroup"
                             - "logs:CreateLogStream"
                             - "logs:PutLogEvents"
-                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref mtmLambdaServiceStats, ":*"]]
+                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref lambdaServiceStats, ":*"]]
                     -
                         Effect: "Allow"
                         Action:
@@ -53,7 +53,7 @@ Resources:
                             - 'dynamodb:Query'
                             - 'dynamodb:Scan'
                         Resource:
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceTypesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable]]
                     -
                         Effect: "Allow"
                         Action:
@@ -62,9 +62,9 @@ Resources:
                         Resource:
                             - "*"
             Roles:
-                - !Ref 'mtmLambdaServiceStatsRole'
+                - !Ref 'lambdaServiceStatsRole'
 
-    mtmLambdaServiceStats:
+    lambdaServiceStats:
         Type: "AWS::Lambda::Function"
         Properties:
             FunctionName: "mythings-mgmt-stats-service"
@@ -74,16 +74,16 @@ Resources:
                 S3Key: !Join ["/", [!Ref sourceKeyPrefix, "mythings-mgmt-stats-service.zip"]]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt mtmLambdaServiceStatsRole.Arn
+            Role: !GetAtt lambdaServiceStatsRole.Arn
             Timeout: 60
             MemorySize: 256
             Environment:
                 Variables:
-                    TABLE_DEVICE_TYPES: !Ref mtmDeviceTypesTable
+                    TABLE_DEVICE_TYPES: !Ref deviceTypesTable
                     LOGGING_LEVEL: 2
 
 
 Outputs:
-    mtmLambdaServiceStatsArn:
+    lambdaServiceStatsArn:
         Description: "Stats Service ARN"
-        Value: !GetAtt mtmLambdaServiceStats.Arn
+        Value: !GetAtt lambdaServiceStats.Arn

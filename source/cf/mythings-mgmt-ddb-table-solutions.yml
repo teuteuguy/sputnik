@@ -3,7 +3,7 @@ Description: 'My Things Management - DynamoDB Table - Solutions - Version %%VERS
 
 Resources:
 
-    mtmSolutionsTable:
+    solutionsTable:
         Type: "AWS::DynamoDB::Table"
         DeletionPolicy: "Delete"
         Properties:
@@ -22,7 +22,7 @@ Resources:
                 SSEEnabled: true
             TableName: "mythings-mgmt-solutions"
 
-    mtmSolutionsDynamoDBScalingRole:
+    solutionsDynamoDBScalingRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -59,9 +59,9 @@ Resources:
                                     - "dynamodb:DescribeGlobalTable"
                                     - "dynamodb:UpdateGlobalTable"
                                 Resource:
-                                    - !GetAtt mtmSolutionsTable.Arn
+                                    - !GetAtt solutionsTable.Arn
 
 Outputs:
-    mtmSolutionsTable:
+    solutionsTable:
         Description: "DynamoDB Solutions Table"
-        Value: !Ref mtmSolutionsTable
+        Value: !Ref solutionsTable

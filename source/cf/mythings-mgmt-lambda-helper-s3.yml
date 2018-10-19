@@ -14,7 +14,7 @@ Parameters:
         Type: String
         Description: ARN of the My Things Management Data Bucket.
 Resources:
-    mtmCustomResourceS3HelperRole:
+    customResourceS3HelperRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -28,7 +28,7 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
             Policies:
-                - PolicyName: 'mtmCustomResourceS3HelperPolicy'
+                - PolicyName: 'customResourceS3HelperPolicy'
                   PolicyDocument:
                       Version: '2012-10-17'
                       Statement:
@@ -51,7 +51,7 @@ Resources:
                                 - !Join ['/', [!Ref destBucketArn, '*']]
                                 - !Join ['/', [!Ref dataBucketArn, '*']]
 
-    mtmCustomResourceS3Helper:
+    customResourceS3Helper:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'mythings-mgmt-custom-resource-helper-s3'
@@ -61,11 +61,11 @@ Resources:
                 S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-custom-resource-helper-s3.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt mtmCustomResourceS3HelperRole.Arn
+            Role: !GetAtt customResourceS3HelperRole.Arn
             Timeout: 300
             MemorySize: 256
 
 Outputs:
-    mtmCustomResourceS3HelperArn:
+    customResourceS3HelperArn:
         Description: 'Custom Resource S3 Helper ARN'
-        Value: !GetAtt mtmCustomResourceS3Helper.Arn
+        Value: !GetAtt customResourceS3Helper.Arn

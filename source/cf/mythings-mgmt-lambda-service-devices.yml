@@ -7,16 +7,16 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
-    mtmSettingsTable:
+    settingsTable:
         Type: String
         Description: DynamoDB Table for storing the application settings
-    mtmDevicesTable:
+    devicesTable:
         Type: String
         Description: DynamoDB Table for storing the devices
 
 Resources:
 
-    mtmLambdaServiceDevicesRole:
+    lambdaServiceDevicesRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -31,7 +31,7 @@ Resources:
                                 - 'sts:AssumeRole'
             Path: '/'
 
-    mtmLambdaServiceDevicesPolicy:
+    lambdaServiceDevicesPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'My Things Management policy for the devices microservice Lambda function.'
@@ -44,7 +44,7 @@ Resources:
                             - 'logs:CreateLogGroup'
                             - 'logs:CreateLogStream'
                             - 'logs:PutLogEvents'
-                        Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref mtmLambdaServiceDevices, ':*']]
+                        Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref lambdaServiceDevices, ':*']]
                     -
                         Effect: 'Allow'
                         Action:
@@ -57,8 +57,8 @@ Resources:
                             - 'dynamodb:Scan'
                             - 'dynamodb:UpdateItem'
                         Resource:
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDevicesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref settingsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable]]
                     -
                         Effect: 'Allow'
                         Action:
@@ -68,9 +68,9 @@ Resources:
                         Resource:
                             - '*'
             Roles:
-                - !Ref 'mtmLambdaServiceDevicesRole'
+                - !Ref 'lambdaServiceDevicesRole'
 
-    mtmLambdaServiceDevices:
+    lambdaServiceDevices:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'mythings-mgmt-devices-service'
@@ -80,17 +80,17 @@ Resources:
                 S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'mythings-mgmt-devices-service.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt mtmLambdaServiceDevicesRole.Arn
+            Role: !GetAtt lambdaServiceDevicesRole.Arn
             Timeout: 60
             MemorySize: 256
             Environment:
                 Variables:
-                    TABLE_DEVICES: !Ref mtmDevicesTable
-                    TABLE_SETTINGS: !Ref mtmSettingsTable
+                    TABLE_DEVICES: !Ref devicesTable
+                    TABLE_SETTINGS: !Ref settingsTable
                     LOGGING_LEVEL: 2
 
 
 Outputs:
-    mtmLambdaServiceDevicesArn:
+    lambdaServiceDevicesArn:
         Description: 'Devices Service ARN'
-        Value: !GetAtt mtmLambdaServiceDevices.Arn
+        Value: !GetAtt lambdaServiceDevices.Arn

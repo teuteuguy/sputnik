@@ -7,19 +7,19 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
-    mtmSettingsTable:
+    settingsTable:
         Type: String
         Description: DynamoDB Table for storing the application settings
-    mtmDeviceTypesTable:
+    deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
-    mtmDeviceBlueprintsTable:
+    deviceBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the device blueprints
 
 Resources:
 
-    mtmLambdaServiceFactoryResetRole:
+    lambdaServiceFactoryResetRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -34,7 +34,7 @@ Resources:
                                 - "sts:AssumeRole"
             Path: "/"
 
-    mtmLambdaServiceFactoryResetPolicy:
+    lambdaServiceFactoryResetPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'My Things Management policy for the stats microservice Lambda function.'
@@ -47,7 +47,7 @@ Resources:
                             - "logs:CreateLogGroup"
                             - "logs:CreateLogStream"
                             - "logs:PutLogEvents"
-                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref mtmLambdaServiceFactoryReset, ":*"]]
+                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref lambdaServiceFactoryReset, ":*"]]
                     -
                         Effect: "Allow"
                         Action:
@@ -59,9 +59,9 @@ Resources:
                             - 'dynamodb:Query'
                             - 'dynamodb:Scan'
                         Resource:
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceTypesTable]]
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceBlueprintsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref settingsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceBlueprintsTable]]
                     -
                         Effect: "Allow"
                         Action:
@@ -70,9 +70,9 @@ Resources:
                         Resource:
                             - "*"
             Roles:
-                - !Ref 'mtmLambdaServiceFactoryResetRole'
+                - !Ref 'lambdaServiceFactoryResetRole'
 
-    mtmLambdaServiceFactoryReset:
+    lambdaServiceFactoryReset:
         Type: "AWS::Lambda::Function"
         Properties:
             FunctionName: "mythings-mgmt-factoryreset-service"
@@ -82,18 +82,18 @@ Resources:
                 S3Key: !Join ["/", [!Ref sourceKeyPrefix, "mythings-mgmt-factoryreset-service.zip"]]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt mtmLambdaServiceFactoryResetRole.Arn
+            Role: !GetAtt lambdaServiceFactoryResetRole.Arn
             Timeout: 60
             MemorySize: 256
             Environment:
                 Variables:
-                    TABLE_DEVICE_TYPES: !Ref mtmDeviceTypesTable
-                    TABLE_SETTINGS: !Ref mtmSettingsTable
-                    TABLE_DEVICE_BLUEPRINTS: !Ref mtmDeviceBlueprintsTable
+                    TABLE_DEVICE_TYPES: !Ref deviceTypesTable
+                    TABLE_SETTINGS: !Ref settingsTable
+                    TABLE_DEVICE_BLUEPRINTS: !Ref deviceBlueprintsTable
                     LOGGING_LEVEL: 2
 
 
 Outputs:
-    mtmLambdaServiceFactoryResetArn:
+    lambdaServiceFactoryResetArn:
         Description: "Stats Service ARN"
-        Value: !GetAtt mtmLambdaServiceFactoryReset.Arn
+        Value: !GetAtt lambdaServiceFactoryReset.Arn

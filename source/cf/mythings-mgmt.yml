@@ -21,30 +21,30 @@ Mappings:
 Resources:
 
     # Nested stack - Data bucket creation
-    mtmCFStackForDataBucket:
+    CFStackForDataBucket:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-s3bucket-data.yml']]
 
     # Nested stack - Website bucket creation
-    mtmCFStackForWebsite:
+    CFStackForWebsite:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-s3bucket-website.yml']]
 
     # Nested stack - Custom resource - S3 Helper
-    mtmCFStackForCustomResourceS3Helper:
+    CFStackForCustomResourceS3Helper:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-helper-s3.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                destBucketArn: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteBucketArn
-                dataBucketArn: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucketArn
+                destBucketArn: !GetAtt CFStackForWebsite.Outputs.websiteBucketArn
+                dataBucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
 
     # Nested stack - Custom resource - Thing Groups Helper
-    # mtmCFStackForCustomResourceThingGroupsHelper:
+    # CFStackForCustomResourceThingGroupsHelper:
     #     Type: AWS::CloudFormation::Stack
     #     Properties:
     #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-helper-thing-groups.yml']]
@@ -53,211 +53,218 @@ Resources:
     #             sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
 
     # Nested stack - Cognito
-    mtmCFStackForCognito:
+    CFStackForCognito:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-cognito.yml']]
             Parameters:
                 AdministratorName: !Ref AdministratorName
                 AdministratorEmail: !Ref AdministratorEmail
-                mtmDataBucketArn: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucketArn
-                mtmWebsiteURL: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteUrl
+                dataBucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
+                websiteURL: !GetAtt CFStackForWebsite.Outputs.websiteUrl
 
     # Nested stack - DynamoDB Table - Settings
-    mtmCFStackForDDBSettings:
+    CFStackForDDBSettings:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-settings.yml']]
 
     # Nested stack - DynamoDB Table - Device Types
-    mtmCFStackForDDBDeviceTypes:
+    CFStackForDDBDeviceTypes:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-device-types.yml']]
 
     # Nested stack - DynamoDB Table - Device Blueprints
-    mtmCFStackForDDBDeviceBlueprints:
+    CFStackForDDBDeviceBlueprints:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-device-blueprints.yml']]
 
     # Nested stack - DynamoDB Table - Devices
-    mtmCFStackForDDBDevices:
+    CFStackForDDBDevices:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-devices.yml']]
 
     # Nested stack - DynamoDB Table - Deployments
-    mtmCFStackForDDBDeployments:
+    CFStackForDDBDeployments:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-deployments.yml']]
 
+    # # Nested stack - DynamoDB Table - Solutions
+    # CFStackForDDBSolutions:
+    #     Type: AWS::CloudFormation::Stack
+    #     Properties:
+    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
+
+
     # Nested stack - MicroService - Factory Reset
-    mtmCFStackForFactoryResetService:
+    CFStackForFactoryResetService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-factoryreset.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
-                mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
+                deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
 
     # Nested stack - MicroService - Settings
-    mtmCFStackForSettingsService:
+    CFStackForSettingsService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-settings.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmIoTThingAutoRegistrationTopicRuleName: !GetAtt mtmCFStackForThingAutoRegistrationService.Outputs.mtmIoTThingAutoRegistrationTopicRuleName
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
+                iotThingAutoRegistrationTopicRuleName: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
 
     # Nested stack - MicroService - Stats
-    mtmCFStackForStatsService:
+    CFStackForStatsService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-stats.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
 
     # Nested stack - MicroService - Thing Auto Registration
-    mtmCFStackForThingAutoRegistrationService:
+    CFStackForThingAutoRegistrationService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-thing-auto-registration.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
+                devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
 
     # Nested stack - MicroService - Devices
-    mtmCFStackForDevicesService:
+    CFStackForDevicesService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-devices.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
-                mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+                devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
 
     # Nested stack - MicroService - Deployments
-    mtmCFStackForDeploymentsService:
+    CFStackForDeploymentsService:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-deployments.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
-                mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
-                mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
-                mtmDeploymentsTable: !GetAtt mtmCFStackForDDBDeployments.Outputs.mtmDeploymentsTable
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+                devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
+                deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
+                deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
 
     # Nested stack - AppSync
-    mtmCFStackForAppSync:
+    CFStackForAppSync:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-appsync.yml']]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], !Join ['-', ['cf/graphql', '%%DEPLOYMENT_UUID%%']] ]]
-                mtmUserPoolId: !GetAtt mtmCFStackForCognito.Outputs.mtmUserPoolId
-                mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
-                mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
-                mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
-                mtmDeploymentsTable: !GetAtt mtmCFStackForDDBDeployments.Outputs.mtmDeploymentsTable
-                mtmLambdaServiceDevicesArn: !GetAtt mtmCFStackForDevicesService.Outputs.mtmLambdaServiceDevicesArn
-                mtmLambdaServiceSettingsArn: !GetAtt mtmCFStackForSettingsService.Outputs.mtmLambdaServiceSettingsArn
-                mtmLambdaServiceStatsArn: !GetAtt mtmCFStackForStatsService.Outputs.mtmLambdaServiceStatsArn
-                mtmLambdaServiceFactoryResetArn: !GetAtt mtmCFStackForFactoryResetService.Outputs.mtmLambdaServiceFactoryResetArn
-                mtmLambdaServiceDeploymentsArn: !GetAtt mtmCFStackForDeploymentsService.Outputs.mtmLambdaServiceDeploymentsArn
+                userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+                devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
+                deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
+                deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
+                lambdaServiceDevicesArn: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
+                lambdaServiceSettingsArn: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
+                lambdaServiceStatsArn: !GetAtt CFStackForStatsService.Outputs.lambdaServiceStatsArn
+                lambdaServiceFactoryResetArn: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn
+                lambdaServiceDeploymentsArn: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
 
 
     # Initialization - Copy of website assets (html/js/css/assets)
-    mtmWebsite:
+    website:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !GetAtt mtmCFStackForCustomResourceS3Helper.Outputs.mtmCustomResourceS3HelperArn
+            ServiceToken: !GetAtt CFStackForCustomResourceS3Helper.Outputs.customResourceS3HelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
             sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
-            destS3Bucket: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteBucket
+            destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             customAction: 'copyS3assets'
 
-    mtmWebsiteConfig:
+    websiteConfig:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !GetAtt mtmCFStackForCustomResourceS3Helper.Outputs.mtmCustomResourceS3HelperArn
+            ServiceToken: !GetAtt CFStackForCustomResourceS3Helper.Outputs.customResourceS3HelperArn
             Region: !Ref 'AWS::Region'
-            destS3Bucket: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteBucket
+            destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             destS3Key: 'assets/appVariables.js'
             file:
-                USER_POOL_ID: !GetAtt mtmCFStackForCognito.Outputs.mtmUserPoolId
-                USER_POOL_CLIENT_ID: !GetAtt mtmCFStackForCognito.Outputs.mtmWebsiteCognitoClientId
-                IDENTITY_POOL_ID: !GetAtt mtmCFStackForCognito.Outputs.mtmIdentityPool
-                # APIG_ENDPOINT: !Join ['', ['https://', !Ref mtmApi, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com/prod']]
+                USER_POOL_ID: !GetAtt CFStackForCognito.Outputs.userPoolId
+                USER_POOL_CLIENT_ID: !GetAtt CFStackForCognito.Outputs.websiteCognitoClientId
+                IDENTITY_POOL_ID: !GetAtt CFStackForCognito.Outputs.identityPool
+                # APIG_ENDPOINT: !Join ['', ['https://', !Ref api, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com/prod']]
                 REGION: !Ref 'AWS::Region'
-                IOT_COGNITO_POLICY: !GetAtt mtmCFStackForCognito.Outputs.mtmWebsiteCognitoIoTPolicy
-                S3_DATA_BUCKET: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucket
-                APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt mtmCFStackForAppSync.Outputs.mtmAppSyncGraphQLUrl
+                IOT_COGNITO_POLICY: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
+                S3_DATA_BUCKET: !GetAtt CFStackForDataBucket.Outputs.dataBucket
+                APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
             customAction: 'putFile'
 
     # Initialization - Init of Thing Groups and Things
-    # mtmInitThingGroups:
+    # initThingGroups:
     #     Type: 'Custom::LoadLambda'
     #     Properties:
-    #         ServiceToken: !GetAtt mtmCFStackForCustomResourceThingGroupsHelper.Outputs.mtmCustomResourceThingGroupsHelperArn
+    #         ServiceToken: !GetAtt CFStackForCustomResourceThingGroupsHelper.Outputs.customResourceThingGroupsHelperArn
     #         Region: !Ref 'AWS::Region'
     #         sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
     #         sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
-    #         destS3Bucket: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteBucket
+    #         destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
     #         customAction: 'init'
 
 Outputs:
     # Website
-    mtmWebsiteUrl:
+    websiteUrl:
         Description: 'My Things Management Website URL'
-        Value: !GetAtt mtmCFStackForWebsite.Outputs.mtmWebsiteUrl
+        Value: !GetAtt CFStackForWebsite.Outputs.websiteUrl
     # Cognito
-    mtmUserPoolArn:
+    userPoolArn:
         Description: "My Things Management User Pool"
-        Value: !GetAtt mtmCFStackForCognito.Outputs.mtmUserPoolArn
-    mtmUserPoolId:
+        Value: !GetAtt CFStackForCognito.Outputs.userPoolArn
+    userPoolId:
         Description: "My Things Management User Pool ID"
-        Value: !GetAtt mtmCFStackForCognito.Outputs.mtmUserPoolId
-    mtmWebsiteCognitoClientId:
+        Value: !GetAtt CFStackForCognito.Outputs.userPoolId
+    websiteCognitoClientId:
         Description: "My Things Management Website Cognito Client"
-        Value: !GetAtt mtmCFStackForCognito.Outputs.mtmWebsiteCognitoClientId
-    mtmIdentityPool:
+        Value: !GetAtt CFStackForCognito.Outputs.websiteCognitoClientId
+    identityPool:
         Description: "My Things Management Identity Pool"
-        Value: !GetAtt mtmCFStackForCognito.Outputs.mtmIdentityPool
-    mtmWebsiteCognitoIoTPolicy:
+        Value: !GetAtt CFStackForCognito.Outputs.identityPool
+    websiteCognitoIoTPolicy:
         Description: "IoT Policy to access resources"
-        Value: !GetAtt mtmCFStackForCognito.Outputs.mtmWebsiteCognitoIoTPolicy
+        Value: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
 
     # # Data Bucket
-    # mtmDataBucketAccessPolicy:
+    # dataBucketAccessPolicy:
     #     Description: "IAM Policy to access the My Things Management Data bucket"
-    #     Value: !GetAtt mtmCFStackForDataBucket.Outputs.mtmDataBucketAccessPolicy
+    #     Value: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicy
 
 
     # Nested stack - MicroService - Admin
-    # mtmCFStackForAdminService:
+    # CFStackForAdminService:
     #     Type: AWS::CloudFormation::Stack
     #     Properties:
     #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-admin.yml']]
     #         Parameters:
     #             sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
     #             sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
-    #             mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
-    #             mtmUserPoolId: !GetAtt mtmCFStackForCognito.Outputs.mtmUserPoolId
+    #             settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+    #             userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
