@@ -15,7 +15,7 @@ Resources:
                     AttributeName: 'deviceTypeId'
                     AttributeType: 'S'
                 -
-                    AttributeName: 'blueprintId'
+                    AttributeName: 'deviceBlueprintId'
                     AttributeType: 'S'
             KeySchema:
                 -
@@ -34,10 +34,10 @@ Resources:
                         ReadCapacityUnits: 10
                         WriteCapacityUnits: 10
                 -
-                    IndexName: 'blueprintId'
+                    IndexName: 'deviceBlueprintId'
                     KeySchema:
                         -
-                            AttributeName: 'blueprintId'
+                            AttributeName: 'deviceBlueprintId'
                             KeyType: 'HASH'
                     Projection:
                         ProjectionType: 'ALL'
@@ -90,7 +90,7 @@ Resources:
                                 Resource:
                                     - !GetAtt mtmDevicesTable.Arn
                                     - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: mtmDevicesTable, '/index/deviceTypeId']]
-                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: mtmDevicesTable, '/index/blueprintId']]
+                                    - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: mtmDevicesTable, '/index/deviceBlueprintId']]
 
     mtmDevicesWriteCapacityScalableTarget:
         Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
@@ -137,55 +137,6 @@ Resources:
                 ScaleOutCooldown: 60
                 PredefinedMetricSpecification:
                     PredefinedMetricType: DynamoDBReadCapacityUtilization
-
-    # mtmDevicesGiWriteCapacityScalableTarget:
-    #     Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
-    #     Properties:
-    #         MaxCapacity: 100
-    #         MinCapacity: 10
-    #         ResourceId: !Join ['/', ['table',  !Ref 'mtmDevicesTable', 'index/deviceTypeId']]
-    #         RoleARN: !GetAtt mtmDevicesDynamoDBScalingRole.Arn
-    #         ScalableDimension: dynamodb:index:WriteCapacityUnits
-    #         ServiceNamespace: dynamodb
-
-    # mtmDevicesGiWriteScalingPolicy:
-    #     DependsOn: DevicesReadScalingPolicy
-    #     Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
-    #     Properties:
-    #         PolicyName: DevicesGiWriteAutoScalingPolicy
-    #         PolicyType: TargetTrackingScaling
-    #         ScalingTargetId: !Ref mtmDevicesGiWriteCapacityScalableTarget
-    #         TargetTrackingScalingPolicyConfiguration:
-    #             TargetValue: 70.0
-    #             ScaleInCooldown: 60
-    #             ScaleOutCooldown: 60
-    #             PredefinedMetricSpecification:
-    #                 PredefinedMetricType: DynamoDBWriteCapacityUtilization
-
-    # DevicesGiReadCapacityScalableTarget:
-    #     Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
-    #     Properties:
-    #         MaxCapacity: 100
-    #         MinCapacity: 10
-    #         ResourceId: !Join ['/', ['table',  !Ref 'mtmDevicesTable', 'index/deviceTypeId']]
-    #         RoleARN: !GetAtt mtmDevicesDynamoDBScalingRole.Arn
-    #         ScalableDimension: dynamodb:index:ReadCapacityUnits
-    #         ServiceNamespace: dynamodb
-
-
-    # mtmDeviceTypesGiReadScalingPolicy:
-    #     DependsOn: DevicesGiWriteScalingPolicy
-    #     Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
-    #     Properties:
-    #         PolicyName: DevicesGiReadAutoScalingPolicy
-    #         PolicyType: TargetTrackingScaling
-    #         ScalingTargetId: !Ref DevicesGiReadCapacityScalableTarget
-    #         TargetTrackingScalingPolicyConfiguration:
-    #             TargetValue: 70.0
-    #             ScaleInCooldown: 60
-    #             ScaleOutCooldown: 60
-    #             PredefinedMetricSpecification:
-    #                 PredefinedMetricType: DynamoDBReadCapacityUtilization
 
 
 Outputs:

@@ -52,32 +52,5 @@ yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 
-# echo "[Rebuild] Services - Admin"
-# echo "------------------------------------------------------------------------------"
-# cd $1/services/admin
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Services - Device"
-# echo "------------------------------------------------------------------------------"
-# cd $1/services/device
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Service - GGBlueprint"
-# echo "------------------------------------------------------------------------------"
-# cd $1/services/ggblueprint
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Service - Provisioning"
-# echo "------------------------------------------------------------------------------"
-# cd $1/services/provisioning
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
 echo
 exit 0

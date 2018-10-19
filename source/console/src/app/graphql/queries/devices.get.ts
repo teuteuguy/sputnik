@@ -9,7 +9,7 @@ export default gql`
                 thingArn
                 name
                 deviceTypeId
-                blueprintId
+                deviceBlueprintId
                 connectionState {
                     state
                     at

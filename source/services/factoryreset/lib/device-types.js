@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
-const addCreatedAtUpdatedAt = require('../lib/addCreatedAtUpdatedAt');
+const addCreatedAtUpdatedAt = require('./add-created-at-updated-at');
 
 const deviceTypeInits = [
     require('../device-types/deeplens-v1.0.json')

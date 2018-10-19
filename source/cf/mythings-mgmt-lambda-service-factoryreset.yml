@@ -13,9 +13,9 @@ Parameters:
     mtmDeviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
-    mtmBlueprintsTable:
+    mtmDeviceBlueprintsTable:
         Type: String
-        Description: DynamoDB Table for storing the blueprints
+        Description: DynamoDB Table for storing the device blueprints
 
 Resources:
 
@@ -61,7 +61,7 @@ Resources:
                         Resource:
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceTypesTable]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmSettingsTable]]
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmBlueprintsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref mtmDeviceBlueprintsTable]]
                     -
                         Effect: "Allow"
                         Action:
@@ -89,7 +89,7 @@ Resources:
                 Variables:
                     TABLE_DEVICE_TYPES: !Ref mtmDeviceTypesTable
                     TABLE_SETTINGS: !Ref mtmSettingsTable
-                    TABLE_BLUEPRINTS: !Ref mtmBlueprintsTable
+                    TABLE_DEVICE_BLUEPRINTS: !Ref mtmDeviceBlueprintsTable
                     LOGGING_LEVEL: 2
 
 

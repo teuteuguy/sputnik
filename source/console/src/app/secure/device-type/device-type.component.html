@@ -35,7 +35,7 @@
                             (keyup)="editJsonOnKey($event, 4, dtype, 'spec')" name="spec" id="spec" #name="ngModel"
                             [(ngModel)]="dtype.spec" required ngModel>{{dtype.spec | stringify:4}}</textarea>
                         <div class="form-control-feedback">
-                            <small>JSON document to use for the blueprint.
+                            <small>JSON document to use for the device type.
                                 <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
                             </small>
                         </div>

@@ -6,7 +6,7 @@ export default gql`
             thingId
             thingName
             deviceTypeId
-            blueprintId
+            deviceBlueprintId
             connectionState {
                 state
                 at

@@ -12,29 +12,29 @@ import { PrettifierComponent } from '../common/prettifier.component';
 
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
-import { Blueprint } from '../../models/blueprint.model';
+import { DeviceBlueprint } from '../../models/device-blueprint.model';
 import { DeviceType } from '../../models/device-type.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { BlueprintService } from '../../services/blueprint.service';
+import { DeviceBlueprintService } from '../../services/device-blueprint.service';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { LoggerService } from '../../services/logger.service';
 
 import * as _ from 'underscore';
 
 @Component({
-    selector: 'app-root-blueprint',
-    templateUrl: './blueprint.component.html'
+    selector: 'app-root-device-blueprint',
+    templateUrl: './device-blueprint.component.html'
 })
-export class BlueprintComponent extends PrettifierComponent implements OnInit {
-    public title = 'Blueprint';
+export class DeviceBlueprintComponent extends PrettifierComponent implements OnInit {
+    public title = 'Device Blueprint';
     private sub: Subscription;
     private profile: ProfileInfo;
     public hasError = false;
     public errorMsg = '';
 
-    public blueprint: Blueprint;
+    public deviceBlueprint: DeviceBlueprint;
     public compatibleWithAll = false;
     // public deviceTypes: DeviceType[] = [];
 
@@ -45,7 +45,7 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
         public router: Router,
         public route: ActivatedRoute,
         private breadCrumbService: BreadCrumbService,
-        private blueprintService: BlueprintService,
+        private deviceBlueprintService: DeviceBlueprintService,
         public deviceTypeService: DeviceTypeService,
         protected localStorage: LocalStorage,
         private logger: LoggerService,
@@ -57,35 +57,35 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
     ngOnInit() {
         const _self = this;
 
-        _self.blockUI.start('Loading blueprint...');
+        _self.blockUI.start('Loading device blueprint...');
 
         _self.sub = _self.route.params.subscribe(params => {
-            _self.blueprint = new Blueprint({ id: params['blueprintId'] });
-            if (_self.blueprint.id === 'new') {
-                _self.blueprint.name = 'new';
-                _self.blueprint.type = 'UNKNOWN';
-                // _self.blueprint.compatibility = [];
-                // _self.blueprint.deviceTypeMappings = '[]';
-                // _self.blueprint.spec = '{}';
-                // _self.manualPrettify(_self.blueprint, 'spec', 4);
-                // _self.manualPrettify(_self.blueprint, 'deviceTypeMappings', 4);
+            _self.deviceBlueprint = new DeviceBlueprint({ id: params['deviceBlueprintId'] });
+            if (_self.deviceBlueprint.id === 'new') {
+                _self.deviceBlueprint.name = 'new';
+                _self.deviceBlueprint.type = 'UNKNOWN';
+                // _self.deviceBlueprint.compatibility = [];
+                // _self.deviceBlueprint.deviceTypeMappings = '[]';
+                // _self.deviceBlueprint.spec = '{}';
+                // _self.manualPrettify(_self.deviceBlueprint, 'spec', 4);
+                // _self.manualPrettify(_self.deviceBlueprint, 'deviceTypeMappings', 4);
             }
         });
 
         _self.breadCrumbService.setup(_self.title, [
             new Crumb({
-                title: 'Blueprints',
-                link: 'blueprints'
+                title: 'Device Blueprints',
+                link: 'device-blueprints'
             }),
             new Crumb({
-                title: _self.blueprint.id,
+                title: _self.deviceBlueprint.id,
                 active: true
             })
         ]);
 
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
             _self.profile = new ProfileInfo(profile);
-            if (_self.blueprint.id !== 'new') {
+            if (_self.deviceBlueprint.id !== 'new') {
                 _self.loadBlueprint();
             } else {
                 _self.blockUI.stop();
@@ -96,31 +96,32 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
     loadBlueprint() {
         const _self = this;
 
-        _self.logger.info('loadBlueprint for ' + _self.blueprint.id);
+        _self.logger.info('loadBlueprint for ' + _self.deviceBlueprint.id);
 
-        _self.blueprintService
-            .getBlueprint(_self.blueprint.id)
-            .then((blueprint: Blueprint) => {
+        _self.deviceBlueprintService
+            .getDeviceBlueprint(_self.deviceBlueprint.id)
+            .then((deviceBlueprint: DeviceBlueprint) => {
                 _self.blockUI.stop();
-                _self.logger.info(blueprint);
-                _self.blueprint = new Blueprint(blueprint);
-                if (_self.blueprint.spec) {
-                    _self.manualPrettify(_self.blueprint, 'spec', 4);
+                _self.logger.info(deviceBlueprint);
+                _self.deviceBlueprint = new DeviceBlueprint(deviceBlueprint);
+                if (_self.deviceBlueprint.spec) {
+                    _self.manualPrettify(_self.deviceBlueprint, 'spec', 4);
                 }
-                if (_self.blueprint.deviceTypeMappings) {
-                    _self.manualPrettify(_self.blueprint, 'deviceTypeMappings', 4);
+                if (_self.deviceBlueprint.deviceTypeMappings) {
+                    _self.manualPrettify(_self.deviceBlueprint, 'deviceTypeMappings', 4);
                 }
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to retrieve the blueprint.', 'error');
+                swal('Oops...', 'Something went wrong! Unable to retrieve the device blueprint.', 'error');
                 _self.logger.error('error occurred calling getBlueprint api, show message');
                 _self.logger.error(err);
+                _self.router.navigate(['/securehome/device-blueprints']);
             });
     }
 
     cancel() {
-        this.router.navigate(['/securehome/blueprints']);
+        this.router.navigate(['/securehome/device-blueprints']);
     }
 
     delete() {
@@ -133,18 +134,18 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
             cancelButtonText: 'Yes, delete it!'
         }).then(result => {
             if (result.dismiss === swal.DismissReason.cancel) {
-                this.blueprintService
-                    .deleteBlueprint(this.blueprint.id)
-                    .then((blueprint: Blueprint) => {
-                        console.log(blueprint);
+                this.deviceBlueprintService
+                    .deleteDeviceBlueprint(this.deviceBlueprint.id)
+                    .then((deviceBlueprint: DeviceBlueprint) => {
+                        console.log(deviceBlueprint);
                         swal({
                             timer: 1000,
                             title: 'Deleted!',
-                            text: 'Blueprint, ' + this.blueprint.name + ', deleted!',
+                            text: 'Device Blueprint, ' + this.deviceBlueprint.name + ', deleted!',
                             type: 'success',
                             showConfirmButton: false
                         }).then(result => {
-                            this.router.navigate(['/securehome/blueprints']);
+                            this.router.navigate(['/securehome/device-blueprints']);
                         });
                     })
                     .catch(err => {
@@ -159,24 +160,24 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
     saveBlueprint() {
         const _self = this;
 
-        _self.blockUI.start('Saving blueprint...');
+        _self.blockUI.start('Saving device blueprint...');
 
         let promise = null;
         let popupTitle = '';
         let popupText = '';
         let errorMessage = '';
 
-        if (_self.blueprint.id === 'new') {
-            delete _self.blueprint.id;
-            promise = _self.blueprintService.addBlueprint(_self.blueprint);
-            popupTitle = 'Blueprint Created';
-            popupText = `The blueprint ${_self.blueprint.name} was successfully created.`;
-            errorMessage = 'Something went wrong! Unable to create the new blueprint.';
+        if (_self.deviceBlueprint.id === 'new') {
+            delete _self.deviceBlueprint.id;
+            promise = _self.deviceBlueprintService.addDeviceBlueprint(_self.deviceBlueprint);
+            popupTitle = 'Device Blueprint Created';
+            popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully created.`;
+            errorMessage = 'Something went wrong! Unable to create the new device blueprint.';
         } else {
-            promise = _self.blueprintService.updateBlueprint(_self.blueprint);
-            popupTitle = 'Blueprint Updated';
-            popupText = `The blueprint ${_self.blueprint.name} was successfully updated.`;
-            errorMessage = 'Something went wrong! Unable to update the blueprint.';
+            promise = _self.deviceBlueprintService.updateDeviceBlueprint(_self.deviceBlueprint);
+            popupTitle = 'Device Blueprint Updated';
+            popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully updated.`;
+            errorMessage = 'Something went wrong! Unable to update the device blueprint.';
         }
 
         // if (_self.blueprint.compatibility === null) {
@@ -189,11 +190,11 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
         //     delete _self.blueprint.spec;
         // }
 
-        _self.logger.info('Saving blueprint:', _self.blueprint);
+        _self.logger.info('Saving device blueprint:', _self.deviceBlueprint);
 
         promise
-            .then((blueprint: Blueprint) => {
-                _self.logger.info('Saved blueprint', blueprint);
+            .then((deviceBlueprint: DeviceBlueprint) => {
+                _self.logger.info('Saved device blueprint', deviceBlueprint);
                 _self.blockUI.stop();
                 swal({
                     timer: 1000,
@@ -202,7 +203,7 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
                     type: 'success',
                     showConfirmButton: false
                 }).then(result => {
-                    _self.router.navigate(['/securehome/blueprints']);
+                    _self.router.navigate(['/securehome/device-blueprints']);
                 });
             })
             .catch(err => {
@@ -216,9 +217,9 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
     }
 
     inCompatibilityList(id: string) {
-        if (this.blueprint.compatibility) {
+        if (this.deviceBlueprint.compatibility) {
             return (
-                this.blueprint.compatibility.findIndex(devicetypetype => {
+                this.deviceBlueprint.compatibility.findIndex(devicetypetype => {
                     return devicetypetype === id;
                 }) !== -1
             );
@@ -229,13 +230,13 @@ export class BlueprintComponent extends PrettifierComponent implements OnInit {
 
     toggleDeviceType(event, id: string) {
         const _self = this;
-        const index = _self.blueprint.compatibility.indexOf(id);
+        const index = _self.deviceBlueprint.compatibility.indexOf(id);
         if (index === -1) {
-            _self.blueprint.compatibility.push(id);
+            _self.deviceBlueprint.compatibility.push(id);
         } else {
-            _self.blueprint.compatibility.splice(index, 1);
+            _self.deviceBlueprint.compatibility.splice(index, 1);
         }
-        // _self.logger.info(_self.blueprint.compatibility);
+        // _self.logger.info(_self.deviceBlueprint.compatibility);
         event.stopPropagation();
         event.preventDefault();
     }

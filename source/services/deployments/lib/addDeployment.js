@@ -24,7 +24,7 @@ module.exports = function (event, context, callback) {
 
     let _device;
     let _deviceType;
-    let _blueprint;
+    let _deviceBlueprint;
     let _newSpec;
     let _newGreengrassGroupVersion = {};
     let _groupVersion;
@@ -58,16 +58,16 @@ module.exports = function (event, context, callback) {
                 id: _device.deviceTypeId
             }
         };
-        const blueprintParams = {
-            TableName: process.env.TABLE_BLUEPRINTS,
+        const deviceBlueprintParams = {
+            TableName: process.env.TABLE_DEVICE_BLUEPRINTS,
             Key: {
-                id: _device.blueprintId
+                id: _device.deviceBlueprintId
             }
         };
 
         return Promise.all([
             documentClient.get(deviceTypeParams).promise().then(result => _deviceType = result.Item),
-            documentClient.get(blueprintParams).promise().then(result => _blueprint = result.Item),
+            documentClient.get(deviceBlueprintParams).promise().then(result => _deviceBlueprint = result.Item),
             // iot.describeThing({
             //     thingName: _device.thingName
             // }).promise()
@@ -76,13 +76,13 @@ module.exports = function (event, context, callback) {
         // _thing = results[2];
 
         console.log('Device Type:', _deviceType);
-        console.log('Blueprint:', _blueprint);
+        console.log('Device Blueprint:', _deviceBlueprint);
         // console.log('Thing:', _thing);
-        if (_deviceType === undefined || _blueprint === undefined) {
-            throw 'Device Type or Blueprint do not exist in DB';
+        if (_deviceType === undefined || _deviceBlueprint === undefined) {
+            throw 'Device Type or Device Blueprint do not exist in DB';
         }
 
-        if (_deviceType.type === 'GREENGRASS' && _blueprint.type === 'GREENGRASS') {
+        if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {
 
             return gg.getGroup({
                 GroupId: _device.greengrassGroupId
@@ -111,9 +111,9 @@ module.exports = function (event, context, callback) {
                 // console.log(`MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY: ${process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY}`);
 
                 console.log(`DeviceType Spec in: ${JSON.stringify(_deviceType.spec, null, 4)}`);
-                console.log(`Blueprint Spec in: ${JSON.stringify(_blueprint.spec, null, 4)}`);
+                console.log(`DeviceBlueprint Spec in: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
 
-                _newSpec = mergeGreengrassSpecs(_blueprint.spec, _deviceType.spec);
+                _newSpec = mergeGreengrassSpecs(_deviceBlueprint.spec, _deviceType.spec);
                 console.log(`New Spec in: ${JSON.stringify(_newSpec, null, 4)}`);
 
                 // Construct the spec:
@@ -133,7 +133,7 @@ module.exports = function (event, context, callback) {
                     }
                 }
 
-                _blueprint.deviceTypeMappings.forEach(mapping => {
+                _deviceBlueprint.deviceTypeMappings.forEach(mapping => {
                     if (mapping.value[_deviceType.id]) {
                         let regExp = new RegExp('[' + mapping.substitute + ']', 'gi');
                         strSpec = strSpec.split('[' + mapping.substitute + ']').join(mapping.value[_deviceType.id]);
@@ -224,7 +224,7 @@ module.exports = function (event, context, callback) {
             });
 
         } else {
-            console.log('Device is NOT a greengrass device, or at least not detected as one. OR the blueprint/deviceType combination is not for a Greengrass device');
+            console.log('Device is NOT a greengrass device, or at least not detected as one. OR the deviceBlueprint/deviceType combination is not for a Greengrass device');
             callback(null, null);
         }
 

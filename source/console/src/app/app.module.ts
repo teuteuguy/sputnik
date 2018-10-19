@@ -34,8 +34,8 @@ import { DeviceTypesComponent } from './secure/device-types/device-types.compone
 import { DeviceTypeComponent } from './secure/device-type/device-type.component';
 import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceComponent } from './secure/device/device.component';
-import { BlueprintsComponent } from './secure/blueprints/blueprints.component';
-import { BlueprintComponent } from './secure/blueprint/blueprint.component';
+import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
+import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
@@ -66,7 +66,7 @@ import { FactoryResetService } from './services/factoryreset.service';
 import { DeviceService } from './services/device.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { StatService } from './services/stat.service';
-import { BlueprintService } from './services/blueprint.service';
+import { DeviceBlueprintService } from './services/device-blueprint.service';
 import { DeploymentService } from './services/deployment.service';
 // import { AdminService } from './services/admin.service';
 // import { StatsService } from './services/stats.service';
@@ -94,8 +94,8 @@ import { DeploymentService } from './services/deployment.service';
         DeviceTypeComponent,
         DevicesComponent,
         DeviceComponent,
-        BlueprintsComponent,
-        BlueprintComponent,
+        DeviceBlueprintsComponent,
+        DeviceBlueprintComponent,
         DeploymentsComponent,
 
         // Directives
@@ -140,7 +140,7 @@ import { DeploymentService } from './services/deployment.service';
         StatService,
         DeviceService,
         DeviceTypeService,
-        BlueprintService,
+        DeviceBlueprintService,
         DeploymentService,
 
         { provide: LoggerService, useClass: ConsoleLoggerService }

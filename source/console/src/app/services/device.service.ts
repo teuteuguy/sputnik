@@ -18,7 +18,7 @@ import { _ } from 'underscore';
 // Queries
 import getDevices from '../graphql/queries/devices.get';
 import getDevicesOfDeviceType from '../graphql/queries/devices-of-device-type.get';
-import getDevicesWithBlueprint from '../graphql/queries/devices-with-blueprint.get';
+import getDevicesWithDeviceBlueprint from '../graphql/queries/devices-with-device-blueprint.get';
 import getDevice from '../graphql/queries/device.get';
 import getDeviceStats from '../graphql/queries/device.getStats';
 
@@ -57,27 +57,6 @@ export class DeviceService extends AppSyncService {
         // _self.loadDeviceTypes();
     }
 
-    // private _getDeviceTypes(limit: number, nexttoken: string, devicetypes: DeviceType[]) {
-    //     const _self = this;
-    //     return super.query(getAllDeviceTypes, { limit: limit, nextToken: nexttoken }).then(result => {
-    //         devicetypes.push(...result.data.getAllDeviceTypes.deviceTypes);
-    //         if (result.data.getAllDeviceTypes.nextToken) {
-    //             return _self._getDeviceTypes(limit, result.data.getAllDeviceTypes.nextToken, devicetypes);
-    //         }
-    //     });
-    // }
-
-    // loadDeviceTypes() {
-    //     const _self = this;
-    //     _self._getDeviceTypes(_self.limit, null, _self.deviceTypes).then(result => {
-    //         _self.observable.next(_self.deviceTypes);
-    //     });
-    // }
-
-    // refresh() {
-    //     this.loadDeviceTypes();
-    // }
-
     public getDevices(limit: number, nextToken: String) {
         return super.query(getDevices, { limit: limit, nextToken: nextToken }).then(result => result.data.getDevices);
     }
@@ -86,10 +65,10 @@ export class DeviceService extends AppSyncService {
             .query(getDevicesOfDeviceType, { limit: limit, nextToken: nextToken })
             .then(result => result.data.getDevicesOfDeviceType);
     }
-    public getDevicesWithBlueprint(limit: number, nextToken: String) {
+    public getDevicesWithDeviceBlueprint(limit: number, nextToken: String) {
         return super
-            .query(getDevicesWithBlueprint, { limit: limit, nextToken: nextToken })
-            .then(result => result.data.getDevicesWithBlueprint);
+            .query(getDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken })
+            .then(result => result.data.getDevicesWithDeviceBlueprint);
     }
     public getDevice(thingId: string) {
         return super.query(getDevice, { thingId: thingId }).then(result => <Device>result.data.getDevice);
@@ -116,12 +95,12 @@ export class DeviceService extends AppSyncService {
             });
     }
 
-    public updateDevice(thingId: string, name: string, deviceTypeId: string, blueprintId: string) {
+    public updateDevice(thingId: string, name: string, deviceTypeId: string, deviceBlueprintId: string) {
         return super.mutation(updateDevice, {
             thingId: thingId,
             name: name,
             deviceTypeId: deviceTypeId,
-            blueprintId: blueprintId
+            deviceBlueprintId: deviceBlueprintId
         }).then(d => {
             return <Device>d.data.updateDevice;
         });

@@ -1,14 +1,14 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation AddBlueprint(
+    mutation AddDeviceAlueprint(
         $name: String!
         $type: String!
         $compatibility: [String]
         $deviceTypeMappings: AWSJSON
         $spec: AWSJSON
     ) {
-        addBlueprint(
+        addDeviceBlueprint(
             name: $name
             type: $type
             compatibility: $compatibility

@@ -14,7 +14,7 @@ export class Device {
     thingArn: string;
     name: string;
     deviceTypeId: string;
-    blueprintId: string;
+    deviceBlueprintId: string;
     connectionState: ConnectionState;
     lastDeploymentId: string;
     createdAt: string;

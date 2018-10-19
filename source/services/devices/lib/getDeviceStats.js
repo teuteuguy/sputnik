@@ -15,7 +15,7 @@ function getDeviceStatsRecursive(lastEvalKey) {
         params.ExclusiveStartKey = lastEvalKey;
     }
 
-    params.ProjectionExpression = 'thingId, userId, deviceTypeId, connectionState, blueprintId';
+    params.ProjectionExpression = 'thingId, userId, deviceTypeId, connectionState, deviceBlueprintId';
 
     return documentClient.scan(params).promise().then(results => {
         let _stats = _.countBy(results.Items, (device) => {

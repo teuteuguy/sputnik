@@ -1,6 +1,13 @@
 ## My Things Management
 Blablabla
 
+## TODO
+
+* Add A:FreeRTOS devic types, blueprints and deployment management.
+* When creating a device, deal with the certificates ?
+* 
+
+
 ## Notes
 
 Public access to the website has been disabled by default.

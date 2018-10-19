@@ -52,7 +52,7 @@ module.exports = function(event, context, callback) {
                     thingArn: thing.thingArn,
                     name: event.thingName,
                     deviceTypeId: 'UNKNOWN',
-                    blueprintId: 'UNKNOWN',
+                    deviceBlueprintId: 'UNKNOWN',
                     connectionState: {
                         // TODO: probably generate the certs here at one point.
                         certificateId: 'NOTSET',

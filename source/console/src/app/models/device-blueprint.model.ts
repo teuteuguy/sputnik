@@ -3,7 +3,7 @@ export class DeviceTypeMapping {
     substitute = 'SUBSTITUTE_WORD_IN_TEMPLATE';
 }
 
-export class Blueprint {
+export class DeviceBlueprint {
     id: string;
     name = 'UNKNOWN';
     type: 'UNKNOWN';

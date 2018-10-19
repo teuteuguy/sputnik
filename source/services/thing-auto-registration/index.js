@@ -135,7 +135,7 @@ function handler(event, context, callback) {
                                         name: thing.thingName,
                                         type: 'UNKNOWN',
                                         deviceTypeId: 'UNKNOWN',
-                                        blueprintId: 'UNKNOWN',
+                                        deviceBlueprintId: 'UNKNOWN',
                                         connectionState: {
                                             certificateId: _cert.certificateDescription.certificateId,
                                             certificateArn: _cert.certificateDescription.certificateArn,

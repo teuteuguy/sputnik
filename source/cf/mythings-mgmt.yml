@@ -75,11 +75,11 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-device-types.yml']]
 
-    # Nested stack - DynamoDB Table - Blueprints
-    mtmCFStackForDDBBlueprints:
+    # Nested stack - DynamoDB Table - Device Blueprints
+    mtmCFStackForDDBDeviceBlueprints:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-blueprints.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-device-blueprints.yml']]
 
     # Nested stack - DynamoDB Table - Devices
     mtmCFStackForDDBDevices:
@@ -103,7 +103,7 @@ Resources:
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
                 mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
                 mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmBlueprintsTable: !GetAtt mtmCFStackForDDBBlueprints.Outputs.mtmBlueprintsTable
+                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
 
     # Nested stack - MicroService - Settings
     mtmCFStackForSettingsService:
@@ -159,7 +159,7 @@ Resources:
                 mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
                 mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
                 mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmBlueprintsTable: !GetAtt mtmCFStackForDDBBlueprints.Outputs.mtmBlueprintsTable
+                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
                 mtmDeploymentsTable: !GetAtt mtmCFStackForDDBDeployments.Outputs.mtmDeploymentsTable
 
     # Nested stack - AppSync
@@ -174,7 +174,7 @@ Resources:
                 mtmSettingsTable: !GetAtt mtmCFStackForDDBSettings.Outputs.mtmSettingsTable
                 mtmDevicesTable: !GetAtt mtmCFStackForDDBDevices.Outputs.mtmDevicesTable
                 mtmDeviceTypesTable: !GetAtt mtmCFStackForDDBDeviceTypes.Outputs.mtmDeviceTypesTable
-                mtmBlueprintsTable: !GetAtt mtmCFStackForDDBBlueprints.Outputs.mtmBlueprintsTable
+                mtmDeviceBlueprintsTable: !GetAtt mtmCFStackForDDBDeviceBlueprints.Outputs.mtmDeviceBlueprintsTable
                 mtmDeploymentsTable: !GetAtt mtmCFStackForDDBDeployments.Outputs.mtmDeploymentsTable
                 mtmLambdaServiceDevicesArn: !GetAtt mtmCFStackForDevicesService.Outputs.mtmLambdaServiceDevicesArn
                 mtmLambdaServiceSettingsArn: !GetAtt mtmCFStackForSettingsService.Outputs.mtmLambdaServiceSettingsArn

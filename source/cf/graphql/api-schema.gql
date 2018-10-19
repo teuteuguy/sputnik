@@ -10,7 +10,7 @@ type Device {
     thingArn: String!
     name: String!
     deviceTypeId: String!
-    blueprintId: String!
+    deviceBlueprintId: String!
     connectionState: ConnectionState
     greengrassGroupId: String!
     lastDeploymentId: String
@@ -49,7 +49,7 @@ type PaginatedDeviceTypes {
     deviceTypes: [DeviceType]
     nextToken: String
 }
-type Blueprint {
+type DeviceBlueprint {
     id: String!
     name: String!
     type: String!
@@ -59,8 +59,8 @@ type Blueprint {
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
-type PaginatedBlueprints {
-    blueprints: [Blueprint]
+type PaginatedDeviceBlueprints {
+    deviceBlueprints: [DeviceBlueprint]
     nextToken: String
 }
 type Setting {
@@ -77,7 +77,7 @@ type Stat {
 type Query {
     getDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDevicesOfDeviceType(deviceTypeId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getDevicesWithBlueprint(blueprintId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDevicesWithDeviceBlueprint(deviceBlueprintId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     getDeviceStats: DeviceStat @aws_auth(cognito_groups: ["Administrators", "Members"])
@@ -91,15 +91,15 @@ type Query {
 
     getThingAutoRegistrationState: Boolean @aws_auth(cognito_groups: ["Administrators"])
 
-    getBlueprints(limit: Int, nextToken: String): PaginatedBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getBlueprint(id: String!): Blueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDeviceBlueprints(limit: Int, nextToken: String): PaginatedDeviceBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     getDeployments(limit: Int, nextToken: String): PaginatedDeployments @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
     deleteDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators"])
-    updateDevice(thingId: String!, name: String!, deviceTypeId: String!, blueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
+    updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
 
     addDeviceType(name: String!, type: String!, spec: AWSJSON): DeviceType! @aws_auth(cognito_groups: ["Administrators"])
 
@@ -107,10 +107,9 @@ type Mutation {
 
     updateDeviceType(id: String!, name: String!, type: String!, spec: AWSJSON): DeviceType @aws_auth(cognito_groups: ["Administrators"])
 
-    addBlueprint(name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): Blueprint! @aws_auth(cognito_groups: ["Administrators"])
-    deleteBlueprint(id: String!): Blueprint @aws_auth(cognito_groups: ["Administrators"])
-
-    updateBlueprint(id: String!, name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): Blueprint @aws_auth(cognito_groups: ["Administrators"])
+    addDeviceBlueprint(name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])
+    deleteDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
+    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
 
     factoryReset(cmd: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
@@ -123,9 +122,9 @@ type Subscription {
     updatedDeviceType: DeviceType @aws_subscribe(mutations: ["updateDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
     deletedDeviceType: DeviceType @aws_subscribe(mutations: ["deleteDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    addedBlueprint: Blueprint @aws_subscribe(mutations: ["addBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedBlueprint: Blueprint @aws_subscribe(mutations: ["updateBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedBlueprint: Blueprint @aws_subscribe(mutations: ["deleteBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    addedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["addDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["updateDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["deleteDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     addedDevice: Device @aws_subscribe(mutations: ["addDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
     updatedDevice: Device @aws_subscribe(mutations: ["updateDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])

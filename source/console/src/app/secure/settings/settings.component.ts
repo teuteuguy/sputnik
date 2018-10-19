@@ -43,7 +43,7 @@ export class SettingsComponent implements OnInit {
             done: false
         },
         {
-            table: 'Blueprints',
+            table: 'DeviceBlueprints',
             done: false
         }
     ];

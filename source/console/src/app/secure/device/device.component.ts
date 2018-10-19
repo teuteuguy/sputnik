@@ -26,7 +26,7 @@ import { environment } from '../../../environments/environment';
 // Models
 import { Device } from '../../models/device.model';
 import { DeviceType } from '../../models/device-type.model';
-import { Blueprint } from '../../models/blueprint.model';
+import { DeviceBlueprint } from '../../models/device-blueprint.model';
 import { ProfileInfo } from '../../models/profile-info.model';
 // import { GGDeploymentStatus } from '../../models/gg-deployment-status.model';
 
@@ -34,11 +34,10 @@ import { ProfileInfo } from '../../models/profile-info.model';
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { DeviceService } from '../../services/device.service';
 import { DeviceTypeService } from '../../services/device-type.service';
-import { BlueprintService } from '../../services/blueprint.service';
+import { DeviceBlueprintService } from '../../services/device-blueprint.service';
 import { LoggerService } from '../../services/logger.service';
 // import { StatsService } from '../../services/stats.service';
 // import { DeviceSubViewComponentService } from '../../services/device-sub-view-component.service';
-
 
 declare var jquery: any;
 declare var $: any;
@@ -65,8 +64,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
     public device: Device;
     public deviceType: DeviceType;
     public deviceTypes: DeviceType[];
-    public blueprints: Blueprint[];
-    public blueprint: Blueprint;
+    public deviceBlueprints: DeviceBlueprint[];
+    public deviceBlueprint: DeviceBlueprint;
 
     public deviceForEdit: Device;
 
@@ -89,7 +88,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
         private deviceService: DeviceService,
-        private blueprintService: BlueprintService,
+        private deviceBlueprintService: DeviceBlueprintService,
         private deviceTypeService: DeviceTypeService
     ) {
         // private resolver: ComponentFactoryResolver,
@@ -139,7 +138,6 @@ export class DeviceComponent implements OnInit, OnDestroy {
             //     _self.loadDevice();
             // }, environment.refreshInterval);
         });
-
     }
 
     ngOnDestroy() {
@@ -156,7 +154,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
                 _self.logger.info('device:', device);
                 _self.device = device;
                 _self.deviceTypes = _self.deviceTypeService.getDeviceTypes();
-                _self.blueprints = _self.blueprintService.getBlueprints();
+                _self.deviceBlueprints = _self.deviceBlueprintService.getDeviceBlueprints();
                 _self.getTheExtraResources();
                 _self.blockUI.stop();
             })
@@ -200,9 +198,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
                 return dt.id === _self.device.deviceTypeId;
             })
         );
-        _self.blueprint = new Blueprint(
-            _self.blueprints.find(b => {
-                return b.id === _self.device.blueprintId;
+        _self.deviceBlueprint = new DeviceBlueprint(
+            _self.deviceBlueprints.find(b => {
+                return b.id === _self.device.deviceBlueprintId;
             })
         );
     }
@@ -262,7 +260,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
         const _self = this;
         _self.blockUI.start('Editing device...');
         _self.deviceService
-            .updateDevice(_self.deviceForEdit.thingId, _self.deviceForEdit.name, _self.deviceForEdit.deviceTypeId, _self.deviceForEdit.blueprintId)
+            .updateDevice(
+                _self.deviceForEdit.thingId,
+                _self.deviceForEdit.name,
+                _self.deviceForEdit.deviceTypeId,
+                _self.deviceForEdit.deviceBlueprintId
+            )
             .then((resp: any) => {
                 $('#editModal').modal('hide');
                 console.log('Updated device:', resp);

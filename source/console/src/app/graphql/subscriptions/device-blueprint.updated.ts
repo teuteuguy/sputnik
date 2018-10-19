@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    subscription AddedBlueprint {
-        addedBlueprint {
+    subscription UpdatedDeviceBlueprint {
+        updatedDeviceBlueprint {
             id
             name
             type

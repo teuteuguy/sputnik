@@ -2,12 +2,12 @@ const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const addCreatedAtUpdatedAt = require('./add-created-at-updated-at');
 
-const settingsInits = [
-    require('../settings/app-config.json'),
-    require('../settings/services.json')
+const deviceBlueprintsInits = [
+    require('../device-blueprints/gg-deeplens-v1.0-factory-reset-v1.0.json'),
+    require('../device-blueprints/gg-factory-reset-v1.0.json')
 ];
 
-class Settings {
+class DeviceBlueprints {
 
     constructor() {}
 
@@ -15,17 +15,17 @@ class Settings {
         let params = {
             RequestItems: {}
         };
-        params.RequestItems[process.env.TABLE_SETTINGS] = [];
-        settingsInits.forEach(s => {
-            params.RequestItems[process.env.TABLE_SETTINGS].push({
+        params.RequestItems[process.env.TABLE_DEVICE_BLUEPRINTS] = [];
+        deviceBlueprintsInits.forEach(b => {
+            params.RequestItems[process.env.TABLE_DEVICE_BLUEPRINTS].push({
                 PutRequest: {
-                    Item: addCreatedAtUpdatedAt(s)
+                    Item: addCreatedAtUpdatedAt(b)
                 }
             });
         });
 
         documentClient.batchWrite(params).promise().then(data => {
-            console.log('Batch write Settings Result', data);
+            console.log('Batch write Device Blueprints Result', data);
             callback(null, true);
         }).catch(err => {
             callback('Error: ' + JSON.stringify(err), null);
@@ -34,4 +34,4 @@ class Settings {
     }
 }
 
-module.exports = Settings;
+module.exports = DeviceBlueprints;

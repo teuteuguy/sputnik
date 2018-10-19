@@ -1,6 +1,6 @@
-const DeviceTypes = require('./lib/deviceTypes');
+const DeviceTypes = require('./lib/device-types');
 const Settings = require('./lib/settings');
-const Blueprints = require('./lib/blueprints');
+const DeviceBlueprints = require('./lib/device-blueprints');
 
 function handler(event, context, callback) {
     console.log('Event:', JSON.stringify(event, null, 2));
@@ -18,8 +18,8 @@ function handler(event, context, callback) {
             const s = new Settings();
             s.factoryReset(event, context, callback);
             break;
-        case 'Blueprints':
-            const b = new Blueprints();
+        case 'DeviceBlueprints':
+            const b = new DeviceBlueprints();
             b.factoryReset(event, context, callback);
             break;
         default:

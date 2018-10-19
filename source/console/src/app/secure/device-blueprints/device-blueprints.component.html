@@ -1,0 +1,64 @@
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()">
+                    <i class="fa fa-refresh"></i> Refresh</button>
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="openBlueprint('new')">
+                    <i class="mdi mdi-plus"></i> Create NEW Device Blueprint</button>
+                <h4 class="card-title">{{ title }} ({{metrics.total}})</h4>
+                <div class="table-responsive m-t-20">
+                    <table id="types-pagination" class="table stylish-table" style="text-transform:uppercase;"
+                        data-paging-limit="10">
+                        <thead>
+                            <tr>
+                                <th>Device Blueprint</th>
+                                <th class="text-right">Created At</th>
+                                <th class="text-right">Last Updated At</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let deviceBlueprint of deviceBlueprints | slice : (pages.current - 1) * pages.pageSize : pages.current * pages.pageSize - 1">
+                                <td>
+                                    <h6>{{deviceBlueprint.name}}</h6>
+                                    <small class="text-muted">{{deviceBlueprint.id}}</small>
+                                </td>
+                                <td class="text-right">{{deviceBlueprint.createdAt | moment:'MMM Do YYYY'}}</td>
+                                <td class="text-right">{{deviceBlueprint.updatedAt | moment:'MMM Do YYYY'}}</td>
+                                <td>
+                                    <div class="pull-right" role="group">
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip"
+                                            title="Edit Device Type" data-placement="top" (click)="openBlueprint(deviceBlueprint.id)">
+                                            <i class="mdi mdi-pencil"></i> Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="text-right">
+                                        <div class="pull-right">
+                                            <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'"
+                                                (click)="previousPage()" [disabled]="pages.current === 1">
+                                                <i class="mdi mdi-chevron-left"></i>
+                                            </button>
+                                            <span class="m-l-10 m-r-10">Page {{pages.current}} of {{pages.total}}</span>
+                                            <button type="button" [class]="pages.current === (pages.total - 1) ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'"
+                                                (click)="nextPage()" [disabled]="pages.current === pages.total">
+                                                <i class="mdi mdi-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->

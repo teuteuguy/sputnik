@@ -4,13 +4,13 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">{{title}} Definition</h4>
-                <h6 class="card-subtitle">Define your blueprint here.</h6>
+                <h6 class="card-subtitle">Define your device blueprint here.</h6>
                 <form class="fm-t-40">
                     <div class="form-group">
                         <label>{{title}} Name</label>
                         <input type="text" class="form-control form-control-line" name="typename" id="typename"
-                            #typename="ngModel" [(ngModel)]="blueprint.name" required ngModel />
-                        <!-- [readonly]="blueprint.custom === false" -->
+                            #typename="ngModel" [(ngModel)]="deviceBlueprint.name" required ngModel />
+                        <!-- [readonly]="deviceBlueprint.custom === false" -->
                         <!-- [readonly]="this.typeId !== 'new'" -->
                         <div class="form-control-feedback">
                             <small>The common name of the device type.</small>
@@ -19,15 +19,15 @@
                     <div class="form-group row">
                         <div class="col-lg-6">
                             <label for="type" class="form-control-label">Type:</label>
-                            <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="blueprint.type"
+                            <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="deviceBlueprint.type"
                                 required ngModel>
-                                <option ng-selected="blueprint.type === 'UNKNOWN'">UNKNOWN</option>
-                                <option ng-selected="blueprint.type === 'SDK'">SDK</option>
-                                <option ng-selected="blueprint.type === 'A:freeRTOS'">A:freeRTOS</option>
-                                <option ng-selected="blueprint.type === 'GREENGRASS'">GREENGRASS</option>
+                                <option ng-selected="deviceBlueprint.type === 'UNKNOWN'">UNKNOWN</option>
+                                <option ng-selected="deviceBlueprint.type === 'SDK'">SDK</option>
+                                <option ng-selected="deviceBlueprint.type === 'A:freeRTOS'">A:freeRTOS</option>
+                                <option ng-selected="deviceBlueprint.type === 'GREENGRASS'">GREENGRASS</option>
                             </select>
                             <div class="form-control-feedback">
-                                <small>IoT Type for which this blueprint is destined.</small>
+                                <small>IoT Type for which this device blueprint is destined.</small>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -57,16 +57,16 @@
                                 </div>
                             </div>
                             <div class="form-control-feedback">
-                                <small>Which device types this blueprint works on.</small>
+                                <small>Which device types this device blueprint works on.</small>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="type" class="form-control-label">Custom DeviceType Mappings:</label>
                         <textarea class="form-control" rows="10" id="spec" style="font-family: monospace; font-size: 90%;"
-                            (keyup)="editJsonOnKey($event, 4, blueprint, 'deviceTypeMappings')" name="deviceTypeMappings"
-                            id="deviceTypeMappings" #name="ngModel" [(ngModel)]="blueprint.deviceTypeMappings" required
-                            ngModel>{{blueprint.deviceTypeMappings}}</textarea>
+                            (keyup)="editJsonOnKey($event, 4, deviceBlueprint, 'deviceTypeMappings')" name="deviceTypeMappings"
+                            id="deviceTypeMappings" #name="ngModel" [(ngModel)]="deviceBlueprint.deviceTypeMappings"
+                            required ngModel>{{deviceBlueprint.deviceTypeMappings}}</textarea>
                         <div class="form-control-feedback">
                             <small>JSON document to use for the custom device type mappings.
                                 <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
@@ -76,10 +76,10 @@
                     <div class="form-group">
                         <label for="type" class="form-control-label">Spec:</label>
                         <textarea class="form-control" rows="20" id="spec" style="font-family: monospace; font-size: 90%;"
-                            (keyup)="editJsonOnKey($event, 4, blueprint, 'spec')" name="spec" id="spec" #name="ngModel"
-                            [(ngModel)]="blueprint.spec" required ngModel>{{blueprint.spec}}</textarea>
+                            (keyup)="editJsonOnKey($event, 4, deviceBlueprint, 'spec')" name="spec" id="spec" #name="ngModel"
+                            [(ngModel)]="deviceBlueprint.spec" required ngModel>{{deviceBlueprint.spec}}</textarea>
                         <div class="form-control-feedback">
-                            <small>JSON document to use for the blueprint.
+                            <small>JSON document to use for the device blueprint.
                                 <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
                             </small>
                         </div>

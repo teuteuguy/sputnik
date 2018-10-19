@@ -20,8 +20,6 @@ echo "mkdir -p $1/console"
 mkdir -p $1/console
 echo "mkdir -p $1/lambda"
 mkdir -p $1/lambda
-# echo "mkdir -p $1/gg-blueprints"
-# mkdir -p $1/gg-blueprints
 
 
 echo

@@ -12,10 +12,10 @@
                 #set( $expression = "$expression, deviceTypeId = :deviceTypeId" )
                 ":deviceTypeId" : $util.dynamodb.toStringJson($ctx.args.deviceTypeId),
             #end
-            #if( $ctx.args.blueprintId )
-                ## Add blueprintId to expression
-                #set( $expression = "$expression, blueprintId = :blueprintId" )
-                ":blueprintId" : $util.dynamodb.toStringJson($ctx.args.blueprintId),
+            #if( $ctx.args.deviceBlueprintId )
+                ## Add deviceBlueprintId to expression
+                #set( $expression = "$expression, deviceBlueprintId = :deviceBlueprintId" )
+                ":deviceBlueprintId" : $util.dynamodb.toStringJson($ctx.args.deviceBlueprintId),
             #end
             ":n" : $util.dynamodb.toStringJson($ctx.args.name),
             ":uA" : $util.dynamodb.toStringJson($util.time.nowISO8601())

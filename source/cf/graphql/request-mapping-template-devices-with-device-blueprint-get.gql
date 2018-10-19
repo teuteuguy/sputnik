@@ -1,7 +1,7 @@
 {
     "version" : "2017-02-28",
     "operation" : "Scan",
-    "index" : "blueprintId"
+    "index" : "deviceBlueprintId"
     #if( $ctx.args.limit )
         "limit": $ctx.args.limit,
     #end
@@ -9,6 +9,6 @@
         "nextToken": "${ctx.args.nextToken}"
     #end
     "key" : {
-        "blueprintId" : $util.dynamodb.toDynamoDBJson($ctx.args.blueprintId)
+        "deviceBlueprintId" : $util.dynamodb.toDynamoDBJson($ctx.args.deviceBlueprintId)
     }
 }

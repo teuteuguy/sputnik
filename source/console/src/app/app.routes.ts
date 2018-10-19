@@ -21,8 +21,8 @@ import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
 import { DeviceTypesComponent } from './secure/device-types/device-types.component';
 import { DeviceTypeComponent } from './secure/device-type/device-type.component';
-import { BlueprintsComponent } from './secure/blueprints/blueprints.component';
-import { BlueprintComponent } from './secure/blueprint/blueprint.component';
+import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
+import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceComponent } from './secure/device/device.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
@@ -75,8 +75,8 @@ const secureHomeRoutes: Routes = [
             { path: 'settings', component: SettingsComponent },
             { path: 'device-types', component: DeviceTypesComponent },
             { path: 'device-types/:deviceTypeId', component: DeviceTypeComponent },
-            { path: 'blueprints', component: BlueprintsComponent },
-            { path: 'blueprints/:blueprintId', component: BlueprintComponent },
+            { path: 'device-blueprints', component: DeviceBlueprintsComponent },
+            { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
             { path: 'deployments', component: DeploymentsComponent },

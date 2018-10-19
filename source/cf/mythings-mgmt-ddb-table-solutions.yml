@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - DynamoDB Table - Solutions - Version %%VERSION%%'
+
+Resources:
+
+    mtmSolutionsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "id"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "mythings-mgmt-solutions"
+
+    mtmSolutionsDynamoDBScalingRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - application-autoscaling.amazonaws.com
+                        Action:
+                            - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: "root"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "cloudwatch:PutMetricAlarm"
+                                    - "cloudwatch:DescribeAlarms"
+                                    - "cloudwatch:GetMetricStatistics"
+                                    - "cloudwatch:SetAlarmState"
+                                    - "cloudwatch:DeleteAlarms"
+                                Resource: "*"
+                            -
+                                Effect: "Allow"
+                                Action:
+                                    - "dynamodb:DescribeTable"
+                                    - "dynamodb:UpdateTable"
+                                    - "dynamodb:DescribeGlobalTable"
+                                    - "dynamodb:UpdateGlobalTable"
+                                Resource:
+                                    - !GetAtt mtmSolutionsTable.Arn
+
+Outputs:
+    mtmSolutionsTable:
+        Description: "DynamoDB Solutions Table"
+        Value: !Ref mtmSolutionsTable

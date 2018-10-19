@@ -166,14 +166,26 @@
                             <span class="hide-menu">Home </span>
                         </a>
                     </li>
+                    <li>
+                        <a class="waves-effect waves-dark" data-caption="Maps" routerLink="maps">
+                            <i class="mdi mdi-google-maps"></i>
+                            <span class="hide-menu">Maps </span>
+                        </a>
+                    </li>
                     <li class="nav-small-cap">MENU</li>
+                    <li>
+                        <a class="waves-effect waves-dark" routerLink="solutions">
+                            <i class="mdi mdi-switch"></i>
+                            <span class="hide-menu">Solutions </span>
+                        </a>
+                    </li>
                     <li>
                         <a class="waves-effect waves-dark" routerLink="devices">
                             <i class="mdi mdi-view-module"></i>
                             <span class="hide-menu">Devices </span>
                         </a>
                     </li>
-                    <li>
+                    <li *ngIf="isAdminUser">
                         <a class="waves-effect waves-dark" routerLink="deployments">
                             <i class="mdi mdi-move-resize-variant"></i>
                             <span class="hide-menu">Deployments </span>
@@ -186,13 +198,13 @@
                         </a>
                     </li> -->
                     <li class="nav-small-cap">MODULES</li>
-                    <li>
-                        <a class="waves-effect waves-dark" routerLink="blueprints">
+                    <li *ngIf="isAdminUser">
+                        <a class="waves-effect waves-dark" routerLink="device-blueprints">
                             <i class="mdi mdi-lock-pattern"></i>
-                            <span class="hide-menu">Blueprints </span>
+                            <span class="hide-menu">Device Blueprints </span>
                         </a>
                     </li>
-                    <li>
+                    <li *ngIf="isAdminUser">
                         <a class="waves-effect waves-dark" routerLink="device-types">
                             <i class="mdi mdi-chip"></i>
                             <span class="hide-menu">Device Types </span>
