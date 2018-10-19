@@ -6,7 +6,11 @@ import { AmplifyService } from 'aws-amplify-angular';
 @Injectable()
 export class AppSyncService {
 
-    constructor(private _amplifyService: AmplifyService) {}
+    private _amplifyService: AmplifyService;
+
+    constructor() {
+        this._amplifyService = new AmplifyService();
+    }
 
     protected query(query, params) {
         const _self = this;

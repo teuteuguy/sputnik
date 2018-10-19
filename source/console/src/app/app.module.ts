@@ -58,7 +58,7 @@ import { StringifyPipe } from './pipes/stringify.pipe';
 // Services
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 import { BreadCrumbService } from './services/bread-crumb.service';
-import { AppSyncService } from './services/appsync.service';
+import { AppSyncService } from './services/common/appsync.service';
 import { UserLoginService } from './services/user-login.service';
 import { UserRegistrationService } from './services/user-registration.service';
 import { SettingService } from './services/setting.service';

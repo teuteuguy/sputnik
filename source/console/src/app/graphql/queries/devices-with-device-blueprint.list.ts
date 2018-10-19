@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query GetDevicesWithBlueprint($limit: Int, $nextToken: String) {
-        getDevicesWithBlueprint(limit: $limit, nextToken: $nextToken) {
+    query ListDevicesWithBlueprint($limit: Int, $nextToken: String) {
+        listDevicesWithBlueprint(limit: $limit, nextToken: $nextToken) {
             devices {
                 thingId
                 thingName

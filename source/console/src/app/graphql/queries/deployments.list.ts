@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query GetDeployments($limit: Int, $nextToken: String) {
-        getDeployments(limit: $limit, nextToken: $nextToken) {
+    query ListDeployments($limit: Int, $nextToken: String) {
+        listDeployments(limit: $limit, nextToken: $nextToken) {
             deployments {
                 thingId
                 deploymentId

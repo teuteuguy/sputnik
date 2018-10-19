@@ -103,7 +103,7 @@ export class DevicesComponent implements OnInit {
 
         _self.statService.refresh();
 
-        return _self.deviceService.getDevices(_self.pages.pageSize, null).then(results => {
+        return _self.deviceService.listDevices(_self.pages.pageSize, null).then(results => {
             console.log(results);
             _self.devices = results.devices;
             _self.updatePaging();

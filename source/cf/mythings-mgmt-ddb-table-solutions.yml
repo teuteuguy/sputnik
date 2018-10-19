@@ -11,10 +11,28 @@ Resources:
                 -
                     AttributeName: "id"
                     AttributeType: "S"
+                -
+                    AttributeName: "thingId"
+                    AttributeType: "S"
             KeySchema:
                 -
                     AttributeName: "id"
                     KeyType: "HASH"
+                -
+                    AttributeName: "thingId"
+                    KeyType: "RANGE"
+            GlobalSecondaryIndexes:
+                -
+                    IndexName: 'deviceId'
+                    KeySchema:
+                        -
+                            AttributeName: 'thingId'
+                            KeyType: 'HASH'
+                    Projection:
+                        ProjectionType: 'ALL'
+                    ProvisionedThroughput:
+                        ReadCapacityUnits: 5
+                        WriteCapacityUnits: 5
             ProvisionedThroughput:
                 ReadCapacityUnits: 5
                 WriteCapacityUnits: 5
@@ -22,44 +40,6 @@ Resources:
                 SSEEnabled: true
             TableName: "mythings-mgmt-solutions"
 
-    solutionsDynamoDBScalingRole:
-        Type: "AWS::IAM::Role"
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: "2012-10-17"
-                Statement:
-                    -
-                        Effect: "Allow"
-                        Principal:
-                            Service:
-                                - application-autoscaling.amazonaws.com
-                        Action:
-                            - "sts:AssumeRole"
-            Path: "/"
-            Policies:
-                -
-                    PolicyName: "root"
-                    PolicyDocument:
-                        Version: "2012-10-17"
-                        Statement:
-                            -
-                                Effect: "Allow"
-                                Action:
-                                    - "cloudwatch:PutMetricAlarm"
-                                    - "cloudwatch:DescribeAlarms"
-                                    - "cloudwatch:GetMetricStatistics"
-                                    - "cloudwatch:SetAlarmState"
-                                    - "cloudwatch:DeleteAlarms"
-                                Resource: "*"
-                            -
-                                Effect: "Allow"
-                                Action:
-                                    - "dynamodb:DescribeTable"
-                                    - "dynamodb:UpdateTable"
-                                    - "dynamodb:DescribeGlobalTable"
-                                    - "dynamodb:UpdateGlobalTable"
-                                Resource:
-                                    - !GetAtt solutionsTable.Arn
 
 Outputs:
     solutionsTable:

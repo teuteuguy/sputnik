@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
 // Models
 import { DeviceType } from '../models/device-type.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
@@ -18,8 +15,8 @@ import factoryReset from '../graphql/mutations/factoryReset';
 
 @Injectable()
 export class FactoryResetService extends AppSyncService {
-    constructor(private logger: LoggerService, private amplifyService: AmplifyService) {
-        super(amplifyService);
+    constructor(private logger: LoggerService) {
+        super();
     }
 
     public factoryReset(cmd) {

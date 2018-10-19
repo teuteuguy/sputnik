@@ -2,15 +2,9 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
-// Models
-// import { Stats } from '../models/stats.model';
-
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 import { DeviceService } from './device.service';
 
 // Helpers
@@ -24,10 +18,9 @@ export class StatService extends AppSyncService {
 
     constructor(
         private logger: LoggerService,
-        private deviceService: DeviceService,
-        private amplifyService: AmplifyService
+        private deviceService: DeviceService
     ) {
-        super(amplifyService);
+        super();
         const _self = this;
         this.loadStats();
         this.pollerInterval = setInterval(function() {
@@ -50,15 +43,4 @@ export class StatService extends AppSyncService {
     refresh() {
         this.loadStats();
     }
-
-    // constructor(private logger: LoggerService, private amplifyService: AmplifyService) {
-    //     super(amplifyService);
-    // }
-    // public getStat(stat: String) {
-    //     return super
-    //         .query(getStat, { stat: stat })
-    //         .then(d => {
-    //             return <Stat>d.data.getStat;
-    //         });
-    // }
 }

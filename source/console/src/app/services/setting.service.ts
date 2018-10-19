@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
 // Models
 import { Setting } from '../models/setting.model';
 
 // Services
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
@@ -20,8 +17,8 @@ import getSetting from '../graphql/queries/setting.get';
 
 @Injectable()
 export class SettingService extends AppSyncService {
-    constructor(private amplifyService: AmplifyService) {
-        super(amplifyService);
+    constructor() {
+        super();
     }
 
     public getSetting(id: string) {

@@ -1,21 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
 // Models
 import { DeviceBlueprint } from '../models/device-blueprint.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
 // Queries
-import getDeviceBlueprints from '../graphql/queries/device-blueprints.get';
+import listDeviceBlueprints from '../graphql/queries/device-blueprints.list';
 import getDeviceBlueprint from '../graphql/queries/device-blueprint.get';
 // Mutations
 import addDeviceBlueprint from '../graphql/mutations/device-blueprint.add';
@@ -34,8 +31,8 @@ export class DeviceBlueprintService extends AppSyncService {
     private deviceBlueprints: DeviceBlueprint[] = [];
     public blueprintsObservable$ = this.observable.asObservable();
 
-    constructor(private logger: LoggerService, private amplifyService: AmplifyService) {
-        super(amplifyService);
+    constructor(private logger: LoggerService) {
+        super();
         const _self = this;
 
         super.subscribe(addedDeviceBlueprint, {}).subscribe({
@@ -73,17 +70,19 @@ export class DeviceBlueprintService extends AppSyncService {
         });
     }
 
-    private _getDeviceBlueprints(limit: number, nexttoken: string) {
+    private _listDeviceBlueprints(limit: number, nexttoken: string) {
         const _self = this;
 
-        return super.query(getDeviceBlueprints, { limit: limit, nextToken: nexttoken }).then(result => {
+        return super.query(listDeviceBlueprints, { limit: limit, nextToken: nexttoken }).then(result => {
             let _deviceBlueprints: DeviceBlueprint[];
-            _deviceBlueprints = result.data.getDeviceBlueprints.deviceBlueprints;
-            if (result.data.getDeviceBlueprints.nextToken) {
-                return _self._getDeviceBlueprints(limit, result.data.getDeviceBlueprints.nextToken).then(data => {
-                    _deviceBlueprints.push(data);
-                    return _deviceBlueprints;
-                });
+            _deviceBlueprints = result.data.listDeviceBlueprints.deviceBlueprints;
+            if (result.data.listDeviceBlueprints.nextToken) {
+                return _self
+                    ._listDeviceBlueprints(limit, result.data.listDeviceBlueprints.nextToken)
+                    .then(data => {
+                        _deviceBlueprints.push(data);
+                        return _deviceBlueprints;
+                    });
             } else {
                 return _deviceBlueprints;
             }
@@ -92,7 +91,7 @@ export class DeviceBlueprintService extends AppSyncService {
 
     private loadDeviceBlueprints() {
         const _self = this;
-        _self._getDeviceBlueprints(_self.limit, null).then((results: DeviceBlueprint[]) => {
+        _self._listDeviceBlueprints(_self.limit, null).then((results: DeviceBlueprint[]) => {
             _self.pushNewDeviceBlueprints(results);
             _self.observable.next(results);
         });
@@ -117,7 +116,11 @@ export class DeviceBlueprintService extends AppSyncService {
     public addDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
         delete deviceBlueprint.id;
         return super
-            .mutation(addDeviceBlueprint, { name: deviceBlueprint.name, type: deviceBlueprint.type, spec: deviceBlueprint.spec })
+            .mutation(addDeviceBlueprint, {
+                name: deviceBlueprint.name,
+                type: deviceBlueprint.type,
+                spec: deviceBlueprint.spec
+            })
             .then(b => {
                 return <DeviceBlueprint>b.data.addBlueprint;
             });

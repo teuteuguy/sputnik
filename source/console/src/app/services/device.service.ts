@@ -1,24 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
 // Models
 import { Device } from '../models/device.model';
 import { Stats } from '../models/stats.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
 // Queries
-import getDevices from '../graphql/queries/devices.get';
-import getDevicesOfDeviceType from '../graphql/queries/devices-of-device-type.get';
-import getDevicesWithDeviceBlueprint from '../graphql/queries/devices-with-device-blueprint.get';
+import listDevices from '../graphql/queries/devices.list';
+import listDevicesOfDeviceType from '../graphql/queries/devices-of-device-type.list';
+import listDevicesWithDeviceBlueprint from '../graphql/queries/devices-with-device-blueprint.list';
 import getDevice from '../graphql/queries/device.get';
 import getDeviceStats from '../graphql/queries/device.getStats';
 
@@ -38,37 +35,43 @@ export class DeviceService extends AppSyncService {
     public devices: Device[] = [];
     devicesObservable$ = this.observable.asObservable();
 
-    constructor(private logger: LoggerService, private amplifyService: AmplifyService) {
-        super(amplifyService);
+    constructor(private logger: LoggerService) {
+        super();
         const _self = this;
 
-        super.subscribe(addedDevice, {}).subscribe({ next: result => {
+        super.subscribe(addedDevice, {}).subscribe({
+            next: result => {
                 // _self.loadBlueprints();
-            } });
+            }
+        });
 
-        super.subscribe(updatedDevice, {}).subscribe({ next: result => {
+        super.subscribe(updatedDevice, {}).subscribe({
+            next: result => {
                 // _self.loadBlueprints();
-            } });
+            }
+        });
 
-        super.subscribe(deletedDevice, {}).subscribe({ next: result => {
+        super.subscribe(deletedDevice, {}).subscribe({
+            next: result => {
                 // _self.loadBlueprints();
-            } });
+            }
+        });
 
         // _self.loadDeviceTypes();
     }
 
-    public getDevices(limit: number, nextToken: String) {
-        return super.query(getDevices, { limit: limit, nextToken: nextToken }).then(result => result.data.getDevices);
+    public listDevices(limit: number, nextToken: String) {
+        return super.query(listDevices, { limit: limit, nextToken: nextToken }).then(result => result.data.listDevices);
     }
-    public getDevicesOfDeviceType(limit: number, nextToken: String) {
+    public listDevicesOfDeviceType(limit: number, nextToken: String) {
         return super
-            .query(getDevicesOfDeviceType, { limit: limit, nextToken: nextToken })
-            .then(result => result.data.getDevicesOfDeviceType);
+            .query(listDevicesOfDeviceType, { limit: limit, nextToken: nextToken })
+            .then(result => result.data.listDevicesOfDeviceType);
     }
-    public getDevicesWithDeviceBlueprint(limit: number, nextToken: String) {
+    public listDevicesWithDeviceBlueprint(limit: number, nextToken: String) {
         return super
-            .query(getDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken })
-            .then(result => result.data.getDevicesWithDeviceBlueprint);
+            .query(listDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken })
+            .then(result => result.data.listDevicesWithDeviceBlueprint);
     }
     public getDevice(thingId: string) {
         return super.query(getDevice, { thingId: thingId }).then(result => <Device>result.data.getDevice);
@@ -78,11 +81,9 @@ export class DeviceService extends AppSyncService {
     }
 
     public addDevice(thingName: String, isGreengrass) {
-        return super
-            .mutation(addDevice, { thingName: thingName, isGreengrass: isGreengrass })
-            .then(result => {
-                return <Device>result.data.device;
-            });
+        return super.mutation(addDevice, { thingName: thingName, isGreengrass: isGreengrass }).then(result => {
+            return <Device>result.data.device;
+        });
     }
 
     public deleteDevice(thingId: string) {
@@ -96,13 +97,15 @@ export class DeviceService extends AppSyncService {
     }
 
     public updateDevice(thingId: string, name: string, deviceTypeId: string, deviceBlueprintId: string) {
-        return super.mutation(updateDevice, {
-            thingId: thingId,
-            name: name,
-            deviceTypeId: deviceTypeId,
-            deviceBlueprintId: deviceBlueprintId
-        }).then(d => {
-            return <Device>d.data.updateDevice;
-        });
+        return super
+            .mutation(updateDevice, {
+                thingId: thingId,
+                name: name,
+                deviceTypeId: deviceTypeId,
+                deviceBlueprintId: deviceBlueprintId
+            })
+            .then(d => {
+                return <Device>d.data.updateDevice;
+            });
     }
 }

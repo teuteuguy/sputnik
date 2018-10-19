@@ -1,14 +1,12 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query GetDeviceBlueprints($limit: Int, $nextToken: String) {
-        getDeviceBlueprints(limit: $limit, nextToken: $nextToken) {
-            deviceBlueprints {
+    query ListDeviceTypes($limit: Int, $nextToken: String) {
+        listDeviceTypes(limit: $limit, nextToken: $nextToken) {
+            deviceTypes {
                 id
                 name
                 type
-                compatibility
-                deviceTypeMappings
                 spec
                 createdAt
                 updatedAt

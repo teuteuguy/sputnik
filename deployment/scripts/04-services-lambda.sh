@@ -38,13 +38,6 @@ yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo "------------------------------------------------------------------------------"
-echo "[Build] Services - Stats"
-echo "------------------------------------------------------------------------------"
-cd $1/services/stats
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
-echo "------------------------------------------------------------------------------"
 echo "[Build] Services - Deployments"
 echo "------------------------------------------------------------------------------"
 cd $1/services/deployments

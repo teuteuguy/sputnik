@@ -70,31 +70,40 @@ type Setting {
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
-type Stat {
-    stat: String
-    value: String
-}
-type Query {
-    getDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getDevicesOfDeviceType(deviceTypeId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getDevicesWithDeviceBlueprint(deviceBlueprintId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators", "Members"])
 
+type Solution {
+    id: String!
+    thingId: String!
+    solutionBlueprintId: String!
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedSolutions {
+    solutions: [Solution]
+    nextToken: String
+}
+
+type Query {
+    listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesOfDeviceType(deviceTypeId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesWithDeviceBlueprint(deviceBlueprintId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDeviceStats: DeviceStat @aws_auth(cognito_groups: ["Administrators", "Members"])
 
+    listDeviceTypes(limit: Int, nextToken: String): PaginatedDeviceTypes @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getDeviceTypes(limit: Int, nextToken: String): PaginatedDeviceTypes @aws_auth(cognito_groups: ["Administrators", "Members"])
-
-    getStat(stat: String): Stat @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     getSetting(id: String!): Setting @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     getThingAutoRegistrationState: Boolean @aws_auth(cognito_groups: ["Administrators"])
 
-    getDeviceBlueprints(limit: Int, nextToken: String): PaginatedDeviceBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDeviceBlueprints(limit: Int, nextToken: String): PaginatedDeviceBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    getDeployments(limit: Int, nextToken: String): PaginatedDeployments @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDeployments(limit: Int, nextToken: String): PaginatedDeployments @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listSolutions(limit: Int, nextToken: String): PaginatedSolutions @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
@@ -102,9 +111,7 @@ type Mutation {
     updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
 
     addDeviceType(name: String!, type: String!, spec: AWSJSON): DeviceType! @aws_auth(cognito_groups: ["Administrators"])
-
     deleteDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators"])
-
     updateDeviceType(id: String!, name: String!, type: String!, spec: AWSJSON): DeviceType @aws_auth(cognito_groups: ["Administrators"])
 
     addDeviceBlueprint(name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])

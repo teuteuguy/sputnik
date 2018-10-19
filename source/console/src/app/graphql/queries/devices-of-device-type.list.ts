@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query GetDevices($limit: Int, $nextToken: String) {
-        getDevices(limit: $limit, nextToken: $nextToken) {
+    query ListDevicesOfDeviceType($limit: Int, $nextToken: String) {
+        listDevicesOfDeviceType(limit: $limit, nextToken: $nextToken) {
             devices {
                 thingId
                 thingName
@@ -17,7 +17,6 @@ export default gql`
                     certificateArn
                 }
                 greengrassGroupId
-                lastDeploymentId
                 createdAt
                 updatedAt
             }

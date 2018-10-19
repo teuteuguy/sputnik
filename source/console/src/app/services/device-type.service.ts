@@ -1,22 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-// AWS
-import { AmplifyService } from 'aws-amplify-angular';
-
 // Models
 import { DeviceType } from '../models/device-type.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './appsync.service';
+import { AppSyncService } from './common/appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
 // Queries
 // import getAllDeviceTypes from '../graphql/queries/getAllDeviceTypes';
-import getDeviceTypes from '../graphql/queries/device-types.get';
+import listDeviceTypes from '../graphql/queries/device-types.list';
 import getDeviceType from '../graphql/queries/device-type.get';
 // Mutations
 import addDeviceType from '../graphql/mutations/device-type.add';
@@ -34,8 +31,8 @@ export class DeviceTypeService extends AppSyncService {
     private deviceTypes: DeviceType[] = [];
     public deviceTypesObservable$ = this.observable.asObservable();
 
-    constructor(private logger: LoggerService, private amplifyService: AmplifyService) {
-        super(amplifyService);
+    constructor(private logger: LoggerService) {
+        super();
         const _self = this;
 
         super.subscribe(addedDeviceType, {}).subscribe({
@@ -95,17 +92,19 @@ export class DeviceTypeService extends AppSyncService {
         });
     }
 
-    private _getDeviceTypes(limit: number, nexttoken: string) {
+    private _listDeviceTypes(limit: number, nexttoken: string) {
         const _self = this;
 
-        return super.query(getDeviceTypes, { limit: limit, nextToken: nexttoken }).then(result => {
+        return super.query(listDeviceTypes, { limit: limit, nextToken: nexttoken }).then(result => {
             let _devicetypes: DeviceType[];
-            _devicetypes = result.data.getDeviceTypes.deviceTypes;
-            if (result.data.getDeviceTypes.nextToken) {
-                return _self._getDeviceTypes(limit, result.data.getDeviceTypes.nextToken).then(data => {
-                    _devicetypes.push(data);
-                    return _devicetypes;
-                });
+            _devicetypes = result.data.listDeviceTypes.deviceTypes;
+            if (result.data.listDeviceTypes.nextToken) {
+                return _self
+                    ._listDeviceTypes(limit, result.data.listDeviceTypes.nextToken)
+                    .then(data => {
+                        _devicetypes.push(data);
+                        return _devicetypes;
+                    });
             } else {
                 return _devicetypes;
             }
@@ -114,7 +113,7 @@ export class DeviceTypeService extends AppSyncService {
 
     private loadDeviceTypes() {
         const _self = this;
-        _self._getDeviceTypes(_self.limit, null).then((results: DeviceType[]) => {
+        _self._listDeviceTypes(_self.limit, null).then((results: DeviceType[]) => {
             _self.pushNewDeviceTypes(results);
             _self.observable.next(results);
         });
@@ -131,8 +130,8 @@ export class DeviceTypeService extends AppSyncService {
         //     resolve(_self.deviceTypes);
         // });
         // return this.deviceTypes;
-    // public getDeviceTypes(limit: number, nextToken: String) {
-    //     return super.query(getDeviceTypes, { limit: limit, nextToken: nextToken }).then(d => d.data.getAllDeviceTypes);
+        // public getDeviceTypes(limit: number, nextToken: String) {
+        //     return super.query(getDeviceTypes, { limit: limit, nextToken: nextToken }).then(d => d.data.getAllDeviceTypes);
     }
 
     public getDeviceType(id: string) {
