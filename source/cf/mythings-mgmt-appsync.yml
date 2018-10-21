@@ -25,9 +25,9 @@ Parameters:
     deploymentsTable:
         Type: String
         Description: DynamoDB Table for storing the deployments
-    solutionsTable:
-        Type: String
-        Description: DynamoDB Table for storing the solutions
+    # solutionsTable:
+    #     Type: String
+    #     Description: DynamoDB Table for storing the solutions
     lambdaServiceFactoryResetArn:
         Type: String
         Description: Factory Reset Micro Service ARN
@@ -40,6 +40,9 @@ Parameters:
     lambdaServiceDeploymentsArn:
         Type: String
         Description: Deployments Micro Service ARN
+    lambdaServiceSolutionsArn:
+        Type: String
+        Description: Solutions Micro Service ARN
 
 Resources:
 
@@ -82,7 +85,7 @@ Resources:
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceBlueprintsTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deploymentsTable ]]
-                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionsTable ]]
+                            # - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionsTable ]]
             Roles:
                 - !Ref appSyncRole
     appSyncLambdaPolicy:
@@ -101,6 +104,7 @@ Resources:
                             - !Ref lambdaServiceSettingsArn
                             - !Ref lambdaServiceDevicesArn
                             - !Ref lambdaServiceDeploymentsArn
+                            - !Ref lambdaServiceSolutionsArn
 
             Roles:
                 - !Ref appSyncRole
@@ -173,17 +177,17 @@ Resources:
             DynamoDBConfig:
                 AwsRegion: !Ref 'AWS::Region'
                 TableName: !Ref deploymentsTable
-    appSyncDataSourceSolutionsDynamoDB:
-        Type: 'AWS::AppSync::DataSource'
-        Properties:
-            ApiId: !GetAtt appSyncGraphQLApi.ApiId
-            Name: appSyncDataSourceSolutionsDynamoDB
-            Description: The Solutions DynamoDB table App Sync Data Source
-            Type: AMAZON_DYNAMODB
-            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
-            DynamoDBConfig:
-                AwsRegion: !Ref 'AWS::Region'
-                TableName: !Ref solutionsTable
+    # appSyncDataSourceSolutionsDynamoDB:
+    #     Type: 'AWS::AppSync::DataSource'
+    #     Properties:
+    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
+    #         Name: appSyncDataSourceSolutionsDynamoDB
+    #         Description: The Solutions DynamoDB table App Sync Data Source
+    #         Type: AMAZON_DYNAMODB
+    #         ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
+    #         DynamoDBConfig:
+    #             AwsRegion: !Ref 'AWS::Region'
+    #             TableName: !Ref solutionsTable
 
     # DATA SOURCES - Lambda
     appSyncDataSourceFactoryResetLambda:
@@ -226,6 +230,16 @@ Resources:
             ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
             LambdaConfig:
                 LambdaFunctionArn: !Ref lambdaServiceDeploymentsArn
+    appSyncDataSourceSolutionsLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            Name: appSyncDataSourceSolutionsLambda
+            Description: The Solutions Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref lambdaServiceSolutionsArn
 
     # RESOLVERS - QUERIES - DeviceTypes
     appSyncResolverQueryListDeviceTypes:
@@ -390,24 +404,24 @@ Resources:
             ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'deployments', 'deployments-response-mapping-template-list.gql']]
 
     # RESOLVERS - QUERIES - Solutions
-    appSyncResolverQueryListSolutions:
-        Type: 'AWS::AppSync::Resolver'
-        Properties:
-            ApiId: !GetAtt appSyncGraphQLApi.ApiId
-            TypeName: Query
-            FieldName: 'listSolutions'
-            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
-            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-list.gql']]
-            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-response-mapping-template-list.gql']]
-    appSyncResolverQueryGetSolution:
-        Type: 'AWS::AppSync::Resolver'
-        Properties:
-            ApiId: !GetAtt appSyncGraphQLApi.ApiId
-            TypeName: Query
-            FieldName: 'getSolution'
-            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
-            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-get.gql']]
-            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    # appSyncResolverQueryListSolutions:
+    #     Type: 'AWS::AppSync::Resolver'
+    #     Properties:
+    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
+    #         TypeName: Query
+    #         FieldName: 'listSolutions'
+    #         DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
+    #         RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-list.gql']]
+    #         ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-response-mapping-template-list.gql']]
+    # appSyncResolverQueryGetSolution:
+    #     Type: 'AWS::AppSync::Resolver'
+    #     Properties:
+    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
+    #         TypeName: Query
+    #         FieldName: 'getSolution'
+    #         DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
+    #         RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-get.gql']]
+    #         ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
     # RESOLVERS - MUTATIONS - Devices
     appSyncResolverMutationAddDevice:

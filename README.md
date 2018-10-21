@@ -5,7 +5,7 @@ Blablabla
 
 * Add A:FreeRTOS devic types, blueprints and deployment management.
 * When creating a device, deal with the certificates ?
-* 
+* Create a location picker for the solutions
 
 
 ## Notes

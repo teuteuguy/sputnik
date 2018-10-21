@@ -74,7 +74,7 @@ export class DeploymentsComponent implements OnInit {
         const _self = this;
 
         return _self.deploymentService
-            .getDeployments(_self.pages.pageSize, null)
+            .listDeployments(_self.pages.pageSize, null)
             .then(results => {
                 console.log(results);
                 _self.deployments = results.deployments;

@@ -1,10 +1,11 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query GetSolution($id: String!) {
-        getSolution(id: $id) {
+    mutation UpdateSolution($id: String!) {
+        updateSolution(id: $id) {
             id
             thingId
+            name
             solutionBlueprintId
             createdAt
             updatedAt

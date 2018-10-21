@@ -6,76 +6,36 @@ import { DeviceType } from '../models/device-type.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './common/appsync.service';
+import { AppSyncService, AddedDeviceType, UpdatedDeviceType, DeletedDeviceType } from './appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
-// Queries
-// import getAllDeviceTypes from '../graphql/queries/getAllDeviceTypes';
-import listDeviceTypes from '../graphql/queries/device-types.list';
-import getDeviceType from '../graphql/queries/device-type.get';
-// Mutations
-import addDeviceType from '../graphql/mutations/device-type.add';
-import deleteDeviceType from '../graphql/mutations/device-type.delete';
-import updateDeviceType from '../graphql/mutations/device-type.update';
-// Subscriptions
-import addedDeviceType from '../graphql/subscriptions/device-type.added';
-import deletedDeviceType from '../graphql/subscriptions/device-type.deleted';
-import updatedDeviceType from '../graphql/subscriptions/device-type.updated';
-
 @Injectable()
-export class DeviceTypeService extends AppSyncService {
+export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, DeletedDeviceType {
     private limit = 10;
     private observable: any = new Subject<any>();
     private deviceTypes: DeviceType[] = [];
     public deviceTypesObservable$ = this.observable.asObservable();
 
-    constructor(private logger: LoggerService) {
-        super();
+    constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
+        console.log(this);
         const _self = this;
 
-        super.subscribe(addedDeviceType, {}).subscribe({
-            next: result => {
-                // _self.deviceTypes.push(result.value.data.addedDeviceType);
-                // _self.observable.next(result.value.data.addedDeviceType);
-                _self.loadDeviceTypes();
-            }
-        });
-
-        super.subscribe(updatedDeviceType, {}).subscribe({
-            next: result => {
-                // const index = _.findIndex(_self.deviceTypes, deviceType => {
-                //     return deviceType.id === result.value.data.updatedDeviceType.id;
-                // });
-                // if (index !== -1) {
-                //     _self.deviceTypes[index] = JSON.parse(JSON.stringify(result.value.data.updatedDeviceType));
-                // } else {
-                //     console.error('Something went wrong! The index was not found');
-                //     console.log(result.value.data.updatedDeviceType, _self.deviceTypes);
-                // }
-                // _self.observable.next(result.value.data.updatedDeviceType);
-                _self.loadDeviceTypes();
-            }
-        });
-
-        super.subscribe(deletedDeviceType, {}).subscribe({
-            next: result => {
-                // const index = _.findIndex(_self.deviceTypes, deviceType => {
-                //     return deviceType.id === result.value.data.deletedDeviceType.id;
-                // });
-                // if (index !== -1) {
-                //     _self.deviceTypes.splice(index, 1);
-                // } else {
-                //     console.error('Something went wrong! The index was not found');
-                //     console.log(result.value.data.deletedDeviceType, _self.deviceTypes);
-                // }
-                // _self.observable.next(result.value.data.deletedDeviceType);
-                _self.loadDeviceTypes();
-            }
-        });
+        _self.appSyncService.onAddedDeviceType(_self);
+        _self.appSyncService.onUpdatedDeviceType(_self);
+        _self.appSyncService.onDeletedDeviceType(_self);
 
         _self.loadDeviceTypes();
+    }
+    public addDeviceType(deviceType: DeviceType) {
+        return this.appSyncService.addDeviceType(deviceType);
+    }
+    public updateDeviceType(deviceType: DeviceType) {
+        return this.appSyncService.updateDeviceType(deviceType);
+    }
+    public deleteDeviceType(id: string) {
+        return this.appSyncService.deleteDeviceType(id);
     }
 
     private pushNewDeviceTypes(deviceTypes: DeviceType[]) {
@@ -92,21 +52,19 @@ export class DeviceTypeService extends AppSyncService {
         });
     }
 
-    private _listDeviceTypes(limit: number, nexttoken: string) {
+    private _listDeviceTypes(limit: number, nextToken: string) {
         const _self = this;
 
-        return super.query(listDeviceTypes, { limit: limit, nextToken: nexttoken }).then(result => {
-            let _devicetypes: DeviceType[];
-            _devicetypes = result.data.listDeviceTypes.deviceTypes;
-            if (result.data.listDeviceTypes.nextToken) {
-                return _self
-                    ._listDeviceTypes(limit, result.data.listDeviceTypes.nextToken)
-                    .then(data => {
-                        _devicetypes.push(data);
-                        return _devicetypes;
-                    });
+        return _self.appSyncService.listDeviceTypes(limit, nextToken).then(result => {
+            let _deviceTypes: DeviceType[];
+            _deviceTypes = result.deviceTypes;
+            if (result.nextToken) {
+                return _self._listDeviceTypes(limit, result.nextToken).then(data => {
+                    _deviceTypes.push(data);
+                    return _deviceTypes;
+                });
             } else {
-                return _devicetypes;
+                return _deviceTypes;
             }
         });
     }
@@ -124,50 +82,26 @@ export class DeviceTypeService extends AppSyncService {
     }
 
     public getDeviceTypes() {
-        const _self = this;
-        return _self.deviceTypes;
-        // return new Promise((resolve, reject) => {
-        //     resolve(_self.deviceTypes);
-        // });
-        // return this.deviceTypes;
-        // public getDeviceTypes(limit: number, nextToken: String) {
-        //     return super.query(getDeviceTypes, { limit: limit, nextToken: nextToken }).then(d => d.data.getAllDeviceTypes);
+        return this.deviceTypes;
     }
 
     public getDeviceType(id: string) {
+        console.log('deviceTypeService.getDeviceType');
         return this.deviceTypes.find((dt: DeviceType) => {
             return dt.id === id;
         });
-        // return super.query(getDeviceType, { id: id }).then(d => <DeviceType>d.data.getDeviceType);
     }
 
-    public addDeviceType(deviceType: DeviceType) {
-        delete deviceType.id;
-        return super
-            .mutation(addDeviceType, {
-                name: deviceType.name,
-                type: deviceType.type,
-                spec: deviceType.spec
-            })
-            .then(d => {
-                return <DeviceType>d.data.addDeviceType;
-            });
+    onAddedDeviceType(deviceType: DeviceType) {
+        // TODO: Improve this.
+        this.loadDeviceTypes();
     }
-
-    public deleteDeviceType(id: string) {
-        return super
-            .mutation(deleteDeviceType, {
-                id: id
-            })
-            .then(d => {
-                return <DeviceType>d.data.deleteDeviceType;
-            });
+    onUpdatedDeviceType(deviceType: DeviceType) {
+        // TODO: Improve this.
+        this.loadDeviceTypes();
     }
-
-    public updateDeviceType(deviceType: DeviceType) {
-        delete deviceType.updatedAt;
-        return super.mutation(updateDeviceType, deviceType).then(d => {
-            return <DeviceType>d.data.updateDeviceType;
-        });
+    onDeletedDeviceType(deviceType: DeviceType) {
+        // TODO: Improve this.
+        this.loadDeviceTypes();
     }
 }

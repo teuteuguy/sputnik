@@ -93,16 +93,17 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-deployments.yml']]
 
-    # Nested stack - DynamoDB Table - Solutions
-    CFStackForDDBSolutions:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
+    # # Nested stack - DynamoDB Table - Solutions
+    # CFStackForDDBSolutions:
+    #     Type: AWS::CloudFormation::Stack
+    #     Properties:
+    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
+
     # Nested stack - DynamoDB Table - Solution Blueprints
-    CFStackForDDBSolutionBlueprints:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solution-blueprints.yml']]
+    # CFStackForDDBSolutionBlueprints:
+    #     Type: AWS::CloudFormation::Stack
+    #     Properties:
+    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solution-blueprints.yml']]
 
 
     # Nested stack - MicroService - Factory Reset
@@ -164,6 +165,18 @@ Resources:
                 deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
 
+    # Nested stack - MicroService - Solutions
+    CFStackForSolutionsService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-service-solutions.yml']]
+            Parameters:
+                sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
+                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
+                settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+                devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                # solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+
     # Nested stack - AppSync
     CFStackForAppSync:
         Type: AWS::CloudFormation::Stack
@@ -178,11 +191,12 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
-                solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+                # solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
                 lambdaServiceDevicesArn: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
                 lambdaServiceFactoryResetArn: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
+                lambdaServiceSolutionsArn: !GetAtt CFStackForSolutionsService.Outputs.lambdaServiceSolutionsArn
 
 
     # Initialization - Copy of website assets (html/js/css/assets)

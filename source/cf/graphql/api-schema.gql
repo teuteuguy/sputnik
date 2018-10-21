@@ -73,6 +73,7 @@ type Setting {
 
 type Solution {
     id: String!
+    name: String!
     thingId: String!
     solutionBlueprintId: String!
     createdAt: AWSDateTime
@@ -123,6 +124,10 @@ type Mutation {
     setThingAutoRegistrationState(enabled: Boolean!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
     addDeployment(thingId: String!): Deployment! @aws_auth(cognito_groups: ["Administrators"])
+
+    addSolution(name: String!, solutionBlueprintId: Boolean!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
+    deleteSolution(id: String!): [Solution] @aws_auth(cognito_groups: ["Administrators"])
+    updateSolution(id: String!, name: String!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
 }
 type Subscription {
     addedDeviceType: DeviceType @aws_subscribe(mutations: ["addDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
@@ -136,6 +141,10 @@ type Subscription {
     addedDevice: Device @aws_subscribe(mutations: ["addDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
     updatedDevice: Device @aws_subscribe(mutations: ["updateDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
     deletedDevice: Device @aws_subscribe(mutations: ["deleteDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    addedSolution: [Solution] @aws_subscribe(mutations: ["addSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedSolution: [Solution] @aws_subscribe(mutations: ["updateSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedSolution: [Solution] @aws_subscribe(mutations: ["deleteSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 schema {
     query: Query

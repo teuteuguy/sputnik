@@ -44,6 +44,13 @@ cd $1/services/deployments
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
+echo "------------------------------------------------------------------------------"
+echo "[Build] Services - Solutions"
+echo "------------------------------------------------------------------------------"
+cd $1/services/solutions
+yarn run build
+cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
+
 
 echo
 exit 0

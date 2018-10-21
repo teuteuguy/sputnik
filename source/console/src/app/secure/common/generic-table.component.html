@@ -5,8 +5,8 @@
             <div class="card-body">
                 <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i
                         class="fa fa-refresh"></i> Refresh</button>
-                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="openDeviceType('new')"><i
-                        class="mdi mdi-plus"></i> Create NEW Device Type</button>
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="open('new')"><i
+                        class="mdi mdi-plus"></i> Create NEW {{ title }}</button>
                 <h4 class="card-title">{{ title }} ({{metrics.total}})</h4>
                 <div class="table-responsive m-t-20">
                     <table id="types-pagination" class="table stylish-table" style="text-transform:uppercase;"

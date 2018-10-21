@@ -4,23 +4,18 @@ import { environment } from '../../environments/environment';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './common/appsync.service';
-import { DeviceService } from './device.service';
+import { AppSyncService } from './appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
 @Injectable()
-export class StatService extends AppSyncService {
+export class StatService {
     private stat: any = new Subject<any>();
     private pollerInterval: any = null;
     statObservable$ = this.stat.asObservable();
 
-    constructor(
-        private logger: LoggerService,
-        private deviceService: DeviceService
-    ) {
-        super();
+    constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
         const _self = this;
         this.loadStats();
         this.pollerInterval = setInterval(function() {
@@ -29,8 +24,7 @@ export class StatService extends AppSyncService {
     }
 
     loadStats() {
-        this.deviceService
-            .getDeviceStats()
+        this.appSyncService.getDeviceStats()
             .then((data: any) => {
                 this.stat.next(data);
             })

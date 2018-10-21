@@ -26,6 +26,7 @@ import { DeviceBlueprintComponent } from './secure/device-blueprint/device-bluep
 import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceComponent } from './secure/device/device.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
+import { SolutionsComponent } from './secure/solutions/solutions.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -80,6 +81,7 @@ const secureHomeRoutes: Routes = [
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
             { path: 'deployments', component: DeploymentsComponent },
+            { path: 'solutions', component: SolutionsComponent },
             { path: '', component: SecureHomeComponent }
         ]
     }

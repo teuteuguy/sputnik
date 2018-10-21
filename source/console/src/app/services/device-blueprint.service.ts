@@ -6,54 +6,47 @@ import { DeviceBlueprint } from '../models/device-blueprint.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import { AppSyncService } from './common/appsync.service';
+import {
+    AppSyncService,
+    AddedDeviceBlueprint,
+    UpdatedDeviceBlueprint,
+    DeletedDeviceBlueprint
+} from './appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
 
-// Queries
-import listDeviceBlueprints from '../graphql/queries/device-blueprints.list';
-import getDeviceBlueprint from '../graphql/queries/device-blueprint.get';
-// Mutations
-import addDeviceBlueprint from '../graphql/mutations/device-blueprint.add';
-import deleteDeviceBlueprint from '../graphql/mutations/device-blueprint.delete';
-import updateDeviceBlueprint from '../graphql/mutations/device-blueprint.update';
-// Subscriptions
-import addedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.added';
-import deletedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.deleted';
-import updatedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.updated';
-
-
 @Injectable()
-export class DeviceBlueprintService extends AppSyncService {
+export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDeviceBlueprint, DeletedDeviceBlueprint {
     private limit = 10;
     private observable: any = new Subject<any>();
     private deviceBlueprints: DeviceBlueprint[] = [];
     public blueprintsObservable$ = this.observable.asObservable();
 
-    constructor(private logger: LoggerService) {
-        super();
+    constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
         const _self = this;
 
-        super.subscribe(addedDeviceBlueprint, {}).subscribe({
-            next: result => {
-                _self.loadDeviceBlueprints();
-            }
-        });
-
-        super.subscribe(updatedDeviceBlueprint, {}).subscribe({
-            next: result => {
-                _self.loadDeviceBlueprints();
-            }
-        });
-
-        super.subscribe(deletedDeviceBlueprint, {}).subscribe({
-            next: result => {
-                _self.loadDeviceBlueprints();
-            }
-        });
+        _self.appSyncService.onAddedDeviceBlueprint(_self);
+        _self.appSyncService.onUpdatedDeviceBlueprint(_self);
+        _self.appSyncService.onDeletedDeviceBlueprint(_self);
 
         _self.loadDeviceBlueprints();
+    }
+
+    public listDeviceBlueprints(limit: number, nextToken: string) {
+        return this.appSyncService.listDeviceBlueprints(limit, nextToken);
+    }
+    public getDeviceBlueprint(id: string) {
+        return this.appSyncService.getDeviceBlueprint(id);
+    }
+    public addDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        return this.appSyncService.addDeviceBlueprint(deviceBlueprint);
+    }
+    public updateDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        return this.appSyncService.updateDeviceBlueprint(deviceBlueprint);
+    }
+    public deleteDeviceBlueprint(id: string) {
+        return this.appSyncService.deleteDeviceBlueprint(id);
     }
 
     private pushNewDeviceBlueprints(deviceBlueprints: DeviceBlueprint[]) {
@@ -70,19 +63,17 @@ export class DeviceBlueprintService extends AppSyncService {
         });
     }
 
-    private _listDeviceBlueprints(limit: number, nexttoken: string) {
+    private _listDeviceBlueprints(limit: number, nextToken: string) {
         const _self = this;
 
-        return super.query(listDeviceBlueprints, { limit: limit, nextToken: nexttoken }).then(result => {
+        return _self.listDeviceBlueprints(limit, nextToken).then(result => {
             let _deviceBlueprints: DeviceBlueprint[];
-            _deviceBlueprints = result.data.listDeviceBlueprints.deviceBlueprints;
-            if (result.data.listDeviceBlueprints.nextToken) {
-                return _self
-                    ._listDeviceBlueprints(limit, result.data.listDeviceBlueprints.nextToken)
-                    .then(data => {
-                        _deviceBlueprints.push(data);
-                        return _deviceBlueprints;
-                    });
+            _deviceBlueprints = result.deviceBlueprints;
+            if (result.nextToken) {
+                return _self._listDeviceBlueprints(limit, result.nextToken).then(data => {
+                    _deviceBlueprints.push(data);
+                    return _deviceBlueprints;
+                });
             } else {
                 return _deviceBlueprints;
             }
@@ -102,44 +93,19 @@ export class DeviceBlueprintService extends AppSyncService {
     }
 
     public getDeviceBlueprints() {
-        const _self = this;
-        return _self.deviceBlueprints;
-        // return super
-        //     .query(getBlueprints, { limit: limit, nextToken: nextToken })
-        //     .then(d => <Blueprint[]>d.data.getBlueprints);
+        return this.deviceBlueprints;
     }
 
-    public getDeviceBlueprint(id: string) {
-        return super.query(getDeviceBlueprint, { id: id }).then(d => <DeviceBlueprint>d.data.getDeviceBlueprint);
+    onAddedDeviceBlueprint(result: DeviceBlueprint) {
+        // TODO: Improve this.
+        this.loadDeviceBlueprints();
     }
-
-    public addDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
-        delete deviceBlueprint.id;
-        return super
-            .mutation(addDeviceBlueprint, {
-                name: deviceBlueprint.name,
-                type: deviceBlueprint.type,
-                spec: deviceBlueprint.spec
-            })
-            .then(b => {
-                return <DeviceBlueprint>b.data.addBlueprint;
-            });
+    onUpdatedDeviceBlueprint(result: DeviceBlueprint) {
+        // TODO: Improve this.
+        this.loadDeviceBlueprints();
     }
-
-    public deleteDeviceBlueprint(id: string) {
-        return super
-            .mutation(deleteDeviceBlueprint, {
-                id: id
-            })
-            .then(b => {
-                return <DeviceBlueprint>b.data.deleteBlueprint;
-            });
-    }
-
-    public updateDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
-        delete deviceBlueprint.updatedAt;
-        return super.mutation(updateDeviceBlueprint, deviceBlueprint).then(b => {
-            return <DeviceBlueprint>b.data.updateBlueprint;
-        });
+    onDeletedDeviceBlueprint(result: DeviceBlueprint) {
+        // TODO: Improve this.
+        this.loadDeviceBlueprints();
     }
 }
