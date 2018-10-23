@@ -5,12 +5,13 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
+import { DeviceStats, SolutionStats } from '../../models/stats.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { UserLoginService, LoggedInCallback } from '../../services/user-login.service';
 import { LoggerService } from '../../services/logger.service';
-import { StatService } from '../../services/stat.service';
+import { StatService, Stats } from '../../services/stat.service';
 
 // Helpers
 declare let jquery: any;
@@ -27,7 +28,8 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     isAdminUser: boolean;
     profile: ProfileInfo = new ProfileInfo();
     loadedProfile: boolean;
-    public deviceStats: any = {};
+    public deviceStats: DeviceStats = new DeviceStats();
+    public solutionStats: SolutionStats = new SolutionStats();
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -50,8 +52,9 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         const _deviceStats = { total: 0, connected: 0, disconnected: 0 };
         _self.localStorage.setItem('deviceStats', _deviceStats).subscribe(() => {});
 
-        _self.statService.statObservable$.subscribe(message => {
-            _self.deviceStats = message;
+        _self.statService.statObservable$.subscribe((message: Stats) => {
+            _self.deviceStats = message.deviceStats;
+            _self.solutionStats = message.solutionStats;
             _self._ngZone.run(() => {});
         });
         _self.statService.refresh();

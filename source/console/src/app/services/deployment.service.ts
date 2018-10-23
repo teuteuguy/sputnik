@@ -12,5 +12,7 @@ import { _ } from 'underscore';
 export class DeploymentService {
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {}
 
-    public listDeployments = this.appSyncService.listDeployments;
+    public listDeployments(limit: number, nextToken: string) {
+        return this.appSyncService.listDeployments(limit, nextToken);
+    }
 }

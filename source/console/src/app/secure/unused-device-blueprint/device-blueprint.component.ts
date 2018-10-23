@@ -38,6 +38,8 @@ export class DeviceBlueprintComponent extends PrettifierComponent implements OnI
     public compatibleWithAll = false;
     // public deviceTypes: DeviceType[] = [];
 
+    public test;
+
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -69,28 +71,23 @@ export class DeviceBlueprintComponent extends PrettifierComponent implements OnI
                 // _self.deviceBlueprint.spec = '{}';
                 // _self.manualPrettify(_self.deviceBlueprint, 'spec', 4);
                 // _self.manualPrettify(_self.deviceBlueprint, 'deviceTypeMappings', 4);
-            }
-        });
-
-        _self.breadCrumbService.setup(_self.title, [
-            new Crumb({
-                title: 'Device Blueprints',
-                link: 'device-blueprints'
-            }),
-            new Crumb({
-                title: _self.deviceBlueprint.id,
-                active: true
-            })
-        ]);
-
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            if (_self.deviceBlueprint.id !== 'new') {
-                _self.loadBlueprint();
-            } else {
                 _self.blockUI.stop();
+            } else {
+                _self.loadBlueprint();
             }
+            _self.breadCrumbService.setup(_self.title, [
+                new Crumb({
+                    title: 'Device Blueprints',
+                    link: 'device-blueprints'
+                }),
+                new Crumb({
+                    title: _self.deviceBlueprint.id,
+                    active: true
+                })
+            ]);
+
         });
+
     }
 
     loadBlueprint() {
@@ -99,22 +96,23 @@ export class DeviceBlueprintComponent extends PrettifierComponent implements OnI
         _self.logger.info('loadBlueprint for ' + _self.deviceBlueprint.id);
 
         _self.deviceBlueprintService
-            .getDeviceBlueprint(_self.deviceBlueprint.id)
+            .get(_self.deviceBlueprint.id)
             .then((deviceBlueprint: DeviceBlueprint) => {
                 _self.blockUI.stop();
                 _self.logger.info(deviceBlueprint);
                 _self.deviceBlueprint = new DeviceBlueprint(deviceBlueprint);
-                if (_self.deviceBlueprint.spec) {
-                    _self.manualPrettify(_self.deviceBlueprint, 'spec', 4);
-                }
-                if (_self.deviceBlueprint.deviceTypeMappings) {
-                    _self.manualPrettify(_self.deviceBlueprint, 'deviceTypeMappings', 4);
-                }
+                // if (_self.deviceBlueprint.spec) {
+                //     _self.manualPrettify(_self.deviceBlueprint, 'spec', 4);
+                // }
+                // if (_self.deviceBlueprint.deviceTypeMappings) {
+                //     _self.manualPrettify(_self.deviceBlueprint, 'deviceTypeMappings', 4);
+                // }
+                _self.test = _self.deviceBlueprint.deviceTypeMappings;
             })
             .catch(err => {
                 _self.blockUI.stop();
                 swal('Oops...', 'Something went wrong! Unable to retrieve the device blueprint.', 'error');
-                _self.logger.error('error occurred calling getBlueprint api, show message');
+                _self.logger.error('error occurred calling getDeviceBlueprint api, show message');
                 _self.logger.error(err);
                 _self.router.navigate(['/securehome/device-blueprints']);
             });
@@ -135,7 +133,7 @@ export class DeviceBlueprintComponent extends PrettifierComponent implements OnI
         }).then(result => {
             if (result.dismiss === swal.DismissReason.cancel) {
                 this.deviceBlueprintService
-                    .deleteDeviceBlueprint(this.deviceBlueprint.id)
+                    .delete(this.deviceBlueprint.id)
                     .then((deviceBlueprint: DeviceBlueprint) => {
                         console.log(deviceBlueprint);
                         swal({
@@ -167,53 +165,55 @@ export class DeviceBlueprintComponent extends PrettifierComponent implements OnI
         let popupText = '';
         let errorMessage = '';
 
-        if (_self.deviceBlueprint.id === 'new') {
-            delete _self.deviceBlueprint.id;
-            promise = _self.deviceBlueprintService.addDeviceBlueprint(_self.deviceBlueprint);
-            popupTitle = 'Device Blueprint Created';
-            popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully created.`;
-            errorMessage = 'Something went wrong! Unable to create the new device blueprint.';
-        } else {
-            promise = _self.deviceBlueprintService.updateDeviceBlueprint(_self.deviceBlueprint);
-            popupTitle = 'Device Blueprint Updated';
-            popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully updated.`;
-            errorMessage = 'Something went wrong! Unable to update the device blueprint.';
-        }
-
-        // if (_self.blueprint.compatibility === null) {
-        //     delete _self.blueprint.compatibility;
-        // }
-        // if (_self.blueprint.deviceTypeMappings === null) {
-        //     delete _self.blueprint.deviceTypeMappings;
-        // }
-        // if (_self.blueprint.spec === null) {
-        //     delete _self.blueprint.spec;
+        // if (_self.deviceBlueprint.id === 'new') {
+        //     delete _self.deviceBlueprint.id;
+        //     promise = _self.deviceBlueprintService.add(_self.deviceBlueprint);
+        //     popupTitle = 'Device Blueprint Created';
+        //     popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully created.`;
+        //     errorMessage = 'Something went wrong! Unable to create the new device blueprint.';
+        // } else {
+        //     promise = _self.deviceBlueprintService.update(_self.deviceBlueprint);
+        //     popupTitle = 'Device Blueprint Updated';
+        //     popupText = `The device blueprint ${_self.deviceBlueprint.name} was successfully updated.`;
+        //     errorMessage = 'Something went wrong! Unable to update the device blueprint.';
         // }
 
+        // // if (_self.blueprint.compatibility === null) {
+        // //     delete _self.blueprint.compatibility;
+        // // }
+        // // if (_self.blueprint.deviceTypeMappings === null) {
+        // //     delete _self.blueprint.deviceTypeMappings;
+        // // }
+        // // if (_self.blueprint.spec === null) {
+        // //     delete _self.blueprint.spec;
+        // // }
+
+        _self.logger.info('Test:', JSON.stringify(_self.deviceBlueprint.deviceTypeMappings));
+        _self.logger.info('Test:', JSON.stringify(_self.test));
         _self.logger.info('Saving device blueprint:', _self.deviceBlueprint);
 
-        promise
-            .then((deviceBlueprint: DeviceBlueprint) => {
-                _self.logger.info('Saved device blueprint', deviceBlueprint);
-                _self.blockUI.stop();
-                swal({
-                    timer: 1000,
-                    title: popupTitle,
-                    text: popupText,
-                    type: 'success',
-                    showConfirmButton: false
-                }).then(result => {
-                    _self.router.navigate(['/securehome/device-blueprints']);
-                });
-            })
-            .catch(err => {
-                _self.blockUI.stop();
-                swal('Oops...', errorMessage, 'error');
-                _self.logger.error(err);
-                err.errors.forEach(e => {
-                    _self.logger.error(e.message);
-                });
-            });
+        // promise
+        //     .then((deviceBlueprint: DeviceBlueprint) => {
+        //         _self.logger.info('Saved device blueprint', deviceBlueprint);
+        //         _self.blockUI.stop();
+        //         swal({
+        //             timer: 1000,
+        //             title: popupTitle,
+        //             text: popupText,
+        //             type: 'success',
+        //             showConfirmButton: false
+        //         }).then(result => {
+        //             _self.router.navigate(['/securehome/device-blueprints']);
+        //         });
+        //     })
+        //     .catch(err => {
+        //         _self.blockUI.stop();
+        //         swal('Oops...', errorMessage, 'error');
+        //         _self.logger.error(err);
+        //         err.errors.forEach(e => {
+        //             _self.logger.error(e.message);
+        //         });
+        //     });
     }
 
     inCompatibilityList(id: string) {

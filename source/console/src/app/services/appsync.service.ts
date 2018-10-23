@@ -10,7 +10,7 @@ import { DeviceBlueprint } from '../models/device-blueprint.model';
 import { DeviceType } from '../models/device-type.model';
 import { Setting } from '../models/setting.model';
 import { Solution } from '../models/solution.model';
-import { Stats } from '../models/stats.model';
+import { DeviceStats, SolutionStats } from '../models/stats.model';
 
 // Queries
 // import getAllDeviceTypes from '../graphql/queries/getAllDeviceTypes';
@@ -21,6 +21,7 @@ import getDeviceStats from '../graphql/queries/device.getStats';
 import getDeviceType from '../graphql/queries/device-type.get';
 import getSetting from '../graphql/queries/setting.get';
 import getSolution from '../graphql/queries/solution.get';
+import getSolutionStats from '../graphql/queries/solution.getStats';
 import getThingAutoRegistrationState from '../graphql/queries/thing-auto-registration-state.get';
 import listDeployments from '../graphql/queries/deployments.list';
 import listDevices from '../graphql/queries/devices.list';
@@ -181,55 +182,78 @@ export class AppSyncService {
     }
 
     // Device Blueprints
+    private cleanIncomingDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        deviceBlueprint.deviceTypeMappings = JSON.parse(deviceBlueprint.deviceTypeMappings);
+        deviceBlueprint.spec = JSON.parse(deviceBlueprint.spec);
+        return deviceBlueprint;
+    }
+    private cleanOutgoingDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        deviceBlueprint.deviceTypeMappings = JSON.stringify(deviceBlueprint.deviceTypeMappings);
+        deviceBlueprint.spec = JSON.stringify(deviceBlueprint.spec);
+        return deviceBlueprint;
+    }
     public listDeviceBlueprints(limit: number, nextToken: string) {
-        return this.query(listDeviceBlueprints, { limit: limit, nextToken: nextToken }).then(result => {
-            return result.data.listDeviceBlueprints;
+        // return this.query(listDeviceBlueprints, {
+        //     limit: limit,
+        //     nextToken: nextToken
+        // }).then(r => r.data.listDeviceBlueprints);
+        return this.query(listDeviceBlueprints, { limit: limit, nextToken: nextToken }).then(r => {
+            r.data.listDeviceBlueprints.deviceBlueprints = r.data.listDeviceBlueprints.deviceBlueprints.map(d =>
+                this.cleanIncomingDeviceBlueprint(d)
+            );
+            return r.data.listDeviceBlueprints;
         });
     }
     public getDeviceBlueprint(id: string) {
-        return this.query(getDeviceBlueprint, { id: id }).then(d => <DeviceBlueprint>d.data.getDeviceBlueprint);
+        // return this.query(getDeviceBlueprint, { id: id }).then(r => r.data.getDeviceBlueprint);
+        return this.query(getDeviceBlueprint, { id: id }).then(r => {
+            return this.cleanIncomingDeviceBlueprint(r.data.getDeviceBlueprint);
+        });
     }
     public addDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        deviceBlueprint = this.cleanOutgoingDeviceBlueprint(deviceBlueprint);
         delete deviceBlueprint.id;
-        return this.mutation(addDeviceBlueprint, {
-            name: deviceBlueprint.name,
-            type: deviceBlueprint.type,
-            spec: deviceBlueprint.spec
-        }).then(b => {
-            return <DeviceBlueprint>b.data.addBlueprint;
+        delete deviceBlueprint.updatedAt;
+        delete deviceBlueprint.createdAt;
+        return this.mutation(addDeviceBlueprint, deviceBlueprint).then(r => {
+            return this.cleanIncomingDeviceBlueprint(r.data.addDeviceBlueprint);
         });
     }
     public deleteDeviceBlueprint(id: string) {
+        // return this.mutation(deleteDeviceBlueprint, { id: id }).then(r => r.data.deleteDeviceBlueprint);
         return this.mutation(deleteDeviceBlueprint, {
             id: id
-        }).then(b => {
-            return <DeviceBlueprint>b.data.deleteBlueprint;
+        }).then(r => {
+            return this.cleanIncomingDeviceBlueprint(r.data.deleteDeviceBlueprint);
         });
     }
     public updateDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        deviceBlueprint = this.cleanOutgoingDeviceBlueprint(deviceBlueprint);
         delete deviceBlueprint.updatedAt;
-        return this.mutation(updateDeviceBlueprint, deviceBlueprint).then(b => {
-            return <DeviceBlueprint>b.data.updateBlueprint;
+        delete deviceBlueprint.createdAt;
+        console.log(deviceBlueprint);
+        return this.mutation(updateDeviceBlueprint, deviceBlueprint).then(r => {
+            return this.cleanIncomingDeviceBlueprint(r.data.updateDeviceBlueprint);
         });
     }
     public onAddedDeviceBlueprint(hook: AddedDeviceBlueprint) {
         this.subscribe(addedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onAddedDeviceBlueprint(result.value.data.addedDeviceBlueprint);
+                return hook.onAddedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.addedDeviceBlueprint));
             }
         });
     }
     public onUpdatedDeviceBlueprint(hook: UpdatedDeviceBlueprint) {
         this.subscribe(updatedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onUpdatedDeviceBlueprint(result.value.data.updatedDeviceBlueprint);
+                return hook.onUpdatedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.updatedDeviceBlueprint));
             }
         });
     }
     public onDeletedDeviceBlueprint(hook: DeletedDeviceBlueprint) {
         this.subscribe(deletedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onDeletedDeviceBlueprint(result.value.data.deletedDeviceBlueprint);
+                return hook.onDeletedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.deletedDeviceBlueprint));
             }
         });
     }
@@ -254,7 +278,7 @@ export class AppSyncService {
         return this.query(getDevice, { thingId: thingId }).then(d => <Device>d.data.getDevice);
     }
     public getDeviceStats() {
-        return this.query(getDeviceStats, {}).then(result => <Stats>result.data.getDeviceStats);
+        return this.query(getDeviceStats, {}).then(result => <DeviceStats>result.data.getDeviceStats);
     }
     public addDevice(thingName: string, isGreengrass: boolean) {
         return this.mutation(addDevice, { thingName: thingName, isGreengrass: isGreengrass }).then(result => {
@@ -299,7 +323,7 @@ export class AppSyncService {
     }
 
     // Factory Reset
-    public factoryReset(cmd) {
+    public factoryReset(cmd: string) {
         return this.query(factoryReset, { cmd: cmd }).then(result => {
             return <boolean>result.data.factoryReset;
         });
@@ -327,21 +351,21 @@ export class AppSyncService {
 
     // Devices
     public listSolutions(limit: number, nextToken: string) {
-        console.log('appsync list solutions');
         return this.query(listSolutions, { limit: limit, nextToken: nextToken }).then(result => {
-            console.log('query result', result);
             return result.data.listSolutions;
         });
     }
     public getSolution(id: string) {
         return this.query(getSolution, { id: id }).then(d => <Solution>d.data.getSolution);
     }
-    // public getSolutionStats() {
-    //     return this.query(getSolutionStats, {}).then(result => <Stats>result.data.getSolutionStats);
-    // }
-    public addSolution(name: string, solutionBlueprintId: string) {
+    public getSolutionStats() {
+        return this.query(getSolutionStats, {}).then(result => <SolutionStats>result.data.getSolutionStats);
+    }
+    public addSolution(name: string, description: string, thingIds: string[], solutionBlueprintId: string) {
         return this.mutation(addSolution, {
             name: name,
+            description: description,
+            thingIds: thingIds,
             solutionBlueprintId: solutionBlueprintId
         }).then(result => {
             return <Solution>result.data.solution;
@@ -352,10 +376,12 @@ export class AppSyncService {
             return <Solution>d.data.deleteSolution;
         });
     }
-    public updateSolution(id: string, name: string) {
+    public updateSolution(id: string, name: string, description: string, thingIds: string[]) {
         return this.mutation(updateSolution, {
             id: id,
-            name: name
+            name: name,
+            description: description,
+            thingIds: thingIds
         }).then(d => {
             return <Solution>d.data.updateSolution;
         });

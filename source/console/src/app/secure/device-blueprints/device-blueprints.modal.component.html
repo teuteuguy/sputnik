@@ -1,0 +1,92 @@
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel1">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Device Blueprint</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submit()" novalidate>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control form-control-line" name="typename" id="typename"
+                            #typename="ngModel" [(ngModel)]="element.name" required ngModel [readonly]="modalType === 'view'" />
+                        <!-- [readonly]="element.custom === false" -->
+                        <!-- [readonly]="this.typeId !== 'new'" -->
+                        <div class="form-control-feedback">
+                            <small>The common name of the device type.</small>
+                        </div>
+                    </div>
+                    <div class="form-group row" style="overflow: inherit;">
+                        <div class="col-lg-6">
+                            <label for="type" class="form-control-label">Type:</label>
+                            <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="element.type"
+                                required ngModel [disabled]="modalType === 'view'">
+                                <option ng-selected="element.type === 'UNKNOWN'">UNKNOWN</option>
+                                <option ng-selected="element.type === 'SDK'">SDK</option>
+                                <option ng-selected="element.type === 'A:FreeRTOS'">A:FreeRTOS</option>
+                                <option ng-selected="element.type === 'GREENGRASS'">GREENGRASS</option>
+                            </select>
+                            <div class="form-control-feedback">
+                                <small>IoT Type for which this device blueprint is destined.</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="type" class="form-control-label">Compatibility:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Device Types
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <!-- <div class="input-group-text"> -->
+                                    <div class="dropdown-item" data-value="'all'">
+                                        <div class="form-check" style="padding: 0px; margin-bottom: -4px;" (click)="toggleDeviceType($event, 'all')">
+                                            <input type="checkbox" id="all" style="padding-left: 18px;" [checked]="inCompatibilityList('all')">
+                                            <label class="form-check-label" for="all" style="padding-left: 25px;">all</label>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-item" *ngFor="let deviceType of deviceTypeService.deviceTypes"
+                                        data-value="deviceType.id">
+                                        <div class="form-check" style="padding: 0px; margin-bottom: -4px;" (click)="toggleDeviceType($event, deviceType.id)">
+                                            <input type="checkbox" id="deviceType.id" style="padding-left: 18px;"
+                                                [checked]="inCompatibilityList(deviceType.id)" [readonly]="modalType === 'view'">
+                                            <label class="form-check-label" for="deviceType.id" style="padding-left: 25px; width: 100%;">{{deviceType.name}}</label>
+                                        </div>
+                                    </div>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                            <div class="form-control-feedback">
+                                <small>Which device types this device blueprint works on.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="form-control-label">Custom DeviceType Mappings:</label>
+                        <app-pretty-json name="deviceTypeMappings" [(ngModel)]="element.deviceTypeMappings" [rows]="10"
+                            [readonly]="modalType === 'view'"></app-pretty-json>
+                        <div class="form-control-feedback">
+                            <small>JSON document to use for the custom device type mappings.</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="form-control-label">Spec:</label>
+                        <app-pretty-json name="spec" [(ngModel)]="element.spec" [rows]="20" [readonly]="modalType === 'view'"></app-pretty-json>
+                        <div class="form-control-feedback">
+                            <small>JSON document to use for the device blueprint.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+                        <button *ngIf="modalType !== 'view'" type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                    <div *ngIf="hasError" class="alert alert-danger alert-rounded">
+                        <i class="mdi mdi-exclamation"></i> {{errorMsg}}</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

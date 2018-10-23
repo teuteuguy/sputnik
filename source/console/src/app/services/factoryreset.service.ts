@@ -12,5 +12,7 @@ export class FactoryResetService {
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
     }
 
-    public factoryReset = this.appSyncService.factoryReset;
+    public factoryReset(cmd: string) {
+        return this.appSyncService.factoryReset(cmd);
+    }
 }

@@ -1,15 +1,10 @@
-export class DeviceTypeMapping {
-    value: any = { deviceTypeId: 'value needing to replace with' };
-    substitute = 'SUBSTITUTE_WORD_IN_TEMPLATE';
-}
-
 export class DeviceBlueprint {
     id: string;
     name = 'UNKNOWN';
-    type: 'UNKNOWN';
+    type = 'UNKNOWN';
     compatibility: string[] = [];
-    deviceTypeMappings: DeviceTypeMapping[];
-    spec: any;
+    deviceTypeMappings: any = [];
+    spec: any = {};
     createdAt: string;
     updatedAt: string;
 

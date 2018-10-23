@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 
 // Models
 import { Device } from '../models/device.model';
-import { Stats } from '../models/stats.model';
 
 // Services
 import { LoggerService } from './logger.service';

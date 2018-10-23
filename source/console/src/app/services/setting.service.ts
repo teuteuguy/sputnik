@@ -9,12 +9,17 @@ import { AppSyncService } from './appsync.service';
 // Helpers
 import { _ } from 'underscore';
 
-
 @Injectable()
 export class SettingService {
     constructor(private appSyncService: AppSyncService) {}
 
-    public getSetting = this.appSyncService.getSetting;
-    public getThingAutoRegistrationState = this.appSyncService.getThingAutoRegistrationState;
-    public setThingAutoRegistrationState = this.appSyncService.setThingAutoRegistrationState;
+    public getSetting(id: string) {
+        return this.appSyncService.getSetting(id);
+    }
+    public getThingAutoRegistrationState() {
+        return this.appSyncService.getThingAutoRegistrationState();
+    }
+    public setThingAutoRegistrationState(enabled: boolean) {
+        return this.appSyncService.setThingAutoRegistrationState(enabled);
+    }
 }

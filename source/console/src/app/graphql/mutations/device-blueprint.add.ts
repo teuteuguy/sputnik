@@ -4,9 +4,9 @@ export default gql`
     mutation AddDeviceAlueprint(
         $name: String!
         $type: String!
-        $compatibility: [String]
-        $deviceTypeMappings: AWSJSON
-        $spec: AWSJSON
+        $compatibility: [String]!
+        $deviceTypeMappings: AWSJSON!
+        $spec: AWSJSON!
     ) {
         addDeviceBlueprint(
             name: $name

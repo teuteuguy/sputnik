@@ -33,6 +33,8 @@ export class DeviceTypeComponent extends PrettifierComponent implements OnInit {
 
     public dtype: DeviceType;
 
+    // TODO: sync up the view to the Solutions page (buttons on top. And manage state between edit and non edit)
+
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -86,18 +88,20 @@ export class DeviceTypeComponent extends PrettifierComponent implements OnInit {
 
         _self.logger.info('loadDeviceType for ' + _self.dtype.id);
 
-        const type = _self.deviceTypeService.getDeviceType(_self.dtype.id);
-        _self.logger.info(type);
-        _self.blockUI.stop();
-        if (type) {
-            _self.dtype = new DeviceType(type);
-            _self.manualPrettify(_self.dtype, 'spec', 4);
-        } else {
-            swal('Oops...', 'Something went wrong! Unable to retrieve the device type.', 'error');
-            _self.logger.error('error occurred calling getDeviceType api, show message');
-            _self.logger.error('the requested type doesnt exist');
-            _self.router.navigate(['/securehome/device-types']);
-        }
+        _self.deviceTypeService
+            .getDeviceType(_self.dtype.id)
+            .then(type => {
+                _self.logger.info(type);
+                _self.blockUI.stop();
+                _self.dtype = new DeviceType(type);
+                _self.manualPrettify(_self.dtype, 'spec', 4);
+            })
+            .catch(err => {
+                swal('Oops...', 'Something went wrong! Unable to retrieve the device type.', 'error');
+                _self.logger.error('error occurred calling getDeviceType api, show message');
+                _self.logger.error(err);
+                _self.router.navigate(['/securehome/device-types']);
+            });
     }
 
     cancel() {

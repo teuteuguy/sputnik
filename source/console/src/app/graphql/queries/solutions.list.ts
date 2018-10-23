@@ -5,8 +5,9 @@ export default gql`
         listSolutions(limit: $limit, nextToken: $nextToken) {
             solutions {
                 id
-                thingId
                 name
+                description
+                thingIds
                 solutionBlueprintId
                 createdAt
                 updatedAt

@@ -27,12 +27,13 @@ export class PrettifierComponent {
                 } catch (ex) {
                     _self.prettifying = '(ERROR: JSON is incorrect!)';
                 }
-            }, 500);
-        }, 2000);
+            }, 100);
+        }, 500);
     }
 
     manualPrettify(obj: any, attribute: string, width: number) {
-        obj[attribute] = JSON.stringify(JSON.parse(obj[attribute]), null, width);
+        // obj[attribute] = JSON.stringify(JSON.parse(obj[attribute]), null, width);
+        obj[attribute] = JSON.stringify(obj[attribute], null, width);
     }
 }
 

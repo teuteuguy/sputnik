@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation DeleteBlueprint(
+    mutation DeleteDeviceBlueprint(
         $id: String!
     ) {
-        deleteBlueprint(
+        deleteDeviceBlueprint(
             id: $id
         ) {
             id

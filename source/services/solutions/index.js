@@ -17,7 +17,7 @@ function handler(event, context, callback) {
             deleteSolution(event, context, callback);
             break;
         default:
-            callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
+            callback('Unknown cmd, unable to resolve for arguments: ' + JSON.stringify(event), null);
             break;
     }
 }

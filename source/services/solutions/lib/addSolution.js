@@ -4,12 +4,61 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
 
-const lib = 'addDevice';
+const MTMThingGroups = require('mythings-mgmt-custom-resource-helper-thing-groups');
 
-module.exports = function(event, context, callback) {
+const lib = 'addSolution';
+
+module.exports = function (event, context, callback) {
     if (event.cmd !== lib) {
         return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
     }
+
+    // First check a group with that name does not already exist. If so, exit.
+    // Second let's create the group.
+    // Third let's create the solution in the DB to reference the Group as well as the Blueprint.
+
+    iot.describeThingGroup({
+        thingGroupName: event.thingGroupName
+    }).promise().then(group => {
+        // Group already exists.
+        console.log('thingGroup already exists, exiting call');
+        callback('ERROR: thingGroup already exists', null);
+    }).catch(err => {
+        // Group does not exist, lets create it.
+
+        const mtmGroups = new MTMThingGroups();
+
+        return mtmGroups.createThingGroup(event.name, event.description).then(group => {
+
+            return documentClient
+                .put({
+                    TableName: process.env.TABLE_SOLUTIONS,
+                    Item: {
+                        id: group.thingGroupId,
+                        name: event.name,
+                        description: event.description,
+                        thingIds: event.thingIds || [],
+                        solutionBlueprintId: event.solutionBlueprintId,
+                        createdAt: moment()
+                            .utc()
+                            .format(),
+                        updatedAt: moment()
+                            .utc()
+                            .format()
+                    },
+                    ReturnValues: 'ALL_OLD'
+                })
+                .promise();
+
+        }).then(result => {
+            console.log('Created solution', result);
+            callback(null, result);
+        }).catch(err => {
+            console.log('Error', err);
+            callback(err, null);
+        })
+    });
+
 
     // // TODO: deal with creating a greengrass group if required.
     // // TODO: deal with certificates!

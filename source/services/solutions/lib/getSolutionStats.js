@@ -6,6 +6,9 @@ const _ = require('underscore');
 const lib = 'getSolutionStats';
 
 function getSolutionStatsRecursive(lastEvalKey) {
+
+    console.log(lib, lastEvalKey);
+
     let params = {
         TableName: process.env.TABLE_SOLUTIONS,
         Limit: 75
@@ -15,10 +18,13 @@ function getSolutionStatsRecursive(lastEvalKey) {
         params.ExclusiveStartKey = lastEvalKey;
     }
 
-    params.ProjectionExpression = 'id, name, thingId, solutionBlueprintId';
+    params.ProjectionExpression = 'id, thingId, solutionBlueprintId';
 
     return documentClient.scan(params).promise().then(results => {
-        // TODO: immplement this.
+        console.log('scan', results.Items.length);
+        let _stats = {
+            total: results.Items.length
+        };
         // let _stats = _.countBy(results.Items, (solution) => {
         //     return solution.connectionState.state;
         // });
@@ -30,16 +36,16 @@ function getSolutionStatsRecursive(lastEvalKey) {
         // }
         // _stats.total = results.Items.length;
 
-        // if (results.LastEvaluatedKey) {
-        //     return getSolutionStatsRecursive(result.LastEvaluatedKey).then(data => {
-        //         _stats.connected += data.connected;
-        //         _stats.disconnected += data.disconnected;
-        //         _stats.total += data.total;
-        //         return _stats;
-        //     });
-        // } else {
-        //     return _stats;
-        // }
+        if (results.LastEvaluatedKey) {
+            return getSolutionStatsRecursive(result.LastEvaluatedKey).then(data => {
+                // _stats.connected += data.connected;
+                // _stats.disconnected += data.disconnected;
+                _stats.total += data.total;
+                return _stats;
+            });
+        } else {
+            return _stats;
+        }
     });
 }
 

@@ -1,34 +1,37 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ComponentFactoryResolver, NgZone } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Parent
-import { GenericTableComponent, GenericTableParams, DataStat } from '../common/generic-table.component';
+import {
+    GenericTableComponent,
+    GenericTableParams,
+    GenericTableElementParams
+} from '../../common/components/generic-table/generic-table.component';
+
+// Childs
+import { SolutionsModalComponent } from './solutions.modal.component';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
 import { Solution } from '../../models/solution.model';
+import { ProfileInfo } from '../../models/profile-info.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { LoggerService } from '../../services/logger.service';
 import { SolutionService } from '../../services/solution.service';
+import { StatService, Stats } from '../../services/stat.service';
 
 // Helpers
 import * as moment from 'moment';
 
 @Component({
     selector: 'app-root-solutions',
-    templateUrl: '../common/generic-table.component.html'
+    templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
 export class SolutionsComponent extends GenericTableComponent implements OnInit {
-    private solutions: Solution[] = [];
-    private solutionStats: DataStat = {
-        total: 0
-    };
-
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -36,48 +39,98 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
         public router: Router,
         private breadCrumbService: BreadCrumbService,
         private logger: LoggerService,
-        private _ngZone: NgZone,
-        private solutionService: SolutionService
+        private solutionService: SolutionService,
+        private localStorage: LocalStorage,
+        private statService: StatService,
+        private resolver: ComponentFactoryResolver,
+        private ngZone: NgZone
     ) {
-        super(<GenericTableParams>{ childPath: '/securehome/solutions', title: 'Solutions' }, router);
-        this.data = this.solutions;
-        this.dataStats = this.solutionStats;
+        super(logger, resolver);
+
+        this.params = <GenericTableParams>{
+            path: '/securehome/solutions',
+            pageTitle: 'Solutions',
+            createElement: <GenericTableElementParams>{
+                text: 'Create NEW Solution',
+                modal: SolutionsModalComponent,
+                link: false
+            },
+            fields: [
+                // { attr: 'type', text: 'type' },
+                { attr: 'name', text: 'Name' },
+                { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
+                { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
+            ],
+            viewLink: true,
+            editLink: false,
+            cachedMode: false
+        };
+
+        statService.statObservable$.subscribe((message: Stats) => {
+            this.dataStats = message.solutionStats;
+            this.ngZone.run(() => {});
+        });
+
+        statService.refresh();
     }
 
     ngOnInit() {
         const _self = this;
         _self.blockUI.start('Loading solutions...');
 
-        _self.breadCrumbService.setup(_self.params.title, [
-            new Crumb({ title: _self.params.title, active: true, link: _self.params.title.toLowerCase() })
+        _self.breadCrumbService.setup(_self.params.pageTitle, [
+            new Crumb({
+                title: _self.params.pageTitle,
+                active: true,
+                link: _self.params.pageTitle.toLowerCase()
+            })
         ]);
 
         _self.load();
     }
 
-    load() {
-        const _self = this;
-        return _self.solutionService.listSolutions(_self.pages.pageSize, null).then(results => {
-        // return _self.load().then(results => {
-            console.log(results);
-        // // _self.statService.refresh();
-        // return _self.deviceService.listDevices(_self.pages.pageSize, null).then(results => {
-        //     console.log(results);
-        //     _self.devices = results.devices;
-        //     _self.updatePaging();
-        //     _self.blockUI.stop();
-        }).catch(err => {
-            swal('Oops...', 'Something went wrong! Unable to retrieve the solutions.', 'error');
-            _self.logger.error('error occurred calling listSolutions api');
-            _self.logger.error(err);
-            _self.router.navigate(['/securehome/solutions']);
+    private getSolutions(ofPage: number, nextToken: string) {
+        return this.solutionService.list(this.pages.pageSize, nextToken).then(data1 => {
+            if (ofPage === 0) {
+                return data1;
+            } else if (data1.nextToken) {
+                return this.getSolutions(ofPage - 1, data1.nextToken).then(data2 => {
+                    return data2;
+                });
+            } else {
+                throw new Error('Something is wrong');
+            }
         });
     }
 
-    // refreshData() {
-    //     this.blockUI.start('Loading solutions...');
-    //     this.load();
-    // }
+    load() {
+        const _self = this;
+
+        return _self
+            .getSolutions(_self.pages.current - 1, null)
+            .then(results => {
+                console.log(results);
+                _self.data = results.solutions;
+                _self.updatePaging();
+                _self.blockUI.stop();
+            })
+            .catch(err => {
+                swal('Oops...', 'Something went wrong! Unable to retrieve the solutions.', 'error');
+                _self.logger.error('error occurred calling listSolutions api');
+                _self.logger.error(err);
+                _self.router.navigate(['/securehome/solutions']);
+            });
+    }
+
+    open(elem: Solution) {
+        this.router.navigate([['/securehome/solutions', elem.id].join('/')]);
+    }
+
+    refreshData() {
+        this.blockUI.start('Loading solutions...');
+        this.pages.current = 1;
+        this.load();
+    }
 
     // openSolution(id: string) {
     //     this.router.navigate([['/securehome/solutions', id].join('/')]);

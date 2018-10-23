@@ -13,54 +13,55 @@ import { _ } from 'underscore';
 
 @Injectable()
 export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, DeletedDeviceType {
-    private limit = 10;
+    private limit = 50; // TODO: increase this.
     private observable: any = new Subject<any>();
-    private deviceTypes: DeviceType[] = [];
+    public deviceTypes: DeviceType[] = [];
     public deviceTypesObservable$ = this.observable.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
-        console.log(this);
         const _self = this;
 
         _self.appSyncService.onAddedDeviceType(_self);
         _self.appSyncService.onUpdatedDeviceType(_self);
         _self.appSyncService.onDeletedDeviceType(_self);
 
-        _self.loadDeviceTypes();
+        _self.loadAll();
     }
-    public addDeviceType(deviceType: DeviceType) {
+    public add(deviceType: DeviceType) {
         return this.appSyncService.addDeviceType(deviceType);
     }
-    public updateDeviceType(deviceType: DeviceType) {
+    public update(deviceType: DeviceType) {
         return this.appSyncService.updateDeviceType(deviceType);
     }
-    public deleteDeviceType(id: string) {
+    public delete(id: string) {
         return this.appSyncService.deleteDeviceType(id);
     }
 
-    private pushNewDeviceTypes(deviceTypes: DeviceType[]) {
+    private loadAll() {
         const _self = this;
-        deviceTypes.forEach((newDeviceType: DeviceType) => {
-            const index = _.findIndex(_self.deviceTypes, (existingDeviceType: DeviceType) => {
-                return existingDeviceType.id === newDeviceType.id;
+        _self.listRecursive(_self.limit, null).then((results: DeviceType[]) => {
+            _self.deviceTypes.splice(0, _self.deviceTypes.length);
+            results.forEach(r => {
+                _self.deviceTypes.push(r);
             });
-            if (index === -1) {
-                _self.deviceTypes.push(newDeviceType);
-            } else {
-                _self.deviceTypes[index] = newDeviceType;
-            }
+            _self.observable.next(_self.deviceTypes);
         });
     }
 
-    private _listDeviceTypes(limit: number, nextToken: string) {
-        const _self = this;
+    public refresh() {
+        this.loadAll();
+    }
 
-        return _self.appSyncService.listDeviceTypes(limit, nextToken).then(result => {
+    private listRecursive(limit: number, nextToken: string) {
+        const _self = this;
+        return _self.list(_self.limit, nextToken).then(result => {
             let _deviceTypes: DeviceType[];
             _deviceTypes = result.deviceTypes;
             if (result.nextToken) {
-                return _self._listDeviceTypes(limit, result.nextToken).then(data => {
-                    _deviceTypes.push(data);
+                return _self.listRecursive(limit, result.nextToken).then(data => {
+                    data.forEach(d => {
+                        _deviceTypes.push(d);
+                    });
                     return _deviceTypes;
                 });
             } else {
@@ -69,39 +70,38 @@ export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, De
         });
     }
 
-    private loadDeviceTypes() {
-        const _self = this;
-        _self._listDeviceTypes(_self.limit, null).then((results: DeviceType[]) => {
-            _self.pushNewDeviceTypes(results);
-            _self.observable.next(results);
-        });
+    public list(limit: number, nextToken: string) {
+        return this.appSyncService.listDeviceTypes(limit, nextToken);
     }
 
-    public refresh() {
-        this.loadDeviceTypes();
-    }
-
-    public getDeviceTypes() {
-        return this.deviceTypes;
-    }
-
-    public getDeviceType(id: string) {
-        console.log('deviceTypeService.getDeviceType');
-        return this.deviceTypes.find((dt: DeviceType) => {
-            return dt.id === id;
-        });
+    public get(id: string) {
+        return this.appSyncService.getDeviceType(id);
+        // console.log('deviceTypeService.getDeviceType');
+        // return this.deviceTypes.find((dt: DeviceType) => {
+        //     return dt.id === id;
+        // });
     }
 
     onAddedDeviceType(deviceType: DeviceType) {
-        // TODO: Improve this.
-        this.loadDeviceTypes();
+        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+            return d.id === deviceType.id;
+        });
+        if (index === -1) {
+            this.deviceTypes.push(deviceType);
+        } else {
+            this.onUpdatedDeviceType(deviceType);
+        }
     }
     onUpdatedDeviceType(deviceType: DeviceType) {
-        // TODO: Improve this.
-        this.loadDeviceTypes();
+        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+            return d.id === deviceType.id;
+        });
+        this.deviceTypes[index] = deviceType;
     }
     onDeletedDeviceType(deviceType: DeviceType) {
-        // TODO: Improve this.
-        this.loadDeviceTypes();
+        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+            return d.id === deviceType.id;
+        });
+        this.deviceTypes.splice(index, 1);
     }
 }

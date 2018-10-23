@@ -24,26 +24,29 @@ export class SolutionService implements AddedSolution, UpdatedSolution, DeletedS
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
         const _self = this;
 
-        // _self.appSyncService.onAddedSolution(_self);
-        // _self.appSyncService.onUpdatedSolution(_self);
-        // _self.appSyncService.onDeletedSolution(_self);
+        _self.appSyncService.onAddedSolution(_self);
+        _self.appSyncService.onUpdatedSolution(_self);
+        _self.appSyncService.onDeletedSolution(_self);
 
         // _self.loadSolutions();
     }
 
-    public listSolutions(limit: number, nextToken: string) {
+    public list(limit: number, nextToken: string) {
         return this.appSyncService.listSolutions(limit, nextToken);
     }
-    public getSolution(id: string) {
+    public get(id: string) {
         return this.appSyncService.getSolution(id);
     }
-    public addSolution(name: string, solutionBlueprintId: string) {
-        return this.appSyncService.addSolution(name, solutionBlueprintId);
+    public getSolutionStats() {
+        return this.appSyncService.getSolutionStats();
     }
-    public updateSolution(id: string, name: string) {
-        return this.appSyncService.updateSolution(id, name);
+    public add(name: string, description: string, thingIds: string[], solutionBlueprintId: string) {
+        return this.appSyncService.addSolution(name, description, thingIds, solutionBlueprintId);
     }
-    public deleteSolution(id: string) {
+    public update(id: string, name: string, description: string, thingIds: string[]) {
+        return this.appSyncService.updateSolution(id, name, description, thingIds);
+    }
+    public delete(id: string) {
         return this.appSyncService.deleteSolution(id);
     }
 
@@ -94,10 +97,7 @@ export class SolutionService implements AddedSolution, UpdatedSolution, DeletedS
     //     return this.solutions;
     // }
 
-    onAddedSolution(result: Solution) {
-    }
-    onUpdatedSolution(result: Solution) {
-    }
-    onDeletedSolution(result: Solution) {
-    }
+    onAddedSolution(result: Solution) {}
+    onUpdatedSolution(result: Solution) {}
+    onDeletedSolution(result: Solution) {}
 }

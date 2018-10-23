@@ -3,14 +3,12 @@ import gql from 'graphql-tag';
 export default gql`
     subscription AddedSolution {
         addedSolution {
-            solutions {
-                id
-                thingId
-                name
-                solutionBlueprintId
-                createdAt
-                updatedAt
-            }
+            id
+            thingIds
+            name
+            solutionBlueprintId
+            createdAt
+            updatedAt
         }
     }
 `;

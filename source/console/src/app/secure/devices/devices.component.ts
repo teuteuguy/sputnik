@@ -9,7 +9,6 @@ import swal from 'sweetalert2';
 import { ProfileInfo } from '../../models/profile-info.model';
 import { Device } from '../../models/device.model';
 import { DeviceType } from '../../models/device-type.model';
-import { Stats } from '../../models/stats.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
@@ -110,8 +109,8 @@ export class DevicesComponent implements OnInit {
             _self.blockUI.stop();
         }).catch(err => {
             swal('Oops...', 'Something went wrong! Unable to retrieve the devices.', 'error');
-            _self.logger.error('error occurred calling getDevices api, show message');
-            _self.logger.error('the requested type doesnt exist');
+            _self.logger.error('error occurred calling listDevices api, show message');
+            _self.logger.error(err);
             _self.router.navigate(['/securehome/devices']);
         });
 

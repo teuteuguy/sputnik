@@ -1,4 +1,4 @@
-#set( $validTypes = ["UNKNOWN", "SDK", "A:freeRTOS", "GREENGRASS"] )
+#set( $validTypes = ["UNKNOWN", "SDK", "A:FreeRTOS", "GREENGRASS"] )
 #set( $temp = "UNKNOWN" )
 #foreach($t in $validTypes)
     #if($t == $ctx.args.type)

@@ -74,7 +74,8 @@ type Setting {
 type Solution {
     id: String!
     name: String!
-    thingId: String!
+    description: String
+    thingIds: String!
     solutionBlueprintId: String!
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
@@ -82,6 +83,9 @@ type Solution {
 type PaginatedSolutions {
     solutions: [Solution]
     nextToken: String
+}
+type SolutionStat {
+    total: Int!
 }
 
 type Query {
@@ -105,6 +109,7 @@ type Query {
 
     listSolutions(limit: Int, nextToken: String): PaginatedSolutions @aws_auth(cognito_groups: ["Administrators", "Members"])
     getSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolutionStats: SolutionStat @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
@@ -115,9 +120,9 @@ type Mutation {
     deleteDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators"])
     updateDeviceType(id: String!, name: String!, type: String!, spec: AWSJSON): DeviceType @aws_auth(cognito_groups: ["Administrators"])
 
-    addDeviceBlueprint(name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])
+    addDeviceBlueprint(name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON!): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])
     deleteDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
-    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String], deviceTypeMappings: AWSJSON, spec: AWSJSON): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
+    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON)!: DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
 
     factoryReset(cmd: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
@@ -125,9 +130,9 @@ type Mutation {
 
     addDeployment(thingId: String!): Deployment! @aws_auth(cognito_groups: ["Administrators"])
 
-    addSolution(name: String!, solutionBlueprintId: Boolean!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
+    addSolution(name: String!, description: String, thingIds: [String]!, solutionBlueprintId: String!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolution(id: String!): [Solution] @aws_auth(cognito_groups: ["Administrators"])
-    updateSolution(id: String!, name: String!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
+    updateSolution(id: String!, name: String!, description: String, thingIds: [String]!): [Solution]! @aws_auth(cognito_groups: ["Administrators"])
 }
 type Subscription {
     addedDeviceType: DeviceType @aws_subscribe(mutations: ["addDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])

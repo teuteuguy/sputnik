@@ -13,6 +13,8 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 
 // Components
 import { AppComponent } from './app.component';
+// Components - Common
+import { PrettyJsonComponent } from './common/components/pretty-json/pretty-json.component';
 // Components - Public
 import { HomeComponent } from './public/home/home.component';
 import { LoginComponent } from './public/auth/login/login.component';
@@ -31,14 +33,15 @@ import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
 import { DeviceTypesComponent } from './secure/device-types/device-types.component';
-import { DeviceTypeComponent } from './secure/device-type/device-type.component';
+// import { DeviceTypeComponent } from './secure/device-type/device-type.component';
 import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceComponent } from './secure/device/device.component';
 import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
+// import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
-import { GenericTableComponent } from './secure/common/generic-table.component';
+// import { SolutionComponent } from './secure/solution/solution.component';
+import { GenericTableComponent } from './common/components/generic-table/generic-table.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -47,7 +50,9 @@ import { GenericTableComponent } from './secure/common/generic-table.component';
 // import { MyDevicesComponent } from './secure/devices/mydevices.component';
 
 // Sub Components
-// import { FactoryResetDeeplensV10Component } from './secure/devices/types/factory-reset-deeplens-v1.0.component';
+import { DeviceBlueprintsModalComponent } from './secure/device-blueprints/device-blueprints.modal.component';
+import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
+import { SolutionsModalComponent } from './secure/solutions/solutions.modal.component';
 // import { MyDeeplensWebCameraV10Component } from './secure/devices/types/my-deeplens-web-camera-v1.0.component';
 // import { MiniConnectedFactoryV10Component } from './secure/devices/types/mini-connected-factory-v1.0.component';
 
@@ -79,6 +84,11 @@ import { SolutionService } from './services/solution.service';
 @NgModule({
     declarations: [
         AppComponent,
+
+        // Components - Common
+        PrettyJsonComponent,
+
+        // Components - Public
         LoginComponent,
         LogoutComponent,
         RegistrationConfirmationComponent,
@@ -88,21 +98,29 @@ import { SolutionService } from './services/solution.service';
         RegisterComponent,
         NewPasswordComponent,
         HomeComponent,
+
+        // Components - Secure
         SecureHomeCommonComponent,
         SecureHomeComponent,
         SettingsComponent,
         ProfileComponent,
         PrettifierComponent,
         DeviceTypesComponent,
-        DeviceTypeComponent,
+        // DeviceTypeComponent,
         DevicesComponent,
         DeviceComponent,
         DeviceBlueprintsComponent,
-        DeviceBlueprintComponent,
+        // DeviceBlueprintComponent,
         DeploymentsComponent,
         SolutionsComponent,
+        // SolutionComponent,
 
         GenericTableComponent,
+
+        // Sub Components
+        DeviceBlueprintsModalComponent,
+        DeviceTypesModalComponent,
+        SolutionsModalComponent,
 
         // Directives
 
@@ -154,9 +172,9 @@ import { SolutionService } from './services/solution.service';
     ],
     bootstrap: [AppComponent],
     entryComponents: [
-        // FactoryResetDeeplensV10Component,
-        // MyDeeplensWebCameraV10Component,
-        // MiniConnectedFactoryV10Component
+        DeviceBlueprintsModalComponent,
+        DeviceTypesModalComponent,
+        SolutionsModalComponent
     ]
 })
 export class AppModule {}

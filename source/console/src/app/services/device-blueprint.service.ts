@@ -18,9 +18,9 @@ import { _ } from 'underscore';
 
 @Injectable()
 export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDeviceBlueprint, DeletedDeviceBlueprint {
-    private limit = 10;
+    private limit = 50;
     private observable: any = new Subject<any>();
-    private deviceBlueprints: DeviceBlueprint[] = [];
+    public deviceBlueprints: DeviceBlueprint[] = [];
     public blueprintsObservable$ = this.observable.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
@@ -30,48 +30,44 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
         _self.appSyncService.onUpdatedDeviceBlueprint(_self);
         _self.appSyncService.onDeletedDeviceBlueprint(_self);
 
-        _self.loadDeviceBlueprints();
+        _self.loadAll();
     }
-
-    public listDeviceBlueprints(limit: number, nextToken: string) {
-        return this.appSyncService.listDeviceBlueprints(limit, nextToken);
-    }
-    public getDeviceBlueprint(id: string) {
-        return this.appSyncService.getDeviceBlueprint(id);
-    }
-    public addDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+    public add(deviceBlueprint: DeviceBlueprint) {
         return this.appSyncService.addDeviceBlueprint(deviceBlueprint);
     }
-    public updateDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+    public update(deviceBlueprint: DeviceBlueprint) {
         return this.appSyncService.updateDeviceBlueprint(deviceBlueprint);
     }
-    public deleteDeviceBlueprint(id: string) {
+    public delete(id: string) {
         return this.appSyncService.deleteDeviceBlueprint(id);
     }
 
-    private pushNewDeviceBlueprints(deviceBlueprints: DeviceBlueprint[]) {
+    private loadAll() {
         const _self = this;
-        deviceBlueprints.forEach((newDeviceBlueprint: DeviceBlueprint) => {
-            const index = _.findIndex(_self.deviceBlueprints, (existingDeviceBlueprint: DeviceBlueprint) => {
-                return existingDeviceBlueprint.id === newDeviceBlueprint.id;
+        _self.listRecursive(_self.limit, null).then((results: DeviceBlueprint[]) => {
+            _self.deviceBlueprints.splice(0, _self.deviceBlueprints.length);
+            results.forEach(r => {
+                _self.deviceBlueprints.push(r);
             });
-            if (index === -1) {
-                _self.deviceBlueprints.push(newDeviceBlueprint);
-            } else {
-                _self.deviceBlueprints[index] = newDeviceBlueprint;
-            }
+            _self.observable.next(_self.deviceBlueprints);
         });
+
     }
 
-    private _listDeviceBlueprints(limit: number, nextToken: string) {
-        const _self = this;
+    public refresh() {
+        this.loadAll();
+    }
 
-        return _self.listDeviceBlueprints(limit, nextToken).then(result => {
+    private listRecursive(limit: number, nextToken: string) {
+        const _self = this;
+        return _self.list(_self.limit, nextToken).then(result => {
             let _deviceBlueprints: DeviceBlueprint[];
             _deviceBlueprints = result.deviceBlueprints;
             if (result.nextToken) {
-                return _self._listDeviceBlueprints(limit, result.nextToken).then(data => {
-                    _deviceBlueprints.push(data);
+                return _self.listRecursive(limit, result.nextToken).then(data => {
+                    data.forEach(d => {
+                        _deviceBlueprints.push(d);
+                    });
                     return _deviceBlueprints;
                 });
             } else {
@@ -80,32 +76,34 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
         });
     }
 
-    private loadDeviceBlueprints() {
-        const _self = this;
-        _self._listDeviceBlueprints(_self.limit, null).then((results: DeviceBlueprint[]) => {
-            _self.pushNewDeviceBlueprints(results);
-            _self.observable.next(results);
+    public list(limit: number, nextToken: string) {
+        return this.appSyncService.listDeviceBlueprints(limit, nextToken);
+    }
+    public get(id: string) {
+        return this.appSyncService.getDeviceBlueprint(id);
+    }
+
+    onAddedDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        const index = _.findIndex(this.deviceBlueprints, (d: DeviceBlueprint) => {
+            return d.id === deviceBlueprint.id;
         });
+        if (index === -1) {
+            this.deviceBlueprints.push(deviceBlueprint);
+        } else {
+            this.onUpdatedDeviceBlueprint(deviceBlueprint);
+        }
+    }
+    onUpdatedDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        const index = _.findIndex(this.deviceBlueprints, (d: DeviceBlueprint) => {
+            return d.id === deviceBlueprint.id;
+        });
+        this.deviceBlueprints[index] = deviceBlueprint;
+    }
+    onDeletedDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
+        const index = _.findIndex(this.deviceBlueprints, (d: DeviceBlueprint) => {
+            return d.id === deviceBlueprint.id;
+        });
+        this.deviceBlueprints.splice(index, 1);
     }
 
-    public refresh() {
-        this.loadDeviceBlueprints();
-    }
-
-    public getDeviceBlueprints() {
-        return this.deviceBlueprints;
-    }
-
-    onAddedDeviceBlueprint(result: DeviceBlueprint) {
-        // TODO: Improve this.
-        this.loadDeviceBlueprints();
-    }
-    onUpdatedDeviceBlueprint(result: DeviceBlueprint) {
-        // TODO: Improve this.
-        this.loadDeviceBlueprints();
-    }
-    onDeletedDeviceBlueprint(result: DeviceBlueprint) {
-        // TODO: Improve this.
-        this.loadDeviceBlueprints();
-    }
 }

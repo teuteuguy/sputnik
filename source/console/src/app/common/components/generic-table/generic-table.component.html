@@ -1,0 +1,95 @@
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <button type="button" class="float-right btn btn-sm btn-success m-l-15" (click)="refreshData()"><i
+                        class="fa fa-refresh"></i> Refresh</button>
+                <button *ngIf="params.createElement" type="button" class="float-right btn btn-sm btn-success m-l-15"
+                    (click)="handleCreate()"><i class="mdi mdi-plus"></i>
+                    {{ params.createElement.text }}</button>
+                <h4 class="card-title">{{ params.pageTitle }} ({{dataStats.total}})</h4>
+                <div class="table-responsive m-t-20">
+                    <table id="types-pagination" class="table stylish-table" style="text-transform:uppercase;"
+                        data-paging-limit="10">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let field of params.fields" class="{{field.class}}">{{field.text}}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let elem of sliceData(data)">
+                                <td *ngFor="let field of params.fields" class="{{field.class}}">
+                                    <h6 *ngIf="field.format !== 'date'">{{elem[field.attr]}}</h6>
+                                    <h6 *ngIf="field.format === 'date'">{{elem[field.attr] | moment : 'MMM Do YYYY'}}</h6>
+                                </td>
+                                <td class="pull-right" role="group">
+                                    <div class="dropdown">
+                                        <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="actionDropdownMenu"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="actionDropdownMenu">
+                                            <button *ngIf="params.editElement" class="dropdown-item" type="button"
+                                                (click)="handleEdit(elem)"><i class="mdi mdi-pencil"></i>
+                                                {{params.editElement.text}}</button>
+                                            <button *ngIf="params.viewElement" class="dropdown-item" type="button"
+                                                (click)="handleView(elem)"><i class="mdi mdi-information-outline"></i>
+                                                {{params.viewElement.text}}</button>
+                                            <button *ngIf="params.deleteElement" class="dropdown-item" type="button"
+                                                (click)="handleDeleteSubject.next(elem)"><i class="mdi mdi-delete"></i>
+                                                Delete</button>
+                                        </div>
+                                    </div>
+                                    <!-- <button *ngIf="params.editElement" type="button" class="btn btn-success btn-sm m-l-15"
+                                        data-toggle="tooltip" title="Edit Device Type" data-placement="top" (click)="handleEdit(elem)"><i
+                                            class="mdi mdi-pencil"></i>
+                                        {{params.editElement.text}}</button>
+                                    <button *ngIf="params.viewElement" type="button" class="btn btn-sm btn-success btn-sm m-l-15"
+                                        (click)="handleView(elem)">
+                                        <i class="mdi mdi-information-outline"></i>
+                                        {{params.viewElement.text}}
+                                    </button> -->
+                                </td>
+                                <!-- <td>
+                                    <h6>{{type.type}}</h6>
+                                </td>
+                                <td>
+                                    <h6>{{type.name}}</h6><small class="text-muted">{{type.id}}</small>
+                                </td>
+                                <td class="text-right">{{ type.createdAt | moment : 'MMM Do YYYY' }}</td>
+                                <td class="text-right">{{ type.updatedAt | moment : 'MMM Do YYYY' }}</td>
+                                <td>
+                                    <div class="pull-right" role="group">
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip"
+                                            title="Edit Device Type" data-placement="top" (click)="openDeviceType(type.id)"><i
+                                                class="mdi mdi-pencil"></i> Edit</button>
+                                    </div>
+                                </td> -->
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="text-right">
+                                        <div class="pull-right">
+                                            <button type="button" [class]="pages.current === 0 ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'"
+                                                (click)="previousPage()" [disabled]="pages.current === 1"><i class="mdi mdi-chevron-left"></i></button>
+                                            <span class="m-l-10 m-r-10">Page {{pages.current}} of {{pages.total}}</span>
+                                            <button type="button" [class]="pages.current === (pages.total - 1) ? 'btn btn-sm btn-default disabled' : 'btn btn-sm btn-default'"
+                                                (click)="nextPage()" [disabled]="pages.current === pages.total"><i
+                                                    class="mdi mdi-chevron-right"></i></button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+
+<template #createModalTemplate></template>

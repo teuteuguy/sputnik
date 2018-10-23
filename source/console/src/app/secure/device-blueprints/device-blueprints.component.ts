@@ -1,41 +1,44 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
-import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 import { _ } from 'underscore';
 
-// Models
+// User stuff
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { ProfileInfo } from '../../models/profile-info.model';
+
+// Parent
+import {
+    GenericTableComponent,
+    GenericTableParams,
+    GenericTableElementParams
+} from '../../common/components/generic-table/generic-table.component';
+// Childs
+import { DeviceBlueprintsModalComponent } from './device-blueprints.modal.component';
+
+// Models
 import { DeviceBlueprint } from '../../models/device-blueprint.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
 import { DeviceBlueprintService } from '../../services/device-blueprint.service';
+import { LoggerService } from '../../services/logger.service';
 
-// Helpers
-import * as moment from 'moment';
-declare var jquery: any;
-declare var $: any;
-// declare var swal: any;
+// // Helpers
+// import * as moment from 'moment';
+// declare var jquery: any;
+// declare var $: any;
+// // declare var swal: any;
 
 @Component({
     selector: 'app-root-device-blueprints',
-    templateUrl: './device-blueprints.component.html'
+    // templateUrl: './device-blueprints.component.html'
+    templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
-export class DeviceBlueprintsComponent implements OnInit {
-    public title = 'Device Blueprints';
+export class DeviceBlueprintsComponent extends GenericTableComponent implements OnInit {
+    private isAdminUser: boolean;
     private profile: ProfileInfo;
-    public deviceBlueprints: DeviceBlueprint[] = [];
-    public pages: any = {
-        current: 1,
-        total: 0,
-        pageSize: 20
-    };
-    public metrics: any = {
-        total: 0
-    };
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -44,62 +47,88 @@ export class DeviceBlueprintsComponent implements OnInit {
         public router: Router,
         private breadCrumbService: BreadCrumbService,
         private deviceBlueprintService: DeviceBlueprintService,
-        protected localStorage: LocalStorage,
+        private localStorage: LocalStorage,
         private logger: LoggerService,
-        private _ngZone: NgZone
-    ) {}
+        private ngZone: NgZone,
+        private resolver: ComponentFactoryResolver
+    ) {
+        super(logger, resolver);
+
+        this.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+            this.profile = new ProfileInfo(profile);
+            this.isAdminUser = this.profile.isAdmin();
+
+            this.params = <GenericTableParams>{
+                path: '/securehome/device-blueprints',
+                pageTitle: 'Device Blueprints',
+                createElement: <GenericTableElementParams>{
+                    text: 'Create NEW Device Blueprint',
+                    modal: DeviceBlueprintsModalComponent,
+                    link: false
+                },
+                editElement: <GenericTableElementParams>{
+                    text: 'Edit',
+                    modal: DeviceBlueprintsModalComponent,
+                    link: false
+                },
+                viewElement: <GenericTableElementParams>{
+                    text: 'View',
+                    modal: DeviceBlueprintsModalComponent,
+                    link: false
+                },
+                deleteElement: this.isAdminUser,
+                fields: [
+                    { attr: 'type', text: 'type' },
+                    { attr: 'name', text: 'Name' },
+                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
+                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
+                ],
+                cachedMode: true
+            };
+            this.handleDelete.subscribe((element: DeviceBlueprint) => {
+                console.log(element);
+            });
+
+            this.data = deviceBlueprintService.deviceBlueprints;
+        });
+    }
 
     ngOnInit() {
         const _self = this;
         _self.blockUI.start('Loading blueprints...');
 
-        _self.breadCrumbService.setup(_self.title, [
-            new Crumb({ title: _self.title, active: true, link: 'blueprints' })
+        _self.breadCrumbService.setup(_self.params.pageTitle, [
+            new Crumb({ title: _self.params.pageTitle, active: true, link: 'device-blueprints' })
         ]);
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            _self.loadBlueprints();
-        });
-
         _self.deviceBlueprintService.blueprintsObservable$.subscribe(message => {
-            _self.updatePaging();
-            _self._ngZone.run(() => {});
+            _self.cleanup();
+            _self.blockUI.stop();
+            _self.ngZone.run(() => {});
         });
+
+        _self.load();
     }
 
-    loadBlueprints() {
-        const _self = this;
-        _self.deviceBlueprints = _self.deviceBlueprintService.getDeviceBlueprints();
-        _self.updatePaging();
-        _self.blockUI.stop();
-
+    cleanup() {
+        this.dataStats.total = this.deviceBlueprintService.deviceBlueprints.length;
+        this.updatePaging();
     }
 
-    updatePaging() {
-        const _self = this;
-        _self.metrics.total = _self.deviceBlueprints.length;
-        _self.pages.total = Math.ceil(_self.metrics.total / _self.pages.pageSize);
+    load() {
+        this.blockUI.stop();
+        this.cleanup();
     }
 
     refreshData() {
-        this.blockUI.start('Loading device blueprints...');
-        this.loadBlueprints();
+        this.blockUI.start('Loading device types...');
+        this.deviceBlueprintService.refresh();
+        this.pages.current = 1;
     }
 
-    nextPage() {
-        this.pages.current++;
-        this.blockUI.start('Loading device blueprints...');
-        this.loadBlueprints();
-    }
-
-    previousPage() {
-        this.pages.current--;
-        this.blockUI.start('Loading device blueprints...');
-        this.loadBlueprints();
-    }
-
-    openBlueprint(id: string) {
-        this.router.navigate([['/securehome/device-blueprints', id].join('/')]);
+    open(elem: DeviceBlueprint) {
+        // const queryParams: NavigationExtras = { queryParams: { edit: edit } };
+        // this.router.navigate([['/securehome/device-blueprints', elem.id].join('/')], queryParams);
+        this.router.navigate([['/securehome/device-blueprints', elem.id].join('/')]);
     }
 }

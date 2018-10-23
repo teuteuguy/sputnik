@@ -11,28 +11,10 @@ Resources:
                 -
                     AttributeName: "id"
                     AttributeType: "S"
-                -
-                    AttributeName: "thingId"
-                    AttributeType: "S"
             KeySchema:
                 -
                     AttributeName: "id"
                     KeyType: "HASH"
-                -
-                    AttributeName: "thingId"
-                    KeyType: "RANGE"
-            GlobalSecondaryIndexes:
-                -
-                    IndexName: 'deviceId'
-                    KeySchema:
-                        -
-                            AttributeName: 'thingId'
-                            KeyType: 'HASH'
-                    Projection:
-                        ProjectionType: 'ALL'
-                    ProvisionedThroughput:
-                        ReadCapacityUnits: 5
-                        WriteCapacityUnits: 5
             ProvisionedThroughput:
                 ReadCapacityUnits: 5
                 WriteCapacityUnits: 5

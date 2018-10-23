@@ -44,13 +44,13 @@ Resources:
                 dataBucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
 
     # Nested stack - Custom resource - Thing Groups Helper
-    # CFStackForCustomResourceThingGroupsHelper:
-    #     Type: AWS::CloudFormation::Stack
-    #     Properties:
-    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-helper-thing-groups.yml']]
-    #         Parameters:
-    #             sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
-    #             sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
+    CFStackForCustomResourceThingGroupsHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-lambda-helper-thing-groups.yml']]
+            Parameters:
+                sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
+                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
 
     # Nested stack - Cognito
     CFStackForCognito:
@@ -93,11 +93,11 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-deployments.yml']]
 
-    # # Nested stack - DynamoDB Table - Solutions
-    # CFStackForDDBSolutions:
-    #     Type: AWS::CloudFormation::Stack
-    #     Properties:
-    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
+    # Nested stack - DynamoDB Table - Solutions
+    CFStackForDDBSolutions:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
 
     # Nested stack - DynamoDB Table - Solution Blueprints
     # CFStackForDDBSolutionBlueprints:
@@ -175,7 +175,7 @@ Resources:
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
                 settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
                 devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
-                # solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+                solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
 
     # Nested stack - AppSync
     CFStackForAppSync:
@@ -191,7 +191,7 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
-                # solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+                solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
                 lambdaServiceDevicesArn: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
                 lambdaServiceFactoryResetArn: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn
@@ -229,15 +229,15 @@ Resources:
             customAction: 'putFile'
 
     # Initialization - Init of Thing Groups and Things
-    # initThingGroups:
-    #     Type: 'Custom::LoadLambda'
-    #     Properties:
-    #         ServiceToken: !GetAtt CFStackForCustomResourceThingGroupsHelper.Outputs.customResourceThingGroupsHelperArn
-    #         Region: !Ref 'AWS::Region'
-    #         sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
-    #         sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
-    #         destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
-    #         customAction: 'init'
+    initThingGroups:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !GetAtt CFStackForCustomResourceThingGroupsHelper.Outputs.customResourceThingGroupsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
+            sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
+            destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
+            customAction: 'init'
 
 Outputs:
     # Website

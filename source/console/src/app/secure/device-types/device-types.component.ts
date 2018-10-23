@@ -1,40 +1,33 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
+// Parent
+import {
+    GenericTableComponent,
+    GenericTableParams,
+    GenericTableElementParams
+} from '../../common/components/generic-table/generic-table.component';
+// Childs
+import { DeviceTypesModalComponent } from './device-types.modal.component';
+
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
 import { DeviceType } from '../../models/device-type.model';
+import { ProfileInfo } from '../../models/profile-info.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { LoggerService } from '../../services/logger.service';
 
-// Helpers
-import * as moment from 'moment';
-declare var jquery: any;
-declare var $: any;
-
 @Component({
     selector: 'app-root-device-types',
-    templateUrl: './device-types.component.html'
+    // templateUrl: './device-types.component.html'
+    templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
-export class DeviceTypesComponent implements OnInit {
-    public title = 'Device Types';
-    private profile: ProfileInfo;
-    public deviceTypes: DeviceType[] = [];
-    public pages: any = {
-        current: 1,
-        total: 0,
-        pageSize: 20
-    };
-    public metrics: any = {
-        total: 0
-    };
-
+export class DeviceTypesComponent extends GenericTableComponent implements OnInit {
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -42,39 +35,70 @@ export class DeviceTypesComponent implements OnInit {
         public router: Router,
         private breadCrumbService: BreadCrumbService,
         private deviceTypeService: DeviceTypeService,
-        protected localStorage: LocalStorage,
+        private localStorage: LocalStorage,
         private logger: LoggerService,
-        private _ngZone: NgZone
-    ) {}
+        private _ngZone: NgZone,
+        private resolver: ComponentFactoryResolver
+    ) {
+        super(logger, resolver);
+
+        this.params = <GenericTableParams>{
+            path: '/securehome/device-types',
+            pageTitle: 'Device Types',
+            createElement: <GenericTableElementParams>{
+                text: 'Create NEW Device Type',
+                modal: DeviceTypesModalComponent,
+                link: false
+            },
+            editElement: <GenericTableElementParams>{
+                text: 'Edit',
+                modal: DeviceTypesModalComponent,
+                link: false
+            },
+            fields: [
+                { attr: 'type', text: 'type' },
+                { attr: 'name', text: 'Name' },
+                { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
+                { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
+            ],
+            viewLink: true,
+            editLink: false,
+            cachedMode: true
+        };
+
+        this.handleDelete.subscribe((element: DeviceType) => {
+            console.log(element);
+        });
+
+        this.data = deviceTypeService.deviceTypes;
+    }
 
     ngOnInit() {
         const _self = this;
         _self.blockUI.start('Loading device types...');
 
-        _self.breadCrumbService.setup(_self.title, [new Crumb({ title: _self.title, active: true, link: 'device-types' })]);
+        _self.breadCrumbService.setup(_self.params.pageTitle, [
+            new Crumb({ title: _self.params.pageTitle, active: true, link: 'device-types' })
+        ]);
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            _self.loadDeviceTypes();
-        });
-
-        _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
-            _self.updatePaging();
+        _self.deviceTypeService.deviceTypesObservable$.subscribe(deviceTypes => {
+            _self.cleanup();
+            _self.blockUI.stop();
             _self._ngZone.run(() => {});
         });
+
+        _self.load();
     }
 
-    updatePaging() {
-        const _self = this;
-        _self.metrics.total = _self.deviceTypes.length;
-        _self.pages.total = Math.ceil(_self.metrics.total / _self.pages.pageSize);
+    cleanup() {
+        this.dataStats.total = this.deviceTypeService.deviceTypes.length;
+        this.updatePaging();
     }
 
-    loadDeviceTypes() {
-        const _self = this;
-        _self.deviceTypes = _self.deviceTypeService.getDeviceTypes();
-        _self.updatePaging();
-        _self.blockUI.stop();
+    load() {
+        // this.data = this.deviceTypeService.deviceTypes;
+        this.blockUI.stop();
+        this.cleanup();
     }
 
     refreshData() {
@@ -83,27 +107,10 @@ export class DeviceTypesComponent implements OnInit {
         this.pages.current = 1;
     }
 
-    openDeviceType(typeId: string) {
-        this.router.navigate([['/securehome/device-types', typeId].join('/')]);
-    }
-
-    formatDate(dt: string) {
-        if (dt) {
-            return moment(dt).format('MMM Do YYYY');
-        } else {
-            return '';
-        }
-    }
-
-    nextPage() {
-        this.pages.current++;
-        this.blockUI.start('Loading device types...');
-        this.loadDeviceTypes();
-    }
-
-    previousPage() {
-        this.pages.current--;
-        this.blockUI.start('Loading device types...');
-        this.loadDeviceTypes();
+    open(elem: DeviceType) {
+        console.log(elem);
+        // const queryParams: NavigationExtras = { queryParams: { edit: edit } };
+        // this.router.navigate([['/securehome/device-types', elem.id].join('/')], queryParams);
+        this.router.navigate([['/securehome/device-types', elem.id].join('/')]);
     }
 }

@@ -23,7 +23,7 @@
                                 required ngModel>
                                 <option ng-selected="deviceBlueprint.type === 'UNKNOWN'">UNKNOWN</option>
                                 <option ng-selected="deviceBlueprint.type === 'SDK'">SDK</option>
-                                <option ng-selected="deviceBlueprint.type === 'A:freeRTOS'">A:freeRTOS</option>
+                                <option ng-selected="deviceBlueprint.type === 'A:FreeRTOS'">A:FreeRTOS</option>
                                 <option ng-selected="deviceBlueprint.type === 'GREENGRASS'">GREENGRASS</option>
                             </select>
                             <div class="form-control-feedback">
@@ -45,7 +45,7 @@
                                             <label class="form-check-label" for="all" style="padding-left: 25px;">all</label>
                                         </div>
                                     </div>
-                                    <div class="dropdown-item" *ngFor="let deviceType of deviceTypeService.getDeviceTypes()"
+                                    <div class="dropdown-item" *ngFor="let deviceType of deviceTypeService.deviceTypes"
                                         data-value="deviceType.id">
                                         <div class="form-check" style="padding: 0px; margin-bottom: -4px;" (click)="toggleDeviceType($event, deviceType.id)">
                                             <input type="checkbox" id="deviceType.id" style="padding-left: 18px;"
@@ -63,25 +63,17 @@
                     </div>
                     <div class="form-group">
                         <label for="type" class="form-control-label">Custom DeviceType Mappings:</label>
-                        <textarea class="form-control" rows="10" id="spec" style="font-family: monospace; font-size: 90%;"
-                            (keyup)="editJsonOnKey($event, 4, deviceBlueprint, 'deviceTypeMappings')" name="deviceTypeMappings"
-                            id="deviceTypeMappings" #name="ngModel" [(ngModel)]="deviceBlueprint.deviceTypeMappings"
-                            required ngModel>{{deviceBlueprint.deviceTypeMappings}}</textarea>
+                        <app-pretty-json name="deviceTypeMappings" [(ngModel)]="deviceBlueprint.deviceTypeMappings"
+                            [rows]="10"></app-pretty-json>
                         <div class="form-control-feedback">
-                            <small>JSON document to use for the custom device type mappings.
-                                <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
-                            </small>
+                            <small>JSON document to use for the custom device type mappings.</small>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="type" class="form-control-label">Spec:</label>
-                        <textarea class="form-control" rows="20" id="spec" style="font-family: monospace; font-size: 90%;"
-                            (keyup)="editJsonOnKey($event, 4, deviceBlueprint, 'spec')" name="spec" id="spec" #name="ngModel"
-                            [(ngModel)]="deviceBlueprint.spec" required ngModel>{{deviceBlueprint.spec}}</textarea>
+                        <app-pretty-json name="spec" [(ngModel)]="deviceBlueprint.spec" [rows]="20"></app-pretty-json>
                         <div class="form-control-feedback">
-                            <small>JSON document to use for the device blueprint.
-                                <span [style.color]="prettifying === '(ERROR: JSON is incorrect!)' ? 'red' : ''">{{prettifying}}</span>
-                            </small>
+                            <small>JSON document to use for the device blueprint.</small>
                         </div>
                     </div>
                     <!-- <div>

@@ -17,5 +17,12 @@ cd $1/resources/cf-helper-s3
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
+echo "------------------------------------------------------------------------------"
+echo "[Rebuild] Cloudformation custom resource - ThingGroups"
+echo "------------------------------------------------------------------------------"
+cd $1/resources/mtm-thing-groups
+yarn run build
+cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
+
 echo
 exit 0
