@@ -13,3 +13,10 @@ export class SolutionStats {
         Object.assign(this, values);
     }
 }
+
+export class SolutionBlueprintStats {
+    total = 0;
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+    }
+}

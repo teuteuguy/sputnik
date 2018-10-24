@@ -2,8 +2,9 @@ const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const addCreatedAtUpdatedAt = require('./add-created-at-updated-at');
 
-const deviceTypeTemplateFolder = 'device-types/';
 const fs = require('fs');
+const templateFolder = 'device-types/';
+const TABLE = process.env.TABLE_DEVICE_TYPES;
 
 class DeviceTypes {
 
@@ -11,20 +12,20 @@ class DeviceTypes {
 
     factoryReset(event, context, callback) {
 
-        let deviceTypeInits = [];
+        let inits = [];
 
-        fs.readdirSync('./' + deviceTypeTemplateFolder).forEach(file => {
-                    deviceTypeInits.push(require('../' + deviceTypeTemplateFolder + file)); // '../device-types/deeplens-v1.0.json'
+        fs.readdirSync('./' + templateFolder).forEach(file => {
+            inits.push(require('../' + templateFolder + file)); // '../device-types/deeplens-v1.0.json'
         });
 
-        console.log('Loaded:', deviceTypeInits);
+        console.log('Loaded:', inits);
 
         let params = {
             RequestItems: {}
         };
-        params.RequestItems[process.env.TABLE_DEVICE_TYPES] = [];
-        deviceTypeInits.forEach(dti => {
-            params.RequestItems[process.env.TABLE_DEVICE_TYPES].push({
+        params.RequestItems[TABLE] = [];
+        inits.forEach(dti => {
+            params.RequestItems[TABLE].push({
                 PutRequest: {
                     Item: addCreatedAtUpdatedAt(dti)
                 }

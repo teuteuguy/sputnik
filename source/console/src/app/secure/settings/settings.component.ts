@@ -45,6 +45,10 @@ export class SettingsComponent implements OnInit {
         {
             table: 'DeviceBlueprints',
             done: false
+        },
+        {
+            table: 'SolutionBlueprints',
+            done: false
         }
     ];
 

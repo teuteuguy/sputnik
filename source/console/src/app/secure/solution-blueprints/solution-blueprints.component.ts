@@ -1,11 +1,8 @@
-import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, ComponentFactoryResolver, NgZone } from '@angular/core';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
-
-// User stuff
-import { LocalStorage } from '@ngx-pwa/local-storage';
-import { ProfileInfo } from '../../models/profile-info.model';
 
 // Parent
 import {
@@ -13,23 +10,24 @@ import {
     GenericTableParams,
     GenericTableElementParams
 } from '../../common/components/generic-table/generic-table.component';
+
 // Childs
-import { DeviceTypesModalComponent } from './device-types.modal.component';
+import { SolutionBlueprintsModalComponent } from './solution-blueprints.modal.component';
 
 // Models
-import { DeviceType } from '../../models/device-type.model';
+import { SolutionBlueprint } from '../../models/solution-blueprint.model';
+import { ProfileInfo } from '../../models/profile-info.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeviceTypeService } from '../../services/device-type.service';
 import { LoggerService } from '../../services/logger.service';
+import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
 
 @Component({
-    selector: 'app-root-device-types',
-    // templateUrl: './device-types.component.html'
+    selector: 'app-root-solution-blueprints',
     templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
-export class DeviceTypesComponent extends GenericTableComponent implements OnInit {
+export class SolutionBlueprintsComponent extends GenericTableComponent implements OnInit {
     private isAdminUser: boolean;
     private profile: ProfileInfo;
 
@@ -39,7 +37,7 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
     constructor(
         public router: Router,
         private breadCrumbService: BreadCrumbService,
-        private deviceTypeService: DeviceTypeService,
+        private solutionBlueprintService: SolutionBlueprintService,
         private localStorage: LocalStorage,
         private logger: LoggerService,
         private ngZone: NgZone,
@@ -52,18 +50,25 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
             this.isAdminUser = this.profile.isAdmin();
 
             this.params = <GenericTableParams>{
-                path: '/securehome/device-types',
-                pageTitle: 'Device Types',
+                path: '/securehome/solution-blueprints',
+                pageTitle: 'Solution Blueprints',
                 createElement: <GenericTableElementParams>{
-                    text: 'Create NEW Device Type',
-                    modal: DeviceTypesModalComponent,
+                    text: 'Create NEW Solution Blueprint',
+                    modal: SolutionBlueprintsModalComponent,
                     link: false
                 },
-                editElement: <GenericTableElementParams>{ text: 'Edit', modal: DeviceTypesModalComponent, link: false },
-                viewElement: <GenericTableElementParams>{ text: 'View', modal: DeviceTypesModalComponent, link: false },
+                editElement: <GenericTableElementParams>{
+                    text: 'Edit',
+                    modal: SolutionBlueprintsModalComponent,
+                    link: false
+                },
+                viewElement: <GenericTableElementParams>{
+                    text: 'View',
+                    modal: SolutionBlueprintsModalComponent,
+                    link: false
+                },
                 deleteElement: this.isAdminUser,
                 fields: [
-                    { attr: 'type', text: 'type' },
                     { attr: 'name', text: 'Name' },
                     { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
                     { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
@@ -71,10 +76,10 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
                 cachedMode: true
             };
 
-            this.handleDelete.subscribe((element: DeviceType) => {
+            this.handleDelete.subscribe((element: SolutionBlueprint) => {
                 const _self = this;
                 swal({
-                    title: 'Are you sure you want to delete this device type?',
+                    title: 'Are you sure you want to delete this solution blueprint?',
                     text: `You won't be able to revert this!`,
                     type: 'question',
                     showCancelButton: true,
@@ -83,8 +88,8 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
                     confirmButtonText: 'Yes, delete it!'
                 }).then(result => {
                     if (result.value) {
-                        _self.blockUI.start('Deleting device...');
-                        _self.deviceTypeService
+                        _self.blockUI.start('Deleting solution blueprint...');
+                        _self.solutionBlueprintService
                             .delete(element.id)
                             .then((resp: any) => {
                                 console.log(resp);
@@ -92,27 +97,31 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
                             })
                             .catch(err => {
                                 _self.blockUI.stop();
-                                swal('Oops...', 'Something went wrong! Unable to delete the device type.', 'error');
-                                _self.logger.error('error occurred calling deleteDeviceType api, show message');
+                                swal(
+                                    'Oops...',
+                                    'Something went wrong! Unable to delete the solution blueprint.',
+                                    'error'
+                                );
+                                _self.logger.error('error occurred calling deleteSolutionBlueprint api, show message');
                                 _self.logger.error(err);
                             });
                     }
                 });
             });
 
-            this.data = deviceTypeService.deviceTypes;
+            this.data = solutionBlueprintService.solutionBlueprints;
         });
     }
 
     ngOnInit() {
         const _self = this;
-        _self.blockUI.start('Loading device types...');
+        _self.blockUI.start('Loading solution blueprints...');
 
         _self.breadCrumbService.setup(_self.params.pageTitle, [
-            new Crumb({ title: _self.params.pageTitle, active: true, link: 'device-types' })
+            new Crumb({ title: _self.params.pageTitle, active: true, link: 'solution-blueprints' })
         ]);
 
-        _self.deviceTypeService.deviceTypesObservable$.subscribe(deviceTypes => {
+        _self.solutionBlueprintService.solutionBlueprintsObservable$.subscribe(solutionBlueprints => {
             _self.cleanup();
             _self.blockUI.stop();
             _self.ngZone.run(() => {});
@@ -122,26 +131,23 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
     }
 
     cleanup() {
-        this.dataStats.total = this.deviceTypeService.deviceTypes.length;
+        this.dataStats.total = this.solutionBlueprintService.solutionBlueprints.length;
         this.updatePaging();
     }
 
     load() {
-        // this.data = this.deviceTypeService.deviceTypes;
         this.blockUI.stop();
         this.cleanup();
     }
 
     refreshData() {
-        this.blockUI.start('Loading device types...');
-        this.deviceTypeService.refresh();
+        this.blockUI.start('Loading solution blueprints...');
+        this.solutionBlueprintService.refresh();
         this.pages.current = 1;
     }
 
-    open(elem: DeviceType) {
+    open(elem: SolutionBlueprint) {
         console.log(elem);
-        // const queryParams: NavigationExtras = { queryParams: { edit: edit } };
-        // this.router.navigate([['/securehome/device-types', elem.id].join('/')], queryParams);
-        this.router.navigate([['/securehome/device-types', elem.id].join('/')]);
+        this.router.navigate([['/securehome/solution-blueprints', elem.id].join('/')]);
     }
 }

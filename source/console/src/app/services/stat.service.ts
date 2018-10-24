@@ -22,8 +22,9 @@ export class Stats {
 
 @Injectable()
 export class StatService {
-    private observer: any = new Subject<Stats>();
     private pollerInterval: any = null;
+
+    private observer: any = new Subject<Stats>();
     statObservable$ = this.observer.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
@@ -35,18 +36,19 @@ export class StatService {
     }
 
     loadStats() {
-        Promise.all([
-            this.appSyncService.getDeviceStats(),
-            this.appSyncService.getSolutionStats()
-        ]).then(results => {
-            this.observer.next(new Stats({
-                deviceStats: results[0],
-                solutionStats: results[1]
-            }));
-        }).catch(err => {
-            this.logger.error('error occurred calling getDeviceStats api, show message');
-            this.logger.error(err);
-        });
+        Promise.all([this.appSyncService.getDeviceStats(), this.appSyncService.getSolutionStats()])
+            .then(results => {
+                this.observer.next(
+                    new Stats({
+                        deviceStats: results[0],
+                        solutionStats: results[1]
+                    })
+                );
+            })
+            .catch(err => {
+                this.logger.error('error occurred calling getDeviceStats api, show message');
+                this.logger.error(err);
+            });
     }
 
     refresh() {

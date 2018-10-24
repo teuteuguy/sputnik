@@ -40,6 +40,7 @@ import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blu
 // import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
+import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
 // import { SolutionComponent } from './secure/solution/solution.component';
 import { GenericTableComponent } from './common/components/generic-table/generic-table.component';
 
@@ -53,6 +54,7 @@ import { GenericTableComponent } from './common/components/generic-table/generic
 import { DeviceBlueprintsModalComponent } from './secure/device-blueprints/device-blueprints.modal.component';
 import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
 import { SolutionsModalComponent } from './secure/solutions/solutions.modal.component';
+import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/solution-blueprints.modal.component';
 // import { MyDeeplensWebCameraV10Component } from './secure/devices/types/my-deeplens-web-camera-v1.0.component';
 // import { MiniConnectedFactoryV10Component } from './secure/devices/types/mini-connected-factory-v1.0.component';
 
@@ -76,6 +78,7 @@ import { StatService } from './services/stat.service';
 import { DeviceBlueprintService } from './services/device-blueprint.service';
 import { DeploymentService } from './services/deployment.service';
 import { SolutionService } from './services/solution.service';
+import { SolutionBlueprintService } from './services/solution-blueprint.service';
 // import { AdminService } from './services/admin.service';
 // import { StatsService } from './services/stats.service';
 // import { MQTTService } from './services/mqtt.service';
@@ -113,6 +116,7 @@ import { SolutionService } from './services/solution.service';
         // DeviceBlueprintComponent,
         DeploymentsComponent,
         SolutionsComponent,
+        SolutionBlueprintsComponent,
         // SolutionComponent,
 
         GenericTableComponent,
@@ -121,6 +125,7 @@ import { SolutionService } from './services/solution.service';
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
         SolutionsModalComponent,
+        SolutionBlueprintsModalComponent,
 
         // Directives
 
@@ -167,6 +172,7 @@ import { SolutionService } from './services/solution.service';
         DeviceBlueprintService,
         DeploymentService,
         SolutionService,
+        SolutionBlueprintService,
 
         { provide: LoggerService, useClass: ConsoleLoggerService }
     ],
@@ -174,7 +180,8 @@ import { SolutionService } from './services/solution.service';
     entryComponents: [
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
-        SolutionsModalComponent
+        SolutionsModalComponent,
+        SolutionBlueprintsModalComponent
     ]
 })
 export class AppModule {}

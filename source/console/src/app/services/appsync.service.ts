@@ -10,7 +10,8 @@ import { DeviceBlueprint } from '../models/device-blueprint.model';
 import { DeviceType } from '../models/device-type.model';
 import { Setting } from '../models/setting.model';
 import { Solution } from '../models/solution.model';
-import { DeviceStats, SolutionStats } from '../models/stats.model';
+import { SolutionBlueprint } from '../models/solution-blueprint.model';
+import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '../models/stats.model';
 
 // Queries
 // import getAllDeviceTypes from '../graphql/queries/getAllDeviceTypes';
@@ -22,6 +23,8 @@ import getDeviceType from '../graphql/queries/device-type.get';
 import getSetting from '../graphql/queries/setting.get';
 import getSolution from '../graphql/queries/solution.get';
 import getSolutionStats from '../graphql/queries/solution.getStats';
+import getSolutionBlueprint from '../graphql/queries/solution-blueprint.get';
+import getSolutionBlueprintStats from '../graphql/queries/solution-blueprint.getStats';
 import getThingAutoRegistrationState from '../graphql/queries/thing-auto-registration-state.get';
 import listDeployments from '../graphql/queries/deployments.list';
 import listDevices from '../graphql/queries/devices.list';
@@ -30,33 +33,40 @@ import listDevicesWithDeviceBlueprint from '../graphql/queries/devices-with-devi
 import listDeviceBlueprints from '../graphql/queries/device-blueprints.list';
 import listDeviceTypes from '../graphql/queries/device-types.list';
 import listSolutions from '../graphql/queries/solutions.list';
+import listSolutionBlueprints from '../graphql/queries/solution-blueprints.list';
 // Mutations
 import addDevice from '../graphql/mutations/device.add';
 import addDeviceBlueprint from '../graphql/mutations/device-blueprint.add';
 import addDeviceType from '../graphql/mutations/device-type.add';
 import addSolution from '../graphql/mutations/solution.add';
+import addSolutionBlueprint from '../graphql/mutations/solution-blueprint.add';
 import deleteDevice from '../graphql/mutations/device.delete';
 import deleteDeviceBlueprint from '../graphql/mutations/device-blueprint.delete';
 import deleteDeviceType from '../graphql/mutations/device-type.delete';
 import deleteSolution from '../graphql/mutations/solution.delete';
+import deleteSolutionBlueprint from '../graphql/mutations/solution-blueprint.delete';
 import setThingAutoRegistrationState from '../graphql/mutations/thing-auto-registration-state.set';
 import updateDevice from '../graphql/mutations/device.update';
 import updateDeviceBlueprint from '../graphql/mutations/device-blueprint.update';
 import updateDeviceType from '../graphql/mutations/device-type.update';
 import updateSolution from '../graphql/mutations/solution.update';
+import updateSolutionBlueprint from '../graphql/mutations/solution-blueprint.update';
 // Subscriptions
 import addedDevice from '../graphql/subscriptions/device.added';
 import addedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.added';
 import addedDeviceType from '../graphql/subscriptions/device-type.added';
 import addedSolution from '../graphql/subscriptions/solution.added';
+import addedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.added';
 import deletedDevice from '../graphql/subscriptions/device.deleted';
 import deletedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.deleted';
 import deletedDeviceType from '../graphql/subscriptions/device-type.deleted';
 import deletedSolution from '../graphql/subscriptions/solution.deleted';
+import deletedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.deleted';
 import updatedDevice from '../graphql/subscriptions/device.updated';
 import updatedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.updated';
 import updatedDeviceType from '../graphql/subscriptions/device-type.updated';
 import updatedSolution from '../graphql/subscriptions/solution.updated';
+import updatedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.updated';
 
 export interface AddedDevice {
     onAddedDevice(result: Device): void;
@@ -93,6 +103,15 @@ export interface UpdatedSolution {
 }
 export interface DeletedSolution {
     onDeletedSolution(result: Solution): void;
+}
+export interface AddedSolutionBlueprint {
+    onAddedSolutionBlueprint(result: SolutionBlueprint): void;
+}
+export interface UpdatedSolutionBlueprint {
+    onUpdatedSolutionBlueprint(result: SolutionBlueprint): void;
+}
+export interface DeletedSolutionBlueprint {
+    onDeletedSolutionBlueprint(result: SolutionBlueprint): void;
 }
 
 @Injectable()
@@ -160,7 +179,9 @@ export class AppSyncService {
         deviceType = this.cleanOutgoingDeviceType(deviceType);
         delete deviceType.updatedAt;
         delete deviceType.createdAt;
-        return this.mutation(updateDeviceType, deviceType).then(d => this.cleanIncomingDeviceType(d.data.updateDeviceType));
+        return this.mutation(updateDeviceType, deviceType).then(d =>
+            this.cleanIncomingDeviceType(d.data.updateDeviceType)
+        );
     }
     public onAddedDeviceType(hook: AddedDeviceType) {
         this.subscribe(addedDeviceType, {}).subscribe({
@@ -418,6 +439,85 @@ export class AppSyncService {
         this.subscribe(deletedSolution, {}).subscribe({
             next: result => {
                 return hook.onDeletedSolution(result.value.data.deletedSolution);
+            }
+        });
+    }
+
+    // Solution Blueprints
+    private cleanIncomingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
+        solutionBlueprint.spec = JSON.parse(solutionBlueprint.spec);
+        return solutionBlueprint;
+    }
+    private cleanOutgoingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
+        solutionBlueprint.spec = JSON.stringify(solutionBlueprint.spec);
+        return solutionBlueprint;
+    }
+    public listSolutionBlueprints(limit: number, nextToken: string) {
+        return this.query(listSolutionBlueprints, { limit: limit, nextToken: nextToken }).then(result => {
+            result.data.listSolutionBlueprints.solutionBlueprints = result.data.listSolutionBlueprints.solutionBlueprints.map(
+                r => this.cleanIncomingSolutionBlueprint(r)
+            );
+            return result.data.listSolutionBlueprints;
+        });
+    }
+    public getSolutionBlueprint(id: string) {
+        return this.query(getSolutionBlueprint, {
+            id: id
+        }).then(d => this.cleanIncomingSolutionBlueprint(d.data.getSolutionBlueprint));
+    }
+    // public getSolutionBlueprintStats() {
+    //     return this.query(getSolutionBlueprintStats, {}).then(
+    //         result => <SolutionBlueprintStats>result.data.getSolutionBlueprintStats
+    //     );
+    // }
+    public addSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
+        solutionBlueprint = this.cleanOutgoingSolutionBlueprint(solutionBlueprint);
+        delete solutionBlueprint.id;
+        delete solutionBlueprint.createdAt;
+        delete solutionBlueprint.updatedAt;
+        return this.mutation(addSolutionBlueprint, {
+            name: solutionBlueprint.name,
+            description: solutionBlueprint.description,
+            spec: solutionBlueprint.spec
+        }).then(r => this.cleanIncomingSolutionBlueprint(r.data.addSolutionBlueprint));
+    }
+    public deleteSolutionBlueprint(id: string) {
+        return this.mutation(deleteSolutionBlueprint, {
+            id: id
+        }).then(r => this.cleanIncomingSolutionBlueprint(r.data.deleteSolutionBlueprint));
+    }
+    public updateSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
+        solutionBlueprint = this.cleanOutgoingSolutionBlueprint(solutionBlueprint);
+        delete solutionBlueprint.updatedAt;
+        delete solutionBlueprint.createdAt;
+        return this.mutation(updateSolutionBlueprint, solutionBlueprint).then(r =>
+            this.cleanIncomingSolutionBlueprint(r.data.updateSolutionBlueprint)
+        );
+    }
+    public onAddedSolutionBlueprint(hook: AddedSolutionBlueprint) {
+        this.subscribe(addedSolutionBlueprint, {}).subscribe({
+            next: result => {
+                return hook.onAddedSolutionBlueprint(
+                    this.cleanIncomingSolutionBlueprint(result.value.data.addedSolutionBlueprint)
+                );
+            }
+        });
+    }
+    public onUpdatedSolutionBlueprint(hook: UpdatedSolutionBlueprint) {
+        this.subscribe(updatedSolutionBlueprint, {}).subscribe({
+            next: result => {
+                return hook.onUpdatedSolutionBlueprint(
+                    this.cleanIncomingSolutionBlueprint(result.value.data.updatedSolutionBlueprint)
+                );
+            }
+        });
+    }
+    public onDeletedSolutionBlueprint(hook: DeletedSolutionBlueprint) {
+        this.subscribe(deletedSolutionBlueprint, {}).subscribe({
+            next: result => {
+                return hook.onDeletedSolutionBlueprint(
+                    this.cleanIncomingSolutionBlueprint(result.value.data.deletedSolutionBlueprint)
+                );
             }
         });
     }

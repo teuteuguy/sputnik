@@ -117,6 +117,7 @@ Resources:
                 settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
                 deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
+                solutionBlueprintsTable: !GetAtt CFStackForDDBSolutionBlueprints.Outputs.solutionBlueprintsTable
 
     # Nested stack - MicroService - Settings
     CFStackForSettingsService:

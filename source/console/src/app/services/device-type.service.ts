@@ -14,8 +14,8 @@ import { _ } from 'underscore';
 @Injectable()
 export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, DeletedDeviceType {
     private limit = 50; // TODO: increase this.
-    private observable: any = new Subject<any>();
     public deviceTypes: DeviceType[] = [];
+    private observable: any = new Subject<any>();
     public deviceTypesObservable$ = this.observable.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {

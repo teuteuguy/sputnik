@@ -27,6 +27,7 @@ import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceComponent } from './secure/device/device.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
+import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
 // import { SolutionComponent } from './secure/solution/solution.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
@@ -83,6 +84,7 @@ const secureHomeRoutes: Routes = [
             { path: 'devices/:thingId', component: DeviceComponent },
             { path: 'deployments', component: DeploymentsComponent },
             { path: 'solutions', component: SolutionsComponent },
+            { path: 'solution-blueprints', component: SolutionBlueprintsComponent },
             // { path: 'solutions/:solutionId', component: SolutionComponent },
             { path: '', component: SecureHomeComponent }
         ]
