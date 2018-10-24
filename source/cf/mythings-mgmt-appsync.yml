@@ -658,7 +658,7 @@ Resources:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Query
             FieldName: 'listSolutionBlueprints'
-            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
+            DataSourceName: !GetAtt appSyncDataSourceSolutionBlueprintsDynamoDB.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-list.gql']]
             ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-response-mapping-template-list.gql']]
     appSyncResolverQueryGetSolutionBlueprint:
@@ -667,7 +667,7 @@ Resources:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Query
             FieldName: 'getSolutionBlueprint'
-            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
+            DataSourceName: !GetAtt appSyncDataSourceSolutionBlueprintsDynamoDB.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-get.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
     # appSyncResolverQueryGetSolutionBlueprintStats:
