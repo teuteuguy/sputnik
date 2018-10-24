@@ -86,7 +86,32 @@ export class DeviceBlueprintsComponent extends GenericTableComponent implements 
                 cachedMode: true
             };
             this.handleDelete.subscribe((element: DeviceBlueprint) => {
-                console.log(element);
+                const _self = this;
+                swal({
+                    title: 'Are you sure you want to delete this device blueprint?',
+                    text: `You won't be able to revert this!`,
+                    type: 'question',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then(result => {
+                    if (result.value) {
+                        _self.blockUI.start('Deleting device...');
+                        _self.deviceBlueprintService
+                            .delete(element.id)
+                            .then((resp: any) => {
+                                console.log(resp);
+                                _self.blockUI.stop();
+                            })
+                            .catch(err => {
+                                _self.blockUI.stop();
+                                swal('Oops...', 'Something went wrong! Unable to delete the device bluepritn.', 'error');
+                                _self.logger.error('error occurred calling deleteDeviceBlueprint api, show message');
+                                _self.logger.error(err);
+                            });
+                    }
+                });
             });
 
             this.data = deviceBlueprintService.deviceBlueprints;

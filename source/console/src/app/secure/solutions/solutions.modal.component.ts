@@ -23,6 +23,7 @@ export class SolutionsModalComponent {
 
     constructor(private solutionService: SolutionService) {
         if (!this.element) {
+            this.element = new Solution();
             this.element.id = 'new';
             this.element.name = 'new';
             this.element.description = 'New Solution';

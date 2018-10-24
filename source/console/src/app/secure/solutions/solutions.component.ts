@@ -32,6 +32,9 @@ import * as moment from 'moment';
     templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
 export class SolutionsComponent extends GenericTableComponent implements OnInit {
+    private isAdminUser: boolean;
+    private profile: ProfileInfo;
+
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -47,24 +50,66 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
     ) {
         super(logger, resolver);
 
-        this.params = <GenericTableParams>{
-            path: '/securehome/solutions',
-            pageTitle: 'Solutions',
-            createElement: <GenericTableElementParams>{
-                text: 'Create NEW Solution',
-                modal: SolutionsModalComponent,
-                link: false
-            },
-            fields: [
-                // { attr: 'type', text: 'type' },
-                { attr: 'name', text: 'Name' },
-                { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
-                { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
-            ],
-            viewLink: true,
-            editLink: false,
-            cachedMode: false
-        };
+        this.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+            this.profile = new ProfileInfo(profile);
+            this.isAdminUser = this.profile.isAdmin();
+
+            this.params = <GenericTableParams>{
+                path: '/securehome/solutions',
+                pageTitle: 'Solutions',
+                createElement: <GenericTableElementParams>{
+                    text: 'Create NEW Solution',
+                    modal: SolutionsModalComponent,
+                    link: false
+                },
+                editElement: <GenericTableElementParams>{
+                    text: 'Edit',
+                    modal: SolutionsModalComponent,
+                    link: false
+                },
+                viewElement: <GenericTableElementParams>{
+                    text: 'View',
+                    modal: SolutionsModalComponent,
+                    link: false
+                },
+                deleteElement: this.isAdminUser,
+                fields: [
+                    // { attr: 'type', text: 'type' },
+                    { attr: 'name', text: 'Name' },
+                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
+                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
+                ],
+                cachedMode: false
+            };
+            this.handleDelete.subscribe((element: Solution) => {
+                const _self = this;
+                swal({
+                    title: 'Are you sure you want to delete this solution?',
+                    text: `You won't be able to revert this!`,
+                    type: 'question',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then(result => {
+                    if (result.value) {
+                        _self.blockUI.start('Deleting device...');
+                        _self.solutionService
+                            .delete(element.id)
+                            .then((resp: any) => {
+                                console.log(resp);
+                                _self.blockUI.stop();
+                            })
+                            .catch(err => {
+                                _self.blockUI.stop();
+                                swal('Oops...', 'Something went wrong! Unable to delete the solution.', 'error');
+                                _self.logger.error('error occurred calling deleteSolution api, show message');
+                                _self.logger.error(err);
+                            });
+                    }
+                });
+            });
+        });
 
         statService.statObservable$.subscribe((message: Stats) => {
             this.dataStats = message.solutionStats;
@@ -79,11 +124,7 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
         _self.blockUI.start('Loading solutions...');
 
         _self.breadCrumbService.setup(_self.params.pageTitle, [
-            new Crumb({
-                title: _self.params.pageTitle,
-                active: true,
-                link: _self.params.pageTitle.toLowerCase()
-            })
+            new Crumb({ title: _self.params.pageTitle, active: true, link: 'solutions' })
         ]);
 
         _self.load();

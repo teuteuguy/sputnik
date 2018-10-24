@@ -116,60 +116,70 @@ export class AppSyncService {
     }
 
     // Device Types
+    private cleanIncomingDeviceType(deviceType: DeviceType) {
+        deviceType.spec = JSON.parse(deviceType.spec);
+        return deviceType;
+    }
+    private cleanOutgoingDeviceType(deviceType: DeviceType) {
+        deviceType.spec = JSON.stringify(deviceType.spec);
+        return deviceType;
+    }
     public listDeviceTypes(limit: number, nextToken: string) {
         return this.query(listDeviceTypes, {
             limit: limit,
             nextToken: nextToken
-        }).then(result => {
-            return result.data.listDeviceTypes;
+        }).then(r => {
+            r.data.listDeviceTypes.deviceTypes = r.data.listDeviceTypes.deviceTypes.map(d =>
+                this.cleanIncomingDeviceType(d)
+            );
+            return r.data.listDeviceTypes;
         });
     }
     public getDeviceType(id: string) {
         return this.query(getDeviceType, {
             id: id
-        }).then(d => <DeviceType>d.data.getDeviceType);
+        }).then(d => this.cleanIncomingDeviceType(d.data.getDeviceType));
     }
     public addDeviceType(deviceType: DeviceType) {
+        deviceType = this.cleanOutgoingDeviceType(deviceType);
         delete deviceType.id;
+        delete deviceType.createdAt;
+        delete deviceType.updatedAt;
         return this.mutation(addDeviceType, {
             name: deviceType.name,
             type: deviceType.type,
             spec: deviceType.spec
-        }).then(d => {
-            return <DeviceType>d.data.addDeviceType;
-        });
+        }).then(d => this.cleanIncomingDeviceType(d.data.addDeviceType));
     }
     public deleteDeviceType(id: string) {
         return this.mutation(deleteDeviceType, {
             id: id
-        }).then(d => {
-            return <DeviceType>d.data.deleteDeviceType;
-        });
+        }).then(d => this.cleanIncomingDeviceType(d.data.deleteDeviceType));
     }
     public updateDeviceType(deviceType: DeviceType) {
+        deviceType = this.cleanOutgoingDeviceType(deviceType);
         delete deviceType.updatedAt;
-        return this.mutation(updateDeviceType, deviceType).then(d => {
-            return <DeviceType>d.data.updateDeviceType;
-        });
+        delete deviceType.createdAt;
+        return this.mutation(updateDeviceType, deviceType).then(d => this.cleanIncomingDeviceType(d.data.updateDeviceType));
     }
     public onAddedDeviceType(hook: AddedDeviceType) {
         this.subscribe(addedDeviceType, {}).subscribe({
             next: result => {
-                return hook.onAddedDeviceType(result.value.data.addedDeviceType);
+                return hook.onAddedDeviceType(this.cleanIncomingDeviceType(result.value.data.addedDeviceType));
             }
         });
     }
     public onUpdatedDeviceType(hook: UpdatedDeviceType) {
         this.subscribe(updatedDeviceType, {}).subscribe({
             next: result => {
-                return hook.onUpdatedDeviceType(result.value.data.updatedDeviceType);
+                return hook.onUpdatedDeviceType(this.cleanIncomingDeviceType(result.value.data.updatedDeviceType));
             }
         });
     }
     public onDeletedDeviceType(hook: DeletedDeviceType) {
         this.subscribe(deletedDeviceType, {}).subscribe({
             next: result => {
-                return hook.onDeletedDeviceType(result.value.data.deletedDeviceType);
+                return hook.onDeletedDeviceType(this.cleanIncomingDeviceType(result.value.data.deletedDeviceType));
             }
         });
     }
@@ -193,10 +203,6 @@ export class AppSyncService {
         return deviceBlueprint;
     }
     public listDeviceBlueprints(limit: number, nextToken: string) {
-        // return this.query(listDeviceBlueprints, {
-        //     limit: limit,
-        //     nextToken: nextToken
-        // }).then(r => r.data.listDeviceBlueprints);
         return this.query(listDeviceBlueprints, { limit: limit, nextToken: nextToken }).then(r => {
             r.data.listDeviceBlueprints.deviceBlueprints = r.data.listDeviceBlueprints.deviceBlueprints.map(d =>
                 this.cleanIncomingDeviceBlueprint(d)
@@ -224,6 +230,7 @@ export class AppSyncService {
         return this.mutation(deleteDeviceBlueprint, {
             id: id
         }).then(r => {
+            console.log(r);
             return this.cleanIncomingDeviceBlueprint(r.data.deleteDeviceBlueprint);
         });
     }
@@ -239,21 +246,28 @@ export class AppSyncService {
     public onAddedDeviceBlueprint(hook: AddedDeviceBlueprint) {
         this.subscribe(addedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onAddedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.addedDeviceBlueprint));
+                return hook.onAddedDeviceBlueprint(
+                    this.cleanIncomingDeviceBlueprint(result.value.data.addedDeviceBlueprint)
+                );
             }
         });
     }
     public onUpdatedDeviceBlueprint(hook: UpdatedDeviceBlueprint) {
         this.subscribe(updatedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onUpdatedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.updatedDeviceBlueprint));
+                return hook.onUpdatedDeviceBlueprint(
+                    this.cleanIncomingDeviceBlueprint(result.value.data.updatedDeviceBlueprint)
+                );
             }
         });
     }
     public onDeletedDeviceBlueprint(hook: DeletedDeviceBlueprint) {
         this.subscribe(deletedDeviceBlueprint, {}).subscribe({
             next: result => {
-                return hook.onDeletedDeviceBlueprint(this.cleanIncomingDeviceBlueprint(result.value.data.deletedDeviceBlueprint));
+                console.log('onDelete', result);
+                return hook.onDeletedDeviceBlueprint(
+                    this.cleanIncomingDeviceBlueprint(result.value.data.deletedDeviceBlueprint)
+                );
             }
         });
     }
@@ -349,7 +363,7 @@ export class AppSyncService {
         });
     }
 
-    // Devices
+    // Solutions
     public listSolutions(limit: number, nextToken: string) {
         return this.query(listSolutions, { limit: limit, nextToken: nextToken }).then(result => {
             return result.data.listSolutions;

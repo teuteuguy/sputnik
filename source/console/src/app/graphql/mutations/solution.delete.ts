@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation UpdateSolution($id: String!) {
-        updateSolution(id: $id) {
+    mutation DeleteSolution($id: String!) {
+        deleteSolution(id: $id) {
             id
             name
             description

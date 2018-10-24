@@ -27,8 +27,6 @@ export class GenericTableParams {
     viewElement: GenericTableElementParams;
     editElement: GenericTableElementParams;
     deleteElement: boolean;
-    viewLink: boolean;
-    editLink: boolean;
     cachedMode: boolean;
     constructor(values: Object = {}) {
         Object.assign(this, values);
@@ -106,6 +104,7 @@ export class GenericTableComponent {
     }
 
     private showModal(modal: any, type: string, element: any = null) {
+        console.log(type, element);
         this.createModalTemplate.clear();
         const componentRef = this.createModalTemplate.createComponent(
             this.genericResolver.resolveComponentFactory(modal)

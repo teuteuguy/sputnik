@@ -2,15 +2,23 @@ const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const addCreatedAtUpdatedAt = require('./add-created-at-updated-at');
 
-const deviceTypeInits = [
-    require('../device-types/deeplens-v1.0.json')
-];
+const deviceTypeTemplateFolder = 'device-types/';
+const fs = require('fs');
 
 class DeviceTypes {
 
     constructor() {}
 
     factoryReset(event, context, callback) {
+
+        let deviceTypeInits = [];
+
+        fs.readdirSync('./' + deviceTypeTemplateFolder).forEach(file => {
+                    deviceTypeInits.push(require('../' + deviceTypeTemplateFolder + file)); // '../device-types/deeplens-v1.0.json'
+        });
+
+        console.log('Loaded:', deviceTypeInits);
+
         let params = {
             RequestItems: {}
         };

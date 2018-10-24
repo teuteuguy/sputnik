@@ -23,8 +23,10 @@ export class DeviceTypesModalComponent {
 
     constructor(private deviceTypeService: DeviceTypeService) {
         if (!this.element) {
+            this.element = new DeviceType();
             this.element.id = 'new';
             this.element.name = 'new';
+            console.log('new', this.element);
         }
     }
 
@@ -55,7 +57,6 @@ export class DeviceTypesModalComponent {
     }
 
     cancel() {
-        console.log('Cancel');
         this.cancelSubject.next();
     }
 }

@@ -45,6 +45,3 @@ Menu is broken because of Angular UI. Needs improving.
 This is based off of the AWS IoT Device Simulator.
 This is completely UNTESTED code! Use at your own risk!!!
 
-# Thank you
-
-I would like to thank Fred Groen, for which this would have never been possible. If you don't like his driving, honk.

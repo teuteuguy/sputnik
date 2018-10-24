@@ -8,9 +8,20 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submit()"
-                    novalidate>
+                <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submit()" novalidate>
                     <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                        <label for="name" class="form-control-label">Solution Name:</label>
+                        <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
+                            name="name" id="name" #name="ngModel" [(ngModel)]="element.name" pattern="[a-zA-Z0-9:_-]+"
+                            required ngModel [readonly]="modalType === 'view'">
+                        <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
+                            <small>Name of your solution.</small>
+                        </div>
+                        <div *ngIf="(name.invalid && (name.dirty || name.touched)) && name.errors" class="form-control-feedback">
+                            <small>Name of solution is required or has errors.</small>
+                        </div>
+                    </div>
+                    <!-- <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
                         <label for="name" class="form-control-label">Solution Name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
                             name="name" id="name" #name="ngModel" [(ngModel)]="solution.name" pattern="[a-zA-Z0-9:_-]+"
@@ -21,7 +32,7 @@
                         <div *ngIf="(name.invalid && (name.dirty || name.touched)) && name.errors" class="form-control-feedback">
                             <small>Name of solution is required or has errors.</small>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
                         <button type="submit" class="btn btn-success">Submit</button>

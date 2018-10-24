@@ -1,8 +1,11 @@
 import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
-import { LocalStorage } from '@ngx-pwa/local-storage';
 import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
+
+// User stuff
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { ProfileInfo } from '../../models/profile-info.model';
 
 // Parent
 import {
@@ -15,7 +18,6 @@ import { DeviceTypesModalComponent } from './device-types.modal.component';
 
 // Models
 import { DeviceType } from '../../models/device-type.model';
-import { ProfileInfo } from '../../models/profile-info.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
@@ -28,6 +30,9 @@ import { LoggerService } from '../../services/logger.service';
     templateUrl: '../../common/components/generic-table/generic-table.component.html'
 })
 export class DeviceTypesComponent extends GenericTableComponent implements OnInit {
+    private isAdminUser: boolean;
+    private profile: ProfileInfo;
+
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -42,35 +47,61 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
     ) {
         super(logger, resolver);
 
-        this.params = <GenericTableParams>{
-            path: '/securehome/device-types',
-            pageTitle: 'Device Types',
-            createElement: <GenericTableElementParams>{
-                text: 'Create NEW Device Type',
-                modal: DeviceTypesModalComponent,
-                link: false
-            },
-            editElement: <GenericTableElementParams>{
-                text: 'Edit',
-                modal: DeviceTypesModalComponent,
-                link: false
-            },
-            fields: [
-                { attr: 'type', text: 'type' },
-                { attr: 'name', text: 'Name' },
-                { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
-                { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
-            ],
-            viewLink: true,
-            editLink: false,
-            cachedMode: true
-        };
+        this.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+            this.profile = new ProfileInfo(profile);
+            this.isAdminUser = this.profile.isAdmin();
 
-        this.handleDelete.subscribe((element: DeviceType) => {
-            console.log(element);
+            this.params = <GenericTableParams>{
+                path: '/securehome/device-types',
+                pageTitle: 'Device Types',
+                createElement: <GenericTableElementParams>{
+                    text: 'Create NEW Device Type',
+                    modal: DeviceTypesModalComponent,
+                    link: false
+                },
+                editElement: <GenericTableElementParams>{ text: 'Edit', modal: DeviceTypesModalComponent, link: false },
+                viewElement: <GenericTableElementParams>{ text: 'View', modal: DeviceTypesModalComponent, link: false },
+                deleteElement: this.isAdminUser,
+                fields: [
+                    { attr: 'type', text: 'type' },
+                    { attr: 'name', text: 'Name' },
+                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
+                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
+                ],
+                cachedMode: true
+            };
+
+            this.handleDelete.subscribe((element: DeviceType) => {
+                const _self = this;
+                swal({
+                    title: 'Are you sure you want to delete this device type?',
+                    text: `You won't be able to revert this!`,
+                    type: 'question',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then(result => {
+                    if (result.value) {
+                        _self.blockUI.start('Deleting device...');
+                        _self.deviceTypeService
+                            .delete(element.id)
+                            .then((resp: any) => {
+                                console.log(resp);
+                                _self.blockUI.stop();
+                            })
+                            .catch(err => {
+                                _self.blockUI.stop();
+                                swal('Oops...', 'Something went wrong! Unable to delete the device type.', 'error');
+                                _self.logger.error('error occurred calling deleteDeviceType api, show message');
+                                _self.logger.error(err);
+                            });
+                    }
+                });
+            });
+
+            this.data = deviceTypeService.deviceTypes;
         });
-
-        this.data = deviceTypeService.deviceTypes;
     }
 
     ngOnInit() {
