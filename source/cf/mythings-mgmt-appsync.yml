@@ -565,7 +565,7 @@ Resources:
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # RESOLVERS - MUTATIONS - Solutions
-    appSyncResolverMutationAddDevice:
+    appSyncResolverMutationAddSolution:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
         Properties:

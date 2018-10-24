@@ -122,7 +122,7 @@ type Mutation {
 
     addDeviceBlueprint(name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON!): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])
     deleteDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
-    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON)!: DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
+    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
 
     factoryReset(cmd: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
