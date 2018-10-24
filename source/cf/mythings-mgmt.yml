@@ -100,10 +100,10 @@ Resources:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solutions.yml']]
 
     # Nested stack - DynamoDB Table - Solution Blueprints
-    # CFStackForDDBSolutionBlueprints:
-    #     Type: AWS::CloudFormation::Stack
-    #     Properties:
-    #         TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solution-blueprints.yml']]
+    CFStackForDDBSolutionBlueprints:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/mythings-mgmt-ddb-table-solution-blueprints.yml']]
 
 
     # Nested stack - MicroService - Factory Reset
@@ -192,6 +192,7 @@ Resources:
                 deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+                solutionBlueprintsTable: !GetAtt CFStackForDDBSolutionBlueprints.Outputs.solutionBlueprintsTable
                 lambdaServiceDevicesArn: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
                 lambdaServiceFactoryResetArn: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn

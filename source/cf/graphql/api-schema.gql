@@ -88,6 +88,22 @@ type SolutionStat {
     total: Int!
 }
 
+type SolutionBlueprint {
+    id: String!
+    name: String!
+    description: String
+    spec: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedSolutionBlueprints {
+    solutionBlueprints: [SolutionBlueprint]
+    nextToken: String
+}
+type SolutionBlueprintStat {
+    total: Int!
+}
+
 type Query {
     listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     listDevicesOfDeviceType(deviceTypeId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
@@ -110,6 +126,10 @@ type Query {
     listSolutions(limit: Int, nextToken: String): PaginatedSolutions @aws_auth(cognito_groups: ["Administrators", "Members"])
     getSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators", "Members"])
     getSolutionStats: SolutionStat @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listSolutionBlueprints(limit: Int, nextToken: String): PaginatedSolutionBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## getSolutionBlueprintStats: SolutionBlueprintStat @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
