@@ -110,6 +110,7 @@ export class SettingsComponent implements OnInit {
         const _self = this;
 
         _self.factoryResetTables.forEach(t => {
+            t.done = false;
             _self.factoryResetService
                 .factoryReset(t.table)
                 .then(result => {

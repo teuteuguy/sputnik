@@ -13,7 +13,7 @@
                         <label for="name" class="form-control-label">Device Type Name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
                             name="name" id="name" #name="ngModel" [(ngModel)]="element.name" pattern="[a-zA-Z0-9:_-]+"
-required ngModel [readonly]="modalType === 'view'">
+                            required ngModel [readonly]="modalType === 'view'">
                         <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
                             <small>Name of your device type.</small>
                         </div>
@@ -24,7 +24,7 @@ required ngModel [readonly]="modalType === 'view'">
                     <div class="form-group">
                         <label for="type" class="form-control-label">Type:</label>
                         <select class="custom-select col-12" name="type" id="type" #type="ngModel" [(ngModel)]="element.type"
-required ngModel [disabled]="modalType === 'view'">
+                            required ngModel [disabled]="modalType === 'view'">
                             <option ng-selected="element.type === 'UNKNOWN'">UNKNOWN</option>
                             <option ng-selected="element.type === 'SDK'">SDK</option>
                             <option ng-selected="element.type === 'A:FreeRTOS'">A:FreeRTOS</option>
