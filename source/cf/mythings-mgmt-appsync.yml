@@ -642,6 +642,16 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-add.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationDeleteSolution:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: deleteSolution
+            DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################
     # ####################################################################################################
