@@ -13,7 +13,7 @@ type Device {
     deviceBlueprintId: String!
     connectionState: ConnectionState
     greengrassGroupId: String!
-    spec: AWSJON
+    spec: AWSJSON
     lastDeploymentId: String
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
