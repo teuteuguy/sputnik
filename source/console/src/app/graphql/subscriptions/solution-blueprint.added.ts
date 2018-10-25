@@ -4,9 +4,9 @@ export default gql`
     subscription AddedSolutionBlueprint {
         addedSolutionBlueprint {
             id
-            thingIds
             name
-            solutionBlueprintBlueprintId
+            description
+            spec
             createdAt
             updatedAt
         }

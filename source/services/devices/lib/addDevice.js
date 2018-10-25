@@ -6,93 +6,101 @@ const moment = require('moment');
 
 const lib = 'addDevice';
 
-module.exports = function(event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
+module.exports = function (event, context) {
 
     // Create thing returns
     // {
-    //     "thingArn": "arn:aws:iot:us-east-1:831994023503:thing/toto",
+    //     "thingArn": "arn:aws:iot:us-east-1:accountnumber:thing/toto",
     //     "thingName": "toto",
-    //     "thingId": "ef17a1e7-eb50-4d64-a359-df4894ba90a0"
+    //     "thingId": "ef17a1237-eb50-4d64-a359-df4894ba90a0"
     // }
 
     // TODO: deal with creating a greengrass group if required.
     // TODO: deal with certificates!
 
-    iot.createThing({
-        thingName: event.thingName
-    })
+    let _thing;
+
+    return iot.createThing({
+            thingName: event.thingName
+        })
         .promise()
         .then(thing => {
-            return Promise.all([
-                thing,
-                documentClient
-                    .get({
-                        TableName: process.env.TABLE_DEVICES,
-                        Key: {
-                            thingId: thing.thingId
-                        }
-                    })
-                    .promise()
-            ]);
+            _thing = thing;
+            // Check if thing already exists
+            return documentClient
+                .get({
+                    TableName: process.env.TABLE_DEVICES,
+                    Key: {
+                        thingId: thing.thingId
+                    }
+                })
+                .promise();
         })
-        .then(results => {
-            const thing = results[0];
-            const result = results[1];
+        .then(result => {
+
+            let params = {
+                thingId: _thing.thingId,
+                thingName: _thing.thingName,
+                thingArn: _thing.thingArn,
+                name: _thing.thingName,
+                deviceTypeId: event.deviceTypeId || 'UNKNOWN',
+                deviceBlueprintId: event.deviceBlueprintId || 'UNKNOWN',
+                greengrassGroupId: 'NOT_A_GREENGRASS_DEVICE',
+                spec: event.spec || {},
+                lastDeploymentId: 'UNKNOWN',
+                createdAt: moment()
+                    .utc()
+                    .format(),
+                updatedAt: moment()
+                    .utc()
+                    .format(),
+                connectionState: {
+                    certificateId: 'NOTSET',
+                    certificateArn: 'NOTSET',
+                    state: 'created',
+                    at: moment()
+                        .utc()
+                        .format()
+                }
+            };
 
             if (result.Item) {
                 // Thing already in our DB
                 throw 'Thing is already in the DB';
             } else {
-                const params = {
-                    thingId: thing.thingId,
-                    thingName: event.thingName,
-                    thingArn: thing.thingArn,
-                    name: event.thingName,
-                    deviceTypeId: 'UNKNOWN',
-                    deviceBlueprintId: 'UNKNOWN',
-                    connectionState: {
-                        // TODO: probably generate the certs here at one point.
-                        certificateId: 'NOTSET',
-                        certificateArn: 'NOTSET',
-                        state: 'created',
-                        at: moment()
-                            .utc()
-                            .format()
-                    },
-                    greengrassGroupId: 'NOT_A_GREENGRASS_DEVICE',
-                    lastDeploymentId: 'UNKNOWN',
-                    createdAt: moment()
-                        .utc()
-                        .format(),
-                    updatedAt: moment()
-                        .utc()
-                        .format()
-                };
-                return Promise.all([params, documentClient
-                    .put({
-                        TableName: process.env.TABLE_DEVICES,
-                        Item: params,
-                        ReturnValues: 'ALL_OLD'
-                    })
-                    .promise()
-                ]);
+                if (event.generateCert) {
+
+                    return iot.createKeysAndCertificate({
+                        setAsActive: true
+                    }).promise().then(cert => {
+                        params.connectionState = {
+                            certificateId: cert.certificateId,
+                            certificateArn: cert.certificateArn,
+                            state: 'created',
+                            at: moment().utc().format()
+                        };
+                        params.cert = cert;
+                        return params;
+                    });
+
+                } else {
+
+                    return params;
+
+                }
             }
+        }).then(params => {
+            return Promise.all([params, documentClient
+                .put({
+                    TableName: process.env.TABLE_DEVICES,
+                    Item: params,
+                    ReturnValues: 'ALL_OLD'
+                })
+                .promise()
+            ]);
         })
         .then(results => {
-            const newThing = results[0];
-            console.log(newThing);
-            callback(null, newThing);
-        })
-        .catch(err => {
-            callback(err, null);
+            console.log('addDevice: results:', JSON.stringify(results, null, 4));
+            return results[0];
         });
-
-    // getDeviceStatsRecursive().then(stats => {
-    //     callback(null, stats);
-    // }).catch(err => {
-    //     callback(err, null);
-    // });
 };

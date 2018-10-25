@@ -176,7 +176,10 @@ Resources:
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
                 settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
                 devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                deviceBlueprintsTable: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
                 solutionsTable: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+                solutionBlueprintsTable: !GetAtt CFStackForDDBSolutionBlueprints.Outputs.solutionBlueprintsTable
 
     # Nested stack - AppSync
     CFStackForAppSync:

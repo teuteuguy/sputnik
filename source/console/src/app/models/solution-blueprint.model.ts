@@ -1,8 +1,9 @@
 export class SolutionBlueprint {
     id: string;
-    name: string;
-    description: string;
-    spec: any;
+    name: 'UNKNOWN';
+    description = 'UNKNOWN';
+    prefix = 'MTM_';
+    spec: any = {};
     createdAt: string;
     updatedAt: string;
 

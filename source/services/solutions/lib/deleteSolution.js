@@ -7,11 +7,8 @@ const moment = require('moment');
 const lib = 'deleteSolution';
 
 module.exports = function (event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
 
-    documentClient
+    return documentClient
         .get({
             TableName: process.env.TABLE_SOLUTIONS,
             Key: {
@@ -44,14 +41,6 @@ module.exports = function (event, context, callback) {
         //     const oldDevice = results[0];
         //     console.log(oldDevice);
         //     callback(null, oldDevice);
-        })
-        .catch(err => {
-            callback(err, null);
         });
 
-    // getDeviceStatsRecursive().then(stats => {
-    //     callback(null, stats);
-    // }).catch(err => {
-    //     callback(err, null);
-    // });
 };

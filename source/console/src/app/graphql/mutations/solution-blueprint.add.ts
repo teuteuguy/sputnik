@@ -1,18 +1,18 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation AddSolutionBlueprint($name: String!, $description: String, $thingIds: [String]!, $solutionBlueprintBlueprintId: String!) {
+    mutation AddSolutionBlueprint($name: String!, $description: String, $prefix: String!, $spec: AWSJSON!) {
         addSolutionBlueprint(
             name: $name
             description: $description
-            thingIds: $thingIds
-            solutionBlueprintBlueprintId: $solutionBlueprintBlueprintId
+            prefix: $prefix
+            spec: $spec
         ) {
             id
             name
             description
-            thingIds
-            solutionBlueprintBlueprintId
+            prefix
+            spec
             createdAt
             updatedAt
         }

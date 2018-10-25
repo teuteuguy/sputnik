@@ -89,6 +89,7 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
         });
         if (index === -1) {
             this.deviceBlueprints.push(deviceBlueprint);
+            this.observable.next(this.deviceBlueprints);
         } else {
             this.onUpdatedDeviceBlueprint(deviceBlueprint);
         }
@@ -98,12 +99,14 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
             return d.id === deviceBlueprint.id;
         });
         this.deviceBlueprints[index] = deviceBlueprint;
+        this.observable.next(this.deviceBlueprints);
     }
     onDeletedDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
         const index = _.findIndex(this.deviceBlueprints, (d: DeviceBlueprint) => {
             return d.id === deviceBlueprint.id;
         });
         this.deviceBlueprints.splice(index, 1);
+        this.observable.next(this.deviceBlueprints);
     }
 
 }

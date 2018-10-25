@@ -1,24 +1,31 @@
-const getSolutionStats = require('./lib/getSolutionStats');
-const addSolution = require('./lib/addSolution');
-const deleteSolution = require('./lib/deleteSolution');
-
+const libs = require('./libs');
 
 function handler(event, context, callback) {
     console.log('Event:', JSON.stringify(event, null, 2));
 
+    let promise = null;
+
     switch (event.cmd) {
         case 'getSolutionStats':
-            getSolutionStats(event, context, callback);
+            promise = libs.getSolutionStats;
             break;
         case 'addSolution':
-            addSolution(event, context, callback);
+            promise = libs.addSolution;
             break;
         case 'deleteSolution':
-            deleteSolution(event, context, callback);
+            promise = libs.deleteSolution;
             break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + JSON.stringify(event), null);
             break;
+    }
+
+    if (promise) {
+        promise(event, context).then(result => {
+            callback(null, result);
+        }).catch(err => {
+            callback(err, null);
+        });
     }
 }
 

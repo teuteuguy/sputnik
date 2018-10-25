@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
@@ -23,11 +23,10 @@ export class DeviceBlueprintsModalComponent {
     submitSubject: Subject<any>;
 
     constructor(private deviceBlueprintService: DeviceBlueprintService, private deviceTypeService: DeviceTypeService) {
-        if (!this.element) {
-            this.element = new DeviceBlueprint();
-            this.element.id = 'new';
-            this.element.name = 'new';
-        }
+        this.element = new DeviceBlueprint({
+            id: 'new',
+            name: 'new'
+        });
     }
 
     submit() {

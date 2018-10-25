@@ -24,7 +24,6 @@ import getSetting from '../graphql/queries/setting.get';
 import getSolution from '../graphql/queries/solution.get';
 import getSolutionStats from '../graphql/queries/solution.getStats';
 import getSolutionBlueprint from '../graphql/queries/solution-blueprint.get';
-import getSolutionBlueprintStats from '../graphql/queries/solution-blueprint.getStats';
 import getThingAutoRegistrationState from '../graphql/queries/thing-auto-registration-state.get';
 import listDeployments from '../graphql/queries/deployments.list';
 import listDevices from '../graphql/queries/devices.list';
@@ -465,11 +464,6 @@ export class AppSyncService {
             id: id
         }).then(d => this.cleanIncomingSolutionBlueprint(d.data.getSolutionBlueprint));
     }
-    // public getSolutionBlueprintStats() {
-    //     return this.query(getSolutionBlueprintStats, {}).then(
-    //         result => <SolutionBlueprintStats>result.data.getSolutionBlueprintStats
-    //     );
-    // }
     public addSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
         solutionBlueprint = this.cleanOutgoingSolutionBlueprint(solutionBlueprint);
         delete solutionBlueprint.id;

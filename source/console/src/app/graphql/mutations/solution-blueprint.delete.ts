@@ -6,8 +6,8 @@ export default gql`
             id
             name
             description
-            thingIds
-            solutionBlueprintBlueprintId
+            prefix
+            spec
             createdAt
             updatedAt
         }

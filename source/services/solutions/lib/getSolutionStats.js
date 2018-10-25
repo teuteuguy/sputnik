@@ -50,12 +50,5 @@ function getSolutionStatsRecursive(lastEvalKey) {
 }
 
 module.exports = function (event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
-    getSolutionStatsRecursive().then(stats => {
-        callback(null, stats);
-    }).catch(err => {
-        callback(err, null);
-    });
+    return getSolutionStatsRecursive();
 };

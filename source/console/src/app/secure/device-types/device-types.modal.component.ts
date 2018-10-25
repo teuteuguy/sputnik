@@ -22,12 +22,10 @@ export class DeviceTypesModalComponent {
     submitSubject: Subject<any>;
 
     constructor(private deviceTypeService: DeviceTypeService) {
-        if (!this.element) {
-            this.element = new DeviceType();
-            this.element.id = 'new';
-            this.element.name = 'new';
-            console.log('new', this.element);
-        }
+        this.element = new DeviceType({
+            id: 'new',
+            name: 'new'
+        });
     }
 
     submit() {

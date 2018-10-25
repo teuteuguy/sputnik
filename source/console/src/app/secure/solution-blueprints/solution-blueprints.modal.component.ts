@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
@@ -22,13 +22,12 @@ export class SolutionBlueprintsModalComponent {
     submitSubject: Subject<any>;
 
     constructor(private solutionBlueprintService: SolutionBlueprintService) {
-        if (!this.element) {
-            this.element = new SolutionBlueprint();
-            this.element.id = 'new';
-            this.element.name = 'new';
-            this.element.description = 'New Solution';
-            this.element.spec = {};
-        }
+        this.element = new SolutionBlueprint({
+            id: 'new',
+            name: 'new',
+            description: 'New Solution',
+            spec: {}
+        });
     }
 
     submit() {

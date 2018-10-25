@@ -1,9 +1,9 @@
 export class Solution {
     id: string;
-    name: string;
-    description: string;
-    thingIds: string[];
-    solutionBlueprintId: string;
+    name = 'UNKNOWN';
+    description = 'UNKNOWN';
+    thingIds: string[] = [];
+    solutionBlueprintId = 'UNKNOWN';
     createdAt: string;
     updatedAt: string;
 

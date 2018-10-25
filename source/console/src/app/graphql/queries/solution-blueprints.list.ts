@@ -7,6 +7,7 @@ export default gql`
                 id
                 name
                 description
+                prefix
                 spec
                 createdAt
                 updatedAt

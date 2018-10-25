@@ -3,21 +3,84 @@ const iot = new AWS.Iot();
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
+const shortid = require('shortid');
 
 const MTMThingGroups = require('mythings-mgmt-custom-resource-helper-thing-groups');
+const DevicesLibs = require('mythings-mgmt-devices-service');
 
 const lib = 'addSolution';
 
-module.exports = function (event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
+function processDeviceList(prefix, deviceListSpec) {
+
+    const tag = 'processDeviceList:';
+
+    return deviceListSpec.reduce((previousValue, currentValue, index, array) => {
+        return previousValue.then(chainResults => {
+            console.log(tag, 'CurrentValue:', index, JSON.stringify(currentValue));
+            console.log(tag, 'chainResults:', index, JSON.stringify(chainResults));
+
+            let occurencesOfGetAtt = JSON.stringify(currentValue).split('!GetAtt[');
+
+            if (occurencesOfGetAtt.length !== 1) {
+                // Attributes need to be looked into.
+                console.log(tag, 'GetAtt:', JSON.stringify(occurencesOfGetAtt, null, 4));
+                occurencesOfGetAtt.forEach((occurence, i) => {
+                    if (i !== 0) {
+                        console.log(tag, 'GetAtt: occurencesOfGetAtt[i]:', i, occurencesOfGetAtt[i]);
+                        let split = occurence.split(']');
+                        const attributes = split[0].split('.');
+                        const value = attributes.reduce((pv, cv, j) => {
+                            if (j === 0) {
+                                const indexOfDevice = _.findIndex(chainResults, item => {
+                                    return item.ref === cv;
+                                });
+                                if (indexOfDevice === -1) {
+                                    throw 'Invalid spec';
+                                } else {
+                                    return chainResults[indexOfDevice].device;
+                                }
+                            } else {
+                                return pv[cv];
+                            }
+                        }, '');
+                        console.log(tag, 'GetAtt: value:', value);
+                        split.shift();
+                        occurencesOfGetAtt[i] = '' + value + split.join(']');
+                        console.log(tag, 'GetAtt: occurencesOfGetAtt[i]:', i, occurencesOfGetAtt[i]);
+                    }
+                });
+            }
+            console.log(tag, 'GetAtt:', occurencesOfGetAtt.join(''));
+            currentValue = JSON.parse(occurencesOfGetAtt.join(''));
+
+            return DevicesLibs.addDevice({
+                thingName: '' + prefix + shortid.generate(),
+                deviceTypeId: currentValue.defaultDeviceTypeId,
+                deviceBlueprintId: currentValue.deviceBlueprintId,
+                spec: currentValue.spec,
+                generateCert: true
+            }).then(device => {
+                currentValue.device = device;
+                return [...chainResults, currentValue];
+            });
+        });
+
+    }, Promise.resolve([]).then(arrayOfResults => arrayOfResults));
+}
+
+module.exports = function (event, context) {
+
+    // Event:
+    // {
+    //     "cmd": "addSolution",
+    //     "name": "new",
+    //     "description": "New Solution",
+    //     "thingIds": "[]",
+    //     "solutionBlueprintId": "aws-mini-connected-factory-v1.0"
+    // }
 
     // First check a group with that name does not already exist. If so, exit.
-    // Second let's create the group.
-    // Third let's create the solution in the DB to reference the Group as well as the Blueprint.
-
-    iot.describeThingGroup({
+    return iot.describeThingGroup({
         thingGroupName: event.thingGroupName
     }).promise().then(group => {
         // Group already exists.
@@ -26,9 +89,43 @@ module.exports = function (event, context, callback) {
     }).catch(err => {
         // Group does not exist, lets create it.
 
-        const mtmGroups = new MTMThingGroups();
+        return documentClient.get({
+            TableName: process.env.TABLE_SOLUTION_BLUEPRINTS,
+            Key: {
+                id: event.solutionBlueprintId
+            }
+        }).promise().then(solutionBlueprint => {
 
-        return mtmGroups.createThingGroup(event.name, event.description).then(group => {
+            solutionBlueprint = solutionBlueprint.Item;
+
+            console.log('solutionBlueprint:', JSON.stringify(solutionBlueprint, null, 2));
+            if (!solutionBlueprint.spec || !solutionBlueprint.spec.devices) {
+                throw 'solutionBlueprintId: ' + event.solutionBlueprintId + ' does not have a spec and devices';
+            }
+
+            // TODO: for now We'll generate the devices.
+            // Later we can look at thingIds to check if no devices have been provided and if so, NOT create them, but associate them.
+            // Same for the certs. For now we'll generate them.
+
+            return processDeviceList(solutionBlueprint.prefix, solutionBlueprint.spec.devices);
+
+        }).then(devices => {
+
+            console.log('ProcessDeviceList Result:', JSON.stringify(devices));
+
+            event.thingIds = devices.map(d => {
+                return d.device.thingId;
+            });
+
+            // Second let's create the group.
+            // Third based on the spec, we need to read the spec and create the different resources!
+            // Fourth let's create the solution in the DB to reference the Group as well as the Blueprint.
+
+            const mtmGroups = new MTMThingGroups();
+
+            return mtmGroups.createThingGroup(event.name, event.description);
+
+        }).then(group => {
 
             return documentClient
                 .put({
@@ -52,11 +149,9 @@ module.exports = function (event, context, callback) {
 
         }).then(result => {
             console.log('Created solution', result);
-            callback(null, result);
-        }).catch(err => {
-            console.log('Error', err);
-            callback(err, null);
-        })
+            return result;
+        });
+
     });
 
 

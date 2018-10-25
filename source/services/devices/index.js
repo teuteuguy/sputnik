@@ -1,24 +1,31 @@
-const getDeviceStats = require('./lib/getDeviceStats');
-const addDevice = require('./lib/addDevice');
-const deleteDevice = require('./lib/deleteDevice');
-
+const libs = require('./libs');
 
 function handler(event, context, callback) {
     console.log('Event:', JSON.stringify(event, null, 2));
 
+    let promise = null;
+
     switch (event.cmd) {
         case 'getDeviceStats':
-            getDeviceStats(event, context, callback);
+            promise = libs.getDeviceStats;
             break;
         case 'addDevice':
-            addDevice(event, context, callback);
+            promise = libs.addDevice;
             break;
         case 'deleteDevice':
-            deleteDevice(event, context, callback);
+            promise = libs.deleteDevice;
             break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
             break;
+    }
+
+    if (promise) {
+        promise(event, context).then(result => {
+            callback(null, result);
+        }).catch(err => {
+            callback(err, null);
+        });
     }
 }
 

@@ -6,6 +6,7 @@ import { Solution } from '../../models/solution.model';
 
 // Services
 import { SolutionService } from '../../services/solution.service';
+import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
 
 @Component({
     selector: 'app-root-solutions-modal',
@@ -21,41 +22,35 @@ export class SolutionsModalComponent {
     @Input()
     submitSubject: Subject<any>;
 
-    constructor(private solutionService: SolutionService) {
-        if (!this.element) {
-            this.element = new Solution();
-            this.element.id = 'new';
-            this.element.name = 'new';
-            this.element.description = 'New Solution';
-            this.element.solutionBlueprintId = 'UNKNOWN';
-        }
+    constructor(private solutionService: SolutionService, protected solutionBlueprintService: SolutionBlueprintService) {
+        this.element = new Solution({
+            id: 'new',
+            name: 'new',
+            description: 'New Solution'
+        });
     }
 
     submit() {
         if (this.modalType === 'create') {
-        this.solutionService
-            .add(
-                this.element.name,
-                this.element.description,
-                this.element.thingIds,
-                this.element.solutionBlueprintId
-            )
-            .then(solution => {
-                console.log(solution);
-                this.submitSubject.next({ data: solution, error: null });
-            })
-            .catch(err => {
-                console.error(err);
-                this.submitSubject.next({ data: this.element, error: err });
-            });
-        } else if (this.modalType === 'edit') {
+            console.log('element', this.element);
             this.solutionService
-                .update(
-                    this.element.id,
+                .add(
                     this.element.name,
                     this.element.description,
-                    this.element.thingIds
+                    this.element.thingIds,
+                    this.element.solutionBlueprintId
                 )
+                .then(solution => {
+                    console.log(solution);
+                    this.submitSubject.next({ data: solution, error: null });
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.submitSubject.next({ data: this.element, error: err });
+                });
+        } else if (this.modalType === 'edit') {
+            this.solutionService
+                .update(this.element.id, this.element.name, this.element.description, this.element.thingIds)
                 .then(solution => {
                     console.log(solution);
                     this.submitSubject.next({ data: solution, error: null });

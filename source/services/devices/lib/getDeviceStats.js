@@ -42,13 +42,6 @@ function getDeviceStatsRecursive(lastEvalKey) {
     });
 }
 
-module.exports = function (event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
-    getDeviceStatsRecursive().then(stats => {
-        callback(null, stats);
-    }).catch(err => {
-        callback(err, null);
-    });
+module.exports = function (event, context) {
+    return getDeviceStatsRecursive();
 };

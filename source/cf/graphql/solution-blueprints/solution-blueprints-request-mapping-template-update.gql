@@ -1,4 +1,4 @@
-#set( $expression = "SET #n = :n, #d = :d, #uA = :uA" )
+#set( $expression = "SET #n = :n, #d = :d, #p = :p, #uA = :uA" )
 {
     "version" : "2017-02-28",
     "operation" : "UpdateItem",
@@ -14,12 +14,14 @@
             #end
             ":n" : $util.dynamodb.toStringJson($ctx.args.name),
             ":d" : $util.dynamodb.toStringJson($ctx.args.description),
+            ":p" : $util.dynamodb.toStringJson($ctx.args.prefix),
             ":uA" : $util.dynamodb.toStringJson($util.time.nowISO8601())
         },
         "expression" : "$expression",
         "expressionNames": {
             "#n": "name",
             "#d": "description",
+            "#p": "prefix",
             "#uA": "updatedAt"
         }
     }

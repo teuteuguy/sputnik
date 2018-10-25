@@ -1,14 +1,17 @@
 {
     "name": "mythings-mgmt-solutions-service",
     "description": "The solutions microservice for the My Things Management",
-    "main": "index.js",
+    "main": "libs.js",
     "license": "Amazon Software License (ASL)",
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
         "moment": "*",
         "mythings-mgmt-custom-resource-helper-thing-groups": "../../resources/mtm-thing-groups",
-        "underscore": "*"
+        "mythings-mgmt-devices-service": "../devices",
+        "shortid": "^2.2.13",
+        "underscore": "*",
+        "uuid": "^3.3.2"
     },
     "devDependencies": {},
     "scripts": {

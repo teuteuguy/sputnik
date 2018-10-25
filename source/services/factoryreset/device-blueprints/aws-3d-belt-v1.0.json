@@ -1,8 +1,8 @@
 {
-    "id": "afr-mini-connected-factory-v1.0",
-    "name": "Mini Connected Factory for AWS 3D Printed Belt v1.0",
+    "id": "aws-3d-belt-v1.0",
+    "name": "AWS 3D Printed Belt v1.0",
     "type": "A:FreeRTOS",
-    "compatibility": ["aws-3d-belt-esp32-v1.0"],
+    "compatibility": ["aws-afr-3d-belt-esp32-v1.0"],
     "deviceTypeMappings": [],
     "spec": {
         "Shadow": {

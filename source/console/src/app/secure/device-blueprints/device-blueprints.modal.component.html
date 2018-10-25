@@ -9,13 +9,12 @@
             </div>
             <div class="modal-body">
                 <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submit()" novalidate>
-                    <div class="form-group">
-                        <label>Device Blueprint Name:</label>
+
+                    <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                        <label for="name" class="form-control-label">Device Blueprint Name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
-                            name="typename" id="typename" #typename="ngModel" [(ngModel)]="element.name" required
-                            ngModel [readonly]="modalType === 'view'" />
-                        <!-- [readonly]="element.custom === false" -->
-                        <!-- [readonly]="this.typeId !== 'new'" -->
+                            name="name" id="name" #name="ngModel" [(ngModel)]="element.name" pattern="[a-zA-Z0-9:_-]+"
+                            required ngModel [readonly]="modalType === 'view'">
                         <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
                             <small>Name of your device blueprint.</small>
                         </div>
@@ -68,7 +67,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div *ngIf="element.type === 'GREENGRASS'" class="form-group">
                         <label for="type" class="form-control-label">Custom DeviceType Mappings:</label>
                         <app-pretty-json name="deviceTypeMappings" [(ngModel)]="element.deviceTypeMappings" [rows]="10"
                             [readonly]="modalType === 'view'"></app-pretty-json>

@@ -89,6 +89,7 @@ export class SolutionBlueprintService
         });
         if (index === -1) {
             this.solutionBlueprints.push(result);
+            this.observable.next(this.solutionBlueprints);
         } else {
             this.onUpdatedSolutionBlueprint(result);
         }
@@ -98,11 +99,13 @@ export class SolutionBlueprintService
             return r.id === result.id;
         });
         this.solutionBlueprints[index] = result;
+        this.observable.next(this.solutionBlueprints);
     }
     onDeletedSolutionBlueprint(result: SolutionBlueprint) {
         const index = _.findIndex(this.solutionBlueprints, (r: SolutionBlueprint) => {
             return r.id === result.id;
         });
         this.solutionBlueprints.splice(index, 1);
+        this.observable.next(this.solutionBlueprints);
     }
 }

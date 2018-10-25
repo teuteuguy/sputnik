@@ -680,16 +680,6 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceSolutionBlueprintsDynamoDB.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-get.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
-    # appSyncResolverQueryGetSolutionBlueprintStats:
-    #     Type: 'AWS::AppSync::Resolver'
-    #     DependsOn: appSyncSchema
-    #     Properties:
-    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
-    #         TypeName: Query
-    #         FieldName: getSolutionBlueprintStats
-    #         DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
-    #         RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprint-stats-request-mapping-template-get.gql']]
-    #         ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # RESOLVERS - MUTATIONS - Solution Blueprints
     # appSyncResolverMutationAddSolution:

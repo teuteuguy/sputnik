@@ -95,7 +95,6 @@ export class GenericTableComponent {
         }
     }
     handleView(element: any) {
-        console.log(element, this.params);
         if (this.params.viewElement && this.params.viewElement.modal) {
             this.showModal(this.params.viewElement.modal, 'view', element);
         } else if (this.params.viewElement && this.params.viewElement.link) {
@@ -104,7 +103,7 @@ export class GenericTableComponent {
     }
 
     private showModal(modal: any, type: string, element: any = null) {
-        console.log(type, element);
+        // console.log(type, element);
         this.createModalTemplate.clear();
         const componentRef = this.createModalTemplate.createComponent(
             this.genericResolver.resolveComponentFactory(modal)

@@ -2,7 +2,7 @@ export class DeviceType {
     id: string;
     name = 'UNKNOWN';
     type = 'UNKNOWN';
-    spec = '{}';
+    spec: any = {};
     createdAt: string;
     updatedAt: string;
 

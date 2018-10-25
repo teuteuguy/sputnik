@@ -4,9 +4,9 @@ export default gql`
     subscription DeletedSolutionBlueprint {
         deletedSolutionBlueprint {
             id
-            thingIds
             name
-            solutionBlueprintBlueprintId
+            description
+            spec
             createdAt
             updatedAt
         }

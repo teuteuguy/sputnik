@@ -1,5 +1,5 @@
 {
-    "id": "aws-3d-belt-esp32-v1.0",
+    "id": "aws-afr-3d-belt-esp32-v1.0",
     "name": "AWS 3D Printed Belt v1.0",
     "type": "A:FreeRTOS",
     "spec": {}
