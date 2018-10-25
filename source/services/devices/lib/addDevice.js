@@ -8,6 +8,16 @@ const lib = 'addDevice';
 
 module.exports = function (event, context) {
 
+    // Note: in order to be consistent with the rest of the Appsync API, event.spec is a stringified json object!
+
+    // Event needs to be:
+    // event.deviceTypeId
+    // event.deviceBlueprintId
+    // event.spec
+    // event.thingName
+    // event.generateCert
+
+
     // Create thing returns
     // {
     //     "thingArn": "arn:aws:iot:us-east-1:accountnumber:thing/toto",
@@ -38,6 +48,13 @@ module.exports = function (event, context) {
         })
         .then(result => {
 
+
+            if (!event.spec) {
+                event.spec = {};
+            } else {
+                event.spec = JSON.parse(event.spec);
+            }
+
             let params = {
                 thingId: _thing.thingId,
                 thingName: _thing.thingName,
@@ -46,7 +63,7 @@ module.exports = function (event, context) {
                 deviceTypeId: event.deviceTypeId || 'UNKNOWN',
                 deviceBlueprintId: event.deviceBlueprintId || 'UNKNOWN',
                 greengrassGroupId: 'NOT_A_GREENGRASS_DEVICE',
-                spec: event.spec || {},
+                spec: event.spec,
                 lastDeploymentId: 'UNKNOWN',
                 createdAt: moment()
                     .utc()
@@ -68,7 +85,7 @@ module.exports = function (event, context) {
                 // Thing already in our DB
                 throw 'Thing is already in the DB';
             } else {
-                if (event.generateCert) {
+                if (event.generateCert !== false) {
 
                     return iot.createKeysAndCertificate({
                         setAsActive: true
@@ -80,7 +97,16 @@ module.exports = function (event, context) {
                             at: moment().utc().format()
                         };
                         params.cert = cert;
+
+                        return iot.attachThingPrincipal({
+                            principal: cert.certificateArn,
+                            thingName: event.thingName
+                        }).promise();
+
+                    }).then(() => {
+
                         return params;
+
                     });
 
                 } else {

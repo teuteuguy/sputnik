@@ -36,14 +36,26 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
     public getDevice(thingId: string) {
         return this.appSyncService.getDevice(thingId);
     }
-    public updateDevice(thingId: string, name: string, deviceTypeId: string, deviceBlueprintId: string) {
-        return this.appSyncService.updateDevice(thingId, name, deviceTypeId, deviceBlueprintId);
+    public updateDevice(
+        thingId: string,
+        name: string,
+        spec: any = {},
+        deviceTypeId: string = 'UNKNOWN',
+        deviceBlueprintId: string = 'UNKNOWN'
+    ) {
+        return this.appSyncService.updateDevice(thingId, name, spec, deviceTypeId, deviceBlueprintId);
     }
     public deleteDevice(thingId: string) {
         return this.appSyncService.deleteDevice(thingId);
     }
-    public addDevice(thingName: string, isGreengrass: boolean) {
-        return this.appSyncService.addDevice(thingName, isGreengrass);
+    public addDevice(
+        thingName: string,
+        deviceTypeId: string = 'UNKNOWN',
+        deviceBlueprintId: string = 'UNKNOWN',
+        spec: any = {},
+        generateCert: boolean = true
+    ) {
+        return this.appSyncService.addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert);
     }
 
     onAddedDevice(result: Device) {

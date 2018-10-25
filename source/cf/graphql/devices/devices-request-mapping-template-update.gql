@@ -17,6 +17,11 @@
                 #set( $expression = "$expression, deviceBlueprintId = :deviceBlueprintId" )
                 ":deviceBlueprintId" : $util.dynamodb.toStringJson($ctx.args.deviceBlueprintId),
             #end
+            #if( $ctx.args.spec )
+                ## Add spec to expression
+                #set( $expression = "$expression, spec = :spec" )
+                ":spec" : $util.dynamodb.toStringJson($ctx.args.spec),
+            #end
             ":n" : $util.dynamodb.toStringJson($ctx.args.name),
             ":uA" : $util.dynamodb.toStringJson($util.time.nowISO8601())
         },

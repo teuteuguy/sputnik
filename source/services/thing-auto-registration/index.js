@@ -12,7 +12,7 @@ const listPrincipalThingsDetailed = require('./lib/listPrincipalThingsDetailed')
 // TODO: Move the actual rule action to SQS so as to separate the calls and buffer via SQS.
 // TODO: The principal will refer to a cert. But this does not actually refer to the thing.
 //          We can assume the thing via it's attachement to the cert, but we need to combine it with the client id.
-
+// TODO: Try to re-use the addDevice service ?
 
 // {
 //     "clientId": "iotconsole-1539277498927-0",

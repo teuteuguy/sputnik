@@ -66,7 +66,7 @@ export class DevicesComponent implements OnInit {
         });
 
         _self.statService.statObservable$.subscribe(message => {
-            _self.deviceStats = message;
+            _self.deviceStats = message.deviceStats;
             _self._ngZone.run(() => {});
         });
 
@@ -165,7 +165,7 @@ export class DevicesComponent implements OnInit {
         _self.blockUI.start('Creating device...');
 
         _self.deviceService
-            .addDevice(_self.newDevice.thingName, false)
+            .addDevice(_self.newDevice.thingName)
             .then((device: Device) => {
                 _self.loadDevices();
                 // TODO: goto the /devices/thingId in the router

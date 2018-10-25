@@ -133,9 +133,9 @@ type Query {
     getSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
-    addDevice(thingName: String!, isGreengrass: Boolean!): Device! @aws_auth(cognito_groups: ["Administrators"])
+    addDevice(thingName: String!, spec: AWSJSON, generateCert: Boolean!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
     deleteDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators"])
-    updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
+    updateDevice(thingId: String!, name: String!, spec: AWSJSON, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
 
     addDeviceType(name: String!, type: String!, spec: AWSJSON): DeviceType! @aws_auth(cognito_groups: ["Administrators"])
     deleteDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators"])

@@ -6,16 +6,11 @@ export default gql`
             thingId
             thingName
             thingArn
-            device
+            name
             deviceTypeId
             deviceBlueprintId
-            connectionState {
-                state
-                at
-                certificateId
-                certificateArn
-            }
             greengrassGroupId
+            spec
             lastDeploymentId
             createdAt
             updatedAt

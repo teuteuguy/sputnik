@@ -10,6 +10,30 @@ const DevicesLibs = require('mythings-mgmt-devices-service');
 
 const lib = 'addSolution';
 
+
+// "spec": {
+//     "devices": [{
+//             "ref": "device_0",
+//             "deviceBlueprintId": "aws-3d-belt-v1.0",
+//             "defaultDeviceTypeId": "aws-afr-3d-belt-esp32-v1.0"
+//         },
+//         {
+//             "ref": "device_1",
+//             "deviceBlueprintId": "gg-mini-connected-factory-v1.0",
+//             "defaultDeviceTypeId": "deeplensv1.0",
+//             "spec": {
+//                 "DeviceDefinitionVersion": {
+//                     "Devices": [{
+//                         "ThingArn": "!GetAtt[device_0.thingArn]",
+//                         "CertificateArn": "!GetAtt[device_0.cert.certificateArn]",
+//                         "SyncShadow": true
+//                     }]
+//                 }
+//             }
+//         }
+//     ]
+// }
+
 function processDeviceList(prefix, deviceListSpec) {
 
     const tag = 'processDeviceList:';
@@ -22,7 +46,7 @@ function processDeviceList(prefix, deviceListSpec) {
             let occurencesOfGetAtt = JSON.stringify(currentValue).split('!GetAtt[');
 
             if (occurencesOfGetAtt.length !== 1) {
-                // Attributes need to be looked into.
+                // Found at least 1 occurence of !GetAtt in our spec.
                 console.log(tag, 'GetAtt:', JSON.stringify(occurencesOfGetAtt, null, 4));
                 occurencesOfGetAtt.forEach((occurence, i) => {
                     if (i !== 0) {
@@ -50,6 +74,7 @@ function processDeviceList(prefix, deviceListSpec) {
                     }
                 });
             }
+
             console.log(tag, 'GetAtt:', occurencesOfGetAtt.join(''));
             currentValue = JSON.parse(occurencesOfGetAtt.join(''));
 
@@ -57,9 +82,12 @@ function processDeviceList(prefix, deviceListSpec) {
                 thingName: '' + prefix + shortid.generate(),
                 deviceTypeId: currentValue.defaultDeviceTypeId,
                 deviceBlueprintId: currentValue.deviceBlueprintId,
-                spec: currentValue.spec,
+                spec: JSON.stringify(currentValue.spec),
                 generateCert: true
             }).then(device => {
+                if (device.spec) {
+                    device.spec = JSON.parse(device.spec);
+                }
                 currentValue.device = device;
                 return [...chainResults, currentValue];
             });
@@ -127,29 +155,31 @@ module.exports = function (event, context) {
 
         }).then(group => {
 
-            return documentClient
+            const newSolution = {
+                id: group.thingGroupId,
+                name: event.name,
+                description: event.description,
+                thingIds: event.thingIds || [],
+                solutionBlueprintId: event.solutionBlueprintId,
+                createdAt: moment()
+                    .utc()
+                    .format(),
+                updatedAt: moment()
+                    .utc()
+                    .format()
+            };
+
+            return Promise.all([newSolution, documentClient
                 .put({
                     TableName: process.env.TABLE_SOLUTIONS,
-                    Item: {
-                        id: group.thingGroupId,
-                        name: event.name,
-                        description: event.description,
-                        thingIds: event.thingIds || [],
-                        solutionBlueprintId: event.solutionBlueprintId,
-                        createdAt: moment()
-                            .utc()
-                            .format(),
-                        updatedAt: moment()
-                            .utc()
-                            .format()
-                    },
+                    Item: newSolution,
                     ReturnValues: 'ALL_OLD'
                 })
-                .promise();
+                .promise()]);
 
-        }).then(result => {
-            console.log('Created solution', result);
-            return result;
+        }).then(results => {
+            console.log('Created solution', results[0]);
+            return results[0];
         });
 
     });

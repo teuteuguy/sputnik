@@ -7,7 +7,7 @@
         "devices": [
             {
                 "ref": "device_0",
-                "deviceBlueprintId": "aws-3d-belt-v1.0",
+                "deviceBlueprintId": "belt-mini-connected-factory-v1.0",
                 "defaultDeviceTypeId": "aws-afr-3d-belt-esp32-v1.0"
             },
             {
@@ -23,10 +23,6 @@
                         }]
                     }
                 }
-            }, {
-                "ref": "device_2",
-                "deviceBlueprintId": "aws-3d-belt-v1.0",
-                "defaultDeviceTypeId": "aws-afr-3d-belt-esp32-v1.0"
             }
         ]
     }

@@ -6,7 +6,6 @@ export default gql`
             devices {
                 thingId
                 thingName
-                thingArn
                 name
                 deviceTypeId
                 deviceBlueprintId

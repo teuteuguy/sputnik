@@ -4,6 +4,9 @@
     "payload": {
         "cmd": "addDevice",
         "thingName": "$context.arguments.thingName",
-        "isGreengrass": "$context.arguments.isGreengrass"
+        "generateCert": "$context.arguments.generateCert",
+        "spec": "$context.arguments.spec",
+        "deviceTypeId": "$context.arguments.deviceTypeId",
+        "deviceBlueprintId": "$context.arguments.deviceBlueprintId",
     }
 }

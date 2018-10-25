@@ -1,21 +1,28 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation AddDevice($thingName: String!, $isGreengrass: Boolean!) {
-        addDevice(thingName: $thingName, isGreengrass: $isGreengrass) {
+    mutation AddDevice(
+        $thingName: String!
+        $spec: AWSJSON
+        $generateCert: Boolean!
+        $deviceTypeId: String!
+        $deviceBlueprintId: String!
+    ) {
+        addDevice(
+            thingName: $thingName
+            spec: $spec
+            generateCert: $generateCert
+            deviceTypeId: $deviceTypeId
+            deviceBlueprintId: $deviceBlueprintId
+        ) {
             thingId
             thingName
             thingArn
             name
             deviceTypeId
             deviceBlueprintId
-            connectionState {
-                state
-                at
-                certificateId
-                certificateArn
-            }
             greengrassGroupId
+            spec
             lastDeploymentId
             createdAt
             updatedAt

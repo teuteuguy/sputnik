@@ -135,7 +135,9 @@ export class AppSyncService {
 
     // Device Types
     private cleanIncomingDeviceType(deviceType: DeviceType) {
-        deviceType.spec = JSON.parse(deviceType.spec);
+        if (deviceType.spec) {
+            deviceType.spec = JSON.parse(deviceType.spec);
+        }
         return deviceType;
     }
     private cleanOutgoingDeviceType(deviceType: DeviceType) {
@@ -213,8 +215,12 @@ export class AppSyncService {
 
     // Device Blueprints
     private cleanIncomingDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
-        deviceBlueprint.deviceTypeMappings = JSON.parse(deviceBlueprint.deviceTypeMappings);
-        deviceBlueprint.spec = JSON.parse(deviceBlueprint.spec);
+        if (deviceBlueprint.deviceTypeMappings) {
+            deviceBlueprint.deviceTypeMappings = JSON.parse(deviceBlueprint.deviceTypeMappings);
+        }
+        if (deviceBlueprint.spec) {
+            deviceBlueprint.spec = JSON.parse(deviceBlueprint.spec);
+        }
         return deviceBlueprint;
     }
     private cleanOutgoingDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
@@ -293,65 +299,93 @@ export class AppSyncService {
     }
 
     // Devices
+    private cleanIncomingDevice(device: Device) {
+        if (device.spec) {
+            device.spec = JSON.parse(device.spec);
+        }
+        return device;
+    }
     public listDevices(limit: number, nextToken: string) {
         return this.query(listDevices, { limit: limit, nextToken: nextToken }).then(result => {
+            result.data.listDevices.devices = result.data.listDevices.devices.map(r => this.cleanIncomingDevice(r));
             return result.data.listDevices;
         });
     }
     public listDevicesOfDeviceType(limit: number, nextToken: String) {
-        return this.query(listDevicesOfDeviceType, { limit: limit, nextToken: nextToken }).then(
-            result => result.data.listDevicesOfDeviceType
-        );
+        return this.query(listDevicesOfDeviceType, { limit: limit, nextToken: nextToken }).then(result => {
+            result.data.listDevicesOfDeviceType.devices = result.data.listDevicesOfDeviceType.devices.map(r =>
+                this.cleanIncomingDevice(r)
+            );
+            return result.data.listDevicesOfDeviceType;
+        });
     }
     public listDevicesWithDeviceBlueprint(limit: number, nextToken: String) {
-        return this.query(listDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken }).then(
-            result => result.data.listDevicesWithDeviceBlueprint
-        );
+        return this.query(listDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken }).then(result => {
+            result.data.listDevicesWithDeviceBlueprint.devices = result.data.listDevicesWithDeviceBlueprint.devices.map(
+                r => this.cleanIncomingDevice(r)
+            );
+            return result.data.listDevicesWithDeviceBlueprint;
+        });
     }
     public getDevice(thingId: string) {
-        return this.query(getDevice, { thingId: thingId }).then(d => <Device>d.data.getDevice);
+        return this.query(getDevice, { thingId: thingId }).then(d => this.cleanIncomingDevice(d.data.getDevice));
     }
     public getDeviceStats() {
         return this.query(getDeviceStats, {}).then(result => <DeviceStats>result.data.getDeviceStats);
     }
-    public addDevice(thingName: string, isGreengrass: boolean) {
-        return this.mutation(addDevice, { thingName: thingName, isGreengrass: isGreengrass }).then(result => {
-            return <Device>result.data.device;
-        });
+    public addDevice(
+        thingName: string,
+        deviceTypeId: string = 'UNKNOWN',
+        deviceBlueprintId: string = 'UNKNOWN',
+        spec: any = {},
+        generateCert: boolean = true
+    ) {
+        return this.mutation(addDevice, {
+            thingName: thingName,
+            spec: JSON.stringify(spec),
+            generateCert: generateCert,
+            deviceTypeId: deviceTypeId,
+            deviceBlueprintId: deviceBlueprintId
+        }).then(result => this.cleanIncomingDevice(result.data.addDevice));
     }
     public deleteDevice(thingId: string) {
-        return this.mutation(deleteDevice, { thingId: thingId }).then(d => {
-            return <Device>d.data.deleteDevice;
-        });
+        return this.mutation(deleteDevice, { thingId: thingId }).then(d =>
+            this.cleanIncomingDevice(d.data.deleteDevice)
+        );
     }
-    public updateDevice(thingId: string, name: string, deviceTypeId: string, deviceBlueprintId: string) {
+    public updateDevice(
+        thingId: string,
+        name: string,
+        spec: any = {},
+        deviceTypeId: string = 'UNKNOWN',
+        deviceBlueprintId: string = 'UNKNOWN'
+    ) {
         return this.mutation(updateDevice, {
             thingId: thingId,
             name: name,
+            spec: JSON.stringify(spec),
             deviceTypeId: deviceTypeId,
             deviceBlueprintId: deviceBlueprintId
-        }).then(d => {
-            return <Device>d.data.updateDevice;
-        });
+        }).then(d => this.cleanIncomingDevice(d.data.updateDevice));
     }
     public onAddedDevice(hook: AddedDevice) {
         this.subscribe(addedDevice, {}).subscribe({
             next: result => {
-                return hook.onAddedDevice(result.value.data.addedDevice);
+                return hook.onAddedDevice(this.cleanIncomingDevice(result.value.data.addedDevice));
             }
         });
     }
     public onUpdatedDevice(hook: UpdatedDevice) {
         this.subscribe(updatedDevice, {}).subscribe({
             next: result => {
-                return hook.onUpdatedDevice(result.value.data.updatedDevice);
+                return hook.onUpdatedDevice(this.cleanIncomingDevice(result.value.data.updatedDevice));
             }
         });
     }
     public onDeletedDevice(hook: DeletedDevice) {
         this.subscribe(deletedDevice, {}).subscribe({
             next: result => {
-                return hook.onDeletedDevice(result.value.data.deletedDevice);
+                return hook.onDeletedDevice(this.cleanIncomingDevice(result.value.data.deletedDevice));
             }
         });
     }
@@ -444,7 +478,9 @@ export class AppSyncService {
 
     // Solution Blueprints
     private cleanIncomingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
-        solutionBlueprint.spec = JSON.parse(solutionBlueprint.spec);
+        if (solutionBlueprint.spec) {
+            solutionBlueprint.spec = JSON.parse(solutionBlueprint.spec);
+        }
         return solutionBlueprint;
     }
     private cleanOutgoingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
