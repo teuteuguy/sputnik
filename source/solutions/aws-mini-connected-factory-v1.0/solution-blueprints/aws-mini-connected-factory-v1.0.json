@@ -1,0 +1,29 @@
+{
+    "id": "aws-mini-connected-factory-v1.0",
+    "name": "AWS Mini Connected Factory v1.0",
+    "description": "AWS Mini Connected Factory v1.0",
+    "prefix": "AMCF1_",
+    "spec": {
+        "devices": [
+            {
+                "ref": "device_0",
+                "deviceBlueprintId": "aws-afr-3d-belt-mini-connected-factory-v1.0",
+                "defaultDeviceTypeId": "aws-esp32-3d-belt-v1.0"
+            },
+            {
+                "ref": "device_1",
+                "deviceBlueprintId": "aws-gg-mini-connected-factory-v1.0",
+                "defaultDeviceTypeId": "aws-deeplens-v1.0",
+                "spec": {
+                    "DeviceDefinitionVersion": {
+                        "Devices": [{
+                            "ThingArn": "!GetAtt[device_0.thingArn]",
+                            "CertificateArn": "!GetAtt[device_0.cert.certificateArn]",
+                            "SyncShadow": true
+                        }]
+                    }
+                }
+            }
+        ]
+    }
+}

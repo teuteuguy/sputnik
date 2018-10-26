@@ -7,7 +7,7 @@
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "mtm-utils": "../../resources/mtm-utils/",
+        "mythings-mgmt-custom-resource-helper-utils": "../../resources/utils/",
         "underscore": "*"
     },
     "devDependencies": {},

@@ -60,6 +60,23 @@ Resources:
                 sourceBucket: !Ref sourceBucket
                 sourceKeyPrefix: !Ref sourceKeyPrefix
 
+    # Nested stack - Custom resource - Utils Helper
+    CFStackForCustomResourceUtilsHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-helper-utils.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                destBucketArn: !Ref destBucketArn
+                dataBucketArn: !Ref dataBucketArn
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionsTable: !Ref solutionsTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+
     # Nested stack - MicroService - Deployments
     CFStackForDeploymentsService:
         Type: AWS::CloudFormation::Stack
@@ -143,6 +160,9 @@ Outputs:
     customResourceThingGroupsHelperArn:
         Description: 'Custom Resource Thing Groups Helper ARN'
         Value: !GetAtt CFStackForCustomResourceThingGroupsHelper.Outputs.customResourceThingGroupsHelperArn
+    customResourceUtilsHelperArn:
+        Description: 'Custom Resource Utils Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceUtilsHelper.Outputs.customResourceUtilsHelperArn
     lambdaServiceDeploymentsArn:
         Description: 'Deployments Service ARN'
         Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn

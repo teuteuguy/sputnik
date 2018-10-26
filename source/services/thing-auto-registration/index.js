@@ -5,7 +5,7 @@ const gg = new AWS.Greengrass();
 const moment = require('moment');
 const _ = require('underscore');
 
-const listGreengrassGroupIdsForThingArn = require('mtm-utils').listGreengrassGroupIdsForThingArn;
+const listGreengrassGroupIdsForThingArn = require('mythings-mgmt-custom-resource-helper-utils').listGreengrassGroupIdsForThingArn;
 
 const listPrincipalThingsDetailed = require('./lib/listPrincipalThingsDetailed');
 
