@@ -13,13 +13,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     ]
 })
 export class PrettyJsonComponent implements ControlValueAccessor {
-    private jsonString: string;
-    private parseError: boolean;
+    public jsonString: string;
+    public parseError: boolean;
     private data: any;
 
     private keyUpTimeOut1: any = null;
     private keyUpTimeOut2: any = null;
-    private prettifying: boolean;
+    public prettifying: boolean;
 
     @Input()
     rows: number;
@@ -46,7 +46,7 @@ export class PrettyJsonComponent implements ControlValueAccessor {
     registerOnTouched() {}
 
     // change events from the textarea
-    private onChange(event) {
+    onChange(event) {
         // get value from text area
         const _self = this;
         const newValue = event.target.value;

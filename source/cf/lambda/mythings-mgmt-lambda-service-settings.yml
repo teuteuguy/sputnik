@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "My Things Management - AppSync Micro Service Lambda - Settings - Version %%VERSION%%"
+Description: "My Things Management - Micro Service Lambda - Settings - Version %%VERSION%%"
 Parameters:
     sourceBucket:
         Type: String

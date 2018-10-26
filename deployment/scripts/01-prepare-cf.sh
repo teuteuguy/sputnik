@@ -24,13 +24,26 @@ echo "Updating code source bucket in templates with $3 and code source version i
 replace="s/%%BUCKET_NAME%%/$3/g"
 echo "sed -i '' -e $replace $2/cf/*.yml"
 sed -i '' -e $replace $2/cf/*.yml
+echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
+sed -i '' -e $replace $2/cf/dynamodb/*.yml
+echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
+sed -i '' -e $replace $2/cf/lambda/*.yml
+
 replace="s/%%VERSION%%/$4/g"
 echo "sed -i '' -e $replace $2/cf/*.yml"
 sed -i '' -e $replace $2/cf/*.yml
+echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
+sed -i '' -e $replace $2/cf/dynamodb/*.yml
+echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
+sed -i '' -e $replace $2/cf/lambda/*.yml
 
 replace="s/%%DEPLOYMENT_UUID%%/$UUID/g"
 echo "sed -i '' -e $replace $2/cf/*.yml"
 sed -i '' -e $replace $2/cf/*.yml
+echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
+sed -i '' -e $replace $2/cf/dynamodb/*.yml
+echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
+sed -i '' -e $replace $2/cf/lambda/*.yml
 
 echo
 exit 0

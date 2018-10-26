@@ -57,23 +57,30 @@ class MTMThingGroups {
 
         groupName = PREFIX + groupName;
 
-        console.log('deleteThingGroup(' + groupName + '): Get Childs');
-        return _self._listALLThingGroups(groupName, null, [])
-            .then(childs => {
-                _childs = childs;
-                console.log('deleteThingGroup(' + groupName + '): Got', _childs.length, 'childs');
-                return Promise.all(_childs.map(c => {
-                    return _self._listALLThingGroups(c.childName, null, []).then(results => {
-                        c.subChilds = results;
-                        console.log(c.childName, c.subChilds.length);
-                        return;
-                    });
-                }));
-            })
-            .then(results => {
-                console.log('deleteThingGroup(' + groupName + '): Childs', _childs);
-                return _childs;
-            });
+        return iot.deleteThingGroup({
+            thingGroupName: groupName
+        }).promise().then(result => {
+            console.log('deleteThingGroup(' + groupName + '):', 'Deleted. Result:', result);
+            return result;
+        });
+
+        // console.log('deleteThingGroup(' + groupName + '): Get Childs');
+        // return _self._listALLThingGroups(groupName, null, [])
+        //     .then(childs => {
+        //         _childs = childs;
+        //         console.log('deleteThingGroup(' + groupName + '): Got', _childs.length, 'childs');
+        //         return Promise.all(_childs.map(c => {
+        //             return _self._listALLThingGroups(c.childName, null, []).then(results => {
+        //                 c.subChilds = results;
+        //                 console.log(c.childName, c.subChilds.length);
+        //                 return;
+        //             });
+        //         }));
+        //     })
+        //     .then(results => {
+        //         console.log('deleteThingGroup(' + groupName + '): Childs', _childs);
+        //         return _childs;
+        //     });
 
         // const params = {
         //     maxResults: 2,

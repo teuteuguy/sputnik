@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'My Things Management - Cognito - Version v0.4'
+Description: 'My Things Management - Cognito - Version %%VERSION%%'
 Parameters:
     AdministratorName:
         Type: String

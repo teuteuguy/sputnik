@@ -85,9 +85,9 @@ function processDeviceList(prefix, deviceListSpec) {
                 spec: JSON.stringify(currentValue.spec),
                 generateCert: true
             }).then(device => {
-                if (device.spec) {
-                    device.spec = JSON.parse(device.spec);
-                }
+                // if (device.spec) {
+                //     device.spec = JSON.parse(device.spec);
+                // }
                 currentValue.device = device;
                 return [...chainResults, currentValue];
             });
@@ -157,6 +157,7 @@ module.exports = function (event, context) {
 
             const newSolution = {
                 id: group.thingGroupId,
+                thingGroupName: group.thingGroupName,
                 name: event.name,
                 description: event.description,
                 thingIds: event.thingIds || [],

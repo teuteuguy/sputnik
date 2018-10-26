@@ -7,6 +7,7 @@ Blablabla
 * When creating a device, deal with the certificates ?
 * Create a location picker for the solutions
 
+* Put back the admin to manage the users, and the profile ?
 * Attach cert function from UI
 * Initialize the shadow when provisioning
 * Attach policies

@@ -22,7 +22,7 @@ export class SolutionsModalComponent {
     @Input()
     submitSubject: Subject<any>;
 
-    constructor(private solutionService: SolutionService, protected solutionBlueprintService: SolutionBlueprintService) {
+    constructor(private solutionService: SolutionService, public solutionBlueprintService: SolutionBlueprintService) {
         this.element = new Solution({
             id: 'new',
             name: 'new',

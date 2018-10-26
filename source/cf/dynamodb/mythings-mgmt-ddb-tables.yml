@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - DynamoDB Tables - Version %%VERSION%%'
+
+Resources:
+
+    # Nested stack - DynamoDB Table - Deployments
+    CFStackForDDBDeployments:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-deployments.yml']]
+
+    # Nested stack - DynamoDB Table - Device Blueprints
+    CFStackForDDBDeviceBlueprints:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-device-blueprints.yml']]
+
+    # Nested stack - DynamoDB Table - Device Types
+    CFStackForDDBDeviceTypes:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-device-types.yml']]
+
+    # Nested stack - DynamoDB Table - Devices
+    CFStackForDDBDevices:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-devices.yml']]
+
+    # Nested stack - DynamoDB Table - Settings
+    CFStackForDDBSettings:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-settings.yml']]
+
+    # Nested stack - DynamoDB Table - Solution Blueprints
+    CFStackForDDBSolutionBlueprints:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-solution-blueprints.yml']]
+
+    # Nested stack - DynamoDB Table - Solutions
+    CFStackForDDBSolutions:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-table-solutions.yml']]
+
+Outputs:
+    deploymentsTable:
+        Description: "DynamoDB Deployments Table"
+        Value: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable
+    deviceBlueprintsTable:
+        Description: "DynamoDB Device Blueprints Table"
+        Value: !GetAtt CFStackForDDBDeviceBlueprints.Outputs.deviceBlueprintsTable
+    deviceTypesTable:
+        Description: "DynamoDB Device Types Table"
+        Value: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
+    devicesTable:
+        Description: "DynamoDB Devices Table"
+        Value: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+    settingsTable:
+        Description: "DynamoDB Settings Table"
+        Value: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
+    solutionBlueprintsTable:
+        Description: "DynamoDB Solution Blueprints Table"
+        Value: !GetAtt CFStackForDDBSolutionBlueprints.Outputs.solutionBlueprintsTable
+    solutionsTable:
+        Description: "DynamoDB Solutions Table"
+        Value: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable

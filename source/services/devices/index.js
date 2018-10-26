@@ -15,6 +15,9 @@ function handler(event, context, callback) {
         case 'deleteDevice':
             promise = libs.deleteDevice;
             break;
+        case 'updateDevice':
+            promise = libs.updateDevice;
+            break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
             break;

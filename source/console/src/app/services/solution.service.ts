@@ -6,12 +6,7 @@ import { Solution } from '../models/solution.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import {
-    AppSyncService,
-    AddedSolution,
-    UpdatedSolution,
-    DeletedSolution
-} from './appsync.service';
+import { AppSyncService, AddedSolution, UpdatedSolution, DeletedSolution } from './appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
@@ -97,7 +92,13 @@ export class SolutionService implements AddedSolution, UpdatedSolution, DeletedS
     //     return this.solutions;
     // }
 
-    onAddedSolution(result: Solution) {}
-    onUpdatedSolution(result: Solution) {}
-    onDeletedSolution(result: Solution) {}
+    onAddedSolution(result: Solution) {
+        // TODO: Improve this.
+    }
+    onUpdatedSolution(result: Solution) {
+        // TODO: Improve this.
+    }
+    onDeletedSolution(result: Solution) {
+        // TODO: Improve this.
+    }
 }

@@ -45,13 +45,13 @@ export class DataStat {
     templateUrl: './generic-table.component.html'
 })
 export class GenericTableComponent {
-    protected pages: any = {
+    public pages: any = {
         current: 1,
         total: 0,
         pageSize: 20
     };
-    protected data: any[] = [];
-    protected dataStats: DataStat = new DataStat({
+    public data: any[] = [];
+    public dataStats: DataStat = new DataStat({
         total: 0
     });
 
@@ -63,7 +63,7 @@ export class GenericTableComponent {
     @ViewChild('createModalTemplate', { read: ViewContainerRef })
     createModalTemplate: ViewContainerRef;
 
-    protected params: GenericTableParams = new GenericTableParams();
+    public params: GenericTableParams = new GenericTableParams();
 
     constructor(private genericLogger: LoggerService, private genericResolver: ComponentFactoryResolver) {}
 

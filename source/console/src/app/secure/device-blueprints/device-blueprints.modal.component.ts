@@ -22,7 +22,7 @@ export class DeviceBlueprintsModalComponent {
     @Input()
     submitSubject: Subject<any>;
 
-    constructor(private deviceBlueprintService: DeviceBlueprintService, private deviceTypeService: DeviceTypeService) {
+    constructor(private deviceBlueprintService: DeviceBlueprintService, public deviceTypeService: DeviceTypeService) {
         this.element = new DeviceBlueprint({
             id: 'new',
             name: 'new'
