@@ -557,7 +557,7 @@ Resources:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Mutation
             FieldName: updateDevice
-            DataSourceName: !GetAtt appSyncDataSourceDevicesDynamoDB.Name
+            DataSourceName: !GetAtt appSyncDataSourceDevicesLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'devices', 'devices-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
 

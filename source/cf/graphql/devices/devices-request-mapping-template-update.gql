@@ -1,34 +1,11 @@
-#set( $expression = "SET #uA = :uA, #n = :n" )
 {
     "version" : "2017-02-28",
-    "operation" : "UpdateItem",
-    "key" : {
-        "thingId" : $util.dynamodb.toStringJson($ctx.args.thingId)
-    },
-    "update" : {
-        "expressionValues": {
-            #if( $ctx.args.deviceTypeId )
-                ## Add deviceTypeId to expression
-                #set( $expression = "$expression, deviceTypeId = :deviceTypeId" )
-                ":deviceTypeId" : $util.dynamodb.toStringJson($ctx.args.deviceTypeId),
-            #end
-            #if( $ctx.args.deviceBlueprintId )
-                ## Add deviceBlueprintId to expression
-                #set( $expression = "$expression, deviceBlueprintId = :deviceBlueprintId" )
-                ":deviceBlueprintId" : $util.dynamodb.toStringJson($ctx.args.deviceBlueprintId),
-            #end
-            #if( $ctx.args.spec )
-                ## Add spec to expression
-                #set( $expression = "$expression, spec = :spec" )
-                ":spec" : $util.dynamodb.toStringJson($ctx.args.spec),
-            #end
-            ":n" : $util.dynamodb.toStringJson($ctx.args.name),
-            ":uA" : $util.dynamodb.toStringJson($util.time.nowISO8601())
-        },
-        "expression" : "$expression",
-        "expressionNames": {
-            "#uA": "updatedAt",
-            "#n": "name"
-        }
+    "operation" : "Invoke",
+    "payload": {
+        "cmd": "udpateDevice",
+        "name": "$context.arguments.name",
+        "spec": "$context.arguments.spec",
+        "deviceTypeId": "$context.arguments.deviceTypeId",
+        "deviceBlueprintId": "$context.arguments.deviceBlueprintId"
     }
 }

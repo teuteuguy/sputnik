@@ -151,6 +151,7 @@ Resources:
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
                 settingsTable: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
                 devicesTable: !GetAtt CFStackForDDBDevices.Outputs.devicesTable
+                deviceTypesTable: !GetAtt CFStackForDDBDeviceTypes.Outputs.deviceTypesTable
 
     # Nested stack - MicroService - Deployments
     CFStackForDeploymentsService:

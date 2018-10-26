@@ -7,6 +7,17 @@ Blablabla
 * When creating a device, deal with the certificates ?
 * Create a location picker for the solutions
 
+* Attach cert function from UI
+* Initialize the shadow when provisioning
+* Attach policies
+* Attach IAM
+* Add things to group
+* Delete Group/SOlution
+* short id for group name ?
+* disable devices update ?
+* utils: find rogue stuff
+* For a given thing, check which solution they are part of.
+
 
 ## Notes
 
