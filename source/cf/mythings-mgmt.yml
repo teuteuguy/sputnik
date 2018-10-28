@@ -112,6 +112,23 @@ Resources:
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDeploymentsArn
                 lambdaServiceSolutionsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSolutionsArn
 
+    # ##########################################################################
+    #
+    # Solutions
+    #
+    # ##########################################################################
+    CFStackForSolutions:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], !Ref 'AWS::Region']], !FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/solutions/mythings-mgmt-solutions.yml']]
+            Parameters:
+                sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], !Ref 'AWS::Region']]
+                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/solutions']]
+                deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
+                deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
+                solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                customResourceUtilsHelperArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+                deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
     # ##########################################################################
     #
@@ -157,6 +174,9 @@ Resources:
             sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
             destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             customAction: 'init'
+
+
+
 
 Outputs:
     # Website

@@ -18,11 +18,16 @@ console.log('Loading function');
 const https = require('https');
 const url = require('url');
 
+const DDBHelper = require('./lib/dynamodb-helper');
+
+
 /**
  * Request handler.
  */
 exports.handler = (event, context, callback) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
+
+    const ddbHelper = new DDBHelper();
 
     let responseStatus = 'FAILED';
     let responseData = {};
@@ -31,12 +36,24 @@ exports.handler = (event, context, callback) => {
         sendResponse(event, callback, context.logStreamName, 'SUCCESS');
     }
 
-    if (event.RequestType === 'Update') {
-        sendResponse(event, callback, context.logStreamName, 'SUCCESS');
-    }
+    if (event.RequestType === 'Create' || event.RequestType === 'Update') {
+        if (event.ResourceProperties.customAction === 'dynamodbPutObjectsFromS3Folder') {
+            ddbHelper.dynamodbPutObjectsFromS3Folder(event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3Key, event.ResourceProperties.table).then(data => {
+                responseStatus = 'SUCCESS';
+                responseData = data;
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `dynamodbPutObjectsFromS3Folder failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
 
-    if (event.RequestType === 'Create') {
-        sendResponse(event, callback, context.logStreamName, 'SUCCESS');
+        }
+        else {
+            sendResponse(event, callback, context.logStreamName, 'SUCCESS');
+        }
     }
 
 };

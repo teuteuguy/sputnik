@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS Mini Connected Factory Demo v1.0'
+Parameters:
+    sourceS3Bucket:
+        Type: String
+        Description: My Things Management S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: My Things management Source key prefix.
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    deploymentUUID:
+        Type: String
+        Description: Used to force update / create of inits
+
+Resources:
+
+    AMCF1DeviceBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    AMCF1DeviceTypes:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceTypesTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    AMCF1SolutionBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'solution-blueprints']]
+            uuid: !Ref deploymentUUID
+            table: !Ref solutionBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'

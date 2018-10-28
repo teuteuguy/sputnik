@@ -51,6 +51,8 @@ Resources:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'My Things Management policy for the utils microservice Lambda function.'
+            Roles:
+                - !Ref 'customResourceUtilsHelperRole'
             PolicyDocument:
                 Version: '2012-10-17'
                 Statement:

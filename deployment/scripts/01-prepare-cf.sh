@@ -28,6 +28,8 @@ echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
 sed -i '' -e $replace $2/cf/dynamodb/*.yml
 echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
 sed -i '' -e $replace $2/cf/lambda/*.yml
+echo "sed -i '' -e $replace $2/cf/solutions/*.yml"
+sed -i '' -e $replace $2/cf/solutions/*.yml
 
 replace="s/%%VERSION%%/$4/g"
 echo "sed -i '' -e $replace $2/cf/*.yml"
@@ -36,6 +38,8 @@ echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
 sed -i '' -e $replace $2/cf/dynamodb/*.yml
 echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
 sed -i '' -e $replace $2/cf/lambda/*.yml
+echo "sed -i '' -e $replace $2/cf/solutions/*.yml"
+sed -i '' -e $replace $2/cf/solutions/*.yml
 
 replace="s/%%DEPLOYMENT_UUID%%/$UUID/g"
 echo "sed -i '' -e $replace $2/cf/*.yml"
@@ -44,6 +48,8 @@ echo "sed -i '' -e $replace $2/cf/dynamodb/*.yml"
 sed -i '' -e $replace $2/cf/dynamodb/*.yml
 echo "sed -i '' -e $replace $2/cf/lambda/*.yml"
 sed -i '' -e $replace $2/cf/lambda/*.yml
+echo "sed -i '' -e $replace $2/cf/solutions/*.yml"
+sed -i '' -e $replace $2/cf/solutions/*.yml
 
 echo
 exit 0

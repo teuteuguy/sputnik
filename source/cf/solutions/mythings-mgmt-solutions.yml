@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Solutions - Version %%VERSION%%'
+
+Parameters:
+    sourceS3Bucket:
+        Type: String
+        Description: My Things Management S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: My Things management Source key prefix.
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    deploymentUUID:
+        Type: String
+        Description: Used to force update / create of inits
+
+
+Mappings:
+    Solutions:
+        Solution:
+            AMCF1: 'aws-mini-connected-factory-v1.0'
+
+Resources:
+
+    # Nested stack - Custom resource - S3 Helper
+    CFStackForSolutionsAMCF1:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Ref sourceS3Bucket, !Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'AMCF1'], !Join ['.', [!FindInMap ['Solutions', 'Solution', 'AMCF1'], 'yml']]]]
+            Parameters:
+                sourceS3Bucket: !Ref sourceS3Bucket
+                sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'AMCF1']]]
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
+                deploymentUUID: !Ref deploymentUUID
+
+
+
