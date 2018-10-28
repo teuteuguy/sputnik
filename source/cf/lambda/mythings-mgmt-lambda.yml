@@ -35,7 +35,9 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
-
+    dataBucketAccessPolicyArn:
+        Type: String
+        Description: My Things Management Data Bucket Access Policy ARN
 
 
 Resources:
@@ -90,6 +92,7 @@ Resources:
                 deviceTypesTable: !Ref deviceTypesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deploymentsTable: !Ref deploymentsTable
+                dataBucketAccessPolicyArn: !Ref dataBucketAccessPolicyArn
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:

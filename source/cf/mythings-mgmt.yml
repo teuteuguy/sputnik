@@ -85,6 +85,7 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                dataBucketAccessPolicyArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicyArn
 
     # ##########################################################################
     #
@@ -124,11 +125,14 @@ Resources:
             Parameters:
                 sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], !Ref 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/solutions']]
+                greengrassSourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'greengrass']]
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
                 customResourceUtilsHelperArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
                 deploymentUUID: '%%DEPLOYMENT_UUID%%'
+                # dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
+                # dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
 
     # ##########################################################################
     #

@@ -8,6 +8,9 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: My Things management Source key prefix.
+    greengrassSourceKeyPrefix:
+        Type: String
+        Description: My Things management source key prefix for the greengrass lambda function code
     deviceBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the device blueprints
@@ -23,6 +26,12 @@ Parameters:
     deploymentUUID:
         Type: String
         Description: Used to force update / create of inits
+    # dataS3Bucket:
+    #     Type: String
+    #     Description: My Things Management Data S3 Bucket
+    # dataS3BucketArn:
+    #     Type: String
+    #     Description: My Things Management Data S3 Bucket ARN
 
 
 Mappings:
@@ -40,11 +49,14 @@ Resources:
             Parameters:
                 sourceS3Bucket: !Ref sourceS3Bucket
                 sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'AMCF1']]]
+                greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deviceTypesTable: !Ref deviceTypesTable
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
                 customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
                 deploymentUUID: !Ref deploymentUUID
+                # dataS3Bucket: !Ref dataS3Bucket
+                # dataS3BucketArn: !Ref dataS3BucketArn
 
 
 

@@ -14,9 +14,13 @@ Resources:
                         Effect: "Allow"
                         Action:
                             # TODO BE MORE RESTRICTIVE
-                            - "s3:*"
+                            - "s3:ListBucket"
+                            - "s3:GetObject"
+                            - "s3:ListObjects"
                         Resource:
-                            - !Join ["/", [!GetAtt dataBucket.Arn, "*"]]
+                            - !Join ["*", [!GetAtt dataBucket.Arn, "/*"]]
+                            - !Join ["", [!GetAtt dataBucket.Arn, "*"]]
+
     dataBucket:
         Type: AWS::S3::Bucket
         DeletionPolicy: Retain
@@ -32,12 +36,12 @@ Resources:
                         AllowedHeaders:
                             - "*"
 Outputs:
-    # dataBucketAccessPolicy:
-    #     Description: "IAM Policy to access the My Things Management Data bucket"
-    #     Value: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicy
     dataBucket:
         Description: 'My Things Management Data Bucket'
         Value: !Ref dataBucket
     dataBucketArn:
         Description: 'My Things Management Data Bucket ARN'
         Value: !GetAtt dataBucket.Arn
+    dataBucketAccessPolicyArn:
+        Description: 'My Things Management Data Bucket Access Policy ARN'
+        Value: !Ref dataBucketAccessPolicy

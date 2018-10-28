@@ -7,6 +7,9 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: My Things management Source key prefix.
+    greengrassSourceKeyPrefix:
+        Type: String
+        Description: My Things management source key prefix for the greengrass lambda function code
     deviceBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the device blueprints
@@ -22,9 +25,14 @@ Parameters:
     deploymentUUID:
         Type: String
         Description: Used to force update / create of inits
+    # dataS3Bucket:
+    #     Type: String
+    #     Description: My Things Management Data S3 Bucket
+    # dataS3BucketArn:
+    #     Type: String
+    #     Description: My Things Management Data S3 Bucket ARN
 
 Resources:
-
     AMCF1DeviceBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
@@ -57,3 +65,43 @@ Resources:
             uuid: !Ref deploymentUUID
             table: !Ref solutionBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    AMCF1LambdaRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'lambda.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+
+    AMCF1CameraLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'aws-mini-connected-factory-camera-python'
+            Description: 'My Things Management AWS Mini Connected Factory Camera Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-mini-connected-factory-camera-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt AMCF1LambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    AMCF1CameraLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'AMCF1CameraLambda'
+            Description: 'A first version of aws-mini-connected-factory-camera-python'
+    AMCF1CameraLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref AMCF1CameraLambda
+            FunctionVersion: !GetAtt AMCF1CameraLambdaVersion.Version
+            Name: 'MTM'

@@ -36,6 +36,54 @@
                     }
                 },
                 {
+                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
+                    "FunctionConfiguration": {
+                        "EncodingType": "json",
+                        "Environment": {
+                            "AccessSysfs": false,
+                            "ResourceAccessPolicies": [{
+                                    "Permission": "rw",
+                                    "ResourceId": "tmp"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "aws_cam_home"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "stream"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "model-lego-helmets"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "artifacts"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "26574346-54fe-4ba9-a7f0-b742e59ebf45"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "b4a7f129-4e9b-4498-8f6a-3781986db374"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "42650a24-8c63-47ec-843e-16721b0868e1"
+                                }
+                            ],
+                            "Variables": {
+                                "ML_MODEL_PATH": "/ml/helmets/image-classification"
+                            }
+                        },
+                        "MemorySize": 1048576,
+                        "Pinned": true,
+                        "Timeout": 25
+                    }
+                },
+                {
                     "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
                     "FunctionConfiguration": {
                         "MemorySize": 32768,
@@ -108,6 +156,15 @@
                         "SourcePath": "/dev/ttyUSB0"
                     }
                 }
+            }, {
+                "Id": "model-lego-helmets",
+                "Name": "model-lego-model",
+                "ResourceDataContainer": {
+                    "S3MachineLearningModelResourceData": {
+                        "DestinationPath": "/ml/helmets/",
+                        "S3Uri": "https://connected-factory-reinvent.s3.amazonaws.com/model.tar.gz"
+                    }
+                }
             }]
         },
         "SubscriptionDefinitionVersion": {
@@ -122,6 +179,13 @@
                     "Subject": "$aws/things/[THING_NAME]/shadow/update"
                 }
             ]
+        },
+        "IAM": {
+            "GreengrassGroupRole": {
+                "PolicyArns": [
+                    "[DATA_BUCKET_ACCESS_POLICY]"
+                ]
+            }
         }
     }
 }

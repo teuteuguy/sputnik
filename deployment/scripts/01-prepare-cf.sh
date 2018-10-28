@@ -16,6 +16,7 @@ echo "rm -rf $2/cf"
 rm -rf $2/cf
 echo "cp -R $1/cf $2"
 cp -R $1/cf $2
+
 UUID=`uuidgen`
 echo $UUID
 mv $2/cf/graphql $2/cf/graphql-$UUID

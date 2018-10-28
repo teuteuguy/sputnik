@@ -22,6 +22,9 @@ Parameters:
     deploymentsTable:
         Type: String
         Description: DynamoDB Table for storing the deployments
+    dataBucketAccessPolicyArn:
+        Type: String
+        Description: My Things Management Data Bucket Access Policy ARN
 
 Resources:
 
@@ -103,6 +106,7 @@ Resources:
                     TABLE_DEPLOYMENTS: !Ref deploymentsTable
                     TABLE_SETTINGS: !Ref settingsTable
                     AWS_ACCOUNT: !Ref 'AWS::AccountId'
+                    IAM_DATA_BUCKET_ACCESS_POLICY: !Ref dataBucketAccessPolicyArn
                     LOGGING_LEVEL: 2
 
 
