@@ -33,6 +33,32 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
     public listDevices(limit: number, nextToken: string) {
         return this.appSyncService.listDevices(limit, nextToken);
     }
+    public listDevicesOfDeviceType(deviceTypeId: string, limit: number, nextToken: string) {
+        return this.appSyncService.listDevicesOfDeviceType(deviceTypeId, limit, nextToken);
+    }
+    public listDevicesWithDeviceBlueprint(deviceBlueprintId: string, limit: number, nextToken: string) {
+        return this.appSyncService.listDevicesWithDeviceBlueprint(deviceBlueprintId, limit, nextToken);
+    }
+
+    public listRecursive(listFunction: string, id: string, limit: number, nextToken: string) {
+        const _self = this;
+
+        return _self[listFunction](id, _self.limit, nextToken).then(result => {
+            let _devices: Device[];
+            _devices = result.devices;
+            if (result.nextToken) {
+                return _self.listRecursive(listFunction, id, limit, result.nextToken).then(data => {
+                    data.forEach(d => {
+                        _devices.push(d);
+                    });
+                    return _devices;
+                });
+            } else {
+                return _devices;
+            }
+        });
+    }
+
     public getDevice(thingId: string) {
         return this.appSyncService.getDevice(thingId);
     }

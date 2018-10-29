@@ -39,9 +39,9 @@ import { DeviceComponent } from './secure/device/device.component';
 import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
 // import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
+import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
-// import { SolutionComponent } from './secure/solution/solution.component';
 import { GenericTableComponent } from './common/components/generic-table/generic-table.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
@@ -53,6 +53,7 @@ import { GenericTableComponent } from './common/components/generic-table/generic
 // Sub Components
 import { DeviceBlueprintsModalComponent } from './secure/device-blueprints/device-blueprints.modal.component';
 import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
+import { SolutionEditModalComponent } from './secure/solution/solution.edit.modal.component';
 import { SolutionsModalComponent } from './secure/solutions/solutions.modal.component';
 import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/solution-blueprints.modal.component';
 // import { MyDeeplensWebCameraV10Component } from './secure/devices/types/my-deeplens-web-camera-v1.0.component';
@@ -115,15 +116,16 @@ import { SolutionBlueprintService } from './services/solution-blueprint.service'
         DeviceBlueprintsComponent,
         // DeviceBlueprintComponent,
         DeploymentsComponent,
+        SolutionComponent,
         SolutionsComponent,
         SolutionBlueprintsComponent,
-        // SolutionComponent,
 
         GenericTableComponent,
 
         // Sub Components
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
+        SolutionEditModalComponent,
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent,
 
@@ -180,6 +182,7 @@ import { SolutionBlueprintService } from './services/solution-blueprint.service'
     entryComponents: [
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
+        SolutionEditModalComponent,
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent
     ]

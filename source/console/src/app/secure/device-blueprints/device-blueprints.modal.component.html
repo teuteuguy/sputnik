@@ -84,7 +84,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-                        <button *ngIf="modalType !== 'view' && !name.errors" type="submit" class="btn btn-success">Submit</button>
+                        <button *ngIf="modalType !== 'view'" type="submit" class="btn btn-success">Submit</button>
                     </div>
                     <!-- <div *ngIf="hasError" class="alert alert-danger alert-rounded">
                         <i class="mdi mdi-exclamation"></i> {{errorMsg}}</div> -->

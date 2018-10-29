@@ -103,7 +103,7 @@ module.exports = function (event, context) {
     //     "cmd": "addSolution",
     //     "name": "new",
     //     "description": "New Solution",
-    //     "thingIds": "[]",
+    //     "thingIds": [],
     //     "solutionBlueprintId": "aws-mini-connected-factory-v1.0"
     // }
 

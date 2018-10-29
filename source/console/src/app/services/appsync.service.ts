@@ -311,16 +311,24 @@ export class AppSyncService {
             return result.data.listDevices;
         });
     }
-    public listDevicesOfDeviceType(limit: number, nextToken: String) {
-        return this.query(listDevicesOfDeviceType, { limit: limit, nextToken: nextToken }).then(result => {
+    public listDevicesOfDeviceType(deviceTypeId: String, limit: number, nextToken: String) {
+        return this.query(listDevicesOfDeviceType, {
+            deviceTypeId: deviceTypeId,
+            limit: limit,
+            nextToken: nextToken
+        }).then(result => {
             result.data.listDevicesOfDeviceType.devices = result.data.listDevicesOfDeviceType.devices.map(r =>
                 this.cleanIncomingDevice(r)
             );
             return result.data.listDevicesOfDeviceType;
         });
     }
-    public listDevicesWithDeviceBlueprint(limit: number, nextToken: String) {
-        return this.query(listDevicesWithDeviceBlueprint, { limit: limit, nextToken: nextToken }).then(result => {
+    public listDevicesWithDeviceBlueprint(deviceBlueprintId: String, limit: number, nextToken: String) {
+        return this.query(listDevicesWithDeviceBlueprint, {
+            deviceBlueprintId: deviceBlueprintId,
+            limit: limit,
+            nextToken: nextToken
+        }).then(result => {
             result.data.listDevicesWithDeviceBlueprint.devices = result.data.listDevicesWithDeviceBlueprint.devices.map(
                 r => this.cleanIncomingDevice(r)
             );

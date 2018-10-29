@@ -152,6 +152,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             .getDevice(_self.thingId)
             .then((device: Device) => {
                 _self.logger.info('device:', device);
+                _self.logger.info('device:', JSON.stringify(device.spec));
                 _self.device = device;
                 _self.deviceTypes = _self.deviceTypeService.deviceTypes;
                 _self.deviceBlueprints = _self.deviceBlueprintService.deviceBlueprints;

@@ -21,7 +21,10 @@
                         <tbody>
                             <tr *ngFor="let elem of sliceData(data)">
                                 <td *ngFor="let field of params.fields" class="{{field.class}}">
-                                    <h6 *ngIf="field.format !== 'date'">{{elem[field.attr]}}</h6>
+                                    <h6 *ngIf="field.format !== 'date' && params.fieldLink !== field.attr">{{elem[field.attr]}}</h6>
+                                    <a *ngIf="field.format !== 'date' && params.fieldLink === field.attr" (click)="open(elem)">{{elem[field.attr]}}
+                                        <i class="mdi mdi-link-variant"></i>
+                                    </a>
                                     <h6 *ngIf="field.format === 'date'">{{elem[field.attr] | moment : 'MMM Do YYYY'}}</h6>
                                 </td>
                                 <td class="pull-right" role="group">

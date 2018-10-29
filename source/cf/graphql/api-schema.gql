@@ -76,7 +76,7 @@ type Solution {
     id: String!
     name: String!
     description: String
-    thingIds: String!
+    thingIds: [String]!
     solutionBlueprintId: String!
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
@@ -108,8 +108,8 @@ type SolutionBlueprintStat {
 
 type Query {
     listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    listDevicesOfDeviceType(deviceTypeId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
-    listDevicesWithDeviceBlueprint(deviceBlueprintId: String!): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesOfDeviceType(deviceTypeId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesWithDeviceBlueprint(deviceBlueprintId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators", "Members"])
     getDeviceStats: DeviceStat @aws_auth(cognito_groups: ["Administrators", "Members"])
 
@@ -151,9 +151,9 @@ type Mutation {
 
     addDeployment(thingId: String!): Deployment! @aws_auth(cognito_groups: ["Administrators"])
 
-    addSolution(name: String!, description: String, thingIds: [String], solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
+    addSolution(name: String!, description: String, thingIds: [String]!, solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators"])
-    updateSolution(id: String!, name: String!, description: String, thingIds: [String]): Solution @aws_auth(cognito_groups: ["Administrators"])
+    updateSolution(id: String!, name: String!, description: String, thingIds: [String]!): Solution @aws_auth(cognito_groups: ["Administrators"])
 
     addSolutionBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])

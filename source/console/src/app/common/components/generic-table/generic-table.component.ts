@@ -28,6 +28,7 @@ export class GenericTableParams {
     editElement: GenericTableElementParams;
     deleteElement: boolean;
     cachedMode: boolean;
+    fieldLink = '';
     constructor(values: Object = {}) {
         Object.assign(this, values);
     }

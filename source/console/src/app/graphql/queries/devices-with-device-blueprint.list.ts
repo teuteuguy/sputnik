@@ -1,24 +1,15 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    query ListDevicesWithBlueprint($limit: Int, $nextToken: String) {
-        listDevicesWithBlueprint(limit: $limit, nextToken: $nextToken) {
+    query ListDevicesWithDeviceBlueprint($deviceBlueprintId: String!, $limit: Int, $nextToken: String) {
+        listDevicesWithDeviceBlueprint(deviceBlueprintId: $deviceBlueprintId, limit: $limit, nextToken: $nextToken) {
             devices {
                 thingId
                 thingName
                 thingArn
                 name
                 deviceTypeId
-                blueprintId
-                connectionState {
-                    state
-                    at
-                    certificateId
-                    certificateArn
-                }
-                greengrassGroupId
-                createdAt
-                updatedAt
+                deviceBlueprintId
             }
             nextToken
         }

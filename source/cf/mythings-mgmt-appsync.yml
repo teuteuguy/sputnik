@@ -87,6 +87,8 @@ Resources:
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceBlueprintsTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable ]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable, '/index/deviceBlueprintId']]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable, '/index/deviceTypeId']]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deploymentsTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionsTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionBlueprintsTable ]]
@@ -651,6 +653,16 @@ Resources:
             FieldName: deleteSolution
             DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationUpdateSolution:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateSolution
+            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################

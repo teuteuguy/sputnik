@@ -69,9 +69,10 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
                 },
                 viewElement: <GenericTableElementParams>{
                     text: 'View',
-                    modal: SolutionsModalComponent,
-                    link: false
+                    modal: null,
+                    link: true
                 },
+                fieldLink: 'name',
                 deleteElement: this.isAdminUser,
                 fields: [
                     // { attr: 'type', text: 'type' },

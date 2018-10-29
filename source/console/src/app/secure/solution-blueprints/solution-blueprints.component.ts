@@ -1,6 +1,6 @@
 import { Component, OnInit, ComponentFactoryResolver, NgZone } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import { Router, NavigationExtras } from '@angular/router';
+import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
@@ -23,6 +23,8 @@ import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { LoggerService } from '../../services/logger.service';
 import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
 
+import { _ } from 'underscore';
+
 @Component({
     selector: 'app-root-solution-blueprints',
     templateUrl: '../../common/components/generic-table/generic-table.component.html'
@@ -36,6 +38,7 @@ export class SolutionBlueprintsComponent extends GenericTableComponent implement
 
     constructor(
         public router: Router,
+        public route: ActivatedRoute,
         private breadCrumbService: BreadCrumbService,
         private solutionBlueprintService: SolutionBlueprintService,
         private localStorage: LocalStorage,
@@ -117,17 +120,29 @@ export class SolutionBlueprintsComponent extends GenericTableComponent implement
         const _self = this;
         _self.blockUI.start('Loading solution blueprints...');
 
-        _self.breadCrumbService.setup(_self.params.pageTitle, [
-            new Crumb({ title: _self.params.pageTitle, active: true, link: 'solution-blueprints' })
-        ]);
+        _self.route.params.subscribe(params => {
+            // _self.solution = new Solution({ id: params['solutionId'] });
 
-        _self.solutionBlueprintService.solutionBlueprintsObservable$.subscribe(solutionBlueprints => {
-            _self.cleanup();
-            _self.blockUI.stop();
-            _self.ngZone.run(() => {});
+            _self.breadCrumbService.setup(_self.params.pageTitle, [
+                new Crumb({ title: _self.params.pageTitle, active: true, link: 'solution-blueprints' })
+            ]);
+
+            _self.solutionBlueprintService.solutionBlueprintsObservable$.subscribe(solutionBlueprints => {
+                if (params['solutionBlueprintId']) {
+                    const index = _.findIndex(_self.data, e => {
+                        return e.id === params['solutionBlueprintId'];
+                    });
+                    if (index !== -1) {
+                        _self.handleView(_self.data[index]);
+                    }
+                }
+                _self.cleanup();
+                _self.blockUI.stop();
+                _self.ngZone.run(() => {});
+            });
+
+            _self.load();
         });
-
-        _self.load();
     }
 
     cleanup() {

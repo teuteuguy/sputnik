@@ -140,6 +140,13 @@
                             <small>Device Blueprint for the device.</small>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="type" class="form-control-label">Spec:</label>
+                        <app-pretty-json name="spec" [(ngModel)]="deviceForEdit.spec" [rows]="10"></app-pretty-json>
+                        <div class="form-control-feedback">
+                            <small>JSON document to use for the custom device type.</small>
+                        </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" (click)="deleteDevice(device)">Delete</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
