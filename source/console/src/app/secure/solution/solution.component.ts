@@ -26,12 +26,12 @@ import { Solution } from '../../models/solution.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
+import { DeploymentService } from '../../services/deployment.service';
 import { DeviceService } from '../../services/device.service';
 import { SolutionService } from '../../services/solution.service';
 import { LoggerService } from '../../services/logger.service';
 
 declare var $: any;
-
 
 @Component({
     selector: 'app-root-solution',
@@ -56,6 +56,7 @@ export class SolutionComponent implements OnInit {
         private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
         private resolver: ComponentFactoryResolver,
+        private deploymentService: DeploymentService,
         private deviceService: DeviceService,
         private solutionService: SolutionService
     ) {}
@@ -91,8 +92,6 @@ export class SolutionComponent implements OnInit {
 
     loadSolution() {
         const _self = this;
-
-
 
         _self.solutionService
             .get(_self.solution.id)
@@ -174,7 +173,51 @@ export class SolutionComponent implements OnInit {
         $('#editModal').modal('hide');
         this.editModalTemplate.clear();
     }
-    submitEdit() {
 
+    deploy() {
+        console.log('Deploy', this.solution.thingIds);
+        swal({
+            title: 'Are you sure you want to deploy this solution?',
+            text: `This will overwrite whatever the device is doing!`,
+            type: 'question',
+            showCancelButton: true,
+            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, deploy it!'
+        }).then(result => {
+            if (result.value) {
+                this.blockUI.start('Deploying solution...');
+                Promise.all(
+                    this.solution.thingIds.map(thingId => {
+                        return this.deploymentService.addDeployment(thingId).then(deployment => {
+                            console.log(deployment);
+                            return deployment;
+                        }).catch(err => {
+                            console.error(err);
+                            throw err;
+                        });
+                    })
+                )
+                    .then(results => {
+                        this.blockUI.stop();
+                        swal({
+                            timer: 1000,
+                            title: 'Success',
+                            type: 'success',
+                            showConfirmButton: false
+                        }).then();
+                    })
+                    .catch(err => {
+                        this.blockUI.stop();
+                        swal('Oops...', 'Something went wrong! Unable to deploy the solution.', 'error');
+                        this.logger.error('error occurred calling addDeployment api, show message');
+                        this.logger.error(err);
+                    });
+            }
+        });
+    }
+
+    gotoDevice(device: Device) {
+        this.router.navigate([['/securehome/devices', device.thingId].join('/')]);
     }
 }

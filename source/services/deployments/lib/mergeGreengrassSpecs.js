@@ -28,5 +28,6 @@ module.exports = function (parent, child) {
     result = extend(result, child, 'LoggerDefinitionVersion', 'Loggers');
     result = extend(result, child, 'SubscriptionDefinitionVersion', 'Subscriptions');
     result = extend(result, child, 'ResourceDefinitionVersion', 'Resources');
+    result = extend(result, child, 'DeviceDefinitionVersion', 'Devices');
     return result;
 };

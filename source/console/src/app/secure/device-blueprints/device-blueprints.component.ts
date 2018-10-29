@@ -64,11 +64,13 @@ export class DeviceBlueprintsComponent extends GenericTableComponent implements 
                 createElement: <GenericTableElementParams>{
                     text: 'Create NEW Device Blueprint',
                     modal: DeviceBlueprintsModalComponent,
+                    modalName: 'defaultDeviceBlueprintsModal',
                     link: false
                 },
                 editElement: <GenericTableElementParams>{
                     text: 'Edit',
                     modal: DeviceBlueprintsModalComponent,
+                    modalName: 'defaultDeviceBlueprintsModal',
                     link: false
                 },
                 viewElement: <GenericTableElementParams>{
@@ -106,7 +108,11 @@ export class DeviceBlueprintsComponent extends GenericTableComponent implements 
                             })
                             .catch(err => {
                                 _self.blockUI.stop();
-                                swal('Oops...', 'Something went wrong! Unable to delete the device bluepritn.', 'error');
+                                swal(
+                                    'Oops...',
+                                    'Something went wrong! Unable to delete the device bluepritn.',
+                                    'error'
+                                );
                                 _self.logger.error('error occurred calling deleteDeviceBlueprint api, show message');
                                 _self.logger.error(err);
                             });

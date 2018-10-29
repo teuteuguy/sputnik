@@ -13,6 +13,7 @@ declare var $: any;
 export class GenericTableElementParams {
     text: string;
     modal: any;
+    modalName: string;
     link: boolean;
     constructor(values: Object = {}) {
         Object.assign(this, values);
@@ -83,8 +84,15 @@ export class GenericTableComponent {
             this.showModal(this.params.createElement.modal, 'create', null);
         }
     }
-    handleCancel() {
-        $('#modal').modal('hide');
+    handleCancel(type) {
+        if (type === 'create') {
+            $('#' + this.params.createElement.modalName).modal('hide');
+        } else if (type === 'edit') {
+            $('#' + this.params.editElement.modalName).modal('hide');
+        } else {
+            $('#' + this.params.viewElement.modalName).modal('hide');
+        }
+        // $('#modal').modal('hide');
         this.createModalTemplate.clear();
     }
 
@@ -113,7 +121,7 @@ export class GenericTableComponent {
 
         const cancelSubject: Subject<void> = new Subject<void>();
         cancelSubject.subscribe(() => {
-            this.handleCancel();
+            this.handleCancel(type);
             this.load();
         });
         const submitSubject: Subject<any> = new Subject<any>();
@@ -130,7 +138,7 @@ export class GenericTableComponent {
                     showConfirmButton: false
                 }).then();
             }
-            this.handleCancel();
+            this.handleCancel(type);
             this.load();
         });
 
@@ -140,7 +148,14 @@ export class GenericTableComponent {
         if (element) {
             componentRefInstance.element = element;
         }
-        $('#modal').modal('show');
+
+        if (type === 'create') {
+            $('#' + this.params.createElement.modalName).modal('show');
+        } else if (type === 'edit') {
+            $('#' + this.params.editElement.modalName).modal('show');
+        } else {
+            $('#' + this.params.viewElement.modalName).modal('show');
+        }
     }
 
     updatePaging() {

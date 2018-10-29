@@ -15,4 +15,8 @@ export class DeploymentService {
     public listDeployments(limit: number, nextToken: string) {
         return this.appSyncService.listDeployments(limit, nextToken);
     }
+
+    public addDeployment(thingId: string) {
+        return this.appSyncService.addDeployment(thingId);
+    }
 }

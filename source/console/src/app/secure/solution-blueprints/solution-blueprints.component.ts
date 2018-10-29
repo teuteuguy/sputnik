@@ -58,16 +58,19 @@ export class SolutionBlueprintsComponent extends GenericTableComponent implement
                 createElement: <GenericTableElementParams>{
                     text: 'Create NEW Solution Blueprint',
                     modal: SolutionBlueprintsModalComponent,
+                    modalName: 'defaultSolutionBlueprintsModal',
                     link: false
                 },
                 editElement: <GenericTableElementParams>{
                     text: 'Edit',
                     modal: SolutionBlueprintsModalComponent,
+                    modalName: 'defaultSolutionBlueprintsModal',
                     link: false
                 },
                 viewElement: <GenericTableElementParams>{
                     text: 'View',
                     modal: SolutionBlueprintsModalComponent,
+                    modalName: 'defaultSolutionBlueprintsModal',
                     link: false
                 },
                 deleteElement: this.isAdminUser,

@@ -45,10 +45,22 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" *ngFor="let device of devices">
-                            <div class="col-md-12">
-                                {{device.name}} {{device.deviceTypeId}} {{device.deviceBlueprintId}}
+                        <div class="row form-group" *ngFor="let device of devices; let i = index">
+                            <label class="col-md-2 control-label text-right ">Device {{i}}:</label>
+                            <div class="col-md-10">
+                                <a (click)="gotoDevice(device)">{{device.name}}
+                                    <i class="mdi mdi-link-variant"></i>
+                                </a>
                             </div>
+                            <!-- </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-md-4 control-label text-right">Blueprint:</label>
+                                    <div class="col-md-8">
+                                        <p class="form-control-static">{{device.deviceBlueprintId}} </p>
+                                    </div>
+                                </div>
+                            </div> -->
                         </div>
                     </div>
                 </form>

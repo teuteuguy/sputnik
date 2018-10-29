@@ -57,10 +57,21 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
                 createElement: <GenericTableElementParams>{
                     text: 'Create NEW Device Type',
                     modal: DeviceTypesModalComponent,
+                    modalName: 'defaultDeviceTypesModal',
                     link: false
                 },
-                editElement: <GenericTableElementParams>{ text: 'Edit', modal: DeviceTypesModalComponent, link: false },
-                viewElement: <GenericTableElementParams>{ text: 'View', modal: DeviceTypesModalComponent, link: false },
+                editElement: <GenericTableElementParams>{
+                    text: 'Edit',
+                    modal: DeviceTypesModalComponent,
+                    modalName: 'defaultDeviceTypesModal',
+                    link: false
+                },
+                viewElement: <GenericTableElementParams>{
+                    text: 'View',
+                    modal: DeviceTypesModalComponent,
+                    modalName: 'defaultDeviceTypesModal',
+                    link: false
+                },
                 deleteElement: this.isAdminUser,
                 fields: [
                     { attr: 'type', text: 'type' },

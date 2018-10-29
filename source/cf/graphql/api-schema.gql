@@ -25,7 +25,9 @@ type PaginatedDevices {
 type Deployment {
     thingId: String!
     deploymentId: String!
-    spec: String!
+    type: String!
+    spec: AWSJSON
+    greengrassGroup: AWSJSON
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }

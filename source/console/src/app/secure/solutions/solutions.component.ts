@@ -13,6 +13,7 @@ import {
 
 // Childs
 import { SolutionsModalComponent } from './solutions.modal.component';
+import { SolutionEditModalComponent } from '../solution/solution.edit.modal.component';
 
 // Models
 import { Solution } from '../../models/solution.model';
@@ -60,18 +61,16 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
                 createElement: <GenericTableElementParams>{
                     text: 'Create NEW Solution',
                     modal: SolutionsModalComponent,
+                    modalName: 'defaultSolutionModal',
                     link: false
                 },
                 editElement: <GenericTableElementParams>{
                     text: 'Edit',
-                    modal: SolutionsModalComponent,
+                    modal: SolutionEditModalComponent,
+                    modalName: 'editSolutionModal',
                     link: false
                 },
-                viewElement: <GenericTableElementParams>{
-                    text: 'View',
-                    modal: null,
-                    link: true
-                },
+                viewElement: <GenericTableElementParams>{ text: 'View', modal: null, link: true },
                 fieldLink: 'name',
                 deleteElement: this.isAdminUser,
                 fields: [

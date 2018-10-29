@@ -41,10 +41,10 @@ Mappings:
     Solutions:
         Solution:
             AMCF1: 'aws-mini-connected-factory-v1.0'
+            DEFAULTS: 'aws-defaults'
 
 Resources:
 
-    # Nested stack - Custom resource - S3 Helper
     CFStackForSolutionsAMCF1:
         Type: AWS::CloudFormation::Stack
         Properties:
@@ -52,6 +52,23 @@ Resources:
             Parameters:
                 sourceS3Bucket: !Ref sourceS3Bucket
                 sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'AMCF1']]]
+                greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
+                deploymentUUID: !Ref deploymentUUID
+                dataS3Bucket: !Ref dataS3Bucket
+                dataS3BucketArn: !Ref dataS3BucketArn
+                solutionsGreengrassGroupRole: !Ref solutionsGreengrassGroupRole
+
+    CFStackForSolutionsAMTMFR1:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Ref sourceS3Bucket, !Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'DEFAULTS'], !Join ['.', [!FindInMap ['Solutions', 'Solution', 'DEFAULTS'], 'yml']]]]
+            Parameters:
+                sourceS3Bucket: !Ref sourceS3Bucket
+                sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'Solution', 'DEFAULTS']]]
                 greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deviceTypesTable: !Ref deviceTypesTable

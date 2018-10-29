@@ -28,6 +28,7 @@ module.exports = function (event, context) {
     let _newGreengrassGroupVersion = {};
     let _groupVersion;
     let _deployment;
+    let _savedDeployment;
 
     let _substitutions = {
         THING_NAME: null,
@@ -192,6 +193,12 @@ module.exports = function (event, context) {
                             _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn;
                         }
                         return s;
+                    }),
+                    createGreengrassXDefinitionVersion('Device', _newSpec, groupDefinitionVersion).then(d => {
+                        if (d) {
+                            _newGreengrassGroupVersion.DeviceDefinitionVersionArn = d.Arn;
+                        }
+                        return d;
                     })
                     // createGreengrassCoreDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(c => _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn),
                     // createGreengrassFunctionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(f => _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn),
@@ -233,23 +240,26 @@ module.exports = function (event, context) {
                 _deployment = deployment;
                 console.log(`Deployed: ${_deployment.DeploymentId}`);
 
+                _savedDeployment = {
+                    thingId: _device.thingId,
+                    deploymentId: _deployment.DeploymentId,
+                    spec: _newSpec,
+                    type: 'GREENGRASS',
+                    greengrassGroup: {
+                        Id: _groupVersion.Id,
+                        VersionId: _groupVersion.Version
+                    },
+                    createdAt: moment()
+                        .utc()
+                        .format(),
+                    updatedAt: moment()
+                        .utc()
+                        .format()
+                };
+
                 const newDeployment = {
                     TableName: process.env.TABLE_DEPLOYMENTS,
-                    Item: {
-                        thingId: _device.thingId,
-                        deploymentId: _deployment.DeploymentId,
-                        spec: _newSpec,
-                        greengrassGroup: {
-                            Id: _groupVersion.Id,
-                            VersionId: _groupVersion.Version
-                        },
-                        createdAt: moment()
-                            .utc()
-                            .format(),
-                        updatedAt: moment()
-                            .utc()
-                            .format()
-                    }
+                    Item: _savedDeployment
                 };
                 return documentClient.put(newDeployment).promise();
 
@@ -277,13 +287,25 @@ module.exports = function (event, context) {
             }).then(device => {
 
                 console.log(`AND WE ARE DONE !`);
-                return null;
+                return _savedDeployment;
 
             });
 
         } else {
             console.log('Device is NOT a greengrass device, or at least not detected as one. OR the deviceBlueprint/deviceType combination is not for a Greengrass device');
-            return null;
+            return {
+                thingId: 'UNKNOWN',
+                deploymentId: 'UNKNOWN',
+                type: 'NOT_A_GREENGRASS_DEVICE',
+                spec: {},
+                greengrassGroup: {},
+                createdAt: moment()
+                    .utc()
+                    .format(),
+                updatedAt: moment()
+                    .utc()
+                    .format()
+            };
         }
     });
 };

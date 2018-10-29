@@ -6,7 +6,7 @@ export default gql`
             deployments {
                 thingId
                 deploymentId
-                spec
+                type
                 createdAt
                 updatedAt
             }

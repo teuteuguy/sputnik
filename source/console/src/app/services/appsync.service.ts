@@ -34,6 +34,7 @@ import listDeviceTypes from '../graphql/queries/device-types.list';
 import listSolutions from '../graphql/queries/solutions.list';
 import listSolutionBlueprints from '../graphql/queries/solution-blueprints.list';
 // Mutations
+import addDeployment from '../graphql/mutations/deployment.add';
 import addDevice from '../graphql/mutations/device.add';
 import addDeviceBlueprint from '../graphql/mutations/device-blueprint.add';
 import addDeviceType from '../graphql/mutations/device-type.add';
@@ -207,10 +208,19 @@ export class AppSyncService {
     }
 
     // Deployments
+    private cleanIncomingDeployment(deployment: Deployment) {
+        if (deployment.spec) {
+            deployment.spec = JSON.parse(deployment.spec);
+        }
+        return deployment;
+    }
     public listDeployments(limit: number, nextToken: String) {
         return this.query(listDeployments, { limit: limit, nextToken: nextToken }).then(
             result => result.data.listDeployments
         );
+    }
+    public addDeployment(thingId: String) {
+        return this.mutation(addDeployment, { thingId: thingId }).then(result => this.cleanIncomingDeployment(result.data.addDeployment));
     }
 
     // Device Blueprints
