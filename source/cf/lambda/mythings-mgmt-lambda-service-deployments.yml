@@ -22,9 +22,13 @@ Parameters:
     deploymentsTable:
         Type: String
         Description: DynamoDB Table for storing the deployments
-    dataBucketAccessPolicyArn:
+    dataBucket:
         Type: String
-        Description: My Things Management Data Bucket Access Policy ARN
+        Description: My Things Management Data Bucket
+    solutionsGreengrassGroupRoleArn:
+        Type: String
+        Description: My Things Management Greengrass Group Role ARN
+
 
 Resources:
 
@@ -106,7 +110,8 @@ Resources:
                     TABLE_DEPLOYMENTS: !Ref deploymentsTable
                     TABLE_SETTINGS: !Ref settingsTable
                     AWS_ACCOUNT: !Ref 'AWS::AccountId'
-                    IAM_DATA_BUCKET_ACCESS_POLICY: !Ref dataBucketAccessPolicyArn
+                    IAM_GREENGRASS_GROUP_ARN: !Ref solutionsGreengrassGroupRoleArn
+                    DATA_BUCKET: !Ref dataBucket
                     LOGGING_LEVEL: 2
 
 

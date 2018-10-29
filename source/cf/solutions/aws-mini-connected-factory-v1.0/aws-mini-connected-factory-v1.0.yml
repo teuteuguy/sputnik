@@ -25,12 +25,15 @@ Parameters:
     deploymentUUID:
         Type: String
         Description: Used to force update / create of inits
-    # dataS3Bucket:
-    #     Type: String
-    #     Description: My Things Management Data S3 Bucket
-    # dataS3BucketArn:
-    #     Type: String
-    #     Description: My Things Management Data S3 Bucket ARN
+    dataS3Bucket:
+        Type: String
+        Description: My Things Management Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: My Things Management Data S3 Bucket ARN
+    solutionsGreengrassGroupRole:
+        Type: String
+        Description: Greengrass Group Role
 
 Resources:
     AMCF1DeviceBlueprints:
@@ -105,3 +108,37 @@ Resources:
             FunctionName: !Ref AMCF1CameraLambda
             FunctionVersion: !GetAtt AMCF1CameraLambdaVersion.Version
             Name: 'MTM'
+
+
+    AMCF1GreengrassGroupPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'Policy for the My Things Management Greengrass Role.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                        Resource:
+                            - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
+                            - !Join ['', [!Ref dataS3BucketArn, '*']]
+            Roles:
+                -
+                    !Ref solutionsGreengrassGroupRole
+
+
+    AMCF1LegoModel:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'legomodel.tar.gz']]
+            destS3Bucket: !Ref dataS3Bucket
+            destS3Key: !Join ['/', ['AMCF1', 'models', 'legomodel.tar.gz']]
+            uuid: !Ref deploymentUUID
+            customAction: 'copyFileFromS3ToS3'

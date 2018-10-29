@@ -19,23 +19,6 @@
         },
         "FunctionDefinitionVersion": {
             "Functions": [{
-                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
-                    "FunctionConfiguration": {
-                        "MemorySize": 160000,
-                        "Environment": {
-                            "Variables": {},
-                            "AccessSysfs": true,
-                            "ResourceAccessPolicies": [{
-                                "Permission": "rw",
-                                "ResourceId": "[ARTIFACTS]"
-                            }]
-                        },
-                        "Executable": "das_mutter.function_handler",
-                        "Pinned": true,
-                        "Timeout": 1200
-                    }
-                },
-                {
                     "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "FunctionConfiguration": {
                         "EncodingType": "json",
@@ -46,32 +29,20 @@
                                     "ResourceId": "tmp"
                                 },
                                 {
-                                    "Permission": "ro",
-                                    "ResourceId": "aws_cam_home"
-                                },
-                                {
-                                    "Permission": "ro",
-                                    "ResourceId": "stream"
-                                },
-                                {
                                     "Permission": "rw",
                                     "ResourceId": "model-lego-helmets"
                                 },
                                 {
                                     "Permission": "ro",
-                                    "ResourceId": "artifacts"
+                                    "ResourceId": "aws_cam_home"
                                 },
                                 {
-                                    "Permission": "rw",
-                                    "ResourceId": "26574346-54fe-4ba9-a7f0-b742e59ebf45"
+                                    "Permission": "ro",
+                                    "ResourceId": "aws_cam_stream"
                                 },
                                 {
-                                    "Permission": "rw",
-                                    "ResourceId": "b4a7f129-4e9b-4498-8f6a-3781986db374"
-                                },
-                                {
-                                    "Permission": "rw",
-                                    "ResourceId": "42650a24-8c63-47ec-843e-16721b0868e1"
+                                    "Permission": "ro",
+                                    "ResourceId": "[ARTIFACTS]"
                                 }
                             ],
                             "Variables": {
@@ -94,23 +65,6 @@
                         "Pinned": true,
                         "Timeout": 3
                     }
-                },
-                {
-                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_version_poller:1",
-                    "FunctionConfiguration": {
-                        "MemorySize": 160000,
-                        "Environment": {
-                            "Variables": {},
-                            "AccessSysfs": true,
-                            "ResourceAccessPolicies": [{
-                                "Permission": "rw",
-                                "ResourceId": "[ARTIFACTS]"
-                            }]
-                        },
-                        "Executable": "version_poller.function_handler",
-                        "Pinned": true,
-                        "Timeout": 1200
-                    }
                 }
             ]
         },
@@ -118,27 +72,27 @@
             "Loggers": [{
                     "Type": "AWSCloudWatch",
                     "Level": "INFO",
-                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
+                    "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-GreengrassSystem",
                     "Component": "GreengrassSystem"
                 },
                 {
                     "Type": "AWSCloudWatch",
                     "Level": "INFO",
-                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
+                    "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-Lambda",
                     "Component": "Lambda"
                 },
                 {
                     "Space": 300000,
                     "Type": "FileSystem",
                     "Level": "INFO",
-                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
+                    "Id": "aws-gg-mini-connected-factory-FileSystem-GreengrassSystem",
                     "Component": "GreengrassSystem"
                 },
                 {
                     "Space": 300000,
                     "Type": "FileSystem",
                     "Level": "INFO",
-                    "Id": "deeplens-greengrass-FileSystem-Lambda",
+                    "Id": "aws-gg-mini-connected-factory-FileSystem-Lambda",
                     "Component": "Lambda"
                 }
             ]
@@ -162,30 +116,48 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "https://connected-factory-reinvent.s3.amazonaws.com/model.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/AMCF1/models/legomodel.tar.gz"
+                    }
+                }
+            }, {
+                "Id": "tmp",
+                "Name": "tmp",
+                "ResourceDataContainer": {
+                    "LocalVolumeResourceData": {
+                        "DestinationPath": "/tmp",
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/tmp"
                     }
                 }
             }]
         },
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
-                    "Target": "cloud",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
-                    "Subject": "$aws/things/[THING_NAME]/shadow/update"
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/inference",
+                    "Target": "cloud"
                 },
                 {
-                    "Target": "cloud",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_version_poller:1",
-                    "Subject": "$aws/things/[THING_NAME]/shadow/update"
+                    "Id": "80d583ed-44f1-4d1a-b61b-024cf8791bcc",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/admin",
+                    "Target": "cloud"
+                },
+                {
+                    "Id": "b587282f-2bc2-4624-b2d7-ae240fd31d98",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Subject": "$aws/things/[CORE]/shadow/update",
+                    "Target": "cloud"
+                },
+                {
+                    "Id": "b86dc911-b2db-4a17-a6b7-83c91d15cf69",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Subject": "$aws/things/[CORE]/shadow/update",
+                    "Target": "GGShadowService"
                 }
             ]
-        },
-        "IAM": {
-            "GreengrassGroupRole": {
-                "PolicyArns": [
-                    "[DATA_BUCKET_ACCESS_POLICY]"
-                ]
-            }
         }
     }
 }

@@ -66,6 +66,27 @@ Resources:
 
     # ##########################################################################
     #
+    # IoT / Greengrass
+    #
+    # ##########################################################################
+    # DefaultGreengrass group role
+    DefaultGreengrassGroupRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'greengrass.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+
+
+    # ##########################################################################
+    #
     # Lambda
     #
     # ##########################################################################
@@ -77,6 +98,7 @@ Resources:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
                 destBucketArn: !GetAtt CFStackForWebsite.Outputs.websiteBucketArn
+                dataBucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 dataBucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
                 settingsTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
                 devicesTable: !GetAtt CFStackForDynamoDB.Outputs.devicesTable
@@ -85,7 +107,7 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
-                dataBucketAccessPolicyArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicyArn
+                solutionsGreengrassGroupRoleArn: !GetAtt DefaultGreengrassGroupRole.Arn
 
     # ##########################################################################
     #
@@ -131,8 +153,9 @@ Resources:
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
                 customResourceUtilsHelperArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
                 deploymentUUID: '%%DEPLOYMENT_UUID%%'
-                # dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
-                # dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
+                dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
+                dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
+                solutionsGreengrassGroupRole: !Ref DefaultGreengrassGroupRole
 
     # ##########################################################################
     #

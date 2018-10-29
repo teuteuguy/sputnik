@@ -19,7 +19,7 @@ Blablabla
 * utils: find rogue stuff
 * For a given thing, check which solution they are part of.
 * have the factory reset refer to the cf scripts.
-
+* Simplify cloudformation script, databucket vs databucketarn
 
 ## Notes
 

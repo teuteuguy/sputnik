@@ -26,12 +26,15 @@ Parameters:
     deploymentUUID:
         Type: String
         Description: Used to force update / create of inits
-    # dataS3Bucket:
-    #     Type: String
-    #     Description: My Things Management Data S3 Bucket
-    # dataS3BucketArn:
-    #     Type: String
-    #     Description: My Things Management Data S3 Bucket ARN
+    dataS3Bucket:
+        Type: String
+        Description: My Things Management Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: My Things Management Data S3 Bucket ARN
+    solutionsGreengrassGroupRole:
+        Type: String
+        Description: My Things Management Greengrass Group Role
 
 
 Mappings:
@@ -55,8 +58,6 @@ Resources:
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
                 customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
                 deploymentUUID: !Ref deploymentUUID
-                # dataS3Bucket: !Ref dataS3Bucket
-                # dataS3BucketArn: !Ref dataS3BucketArn
-
-
-
+                dataS3Bucket: !Ref dataS3Bucket
+                dataS3BucketArn: !Ref dataS3BucketArn
+                solutionsGreengrassGroupRole: !Ref solutionsGreengrassGroupRole

@@ -19,6 +19,7 @@ const https = require('https');
 const url = require('url');
 
 const DDBHelper = require('./lib/dynamodb-helper');
+const S3Helper = require('./lib/s3-helper');
 
 
 /**
@@ -28,6 +29,7 @@ exports.handler = (event, context, callback) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
 
     const ddbHelper = new DDBHelper();
+    const s3Helper = new S3Helper();
 
     let responseStatus = 'FAILED';
     let responseData = {};
@@ -50,8 +52,19 @@ exports.handler = (event, context, callback) => {
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
             });
 
-        }
-        else {
+        } else if (event.ResourceProperties.customAction === 'copyFileFromS3ToS3') {
+            s3Helper.copyFileFromS3ToS3(event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3Key, event.ResourceProperties.destS3Bucket, event.ResourceProperties.destS3Key).then(data => {
+                responseStatus = 'SUCCESS';
+                responseData = data;
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch(err => {
+                responseData = {
+                    Error: `copyFileFromS3ToS3 failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            })
+        } else {
             sendResponse(event, callback, context.logStreamName, 'SUCCESS');
         }
     }

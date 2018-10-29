@@ -11,6 +11,9 @@ Parameters:
     destBucketArn:
         Type: String
         Description: ARN of the My Things Management Website Bucket.
+    dataBucket:
+        Type: String
+        Description: My Things Management Data Bucket
     dataBucketArn:
         Type: String
         Description: ARN of the My Things Management Data Bucket.
@@ -35,9 +38,9 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
-    dataBucketAccessPolicyArn:
+    solutionsGreengrassGroupRoleArn:
         Type: String
-        Description: My Things Management Data Bucket Access Policy ARN
+        Description: My Things Management Greengrass group role ARN
 
 
 Resources:
@@ -92,7 +95,8 @@ Resources:
                 deviceTypesTable: !Ref deviceTypesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deploymentsTable: !Ref deploymentsTable
-                dataBucketAccessPolicyArn: !Ref dataBucketAccessPolicyArn
+                dataBucket: !Ref dataBucket
+                solutionsGreengrassGroupRoleArn: !Ref solutionsGreengrassGroupRoleArn
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:

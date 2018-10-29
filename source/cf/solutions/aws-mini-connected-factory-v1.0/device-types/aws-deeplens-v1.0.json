@@ -17,8 +17,8 @@
                     }
                 }
             }, {
-                "Id": "stream",
-                "Name": "dc_admin_stream_resource",
+                "Id": "aws_cam_stream",
+                "Name": "aws_cam_stream",
                 "ResourceDataContainer": {
                     "LocalVolumeResourceData": {
                         "DestinationPath": "/opt/awscam/out",
@@ -29,8 +29,8 @@
                     }
                 }
             }, {
-                "Id": "home",
-                "Name": "dc_admin_home_resource",
+                "Id": "aws_cam_home",
+                "Name": "aws_cam_home",
                 "ResourceDataContainer": {
                     "LocalVolumeResourceData": {
                         "DestinationPath": "/home/aws_cam/",

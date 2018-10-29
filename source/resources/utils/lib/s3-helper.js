@@ -31,73 +31,33 @@ class s3Helper {
         this.creds = new AWS.EnvironmentCredentials('AWS'); // Lambda provided credentials
     }
 
-    copyFileFromS3ToS3(sourceS3Bucket, sourceS3prefix, destS3Bucket, destS3prefix) {
+    copyFileFromS3ToS3(sourceS3Bucket, sourceS3Key, destS3Bucket, destS3Key) {
         console.log(`source bucket: ${sourceS3Bucket}`);
-        console.log(`source prefix: ${sourceS3prefix}`);
+        console.log(`source key: ${sourceS3Key}`);
         console.log(`dest bucket: ${destS3Bucket}`);
-        console.log(`dest prefix: ${destS3prefix}`);
-    }
+        console.log(`dest key: ${destS3Key}`);
 
-    dynamodbPutObjectsFromS3Folder(sourceS3Bucket, sourceS3prefix, table) {
-        console.log(`source bucket: ${sourceS3Bucket}`);
-        console.log(`source prefix: ${sourceS3prefix}`);
-        console.log(`ddb table: ${table}`);
 
+        const params = {
+            Bucket: destS3Bucket,
+            Key: destS3Key,
+            CopySource: [sourceS3Bucket, sourceS3Key].join('/'),
+            MetadataDirective: 'REPLACE'
+        };
+
+        // params.ContentType = this._setContentType(filelist[index]);
+        // params.Metadata = {
+        //     'Content-Type': params.ContentType
+        // };
+        // console.log(params);
         const s3 = new AWS.S3();
-        const documentClient = new AWS.DynamoDB.DocumentClient();
 
-        let _self = this;
-
-        function _listAllFiles(allFiles, token) {
-            let opts = {
-                Bucket: sourceS3Bucket,
-                Prefix: sourceS3prefix
-            };
-            if (token) {
-                opts.ContinuationToken = token;
-            }
-
-            return s3.listObjectsV2(opts).promise().then(data => {
-                allFiles = allFiles.concat(data.Contents.map((e) => {
-                    return e.Key.split(sourceS3prefix + '/').pop();
-                }));
-                if (data.IsTruncated) {
-                    return _listAllFiles(allFiles, data.NextContinuationToken);
-                } else
-                    return allFiles;
-            });
-        }
-
-        return _listAllFiles([], null).then(files => {
-            console.log('Found:', JSON.stringify(files));
-
-            return files.map(file => {
-                return s3.getObject({
-                    Bucket: sourceS3Bucket,
-                    Key: sourceS3prefix + '/' + file
-                }).promise().then(data => {
-                    const object = JSON.parse(data.Body.toString('ascii'));
-                    console.log(file, object);
-
-                    const params = {
-                        TableName: table,
-                        Item: object
-                    };
-
-                    return documentClient.put(params).promise();
-
-                }).then(result => {
-                    return {
-                        file: file
-                    };
-                });
-            });
-        }).then(results => {
-            return {
-                result: results
-            };
+        return s3.copyObject(params).promise().then(data => {
+            console.log(`${sourceS3Bucket}/${sourceS3Key} copied successfully`);
+            return data;
+        }).catch(err => {
+            throw `error copying ${sourceS3Bucket}/${sourceS3Key}\n${err}`;
         });
-
     }
 
 }
