@@ -13,13 +13,13 @@ function _listPrincipalThings(certificateArn, nextToken) {
         nextToken: nextToken
     }).promise().then(data => {
         let _things = data.things;
-        console.log('_listPrincipalThings:', _things);
+        console.log('    _listPrincipalThings:', _things);
         if (data.nextToken) {
             return _listPrincipalThings(certificateArn, data.nextToken).then(things => {
                 return _things.concat(things);
             })
         } else {
-            console.log('_listPrincipalThings: return', data.things);
+            // console.log('    _listPrincipalThings: return', data.things);
             return data.things;
         }
     });
@@ -39,7 +39,9 @@ module.exports = function (certificateArn) {
         );
     }).then(things => {
         console.log(lib + ':', 'Found and Described: ' + things.length + ' things for the certificateArn: ' + certificateArn);
-        things.forEach(t => console.log('    - thingName: ' + t.thingName + ' (' + t.thingId + ')'));
+        things.forEach(t => {
+            console.log(lib + ':', '    thingName: ' + t.thingName + ' (' + t.thingId + ')');
+        });
         return things;
     });
 

@@ -8,6 +8,7 @@
     "dependencies": {
         "moment": "*",
         "mythings-mgmt-custom-resource-helper-utils": "../../resources/utils/",
+        "mythings-mgmt-devices-service": "../devices",
         "underscore": "*"
     },
     "devDependencies": {},

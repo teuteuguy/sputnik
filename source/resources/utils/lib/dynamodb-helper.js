@@ -15,6 +15,7 @@
 
 let AWS = require('aws-sdk');
 const fs = require('fs');
+const moment = require('moment');
 
 /**
  * Helper function to interact with AWS S3 for cfn custom resource.
@@ -71,6 +72,13 @@ class dynamodbHelper {
                 }).promise().then(data => {
                     const object = JSON.parse(data.Body.toString('ascii'));
                     console.log(file, object);
+
+                    object.createdAt = moment()
+                        .utc()
+                        .format();
+                    object.updatedAt = moment()
+                        .utc()
+                        .format();
 
                     const params = {
                         TableName: table,

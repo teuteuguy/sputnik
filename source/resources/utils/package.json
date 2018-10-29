@@ -8,6 +8,7 @@
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
+        "moment": "^2.22.2",
         "underscore": "^1.9.1"
     },
     "scripts": {

@@ -6,6 +6,8 @@ const moment = require('moment');
 const _ = require('underscore');
 const uuid = require('uuid');
 
+const createGreengrassXDefinitionVersion = require('./createGreengrassXDefinitionVersion');
+
 const createGreengrassCoreDefinitionVersion = require('./createGreengrassCoreDefinitionVersion');
 const createGreengrassFunctionDefinitionVersion = require('./createGreengrassFunctionDefinitionVersion');
 const createGreengrassLoggerDefinitionVersion = require('./createGreengrassLoggerDefinitionVersion');
@@ -17,15 +19,12 @@ const mergeGreengrassSpecs = require('./mergeGreengrassSpecs');
 const lib = 'addDeployment';
 
 
-module.exports = function (event, context, callback) {
-    if (event.cmd !== lib) {
-        return callback('Wrong cmd for lib. Should be ' + lib + ', got event: ' + event, null);
-    }
+module.exports = function (event, context) {
 
     let _device;
     let _deviceType;
     let _deviceBlueprint;
-    let _newSpec;
+    let _newSpec = {};
     let _newGreengrassGroupVersion = {};
     let _groupVersion;
     let _deployment;
@@ -37,64 +36,67 @@ module.exports = function (event, context, callback) {
         CORE_CERTIFICATE_ARN: null,
         AWS_REGION: null,
         AWS_ACCOUNT: null,
-        MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY: null
+        DATA_BUCKET_S3_URL: null
     };
 
     // First lets get the device.
-    documentClient.get({
+    return documentClient.get({
         TableName: process.env.TABLE_DEVICES,
         Key: {
             thingId: event.thingId
         }
     }).promise().then(device => {
         _device = device.Item;
-        console.log('Device:', _device);
+
         if (_device === undefined) {
             throw 'Device does not exist in DB';
         }
 
-        const deviceTypeParams = {
-            TableName: process.env.TABLE_DEVICE_TYPES,
-            Key: {
-                id: _device.deviceTypeId
-            }
-        };
-        const deviceBlueprintParams = {
-            TableName: process.env.TABLE_DEVICE_BLUEPRINTS,
-            Key: {
-                id: _device.deviceBlueprintId
-            }
-        };
-
         return Promise.all([
-            documentClient.get(deviceTypeParams).promise().then(result => _deviceType = result.Item),
-            documentClient.get(deviceBlueprintParams).promise().then(result => _deviceBlueprint = result.Item),
-            // iot.describeThing({
-            //     thingName: _device.thingName
-            // }).promise()
+            documentClient.get({
+                TableName: process.env.TABLE_DEVICE_TYPES,
+                Key: {
+                    id: _device.deviceTypeId
+                }
+            }).promise().then(result => _deviceType = result.Item),
+            documentClient.get({
+                TableName: process.env.TABLE_DEVICE_BLUEPRINTS,
+                Key: {
+                    id: _device.deviceBlueprintId
+                }
+            }).promise().then(result => _deviceBlueprint = result.Item)
         ]);
     }).then(results => {
-        // _thing = results[2];
 
-        console.log('Device Type:', _deviceType);
-        console.log('Device Blueprint:', _deviceBlueprint);
-        // console.log('Thing:', _thing);
         if (_deviceType === undefined || _deviceBlueprint === undefined) {
             throw 'Device Type or Device Blueprint do not exist in DB';
         }
 
+        console.log('Device:', _device);
+        console.log('Device Type:', _deviceType);
+        console.log('Device Blueprint:', _deviceBlueprint);
+
         if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {
+
+            console.log('Device is a Greengrass device');
 
             return gg.getGroup({
                 GroupId: _device.greengrassGroupId
             }).promise().then(group => {
-                return gg.getGroupVersion({
-                    GroupId: _device.greengrassGroupId,
-                    GroupVersionId: group.LatestVersion
-                }).promise();
+
+                if (!group.LatestVersion) {
+                    console.log('Group does not have a definition version yet. We will need to create it later down.');
+                    return null;
+                } else {
+                    return gg.getGroupVersion({
+                        GroupId: _device.greengrassGroupId,
+                        GroupVersionId: group.LatestVersion
+                    }).promise();
+                }
+
             }).then(groupDefinitionVersion => {
                 // Lets check if by any chance this device is a Greengrass device ?
-                console.log('Lets check if the device is part of a greengrass group as the greengrass core?');
+                // console.log('Lets check if the device is part of a greengrass group as the greengrass core?');
 
                 _substitutions.AWS_ACCOUNT = process.env.AWS_ACCOUNT;
                 _substitutions.AWS_REGION = process.env.AWS_REGION;
@@ -102,23 +104,34 @@ module.exports = function (event, context, callback) {
                 _substitutions.CORE = _device.thingName;
                 _substitutions.CORE_ARN = _device.thingArn;
                 _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
-                // _substitutions.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY = process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY;
+                _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
 
-                console.log('First we will replace the following info in out templates:');
-                console.log(`THING_NAME: ${_substitutions.THING_NAME}`);
-                console.log(`AWS_REGION: ${process.env.AWS_REGION}`);
-                console.log(`AWS_ACCOUNT: ${process.env.AWS_ACCOUNT}`);
-                console.log(`CORE: ${_substitutions.CORE}`);
-                console.log(`CORE_ARN: ${_substitutions.CORE_ARN}`);
-                console.log(`CORE_CERTIFICATE_ARN: ${_substitutions.CORE_CERTIFICATE_ARN}`);
+                // console.log('First we will replace the following info in out templates:');
+                // console.log(`THING_NAME: ${_substitutions.THING_NAME}`);
+                // console.log(`AWS_REGION: ${process.env.AWS_REGION}`);
+                // console.log(`AWS_ACCOUNT: ${process.env.AWS_ACCOUNT}`);
+                // console.log(`CORE: ${_substitutions.CORE}`);
+                // console.log(`CORE_ARN: ${_substitutions.CORE_ARN}`);
+                // console.log(`CORE_CERTIFICATE_ARN: ${_substitutions.CORE_CERTIFICATE_ARN}`);
                 // console.log(`MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY: ${process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY}`);
 
-                console.log(`DeviceType Spec in: ${JSON.stringify(_deviceType.spec, null, 4)}`);
-                console.log(`DeviceBlueprint Spec in: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
+                if (_device.spec) {
+                    console.log(`Device Spec: ${JSON.stringify(_device.spec, null, 4)}`);
+                    _newSpec = mergeGreengrassSpecs(_newSpec, _device.spec);
+                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+                }
+                if (_deviceType.spec) {
+                    console.log(`Device Type Spec: ${JSON.stringify(_deviceType.spec, null, 4)}`);
+                    _newSpec = mergeGreengrassSpecs(_newSpec, _deviceType.spec);
+                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+                }
+                if (_deviceBlueprint.spec) {
+                    console.log(`Device Blueprint Spec: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
+                    _newSpec = mergeGreengrassSpecs(_newSpec, _deviceBlueprint.spec);
+                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+                }
 
-                _newSpec = mergeGreengrassSpecs(_deviceBlueprint.spec, _deviceType.spec);
-                console.log(`New Spec in: ${JSON.stringify(_newSpec, null, 4)}`);
-
+                console.log('Going to substitute in the spec');
                 // Construct the spec:
                 let strSpec = JSON.stringify(_newSpec);
                 for (var key in _substitutions) {
@@ -150,23 +163,65 @@ module.exports = function (event, context, callback) {
                 _newGreengrassGroupVersion.GroupId = _device.greengrassGroupId;
 
                 return Promise.all([
-                    createGreengrassCoreDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(c => _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn),
-                    createGreengrassFunctionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(f => _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn),
-                    createGreengrassLoggerDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(l => _newGreengrassGroupVersion.LoggerDefinitionVersionArn = l.Arn),
-                    createGreengrassResourceDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(r => _newGreengrassGroupVersion.ResourceDefinitionVersionArn = r.Arn),
-                    createGreengrassSubscriptionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(s => _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn)
+                    createGreengrassXDefinitionVersion('Core', _newSpec, groupDefinitionVersion).then(c => {
+                        if (c) {
+                            _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn;
+                        }
+                        return c;
+                    }),
+                    createGreengrassXDefinitionVersion('Function', _newSpec, groupDefinitionVersion).then(f => {
+                        if (f) {
+                            _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn;
+                        }
+                        return f;
+                    }),
+                    createGreengrassXDefinitionVersion('Logger', _newSpec, groupDefinitionVersion).then(l => {
+                        if (l) {
+                            _newGreengrassGroupVersion.LoggerDefinitionVersionArn = l.Arn;
+                        }
+                        return l;
+                    }),
+                    createGreengrassXDefinitionVersion('Resource', _newSpec, groupDefinitionVersion).then(r => {
+                        if (r) {
+                            _newGreengrassGroupVersion.ResourceDefinitionVersionArn = r.Arn;
+                        }
+                        return r;
+                    }),
+                    createGreengrassXDefinitionVersion('Subscription', _newSpec, groupDefinitionVersion).then(s => {
+                        if (s) {
+                            _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn;
+                        }
+                        return s;
+                    })
+                    // createGreengrassCoreDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(c => _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn),
+                    // createGreengrassFunctionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(f => _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn),
+                    // createGreengrassLoggerDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(l => _newGreengrassGroupVersion.LoggerDefinitionVersionArn = l.Arn),
+                    // createGreengrassResourceDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(r => _newGreengrassGroupVersion.ResourceDefinitionVersionArn = r.Arn),
+                    // createGreengrassSubscriptionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(s => _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn)
                 ]);
 
             }).then(results => {
-
+                console.log('results', JSON.stringify(results));
                 console.log('newGreengrassGroupVersion', JSON.stringify(_newGreengrassGroupVersion, null, 2));
 
-                return gg.createGroupVersion(_newGreengrassGroupVersion).promise();
+                    return gg.createGroupVersion(_newGreengrassGroupVersion).promise();
 
             }).then(groupVersion => {
                 _groupVersion = groupVersion;
+
                 console.log(`Created group version: ${JSON.stringify(_groupVersion, null, 2)}`);
-                console.log(`Deploy it:`);
+
+                console.log('Attach IAM role to group just in case');
+
+                return gg.associateRoleToGroup({
+                    RoleArn: process.env.IAM_GREENGRASS_GROUP_ARN,
+                    GroupId: _device.greengrassGroupId
+                }).promise();
+
+            }).then(result => {
+
+                console.log(`Deploy group:`);
+
                 return gg.createDeployment({
                     GroupId: _groupVersion.Id,
                     DeploymentId: uuid.v4(),
@@ -197,6 +252,7 @@ module.exports = function (event, context, callback) {
                     }
                 };
                 return documentClient.put(newDeployment).promise();
+
             }).then(deployment => {
 
                 const updateParams = {
@@ -217,21 +273,17 @@ module.exports = function (event, context, callback) {
                     }
                 };
                 return documentClient.update(updateParams).promise();
+
             }).then(device => {
 
                 console.log(`AND WE ARE DONE !`);
-                return;
+                return null;
 
-            }).then(() => {
-                callback(null, null);
             });
 
         } else {
             console.log('Device is NOT a greengrass device, or at least not detected as one. OR the deviceBlueprint/deviceType combination is not for a Greengrass device');
-            callback(null, null);
+            return null;
         }
-
-    }).catch(err => {
-        callback(err, null);
     });
 };

@@ -28,30 +28,34 @@ module.exports = function listGreengrassGroupIdsForThingArn(thingArn) {
         console.log(tag, 'Found following greengrass groups:', groups);
 
         return Promise.all(groups.map(group => {
-            return gg.getGroupVersion({
-                GroupId: group.Id,
-                GroupVersionId: group.LatestVersion
-            }).promise().then(groupVersion => {
-                if (groupVersion && groupVersion.Definition && groupVersion.Definition.CoreDefinitionVersionArn) {
-                    return gg.getCoreDefinitionVersion({
-                        CoreDefinitionId: groupVersion.Definition.CoreDefinitionVersionArn.split('/')[4],
-                        CoreDefinitionVersionId: groupVersion.Definition.CoreDefinitionVersionArn.split('/')[6]
-                    }).promise();
-                } else {
-                    return null;
-                }
-            }).then(coreDefinitionVersion => {
-                if (coreDefinitionVersion && coreDefinitionVersion.Definition &&
-                    coreDefinitionVersion.Definition.Cores && coreDefinitionVersion.Definition.Cores[0] && coreDefinitionVersion.Definition.Cores[0].ThingArn) {
+            if (group.LatestVersion) {
+                return gg.getGroupVersion({
+                    GroupId: group.Id,
+                    GroupVersionId: group.LatestVersion
+                }).promise().then(groupVersion => {
+                    if (groupVersion && groupVersion.Definition && groupVersion.Definition.CoreDefinitionVersionArn) {
+                        return gg.getCoreDefinitionVersion({
+                            CoreDefinitionId: groupVersion.Definition.CoreDefinitionVersionArn.split('/')[4],
+                            CoreDefinitionVersionId: groupVersion.Definition.CoreDefinitionVersionArn.split('/')[6]
+                        }).promise();
+                    } else {
+                        return null;
+                    }
+                }).then(coreDefinitionVersion => {
+                    if (coreDefinitionVersion && coreDefinitionVersion.Definition &&
+                        coreDefinitionVersion.Definition.Cores && coreDefinitionVersion.Definition.Cores[0] && coreDefinitionVersion.Definition.Cores[0].ThingArn) {
                         if (coreDefinitionVersion.Definition.Cores[0].ThingArn === thingArn) {
                             return group.Id;
                         } else {
                             return null;
                         }
-                } else {
-                    return null;
-                }
-            });
+                    } else {
+                        return null;
+                    }
+                });
+            } else {
+                return null;
+            }
         }));
 
     }).then(groupIds => {

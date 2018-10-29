@@ -9,21 +9,32 @@ module.exports = function (spec, device, currentGreengrassGroupVersion) {
     const tag = 'createGreengrassCoreDefinitionVersion:';
 
     // Simple version: We'll just create it rather than check.
-    // TODO: probably check if it needs changing.
     if (!spec.hasOwnProperty('CoreDefinitionVersion')) {
-        // return null;
-        return new Promise((resolve, reject) => resolve(null));
+        return Promise.resolve(null);
     } else {
-        console.log(tag, 'Checking difference of CoreDefinitionVersion to:');
-        let currentDefinitionId = currentGreengrassGroupVersion.Definition.CoreDefinitionVersionArn.split('/')[4];
 
-        // spec.CoreDefinitionVersion.Id = uuid.v4();
         spec.CoreDefinitionVersion.Cores.forEach(c => c.Id = uuid.v4());
 
-        return gg.createCoreDefinitionVersion({
-            CoreDefinitionId: currentDefinitionId,
-            Cores: [spec.CoreDefinitionVersion.Cores[0]]
-        }).promise();
+        let promise;
+
+        if (!currentGreengrassGroupDefinition) {
+            console.log(tag, 'Core Definition needs to be created');
+            promise = gg.createCoreDefinition({
+                Name: uuid.v4()
+            }).promise();
+        } else {
+            promise = Promise.resolve({
+                Id: currentGreengrassGroupVersion.Definition.CoreDefinitionVersionArn.split('/')[4]
+            });
+        }
+
+        return promise.then(coreDefinition => {
+            return gg.createCoreDefinitionVersion({
+                CoreDefinitionId: coreDefinition.Id,
+                Cores: [spec.CoreDefinitionVersion.Cores[0]]
+            }).promise();
+        });
+
     }
 
 };

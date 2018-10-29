@@ -21,10 +21,20 @@ module.exports = function (event, context) {
 
     // TODO: deal with creating a greengrass group if required.
 
-    return iot.createThing({
+    return iot.describeThing({
             thingName: event.thingName
+        }).promise().then(thing => {
+            return thing;
         })
-        .promise()
+        .catch(err => {
+            return iot.createThing({
+                thingName: event.thingName
+            }).promise();
+        })
+        // iot.createThing({
+        //         thingName: event.thingName
+        //     })
+        //     .promise()
         .then(thing => {
             // Create thing returns
             // {

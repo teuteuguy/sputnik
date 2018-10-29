@@ -681,18 +681,6 @@ Resources:
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-get.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
-    # RESOLVERS - MUTATIONS - Solution Blueprints
-    # appSyncResolverMutationAddSolution:
-    #     Type: 'AWS::AppSync::Resolver'
-    #     DependsOn: appSyncSchema
-    #     Properties:
-    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
-    #         TypeName: Mutation
-    #         FieldName: addSolutionBlueprint
-    #         DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
-    #         RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solution-blueprints-request-mapping-template-add.gql']]
-    #         ResponseMappingTemplate: '$util.toJson($context.result)'
-
     # ####################################################################################################
     # ####################################################################################################
     #

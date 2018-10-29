@@ -81,6 +81,12 @@ Resources:
                     -
                         Effect: 'Allow'
                         Action:
+                            - 'iam:PassRole'
+                        Resource:
+                            - !Ref solutionsGreengrassGroupRoleArn
+                    -
+                        Effect: 'Allow'
+                        Action:
                             # TODO: Too permissive for now.
                             - 'iot:*'
                             - 'greengrass:*'

@@ -1,3 +1,3 @@
 module.exports = {
-    listGreengrassGroupIdsForThingArn: require('./lib/listGreengrassGroupIdsForThingArn')
+    listGreengrassGroupIdsForThingArn: require('./lib/list-greengrass-group-ids-for-thingarn')
 };

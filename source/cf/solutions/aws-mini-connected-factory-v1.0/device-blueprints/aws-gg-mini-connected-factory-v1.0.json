@@ -8,6 +8,16 @@
         "value": {
             "aws-deeplens-v1.0": "artifacts"
         }
+    }, {
+        "substitute": "AWS_CAM_HOME",
+        "value": {
+            "aws-deeplens-v1.0": "aws_cam_home"
+        }
+    }, {
+        "substitute": "AWS_CAM_STREAM",
+        "value": {
+            "aws-deeplens-v1.0": "aws_cam_stream"
+        }
     }],
     "spec": {
         "CoreDefinitionVersion": {
@@ -34,11 +44,11 @@
                                 },
                                 {
                                     "Permission": "ro",
-                                    "ResourceId": "aws_cam_home"
+                                    "ResourceId": "[AWS_CAM_HOME]"
                                 },
                                 {
                                     "Permission": "ro",
-                                    "ResourceId": "aws_cam_stream"
+                                    "ResourceId": "[AWS_CAM_STREAM]"
                                 },
                                 {
                                     "Permission": "ro",
@@ -99,8 +109,8 @@
         },
         "ResourceDefinitionVersion": {
             "Resources": [{
-                "Id": "serialport",
-                "Name": "serialport",
+                "Id": "serial-port",
+                "Name": "serial-port",
                 "ResourceDataContainer": {
                     "LocalDeviceResourceData": {
                         "GroupOwnerSetting": {
@@ -112,7 +122,7 @@
                 }
             }, {
                 "Id": "model-lego-helmets",
-                "Name": "model-lego-model",
+                "Name": "mtm-model-lego-model",
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
