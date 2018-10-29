@@ -32,6 +32,7 @@ module.exports = function (event, context, callback) {
 
     let _substitutions = {
         THING_NAME: null,
+        CORE: null,
         CORE_ARN: null,
         CORE_CERTIFICATE_ARN: null,
         AWS_REGION: null,
@@ -98,6 +99,7 @@ module.exports = function (event, context, callback) {
                 _substitutions.AWS_ACCOUNT = process.env.AWS_ACCOUNT;
                 _substitutions.AWS_REGION = process.env.AWS_REGION;
                 _substitutions.THING_NAME = _device.thingName;
+                _substitutions.CORE = _device.thingName;
                 _substitutions.CORE_ARN = _device.thingArn;
                 _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
                 // _substitutions.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY = process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY;
@@ -106,6 +108,7 @@ module.exports = function (event, context, callback) {
                 console.log(`THING_NAME: ${_substitutions.THING_NAME}`);
                 console.log(`AWS_REGION: ${process.env.AWS_REGION}`);
                 console.log(`AWS_ACCOUNT: ${process.env.AWS_ACCOUNT}`);
+                console.log(`CORE: ${_substitutions.CORE}`);
                 console.log(`CORE_ARN: ${_substitutions.CORE_ARN}`);
                 console.log(`CORE_CERTIFICATE_ARN: ${_substitutions.CORE_CERTIFICATE_ARN}`);
                 // console.log(`MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY: ${process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY}`);

@@ -135,25 +135,25 @@
         },
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "mtm/[CORE]/inference",
                     "Target": "cloud"
                 },
                 {
                     "Id": "80d583ed-44f1-4d1a-b61b-024cf8791bcc",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "mtm/[CORE]/admin",
                     "Target": "cloud"
                 },
                 {
                     "Id": "b587282f-2bc2-4624-b2d7-ae240fd31d98",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "$aws/things/[CORE]/shadow/update",
                     "Target": "cloud"
                 },
                 {
                     "Id": "b86dc911-b2db-4a17-a6b7-83c91d15cf69",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:test-mtm-gg-mini-connected-factory-camera-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "$aws/things/[CORE]/shadow/update",
                     "Target": "GGShadowService"
                 }
