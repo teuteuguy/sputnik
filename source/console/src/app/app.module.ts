@@ -28,7 +28,7 @@ import { RegisterComponent } from './public/auth/register/registration.component
 import { NewPasswordComponent } from './public/auth/newpassword/new-password.component';
 // Components - Secure
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
-import { SecureHomeComponent } from './secure/home/secure-home.component'
+import { SecureHomeComponent } from './secure/home/secure-home.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
@@ -84,6 +84,9 @@ import { SolutionBlueprintService } from './services/solution-blueprint.service'
 // import { StatsService } from './services/stats.service';
 // import { MQTTService } from './services/mqtt.service';
 // import { DeviceSubViewComponentService } from './services/device-sub-view-component.service';
+
+// Solution Modules
+import { ChildViewsModule } from './secure/child-views/child-views.module';
 
 @NgModule({
     declarations: [
@@ -143,6 +146,8 @@ import { SolutionBlueprintService } from './services/solution-blueprint.service'
         ReactiveFormsModule,
 
         AppRoutingModule,
+
+        ChildViewsModule,
 
         AmplifyAngularModule,
         BlockUIModule.forRoot(),

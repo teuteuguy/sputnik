@@ -41,7 +41,7 @@ export class SolutionComponent implements OnInit {
     public title = 'Solution';
     public id: string;
 
-    public solution: Solution;
+    public solution: Solution = new Solution();
     public devices: Device[] = [];
 
     @BlockUI()
@@ -100,9 +100,9 @@ export class SolutionComponent implements OnInit {
                 _self.solution = new Solution(solution);
                 _self.blockUI.stop();
                 _self.devices = [];
-                return _self.getTheExtraResources();
+                // return _self.getTheExtraResources();
             })
-            .then(result => {})
+            // .then(result => {})
             .catch(err => {
                 _self.blockUI.stop();
                 swal('Oops...', 'Something went wrong! Unable to retrieve the solution.', 'error');
@@ -112,21 +112,21 @@ export class SolutionComponent implements OnInit {
             });
     }
 
-    getTheExtraResources() {
-        const _self = this;
-        _self.solution.thingIds.forEach((thingId: string) => {
-            _self.deviceService
-                .getDevice(thingId)
-                .then((device: Device) => {
-                    _self.devices.push(device);
-                    // this.edit();
-                })
-                .catch(err => {
-                    _self.logger.error('Something went wrong trying to get thingId', thingId);
-                    _self.logger.error(err);
-                });
-        });
-    }
+    // getTheExtraResources() {
+    //     const _self = this;
+    //     _self.solution.thingIds.forEach((thingId: string) => {
+    //         _self.deviceService
+    //             .getDevice(thingId)
+    //             .then((device: Device) => {
+    //                 _self.devices.push(device);
+    //                 // this.edit();
+    //             })
+    //             .catch(err => {
+    //                 _self.logger.error('Something went wrong trying to get thingId', thingId);
+    //                 _self.logger.error(err);
+    //             });
+    //     });
+    // }
 
     public refresh() {
         this.blockUI.start('Loading solution...');
@@ -167,10 +167,10 @@ export class SolutionComponent implements OnInit {
         componentRefInstance.cancelSubject = cancelSubject;
         componentRefInstance.submitSubject = submitSubject;
         componentRefInstance.element = this.solution;
-        $('#editModal').modal('show');
+        $('#editSolutionModal').modal('show');
     }
     handleCancelEdit() {
-        $('#editModal').modal('hide');
+        $('#editSolutionModal').modal('hide');
         this.editModalTemplate.clear();
     }
 

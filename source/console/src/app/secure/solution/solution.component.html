@@ -13,57 +13,10 @@
                         (click)="refresh()">
                         <i class="fa fa-refresh"></i> Refresh</button>
                 </div>
-                <form class="form-horizontal" role="form" *ngIf="solution">
-                    <div class="form-body">
-                        <div class="box-title row">
-                            <div class="col-md-12">
-                                <h3>{{solution.name}}</h3>
-                            </div>
-                        </div>
-                        <hr class="m-t-0 m-b-40">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-md-4 control-label text-right ">Solution Blueprint:</label>
-                                    <div class="col-md-8">
-                                        <p class="form-control-static">
-                                            {{solution.solutionBlueprintId}}
-                                            <!-- <a routerLink="../../solution-blueprints/{{solution.solutionBlueprintId}}">{{solution.solutionBlueprintId}}
-                                                <i class="mdi mdi-link-variant"></i>
-                                            </a> -->
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-md-4 control-label text-right">Updated:</label>
-                                    <div class="col-md-8">
-                                        <p class="form-control-static">{{solution.updatedAt | moment:"MMM Do YYYY
-                                            HH:mm"}} </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row form-group" *ngFor="let device of devices; let i = index">
-                            <label class="col-md-2 control-label text-right ">Device {{i}}:</label>
-                            <div class="col-md-10">
-                                <a (click)="gotoDevice(device)">{{device.name}}
-                                    <i class="mdi mdi-link-variant"></i>
-                                </a>
-                            </div>
-                            <!-- </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label class="col-md-4 control-label text-right">Blueprint:</label>
-                                    <div class="col-md-8">
-                                        <p class="form-control-static">{{device.deviceBlueprintId}} </p>
-                                    </div>
-                                </div>
-                            </div> -->
-                        </div>
-                    </div>
-                </form>
+                <h3 class="card-title">{{solution.name}}</h3>
+                <h6 class="card-subtitle mb-2 text-muted">Blueprint: {{solution.solutionBlueprintId}}<span class="pull-right">Updated: {{solution.updatedAt
+                        | moment:"MMM Do YYYY
+                        HH:mm"}}</span></h6>
             </div>
         </div>
     </div>
@@ -76,3 +29,4 @@
 <!-- </div> -->
 <!-- </div> -->
 <!-- Row -->
+<app-child-view [data]="solution" type="solution"></app-child-view>

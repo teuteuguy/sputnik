@@ -57,7 +57,7 @@ export class SolutionEditModalComponent implements OnInit {
                         return this.deviceService
                             .listRecursive('listDevicesWithDeviceBlueprint', device.deviceBlueprintId, 10, null)
                             .then(devices => {
-                                console.log(this.element.id, this.element.name, this.element.description, this.element.thingIds);
+                                // console.log(this.element.id, this.element.name, this.element.description, this.element.thingIds);
                                 return new DeviceBlueprintPossibleDevices({
                                     thingId: thingId,
                                     device: device,
