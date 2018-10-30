@@ -2,7 +2,8 @@
     "version" : "2017-02-28",
     "operation" : "Invoke",
     "payload": {
-        "cmd": "udpateDevice",
+        "cmd": "updateDevice",
+        "thingId": "$context.arguments.thingId",
         "name": "$context.arguments.name",
         "spec": "$context.arguments.spec",
         "deviceTypeId": "$context.arguments.deviceTypeId",

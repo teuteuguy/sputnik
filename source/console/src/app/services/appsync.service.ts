@@ -371,19 +371,13 @@ export class AppSyncService {
             this.cleanIncomingDevice(d.data.deleteDevice)
         );
     }
-    public updateDevice(
-        thingId: string,
-        name: string,
-        spec: any = {},
-        deviceTypeId: string = 'UNKNOWN',
-        deviceBlueprintId: string = 'UNKNOWN'
-    ) {
+    public updateDevice(device: Device) {
         return this.mutation(updateDevice, {
-            thingId: thingId,
-            name: name,
-            spec: JSON.stringify(spec),
-            deviceTypeId: deviceTypeId,
-            deviceBlueprintId: deviceBlueprintId
+            thingId: device.thingId,
+            name: device.name,
+            spec: JSON.stringify(device.spec),
+            deviceTypeId: device.deviceTypeId,
+            deviceBlueprintId: device.deviceBlueprintId
         }).then(d => this.cleanIncomingDevice(d.data.updateDevice));
     }
     public onAddedDevice(hook: AddedDevice) {

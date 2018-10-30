@@ -61,13 +61,13 @@ export class DeviceComponent implements OnInit, OnDestroy {
     // public deviceStats: any = {};
     // private pollerInterval: any = null;
 
-    public device: Device;
-    public deviceType: DeviceType;
-    public deviceTypes: DeviceType[];
-    public deviceBlueprints: DeviceBlueprint[];
-    public deviceBlueprint: DeviceBlueprint;
+    public device: Device = new Device();
+    public deviceType: DeviceType = new DeviceType();
+    public deviceTypes: DeviceType[] = [];
+    public deviceBlueprints: DeviceBlueprint[] = [];
+    public deviceBlueprint: DeviceBlueprint = new DeviceBlueprint();
 
-    public deviceForEdit: Device;
+    public deviceForEdit: Device = new Device();
 
     // public ggDeploymentStatus: GGDeploymentStatus = new GGDeploymentStatus();
     // public deploying = false;
@@ -148,11 +148,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
     private loadDevice() {
         const _self = this;
 
-        _self.deviceService
-            .getDevice(_self.thingId)
+        _self.deviceService.getDevice(_self.thingId)
             .then((device: Device) => {
                 _self.logger.info('device:', device);
-                _self.logger.info('device:', JSON.stringify(device.spec));
                 _self.device = device;
                 _self.deviceTypes = _self.deviceTypeService.deviceTypes;
                 _self.deviceBlueprints = _self.deviceBlueprintService.deviceBlueprints;
@@ -261,12 +259,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         const _self = this;
         _self.blockUI.start('Editing device...');
         _self.deviceService
-            .updateDevice(
-                _self.deviceForEdit.thingId,
-                _self.deviceForEdit.name,
-                _self.deviceForEdit.deviceTypeId,
-                _self.deviceForEdit.deviceBlueprintId
-            )
+            .updateDevice(_self.deviceForEdit)
             .then((resp: any) => {
                 $('#editModal').modal('hide');
                 console.log('Updated device:', resp);

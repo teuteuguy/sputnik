@@ -17,7 +17,7 @@ export class Device {
     deviceBlueprintId: string;
     greengrassGroupId: string;
     spec: any = {};
-    connectionState: ConnectionState;
+    connectionState: ConnectionState = new ConnectionState();
     lastDeploymentId: string;
     createdAt: string;
     updatedAt: string;

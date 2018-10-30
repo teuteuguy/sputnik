@@ -6,11 +6,7 @@ import { Device } from '../models/device.model';
 
 // Services
 import { LoggerService } from './logger.service';
-import {
-    AppSyncService, AddedDevice,
-    UpdatedDevice,
-    DeletedDevice
- } from './appsync.service';
+import { AppSyncService, AddedDevice, UpdatedDevice, DeletedDevice } from './appsync.service';
 
 // Helpers
 import { _ } from 'underscore';
@@ -62,14 +58,8 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
     public getDevice(thingId: string) {
         return this.appSyncService.getDevice(thingId);
     }
-    public updateDevice(
-        thingId: string,
-        name: string,
-        spec: any = {},
-        deviceTypeId: string = 'UNKNOWN',
-        deviceBlueprintId: string = 'UNKNOWN'
-    ) {
-        return this.appSyncService.updateDevice(thingId, name, spec, deviceTypeId, deviceBlueprintId);
+    public updateDevice(device: Device) {
+        return this.appSyncService.updateDevice(device);
     }
     public deleteDevice(thingId: string) {
         return this.appSyncService.deleteDevice(thingId);
