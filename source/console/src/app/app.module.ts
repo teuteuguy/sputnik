@@ -69,6 +69,7 @@ import { StringifyPipe } from './pipes/stringify.pipe';
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 import { BreadCrumbService } from './services/bread-crumb.service';
 import { AppSyncService } from './services/appsync.service';
+import { IOTService } from './services/iot.service';
 import { UserLoginService } from './services/user-login.service';
 import { UserRegistrationService } from './services/user-registration.service';
 import { SettingService } from './services/setting.service';
@@ -170,6 +171,7 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         UserLoginService,
 
         AppSyncService,
+        IOTService,
 
         SettingService,
         FactoryResetService,

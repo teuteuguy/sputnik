@@ -57,6 +57,7 @@ export class UserLoginService {
                             callback.cognitoCallback(null, user);
                         });
                 }
+
             })
             .catch(err => {
                 _self.logger.error(err);

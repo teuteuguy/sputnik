@@ -5,10 +5,10 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 // AWS related
-import Amplify, { PubSub } from 'aws-amplify';
-import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
+import Amplify from 'aws-amplify';
 
 declare var appVariables: any;
+
 Amplify.configure({
     Auth: {
         identityPoolId: appVariables.IDENTITY_POOL_ID, // REQUIRED - Amazon Cognito Identity Pool ID
@@ -32,12 +32,6 @@ Amplify.configure({
     // }
 });
 
-// Amplify.addPluggable(
-//     new AWSIoTProvider({
-//         aws_pubsub_region: appVariables.REGION,
-//         aws_pubsub_endpoint: 'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt'
-//     })
-// );
 
 if (environment.production) {
     enableProdMode();

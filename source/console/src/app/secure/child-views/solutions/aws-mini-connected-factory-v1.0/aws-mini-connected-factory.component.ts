@@ -24,7 +24,6 @@ export class AWSMiniConnectedFactoryV10Component implements OnInit {
     }
 
     ngOnInit() {
-        console.log('ngOnInit()', this.solution);
         // We know that Device 0 is a belt.
         // We know that Device 1 is a camera.
         // We know this from the blueprint.

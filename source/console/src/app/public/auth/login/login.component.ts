@@ -53,7 +53,6 @@ export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback
       return;
     }
     this.errorMessage = null;
-    this.logger.info(this.email, this.password);
     this.userService.authenticate(this.email, this.password, this);
   }
 

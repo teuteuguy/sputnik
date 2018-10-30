@@ -134,6 +134,7 @@ Resources:
                 lambdaServiceFactoryResetArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceFactoryResetArn
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDeploymentsArn
                 lambdaServiceSolutionsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSolutionsArn
+                lambdaServiceUtilsArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
 
     # ##########################################################################
     #
@@ -162,6 +163,14 @@ Resources:
     # Init
     #
     # ##########################################################################
+
+    iotEndpoint:
+        Type: 'Custom::Lambda'
+        Properties:
+            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            customAction: 'iotDescribeEndpoint'
+
     # Initialization - Copy of website assets (html/js/css/assets)
     website:
         Type: 'Custom::LoadLambda'
@@ -189,6 +198,7 @@ Resources:
                 IOT_COGNITO_POLICY: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
                 S3_DATA_BUCKET: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
+                IOT_ENDPOINT: !GetAtt iotEndpoint.endpointAddress
             customAction: 'putFile'
 
     # Initialization - Init of Thing Groups and Things

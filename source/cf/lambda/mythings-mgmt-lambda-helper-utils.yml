@@ -95,6 +95,13 @@ Resources:
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionsTable]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionBlueprintsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iot:DescribeEndpoint"
+                            - "iot:AttachPrincipalPolicy"
+                        Resource:
+                            - "*"
 
     customResourceUtilsHelper:
         Type: 'AWS::Lambda::Function'

@@ -20,6 +20,7 @@ const url = require('url');
 
 const DDBHelper = require('./lib/dynamodb-helper');
 const S3Helper = require('./lib/s3-helper');
+const IOTHelper = require('./lib/iot-helper');
 
 
 /**
@@ -30,6 +31,7 @@ exports.handler = (event, context, callback) => {
 
     const ddbHelper = new DDBHelper();
     const s3Helper = new S3Helper();
+    const iotHelper = new IOTHelper();
 
     let responseStatus = 'FAILED';
     let responseData = {};
@@ -63,10 +65,36 @@ exports.handler = (event, context, callback) => {
                 };
                 console.log([responseData.Error, ':\n', err].join(''));
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            })
+            });
+        } else if (event.ResourceProperties.customAction === 'iotDescribeEndpoint') {
+            iotHelper.describeEndpoint().then(data => {
+                responseStatus = 'SUCCESS';
+                responseData = data;
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch(err => {
+                responseData = {
+                    Error: `iotDescribeEndpoint failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
+
         } else {
             sendResponse(event, callback, context.logStreamName, 'SUCCESS');
         }
+    }
+
+    if (event.RequestType === 'AppSync') {
+
+        switch (event.cmd) {
+            case 'attachPrincipalPolicy':
+                iotHelper.attachPrincipalPolicy(event.policyName, event.principal).then(result => callback(null, result)).catch(err => callback(err, null));
+                break;
+            default:
+                callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
+                break;
+        }
+
     }
 
 };

@@ -6,6 +6,7 @@ import { AWSAFR3DBeltMiniConnectedFactoryV10Component } from './aws-afr-3d-belt-
 @NgModule({
     declarations: [AWSAFR3DBeltMiniConnectedFactoryV10Component],
     exports: [AWSAFR3DBeltMiniConnectedFactoryV10Component],
-    imports: [CommonModule]
+    imports: [CommonModule],
+    providers: []
 })
 export class AWSAFR3DBeltMiniConnectedFactoryV10Module {}

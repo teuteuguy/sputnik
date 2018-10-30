@@ -12,6 +12,7 @@ import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { UserLoginService, LoggedInCallback } from '../../services/user-login.service';
 import { LoggerService } from '../../services/logger.service';
 import { StatService, Stats } from '../../services/stat.service';
+import { IOTService } from '../../services/iot.service';
 
 // Helpers
 declare let jquery: any;
@@ -42,7 +43,8 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         private _ngZone: NgZone,
         protected localStorage: LocalStorage,
         private logger: LoggerService,
-        private breadCrumbService: BreadCrumbService
+        private breadCrumbService: BreadCrumbService,
+        private iotService: IOTService
     ) {
         const _self = this;
         _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
@@ -65,6 +67,8 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
                 _self.profile = new ProfileInfo(profile);
                 _self.isAdminUser = _self.profile.isAdmin();
                 _self.userService.isAuthenticated(_self, false);
+
+                _self.iotService.connect();
             } else {
                 _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
                 _self.loadedProfile = true;

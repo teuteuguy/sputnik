@@ -4,12 +4,25 @@
             <div class="card-body">
                 <h5 class="card-title">AWS 3D Printed Belt</h5>
                 <div class="card-text">
-                    <div class="btn-group">
-                        <button type="button" class="btn mr-1" [ngClass]="'btn-primary'">-2</button>
-                        <button type="button" class="btn mr-1" [ngClass]="'btn-primary'">-1</button>
-                        <button type="button" class="btn mr-1" [ngClass]="'btn-primary'">Stop</button>
-                        <button type="button" class="btn mr-1" [ngClass]="'btn-primary'">+1</button>
-                        <button type="button" class="btn" [ngClass]="'btn-primary'">+2</button>
+                    <div class="form-group">
+                        <label for="desired" class="form-control-label">Desired:</label>
+                        <div class="ml-4" id="desired">
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'">-2</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'">-1</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'">Stop</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'">+1</button>
+                            <button type="button" class="btn" [ngClass]="'btn-success'">+2</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reported" class="form-control-label">Reported:</label>
+                        <div class="ml-4" id="reported">
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'" disabled>-2</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'" disabled>-1</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'" disabled>Stop</button>
+                            <button type="button" class="btn mr-1" [ngClass]="'btn-success'" disabled>+1</button>
+                            <button type="button" class="btn" [ngClass]="'btn-success'" disabled>+2</button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -46,6 +46,9 @@ Parameters:
     lambdaServiceSolutionsArn:
         Type: String
         Description: Solutions Micro Service ARN
+    lambdaServiceUtilsArn:
+        Type: String
+        Description: Utils Micro Service ARN
 
 Resources:
 
@@ -111,6 +114,7 @@ Resources:
                             - !Ref lambdaServiceDevicesArn
                             - !Ref lambdaServiceDeploymentsArn
                             - !Ref lambdaServiceSolutionsArn
+                            - !Ref lambdaServiceUtilsArn
 
             Roles:
                 - !Ref appSyncRole
@@ -264,6 +268,16 @@ Resources:
             ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
             LambdaConfig:
                 LambdaFunctionArn: !Ref lambdaServiceSolutionsArn
+    appSyncDataSourceUtilsLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            Name: appSyncDataSourceUtilsLambda
+            Description: The Utils Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref lambdaServiceUtilsArn
 
     # ####################################################################################################
     # ####################################################################################################
@@ -712,6 +726,28 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceFactoryResetLambda.Name
             RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
             ResponseMappingTemplate: '$util.toJson($context.result)'
+
+    # ####################################################################################################
+    # ####################################################################################################
+    #
+    # RESOLVERS - Utils
+    #
+    # ####################################################################################################
+    # ####################################################################################################
+
+    # RESOLVERS - MUTATIONS - Utils -
+    appSyncResolverMutationAttachPrincipalPolicy:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: attachPrincipalPolicy
+            DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-attach-principal-policy.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+
+
 
     # SCHEMA
     appSyncSchema:

@@ -12,6 +12,5 @@ export class AWSAFR3DBeltMiniConnectedFactoryV10Component implements OnInit {
     constructor() {}
 
     ngOnInit() {
-        console.log('ngOnInit()', this.device);
     }
 }
