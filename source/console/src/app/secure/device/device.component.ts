@@ -32,6 +32,7 @@ import { ProfileInfo } from '../../models/profile-info.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
+import { DeploymentService } from '../../services/deployment.service';
 import { DeviceService } from '../../services/device.service';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { DeviceBlueprintService } from '../../services/device-blueprint.service';
@@ -87,6 +88,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         private _ngZone: NgZone,
         private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
+        private deploymentService: DeploymentService,
         private deviceService: DeviceService,
         private deviceBlueprintService: DeviceBlueprintService,
         private deviceTypeService: DeviceTypeService
@@ -148,7 +150,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
     private loadDevice() {
         const _self = this;
 
-        _self.deviceService.getDevice(_self.thingId)
+        _self.deviceService
+            .getDevice(_self.thingId)
             .then((device: Device) => {
                 _self.logger.info('device:', device);
                 _self.device = device;
@@ -316,18 +319,37 @@ export class DeviceComponent implements OnInit, OnDestroy {
     }
 
     deploy() {
-        // this.logger.info('deploying');
-        // this.deploying = true;
-        // this.ggBlueprintService
-        //     .deployToDevice(this.device)
-        //     .then(data => {
-        //         console.log('result', data);
-        //         this.deploying = false;
-        //         this.loadDevice();
-        //     })
-        //     .catch(err => {
-        //         console.error(err);
-        //         this.deploying = false;
-        //     });
+        console.log('Deploy', this.device.thingId);
+        swal({
+            title: 'Are you sure you want to deploy this device?',
+            text: `This will overwrite whatever the device is doing!`,
+            type: 'question',
+            showCancelButton: true,
+            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, deploy it!'
+        }).then(result => {
+            if (result.value) {
+                this.blockUI.start('Deploying device...');
+                return this.deploymentService
+                    .addDeployment(this.device.thingId)
+                    .then(deployment => {
+                        console.log(deployment);
+                        this.blockUI.stop();
+                        swal({
+                            timer: 1000,
+                            title: 'Success',
+                            type: 'success',
+                            showConfirmButton: false
+                        }).then();
+                    })
+                    .catch(err => {
+                        this.blockUI.stop();
+                        swal('Oops...', 'Something went wrong! Unable to deploy the solution.', 'error');
+                        this.logger.error('error occurred calling addDeployment api, show message');
+                        this.logger.error(err);
+                    });
+            }
+        });
     }
 }

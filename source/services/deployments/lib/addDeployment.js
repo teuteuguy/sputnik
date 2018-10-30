@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const iot = new AWS.Iot();
+// const iotdata = new AWS.IotData();
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const gg = new AWS.Greengrass();
 const moment = require('moment');
@@ -14,7 +15,8 @@ const createGreengrassLoggerDefinitionVersion = require('./createGreengrassLogge
 const createGreengrassResourceDefinitionVersion = require('./createGreengrassResourceDefinitionVersion');
 const createGreengrassSubscriptionDefinitionVersion = require('./createGreengrassSubscriptionDefinitionVersion');
 
-const mergeGreengrassSpecs = require('./mergeGreengrassSpecs');
+const mergeMTMSpecs = require('./merge-mtm-specs');
+const mergeMTMShadows = require('./merge-mtm-shadows');
 
 const lib = 'addDeployment';
 
@@ -29,6 +31,7 @@ module.exports = function (event, context) {
     let _groupVersion;
     let _deployment;
     let _savedDeployment;
+    let _newShadow = {};
 
     let _substitutions = {
         THING_NAME: null,
@@ -77,6 +80,64 @@ module.exports = function (event, context) {
         console.log('Device Type:', _deviceType);
         console.log('Device Blueprint:', _deviceBlueprint);
 
+        _substitutions.AWS_ACCOUNT = process.env.AWS_ACCOUNT;
+        _substitutions.AWS_REGION = process.env.AWS_REGION;
+        _substitutions.THING_NAME = _device.thingName;
+        _substitutions.CORE = _device.thingName;
+        _substitutions.CORE_ARN = _device.thingArn;
+        _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
+        _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
+
+        // Order is important
+        // Merge Device into DeviceType into DeviceBlueprint
+        if (_device.spec) {
+            console.log(`Device Spec: ${JSON.stringify(_device.spec, null, 4)}`);
+            _newSpec = mergeMTMSpecs(_newSpec, _device.spec);
+            _newShadow = mergeMTMShadows(_newShadow, _device.spec.Shadow);
+            console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+        }
+        if (_deviceType.spec) {
+            console.log(`Device Type Spec: ${JSON.stringify(_deviceType.spec, null, 4)}`);
+            _newSpec = mergeMTMSpecs(_newSpec, _deviceType.spec);
+            _newShadow = mergeMTMShadows(_newShadow, _deviceType.spec.Shadow);
+            console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+        }
+        if (_deviceBlueprint.spec) {
+            console.log(`Device Blueprint Spec: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
+            _newSpec = mergeMTMSpecs(_newSpec, _deviceBlueprint.spec);
+            _newShadow = mergeMTMShadows(_newShadow, _deviceBlueprint.spec.Shadow);
+            console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
+        }
+
+        console.log('Going to substitute in the spec');
+        // Construct the spec:
+        let strSpec = JSON.stringify(_newSpec);
+        for (var key in _substitutions) {
+            // skip loop if the property is from prototype
+            if (!_substitutions.hasOwnProperty(key)) continue;
+
+            var value = _substitutions[key];
+            for (var prop in value) {
+                // skip loop if the property is from prototype
+                if (!value.hasOwnProperty(prop)) continue;
+
+                // your code
+                let regExp = new RegExp('[' + key + ']', 'gi');
+                strSpec = strSpec.split('[' + key + ']').join(value);
+            }
+        }
+
+        _deviceBlueprint.deviceTypeMappings.forEach(mapping => {
+            if (mapping.value[_deviceType.id]) {
+                let regExp = new RegExp('[' + mapping.substitute + ']', 'gi');
+                strSpec = strSpec.split('[' + mapping.substitute + ']').join(mapping.value[_deviceType.id]);
+            }
+        });
+
+        _newSpec = JSON.parse(strSpec);
+        _newSpec.Shadow = _newShadow;
+        console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
+
         if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {
 
             console.log('Device is a Greengrass device');
@@ -96,69 +157,6 @@ module.exports = function (event, context) {
                 }
 
             }).then(groupDefinitionVersion => {
-                // Lets check if by any chance this device is a Greengrass device ?
-                // console.log('Lets check if the device is part of a greengrass group as the greengrass core?');
-
-                _substitutions.AWS_ACCOUNT = process.env.AWS_ACCOUNT;
-                _substitutions.AWS_REGION = process.env.AWS_REGION;
-                _substitutions.THING_NAME = _device.thingName;
-                _substitutions.CORE = _device.thingName;
-                _substitutions.CORE_ARN = _device.thingArn;
-                _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
-                _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
-
-                // console.log('First we will replace the following info in out templates:');
-                // console.log(`THING_NAME: ${_substitutions.THING_NAME}`);
-                // console.log(`AWS_REGION: ${process.env.AWS_REGION}`);
-                // console.log(`AWS_ACCOUNT: ${process.env.AWS_ACCOUNT}`);
-                // console.log(`CORE: ${_substitutions.CORE}`);
-                // console.log(`CORE_ARN: ${_substitutions.CORE_ARN}`);
-                // console.log(`CORE_CERTIFICATE_ARN: ${_substitutions.CORE_CERTIFICATE_ARN}`);
-                // console.log(`MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY: ${process.env.MYTHINGS_MGMT_DATA_BUCKET_ACCESS_POLICY}`);
-
-                if (_device.spec) {
-                    console.log(`Device Spec: ${JSON.stringify(_device.spec, null, 4)}`);
-                    _newSpec = mergeGreengrassSpecs(_newSpec, _device.spec);
-                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
-                }
-                if (_deviceType.spec) {
-                    console.log(`Device Type Spec: ${JSON.stringify(_deviceType.spec, null, 4)}`);
-                    _newSpec = mergeGreengrassSpecs(_newSpec, _deviceType.spec);
-                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
-                }
-                if (_deviceBlueprint.spec) {
-                    console.log(`Device Blueprint Spec: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
-                    _newSpec = mergeGreengrassSpecs(_newSpec, _deviceBlueprint.spec);
-                    console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
-                }
-
-                console.log('Going to substitute in the spec');
-                // Construct the spec:
-                let strSpec = JSON.stringify(_newSpec);
-                for (var key in _substitutions) {
-                    // skip loop if the property is from prototype
-                    if (!_substitutions.hasOwnProperty(key)) continue;
-
-                    var value = _substitutions[key];
-                    for (var prop in value) {
-                        // skip loop if the property is from prototype
-                        if (!value.hasOwnProperty(prop)) continue;
-
-                        // your code
-                        let regExp = new RegExp('[' + key + ']', 'gi');
-                        strSpec = strSpec.split('[' + key + ']').join(value);
-                    }
-                }
-
-                _deviceBlueprint.deviceTypeMappings.forEach(mapping => {
-                    if (mapping.value[_deviceType.id]) {
-                        let regExp = new RegExp('[' + mapping.substitute + ']', 'gi');
-                        strSpec = strSpec.split('[' + mapping.substitute + ']').join(mapping.value[_deviceType.id]);
-                    }
-                });
-
-                _newSpec = JSON.parse(strSpec);
-                console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
 
                 _newGreengrassGroupVersion = {};
                 _newGreengrassGroupVersion.GroupId = _device.greengrassGroupId;
@@ -211,7 +209,7 @@ module.exports = function (event, context) {
                 console.log('results', JSON.stringify(results));
                 console.log('newGreengrassGroupVersion', JSON.stringify(_newGreengrassGroupVersion, null, 2));
 
-                    return gg.createGroupVersion(_newGreengrassGroupVersion).promise();
+                return gg.createGroupVersion(_newGreengrassGroupVersion).promise();
 
             }).then(groupVersion => {
                 _groupVersion = groupVersion;
@@ -257,47 +255,17 @@ module.exports = function (event, context) {
                         .format()
                 };
 
-                const newDeployment = {
-                    TableName: process.env.TABLE_DEPLOYMENTS,
-                    Item: _savedDeployment
-                };
-                return documentClient.put(newDeployment).promise();
-
-            }).then(deployment => {
-
-                const updateParams = {
-                    TableName: process.env.TABLE_DEVICES,
-                    Key: {
-                        thingId: _device.thingId
-                    },
-                    UpdateExpression: 'set #ua = :ua, #l = :l',
-                    ExpressionAttributeNames: {
-                        '#ua': 'updatedAt',
-                        '#l': 'lastDeploymentId'
-                    },
-                    ExpressionAttributeValues: {
-                        ':ua': moment()
-                            .utc()
-                            .format(),
-                        ':l': _deployment.DeploymentId
-                    }
-                };
-                return documentClient.update(updateParams).promise();
-
-            }).then(device => {
-
-                console.log(`AND WE ARE DONE !`);
                 return _savedDeployment;
-
             });
 
         } else {
             console.log('Device is NOT a greengrass device, or at least not detected as one. OR the deviceBlueprint/deviceType combination is not for a Greengrass device');
-            return {
-                thingId: 'UNKNOWN',
-                deploymentId: 'UNKNOWN',
-                type: 'NOT_A_GREENGRASS_DEVICE',
-                spec: {},
+
+            _savedDeployment = {
+                thingId: _device.thingId,
+                deploymentId: uuid.v4(),
+                spec: _newSpec,
+                type: _deviceType.type,
                 greengrassGroup: {},
                 createdAt: moment()
                     .utc()
@@ -306,6 +274,64 @@ module.exports = function (event, context) {
                     .utc()
                     .format()
             };
+
+            return _savedDeployment;
         }
+    }).then(params => {
+
+        const newDeployment = {
+            TableName: process.env.TABLE_DEPLOYMENTS,
+            Item: _savedDeployment
+        };
+        return documentClient.put(newDeployment).promise();
+
+    }).then(deployment => {
+
+        const updateParams = {
+            TableName: process.env.TABLE_DEVICES,
+            Key: {
+                thingId: _device.thingId
+            },
+            UpdateExpression: 'set #ua = :ua, #l = :l',
+            ExpressionAttributeNames: {
+                '#ua': 'updatedAt',
+                '#l': 'lastDeploymentId'
+            },
+            ExpressionAttributeValues: {
+                ':ua': moment()
+                    .utc()
+                    .format(),
+                ':l': _savedDeployment.deploymentId
+            }
+        };
+        return documentClient.update(updateParams).promise();
+
+    }).then(device => {
+
+        if (JSON.stringify(_newShadow) !== '{}') {
+            return iot.describeEndpoint().promise().then(endpoint => {
+                const iotdata = new AWS.IotData({
+                    endpoint: endpoint.endpointAddress
+                });
+                return iotdata.updateThingShadow({
+                    thingName: _device.thingName,
+                    payload: JSON.stringify({
+                        state: _newShadow
+                    })
+                }).promise();
+            }).then(result => {
+                console.log('Updated shadow per spec:', _newShadow);
+                return _savedDeployment;
+            });
+        } else {
+            return _savedDeployment;
+        }
+
+    }).then(() => {
+
+        console.log(`AND WE ARE DONE !`);
+        return _savedDeployment;
+
     });
+
 };

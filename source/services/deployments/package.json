@@ -6,6 +6,7 @@
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
+        "deepmerge": "^2.2.1",
         "moment": "*",
         "underscore": "*",
         "uuid": "^3.3.2"
