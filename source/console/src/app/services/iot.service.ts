@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
 // AWS
-// import Amplify, { PubSub } from 'aws-amplify';
-// import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
+import * as AWS from 'aws-sdk';
 import { AmplifyService } from 'aws-amplify-angular';
+
 import Amplify, { PubSub } from 'aws-amplify';
 import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
@@ -13,7 +13,10 @@ declare var appVariables: any;
 
 @Injectable()
 export class IOTService {
-    constructor(private amplifyService: AmplifyService) {}
+    private iot;
+    constructor(private amplifyService: AmplifyService) {
+        this.iot = new AWS.Iot({ region: appVariables.REGION });
+    }
 
     connect() {
         this.amplifyService
