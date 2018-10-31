@@ -90,6 +90,8 @@ module.exports = function (event, context) {
 
         // Order is important
         // Merge Device into DeviceType into DeviceBlueprint
+        _newSpec = {};
+        _newShadow = {};
         if (_device.spec) {
             console.log(`Device Spec: ${JSON.stringify(_device.spec, null, 4)}`);
             _newSpec = mergeMTMSpecs(_newSpec, _device.spec);
@@ -130,6 +132,7 @@ module.exports = function (event, context) {
             }
         }
 
+        // TODO: Replace this with the !GetAtt system ?
         _deviceBlueprint.deviceTypeMappings.forEach(mapping => {
             if (mapping.value[_deviceType.id]) {
                 let regExp = new RegExp('[' + mapping.substitute + ']', 'gi');
@@ -143,6 +146,7 @@ module.exports = function (event, context) {
 
         // TODO: this eval thing could be a security risk. Need to potentially rethink this.
         _newSpec.afterActions.forEach(a => {
+            console.log('Evaluating:', a);
             eval(a);
             _newSpec = afterAction(_newSpec);
         });

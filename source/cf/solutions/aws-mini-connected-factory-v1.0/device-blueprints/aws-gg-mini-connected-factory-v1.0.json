@@ -20,13 +20,6 @@
         }
     }],
     "spec": {
-        "CoreDefinitionVersion": {
-            "Cores": [{
-                "SyncShadow": true,
-                "ThingArn": "[CORE_ARN]",
-                "CertificateArn": "[CORE_CERTIFICATE_ARN]"
-            }]
-        },
         "FunctionDefinitionVersion": {
             "Functions": [{
                     "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
@@ -67,11 +60,11 @@
                 {
                     "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
                     "FunctionConfiguration": {
-                        "MemorySize": 32768,
                         "Environment": {
-                            "Variables": {},
-                            "AccessSysfs": true
+                            "AccessSysfs": true,
+                            "Variables": {}
                         },
+                        "MemorySize": 32768,
                         "Pinned": true,
                         "Timeout": 3
                     }
@@ -99,35 +92,44 @@
         },
         "LoggerDefinitionVersion": {
             "Loggers": [{
-                    "Type": "AWSCloudWatch",
-                    "Level": "INFO",
                     "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-GreengrassSystem",
-                    "Component": "GreengrassSystem"
+                    "Component": "GreengrassSystem",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
                 },
                 {
-                    "Type": "AWSCloudWatch",
-                    "Level": "INFO",
                     "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-Lambda",
-                    "Component": "Lambda"
+                    "Component": "Lambda",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
                 },
                 {
-                    "Space": 300000,
-                    "Type": "FileSystem",
-                    "Level": "INFO",
                     "Id": "aws-gg-mini-connected-factory-FileSystem-GreengrassSystem",
-                    "Component": "GreengrassSystem"
+                    "Component": "GreengrassSystem",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
                 },
                 {
-                    "Space": 300000,
-                    "Type": "FileSystem",
-                    "Level": "INFO",
                     "Id": "aws-gg-mini-connected-factory-FileSystem-Lambda",
-                    "Component": "Lambda"
+                    "Component": "Lambda",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
                 }
             ]
         },
         "ResourceDefinitionVersion": {
             "Resources": [{
+                "Id": "model-lego-helmets",
+                "Name": "mtm-model-lego-model",
+                "ResourceDataContainer": {
+                    "S3MachineLearningModelResourceData": {
+                        "DestinationPath": "/ml/helmets/",
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/AMCF1/models/legomodel.tar.gz"
+                    }
+                }
+            }, {
                 "Id": "serial-port",
                 "Name": "serial-port",
                 "ResourceDataContainer": {
@@ -137,15 +139,6 @@
                             "GroupOwner": "dialout"
                         },
                         "SourcePath": "/dev/ttyUSB0"
-                    }
-                }
-            }, {
-                "Id": "model-lego-helmets",
-                "Name": "mtm-model-lego-model",
-                "ResourceDataContainer": {
-                    "S3MachineLearningModelResourceData": {
-                        "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/AMCF1/models/legomodel.tar.gz"
                     }
                 }
             }, {
@@ -169,19 +162,16 @@
                     "Target": "cloud"
                 },
                 {
-                    "Id": "80d583ed-44f1-4d1a-b61b-024cf8791bcc",
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "mtm/[CORE]/admin",
                     "Target": "cloud"
                 },
                 {
-                    "Id": "b587282f-2bc2-4624-b2d7-ae240fd31d98",
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "$aws/things/[CORE]/shadow/update",
                     "Target": "cloud"
                 },
                 {
-                    "Id": "b86dc911-b2db-4a17-a6b7-83c91d15cf69",
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "$aws/things/[CORE]/shadow/update",
                     "Target": "GGShadowService"

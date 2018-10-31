@@ -6,26 +6,26 @@
     "spec": {
         "devices": [
             {
-                "ref": "device_0",
+                "defaultDeviceTypeId": "aws-esp32-3d-belt-v1.0",
                 "deviceBlueprintId": "aws-afr-3d-belt-mini-connected-factory-v1.0",
-                "defaultDeviceTypeId": "aws-esp32-3d-belt-v1.0"
+                "ref": "device_0"
             },
             {
-                "ref": "device_1",
-                "deviceBlueprintId": "aws-gg-mini-connected-factory-v1.0",
                 "defaultDeviceTypeId": "aws-deeplens-v1.0",
+                "deviceBlueprintId": "aws-gg-mini-connected-factory-v1.0",
+                "ref": "device_1",
                 "spec": {
-                    "DeviceDefinitionVersion": {
-                        "Devices": [{
-                            "ThingArn": "!GetAtt[device_0.thingArn]",
-                            "CertificateArn": "!GetAtt[device_0.cert.certificateArn]",
-                            "SyncShadow": true
-                        }]
-                    },
                     "afterActions": [
                         "function afterAction(spec) { if ( (index = spec.FunctionDefinitionVersion.Functions.findIndex(f => f.FunctionArn === \"arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM\")) !== -1 ) { spec.FunctionDefinitionVersion.Functions[index].FunctionConfiguration.Environment.Variables.BELT_IOT_THING_NAME = '!GetAtt[device_0.thingName]' } return spec; }",
                         "function afterAction(spec) { if ( (index = spec.FunctionDefinitionVersion.Functions.findIndex(f => f.FunctionArn === \"arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM\")) !== -1 ) { spec.FunctionDefinitionVersion.Functions[index].FunctionConfiguration.Environment.Variables.BELT_IOT_THING_NAME = '!GetAtt[device_0.thingName]' } return spec; }"
-                    ]
+                    ],
+                    "DeviceDefinitionVersion": {
+                        "Devices": [{
+                            "CertificateArn": "!GetAtt[device_0.cert.certificateArn]",
+                            "SyncShadow": true,
+                            "ThingArn": "!GetAtt[device_0.thingArn]"
+                        }]
+                    }
                 }
             }
         ]

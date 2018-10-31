@@ -3,41 +3,41 @@
     "name": "AWS My Things Management Greengrass Factory Reset v1.0",
     "type": "GREENGRASS",
     "compatibility": ["all"],
-    "deviceTypeMappings": null,
+    "deviceTypeMappings": [],
     "spec": {
         "CoreDefinitionVersion": {
             "Cores": [{
+                "CertificateArn": "[CORE_CERTIFICATE_ARN]",
                 "SyncShadow": true,
-                "ThingArn": "[CORE_ARN]",
-                "CertificateArn": "[CORE_CERTIFICATE_ARN]"
+                "ThingArn": "[CORE_ARN]"
             }]
         },
         "LoggerDefinitionVersion": {
             "Loggers": [{
-                    "Type": "AWSCloudWatch",
-                    "Level": "INFO",
                     "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
-                    "Component": "GreengrassSystem"
+                    "Component": "GreengrassSystem",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
                 },
                 {
-                    "Type": "AWSCloudWatch",
-                    "Level": "INFO",
                     "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
-                    "Component": "Lambda"
+                    "Component": "Lambda",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
                 },
                 {
-                    "Space": 300000,
-                    "Type": "FileSystem",
-                    "Level": "INFO",
                     "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
-                    "Component": "GreengrassSystem"
+                    "Component": "GreengrassSystem",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
                 },
                 {
-                    "Space": 300000,
-                    "Type": "FileSystem",
-                    "Level": "INFO",
                     "Id": "deeplens-greengrass-FileSystem-Lambda",
-                    "Component": "Lambda"
+                    "Component": "Lambda",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
                 }
             ]
         }
