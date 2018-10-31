@@ -123,7 +123,7 @@ module.exports = function (event, context) {
     return documentClient.get({
         TableName: process.env.TABLE_SOLUTIONS,
         Key: {
-            id: event.solutionId
+            id: event.id
         }
     }).promise().then(solution => {
         _solution = solution.Item;

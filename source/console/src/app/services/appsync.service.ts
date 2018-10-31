@@ -45,6 +45,7 @@ import deleteDeviceBlueprint from '../graphql/mutations/device-blueprint.delete'
 import deleteDeviceType from '../graphql/mutations/device-type.delete';
 import deleteSolution from '../graphql/mutations/solution.delete';
 import deleteSolutionBlueprint from '../graphql/mutations/solution-blueprint.delete';
+import refreshSolution from '../graphql/mutations/solution.refresh';
 import setThingAutoRegistrationState from '../graphql/mutations/thing-auto-registration-state.set';
 import updateDevice from '../graphql/mutations/device.update';
 import updateDeviceBlueprint from '../graphql/mutations/device-blueprint.update';
@@ -465,6 +466,11 @@ export class AppSyncService {
         }).then(d => {
             return <Solution>d.data.updateSolution;
         });
+    }
+    public refreshSolution(id: string) {
+        return this.mutation(refreshSolution, {
+            id: id
+        }).then(r => r.data.refreshSolution);
     }
     public onAddedSolution(hook: AddedSolution) {
         this.subscribe(addedSolution, {}).subscribe({

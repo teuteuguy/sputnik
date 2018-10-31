@@ -678,6 +678,16 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationRefreshSolution:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: refreshSolution
+            DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-refresh.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################
     # ####################################################################################################

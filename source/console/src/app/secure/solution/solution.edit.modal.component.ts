@@ -97,4 +97,8 @@ export class SolutionEditModalComponent implements OnInit {
             return db.id === deviceBlueprintId;
         })).name;
     }
+
+    refreshSpecs() {
+        this.solutionService.refreshSolution(this.element.id).then(result => console.log(result)).catch(err => console.error(err));
+    }
 }

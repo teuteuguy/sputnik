@@ -44,6 +44,9 @@ export class SolutionService implements AddedSolution, UpdatedSolution, DeletedS
     public delete(id: string) {
         return this.appSyncService.deleteSolution(id);
     }
+    public refreshSolution(id: string) {
+        return this.appSyncService.refreshSolution(id);
+    }
 
     // private pushNewSolutions(solutions: Solution[]) {
     //     const _self = this;

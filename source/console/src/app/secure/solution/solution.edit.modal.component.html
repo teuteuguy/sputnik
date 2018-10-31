@@ -46,6 +46,7 @@
                         </div>
                     </div> -->
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-success" (click)="refreshSpecs()">Refresh specs</button>
                         <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
                         <button *ngIf="!name.errors" type="submit" class="btn btn-success">Submit</button>
                     </div>

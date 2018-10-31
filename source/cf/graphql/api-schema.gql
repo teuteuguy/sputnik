@@ -156,6 +156,7 @@ type Mutation {
     addSolution(name: String!, description: String, thingIds: [String]!, solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators"])
     updateSolution(id: String!, name: String!, description: String, thingIds: [String]!): Solution @aws_auth(cognito_groups: ["Administrators"])
+    refreshSolution(id: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
     addSolutionBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])

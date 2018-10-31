@@ -7,16 +7,16 @@ function handler(event, context, callback) {
 
     switch (event.cmd) {
         case 'getSolutionStats':
-            promise = libs.getSolutionStats;
+            promise = libs.getSolutionStats(event, context);
             break;
         case 'addSolution':
-            promise = libs.addSolution;
+            promise = libs.addSolution(event, context);
             break;
         case 'deleteSolution':
-            promise = libs.deleteSolution;
+            promise = libs.deleteSolution(event, context);
             break;
         case 'refreshSolution':
-            promise = libs.refreshSolution;
+            promise = libs.refreshSolution(event, context).then(result => { return true; });
             break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + JSON.stringify(event), null);
@@ -24,7 +24,7 @@ function handler(event, context, callback) {
     }
 
     if (promise) {
-        promise(event, context).then(result => {
+        promise.then(result => {
             callback(null, result);
         }).catch(err => {
             callback(err, null);
