@@ -14,6 +14,11 @@ import { LoggerService } from '../../services/logger.service';
 import { StatService, Stats } from '../../services/stat.service';
 import { IOTService } from '../../services/iot.service';
 
+// Services that cache
+import { DeviceTypeService } from '../../services/device-type.service';
+import { DeviceBlueprintService } from '../../services/device-blueprint.service';
+import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+
 // Helpers
 declare let jquery: any;
 declare let $: any;
@@ -44,7 +49,11 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         protected localStorage: LocalStorage,
         private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
-        private iotService: IOTService
+        private iotService: IOTService,
+        // Here we load cached services for rest of app
+        private deviceTypeService: DeviceTypeService,
+        private deviceBlueprintService: DeviceBlueprintService,
+        private solutionBlueprintService: SolutionBlueprintService
     ) {
         const _self = this;
         _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');

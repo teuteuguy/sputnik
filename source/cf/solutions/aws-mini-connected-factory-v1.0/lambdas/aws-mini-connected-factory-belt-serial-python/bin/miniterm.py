@@ -1,4 +1,4 @@
-#!/usr/local/opt/python@2/bin/python2.7
+#!/usr/bin/python
 #
 # Very simple serial terminal
 #

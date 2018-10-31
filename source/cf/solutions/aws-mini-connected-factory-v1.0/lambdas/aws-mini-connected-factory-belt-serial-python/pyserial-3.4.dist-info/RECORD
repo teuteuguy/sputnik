@@ -1,6 +1,7 @@
 ../../bin/miniterm.py,sha256=XmdvozzNwHh8zd6tDMoefXHz39myqwvc63L3b6mnS0g,35088
 ../../bin/miniterm.pyc,sha256=cjhQp6L0aitsx6yg5IpG9lYPVzBAYkrSndVHpGwYorY,28907
 pyserial-3.4.dist-info/DESCRIPTION.rst,sha256=rXXIUFeAsfXq2YS7DGkztGmXez-G7gAwbwdBL8t9KME,320
+pyserial-3.4.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 pyserial-3.4.dist-info/METADATA,sha256=CExk0lotyj8ds3rAKUq2ME1vN0lsYWn3CWPDjFqzLH8,1563
 pyserial-3.4.dist-info/RECORD,,
 pyserial-3.4.dist-info/WHEEL,sha256=o2k-Qa-RMNIJmUdIc7KU6VWR_ErNRbWNlxDIpl7lm34,110
@@ -24,9 +25,8 @@ serial/serialutil.py,sha256=V-AeEMJyl8GvijaiildLRY8k-IOAZpW-YeBxHV2iDvg,21692
 serial/serialutil.pyc,sha256=BO3_7SlWWYxCbYOmerYsQOiLu7XRbda4kkrZx4wIZWw,20027
 serial/serialwin32.py,sha256=tMa-81Oh1c4g5nHf86v2eDnLKb7JHAG-vEQZfq2q_Jo,20087
 serial/serialwin32.pyc,sha256=FArzpAX1_F6xFQmkAbDmaYUbw0wEPWRr39lkXuoHPVA,14471
-serial/win32.py,sha256=-GiHVB-QFrQfD4vHelhaEccwfW__6kC2S_46lIYLVsM,10853
-serial/win32.pyc,sha256=iZof5kxLw1eLsxzaD_O2xgIXs9TVFao_zlyqN8C5fZ8,7725
 serial/threaded/__init__.py,sha256=EHay8pD__ePKaa-WvweNjWe9V1SUgZMefNnayVyiwRw,9272
+serial/threaded/__init__.pyc,,
 serial/tools/__init__.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
 serial/tools/__init__.pyc,sha256=stNDuwUOHX5ySsWZfedBkax1go_wefynkMBqnkv9DSI,140
 serial/tools/hexlify_codec.py,sha256=1lvd2TFWYUsYMRt7nsyw0VfHTRfl57Hl6kdCmNhMkC4,3637
@@ -48,6 +48,7 @@ serial/tools/miniterm.pyc,sha256=qNPk-vOUXoPDpswiQE4R0LEybrRBzmNBPWV1XglLhTc,304
 serial/urlhandler/__init__.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
 serial/urlhandler/__init__.pyc,sha256=SBlUmYLyKiul4P6w70w1c0vIiRpv8MGzn5awpHwaO3o,145
 serial/urlhandler/protocol_alt.py,sha256=pWlKn8HBBENU9DNeO46gLgTTWvYHLaLB9O5YVwfEQ0o,1993
+serial/urlhandler/protocol_alt.pyc,,
 serial/urlhandler/protocol_hwgrep.py,sha256=tx4r6Y8smyF7rV0tb2OXMV3ws7xpJtImBH57ZUaSWIo,3119
 serial/urlhandler/protocol_hwgrep.pyc,sha256=cW_46V23glPYWPwp17_zbxxcZJyJEvEOuoZzosyR11o,1627
 serial/urlhandler/protocol_loop.py,sha256=FoDnQw69tQnPRz8Q7p7PMhxIL1wlBKBi7oAPBwJ9-Xo,10119
@@ -55,11 +56,10 @@ serial/urlhandler/protocol_loop.pyc,sha256=g7QJtSdFQBBNZQwHlgABtxYtWZbOMUH92KuKj
 serial/urlhandler/protocol_rfc2217.py,sha256=886ex7FHRb_qPKXJC7HcR6RtMdmvxo4ChEohliqNs5E,277
 serial/urlhandler/protocol_rfc2217.pyc,sha256=Yb3Cn9QymSWgHiiU3s21_yQiKyOKOgjd3nTRIrkvY4Q,214
 serial/urlhandler/protocol_serve-rfc2217.py,sha256=886ex7FHRb_qPKXJC7HcR6RtMdmvxo4ChEohliqNs5E,277
+serial/urlhandler/protocol_serve-rfc2217.pyc,,
 serial/urlhandler/protocol_socket.py,sha256=cCy3zC4WzclIHnYQaf0MaW65h22TPRJpEGbMmJhXPyk,14130
 serial/urlhandler/protocol_socket.pyc,sha256=KoUDgHAXrHpKi8NC5ABBZuscVOe8dIC-URq5iWGTWys,9803
 serial/urlhandler/protocol_spy.py,sha256=9DxcDfV0upKmH3beYBcHMSQzLcxRS9ptnx7a__vefUg,9024
 serial/urlhandler/protocol_spy.pyc,sha256=laRaXOAPYzcgG05c68fWObXgVJBJLL5g9CfqOMAdr8I,10984
-pyserial-3.4.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
-serial/urlhandler/protocol_serve-rfc2217.pyc,,
-serial/threaded/__init__.pyc,,
-serial/urlhandler/protocol_alt.pyc,,
+serial/win32.py,sha256=-GiHVB-QFrQfD4vHelhaEccwfW__6kC2S_46lIYLVsM,10853
+serial/win32.pyc,sha256=iZof5kxLw1eLsxzaD_O2xgIXs9TVFao_zlyqN8C5fZ8,7725
