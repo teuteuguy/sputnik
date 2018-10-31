@@ -16,10 +16,16 @@ echo "mkdir -p $1/greengrass"
 mkdir -p $2/greengrass
 
 
-echo "04-services-lambda.sh---------------------------------------------------------"
-echo "[Build] Solution - aws-mini-connected-factory-v1.0"
-echo "------------------------------------------------------------------------------"
+echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
+echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-camera-python"
+echo "--------------------------------------------------------------------------------------------------------"
 cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-camera-python
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
+echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-belt-serial-python"
+echo "--------------------------------------------------------------------------------------------------------"
+cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-belt-serial-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo

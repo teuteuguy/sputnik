@@ -1,5 +1,6 @@
 module.exports = {
-    addSolution: require('./lib/addSolution'),
-    deleteSolution: require('./lib/deleteSolution'),
-    getSolutionStats: require('./lib/getSolutionStats')
+    addSolution: require('./lib/add-solution'),
+    deleteSolution: require('./lib/delete-solution'),
+    getSolutionStats: require('./lib/get-solution-stats'),
+    refreshSolution: require('./lib/refresh-solution')
 };

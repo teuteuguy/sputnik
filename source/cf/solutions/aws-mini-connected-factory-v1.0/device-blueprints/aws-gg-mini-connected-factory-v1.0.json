@@ -75,6 +75,25 @@
                         "Pinned": true,
                         "Timeout": 3
                     }
+                },
+                {
+                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
+                    "FunctionConfiguration": {
+                        "EncodingType": "json",
+                        "Environment": {
+                            "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "serial-port"
+                            }],
+                            "Variables": {
+                                "SERIALPORT_PORT": "/dev/ttyUSB0",
+                                "SERIALPORT_SPEED": "115200"
+                            }
+                        },
+                        "MemorySize": 131072,
+                        "Pinned": true,
+                        "Timeout": 3
+                    }
                 }
             ]
         },

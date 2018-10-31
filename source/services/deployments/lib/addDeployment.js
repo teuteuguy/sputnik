@@ -109,6 +109,9 @@ module.exports = function (event, context) {
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
 
+        console.log('Deal with actions');
+        _newSpec.afterActions = [...(_device.spec.afterActions || []), ...(_deviceType.spec.afterActions || []), ...(_deviceBlueprint.spec.afterActions || [])];
+
         console.log('Going to substitute in the spec');
         // Construct the spec:
         let strSpec = JSON.stringify(_newSpec);
@@ -135,7 +138,15 @@ module.exports = function (event, context) {
         });
 
         _newSpec = JSON.parse(strSpec);
+
         _newSpec.Shadow = _newShadow;
+
+        // TODO: this eval thing could be a security risk. Need to potentially rethink this.
+        _newSpec.afterActions.forEach(a => {
+            eval(a);
+            _newSpec = afterAction(_newSpec);
+        });
+
         console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
 
         if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {

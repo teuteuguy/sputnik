@@ -15,6 +15,9 @@ function handler(event, context, callback) {
         case 'deleteSolution':
             promise = libs.deleteSolution;
             break;
+        case 'refreshSolution':
+            promise = libs.refreshSolution;
+            break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + JSON.stringify(event), null);
             break;
