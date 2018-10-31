@@ -48,36 +48,72 @@ module.exports = function (key, spec, currentGreengrassGroupDefinitionVersion) {
                     delete params[key + 'DefinitionVersionId'];
 
                     let originalToCompare = definitionVersion.Definition[key + 's'];
-                    let newToCompare = JSON.parse(JSON.stringify(spec[key + 'DefinitionVersion'][key + 's']));
 
-                    console.log(tag, 'Removing all Ids from original:', originalToCompare);
-                    originalToCompare.forEach(item => {
-                        delete item.Id;
-                    });
-                    console.log(tag, 'Removing all Ids from new:', newToCompare);
-                    newToCompare.forEach(item => {
-                        delete item.Id;
+                    spec[key + 'DefinitionVersion'][key + 's'].forEach(o => {
+                        if (!o.hasOwnProperty('Id')) {
+                            o.Id = uuid.v4();
+                        }
                     });
 
-                    console.log(tag, 'Ids removed: Comparing:', JSON.stringify(originalToCompare), JSON.stringify(newToCompare));
+                    params[key + 's'] = spec[key + 'DefinitionVersion'][key + 's'];
+                    return gg['create' + key + 'DefinitionVersion'](params).promise().then(tempVersion => {
+                        delete params[key + 's'];
+                        params[key + 'DefinitionVersionId'] = tempVersion.Version;
+                        return gg['get' + key + 'DefinitionVersion'](params).promise().then(tempFullVersion => {
+                            console.log(tag, tempFullVersion);
+                            let newToCompare = tempFullVersion.Definition[key + 's'];
+                            console.log(tag, 'Removing all Ids from original:', originalToCompare);
+                            originalToCompare.forEach(item => {
+                                delete item.Id;
+                            });
+                            console.log(tag, 'Removing all Ids from new:', newToCompare);
+                            newToCompare.forEach(item => {
+                                delete item.Id;
+                            });
+                            console.log(tag, 'Compare:', JSON.stringify(originalToCompare), JSON.stringify(newToCompare));
 
-                    if (diff(originalToCompare, newToCompare)) {
-
-                        console.log(tag, 'Its different: build the Ids and create the DefinitionVersion');
-                        spec[key + 'DefinitionVersion'][key + 's'].forEach(o => {
-                            if (!o.hasOwnProperty('Id')) {
-                                o.Id = uuid.v4();
+                            if (diff(originalToCompare, newToCompare)) {
+                                console.log(tag, 'Its different, stick to the new');
+                                return tempFullVersion;
+                            } else {
+                                console.log(tag, 'Its same, stick to the old');
+                                return definitionVersion;
                             }
                         });
+                    });
 
-                        params[key + 's'] = spec[key + 'DefinitionVersion'][key + 's'];
-                        return gg['create' + key + 'DefinitionVersion'](params).promise();
 
-                    } else {
-                        // They are the same: don't do anything !
-                        console.log(tag, 'Its the same, return the definition version as is', definitionVersion);
-                        return definitionVersion;
-                    }
+
+                    // let newToCompare = JSON.parse(JSON.stringify(spec[key + 'DefinitionVersion'][key + 's']));
+
+                    // console.log(tag, 'Removing all Ids from original:', originalToCompare);
+                    // originalToCompare.forEach(item => {
+                    //     delete item.Id;
+                    // });
+                    // console.log(tag, 'Removing all Ids from new:', newToCompare);
+                    // newToCompare.forEach(item => {
+                    //     delete item.Id;
+                    // });
+
+                    // console.log(tag, 'Ids removed: Comparing:', JSON.stringify(originalToCompare), JSON.stringify(newToCompare));
+
+                    // if (diff(originalToCompare, newToCompare)) {
+
+                    //     console.log(tag, 'Its different: build the Ids and create the DefinitionVersion');
+                    //     spec[key + 'DefinitionVersion'][key + 's'].forEach(o => {
+                    //         if (!o.hasOwnProperty('Id')) {
+                    //             o.Id = uuid.v4();
+                    //         }
+                    //     });
+
+                    //     params[key + 's'] = spec[key + 'DefinitionVersion'][key + 's'];
+                    //     return gg['create' + key + 'DefinitionVersion'](params).promise();
+
+                    // } else {
+                    //     // They are the same: don't do anything !
+                    //     console.log(tag, 'Its the same, return the definition version as is', definitionVersion);
+                    //     return definitionVersion;
+                    // }
 
                 });
             } else {

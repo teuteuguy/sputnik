@@ -80,7 +80,8 @@
                             }],
                             "Variables": {
                                 "SERIALPORT_PORT": "/dev/ttyUSB0",
-                                "SERIALPORT_SPEED": "115200"
+                                "SERIALPORT_SPEED": "115200",
+                                "THING_NAME": "[CORE]"
                             }
                         },
                         "MemorySize": 131072,
