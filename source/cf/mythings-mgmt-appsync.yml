@@ -717,6 +717,19 @@ Resources:
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-get.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
+    # RESOLVERS - MUTATIONS - Solution Blueprints
+    appSyncResolverMutationUpdateSolutionBlueprint:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateSolutionBlueprint
+            DataSourceName: !GetAtt appSyncDataSourceSolutionBlueprintsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-update.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
+
     # ####################################################################################################
     # ####################################################################################################
     #

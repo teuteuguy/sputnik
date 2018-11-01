@@ -47,6 +47,7 @@ exports.handler = (event, context, callback) => {
                 responseData = data;
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
             }).catch((err) => {
+                console.log('error');
                 responseData = {
                     Error: `dynamodbPutObjectsFromS3Folder failed`
                 };
@@ -84,11 +85,16 @@ exports.handler = (event, context, callback) => {
         }
     }
 
-    if (event.RequestType === 'AppSync') {
+    if (event.RequestType === 'Utils') {
 
         switch (event.cmd) {
             case 'attachPrincipalPolicy':
                 iotHelper.attachPrincipalPolicy(event.policyName, event.principal).then(result => callback(null, result)).catch(err => callback(err, null));
+                break;
+            case 'blueprintParser':
+                const BlueprintParser = require('./lib/blueprint-parser');
+                const blueprintParser = new BlueprintParser();
+                blueprintParser.parse(event.message).then(result => callback(null, result)).catch(err => callback(err, null));
                 break;
             default:
                 callback('Unknown cmd, unable to resolve for arguments: ' + event, null);

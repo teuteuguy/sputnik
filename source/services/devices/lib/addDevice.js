@@ -9,6 +9,10 @@ const lib = 'addDevice';
 
 module.exports = function (event, context) {
 
+    const tag = `addDevice(${event.thingName}):`;
+
+    console.log(tag, 'start');
+
     // Note: in order to be consistent with the rest of the Appsync API, event.spec is a stringified json object!
 
     // Event needs to be:
@@ -31,11 +35,10 @@ module.exports = function (event, context) {
                 thingName: event.thingName
             }).promise();
         })
-        // iot.createThing({
-        //         thingName: event.thingName
-        //     })
-        //     .promise()
         .then(thing => {
+
+            console.log(tag, 'thing:', thing);
+
             // Create thing returns
             // {
             //     "thingArn": "arn:aws:iot:us-east-1:accountnumber:thing/toto",
@@ -50,7 +53,7 @@ module.exports = function (event, context) {
                 .get({
                     TableName: process.env.TABLE_DEVICES,
                     Key: {
-                        thingId: thing.thingId
+                        thingId: event.thing.thingId
                     }
                 })
                 .promise();
@@ -64,6 +67,7 @@ module.exports = function (event, context) {
             }
 
             if (result.Item) {
+                console.log(tag, 'thing is already in the DB. Exiting');
                 // Thing already in our DB
                 throw 'Thing is already in the DB';
             } else {
@@ -99,6 +103,8 @@ module.exports = function (event, context) {
             }
         }).then(greengrassGroupId => {
 
+            console.log(tag, 'greengrassGroupId:', greengrassGroupId);
+
             let params = {
                 thingId: event.thing.thingId,
                 thingName: event.thing.thingName,
@@ -124,7 +130,6 @@ module.exports = function (event, context) {
                         .format()
                 }
             };
-
 
             if (event.generateCert !== false) {
 

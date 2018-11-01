@@ -14,9 +14,11 @@ client = greengrasssdk.client('iot-data')
 # SERIALPORT_PORT = '/dev/cu.SLAB_USBtoUART'
 # SERIALPORT_SPEED = 115200
 
-THINGNAME = '{}'.format(os.environ['BELT_IOT_THING_NAME'])
+THINGNAME = '{}'.format(os.environ['THING_NAME'])
 SERIALPORT_PORT = '{}'.format(os.environ['SERIALPORT_PORT'])
 SERIALPORT_SPEED = '{}'.format(os.environ['SERIALPORT_SPEED'])
+
+TOPIC_SENSORS = 'mtm/{}/sensors'.format(THINGNAME)
 
 
 desiredBelt = {
@@ -64,10 +66,12 @@ def updateShadowControl():
     client.update_thing_shadow(thingName = THINGNAME, payload = payload)
     # print 'updateShadowControl: ' + payload
 
-def updateShadowSensors():
-    payload = json.dumps({ 'state': { 'reported': { 'sensors': reportedBeltSensors } } })
-    client.update_thing_shadow(thingName = THINGNAME, payload = payload)
-    # print 'updateShadowSensors: ' + payload
+def publishSensorData():
+    payload = reportedBeltSensors
+    payload['thing'] = THINGNAME
+    client.publish(topic=TOPIC_SENSORS, payload=json.dumps(payload))
+    # client.update_thing_shadow(thingName = THINGNAME, payload = payload)
+    # print 'publishSensorData: ' + payload
 
 
 def syncShadow(serial):
@@ -84,24 +88,26 @@ def syncShadow(serial):
         print 'Syncshadow rx: ' + json.dumps(stateDict['desired'])
         print 'Syncshadow vs: ' + json.dumps(desiredBelt)
 
-        needSerial = False
+        try:
 
-        if 'mode' in stateDict['desired'] and desiredBelt['mode'] != stateDict['desired']['mode']:
-            desiredBelt['mode'] = stateDict['desired']['mode']
-            needSerial = True
-        if 'speed' in stateDict['desired'] and desiredBelt['speed'] != stateDict['desired']['speed']:
-            desiredBelt['speed'] = stateDict['desired']['speed']
-            needSerial = True
+            needSerial = False
 
-        if needSerial:
-            try:
-                print '================================================'
-                print 'Writing to belt on serial:'
-                serial.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
-                print '======== Updated speed & mode - DESIRED ========'
-                print '================================================'
-            except Exception as ex:
-                print 'ERROR in syncShadow: {}'.format(ex)
+            if 'mode' in stateDict['desired'] and desiredBelt['mode'] != stateDict['desired']['mode']:
+                desiredBelt['mode'] = stateDict['desired']['mode']
+                needSerial = True
+            if 'speed' in stateDict['desired'] and desiredBelt['speed'] != stateDict['desired']['speed']:
+                desiredBelt['speed'] = stateDict['desired']['speed']
+                needSerial = True
+
+            if needSerial:
+                    print '================================================'
+                    print 'Writing to belt on serial:'
+                    serial.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
+                    print '======== Updated speed & mode - DESIRED ========'
+                    print '================================================'
+
+        except Exception as ex:
+            print 'ERROR in syncShadow: {}'.format(ex)
 
 
 class MySerial(serial.threaded.LineReader):
@@ -123,7 +129,9 @@ class MySerial(serial.threaded.LineReader):
 
             if found:
                 if 'state' in data:
+
                     if 'reported' in data['state']:
+
                         if 'speed' in data['state']['reported']:
                             if data['state']['reported']['speed'] != 1 and \
                                data['state']['reported']['speed'] != 2:
@@ -131,22 +139,26 @@ class MySerial(serial.threaded.LineReader):
                                 self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
                             else:
                                 reportedBeltControl['speed'] = data['state']['reported']['speed']
-                                updateShadowControl()
+
                         if 'mode' in data['state']['reported']:
                             if data['state']['reported']['mode'] != 1 and data['state']['reported']['mode'] != 2 and data['state']['reported']['mode'] != 3:
                                 print 'Incorrect mode reported'
                                 self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
                             else:
                                 reportedBeltControl['speed'] = data['state']['reported']['speed']
-                                updateShadowControl()
+
+                        updateShadowControl()
 
                 if 'chassis' in data:
+
                     if 'x' in data['chassis'] and 'y' in data['chassis'] and 'z' in data['chassis']:
+
                         if data['chassis']['x'] != reportedBeltSensors['chassis']['x'] or \
                            data['chassis']['y'] != reportedBeltSensors['chassis']['y'] or \
                            data['chassis']['z'] != reportedBeltSensors['chassis']['z']:
+
                             reportedBeltSensors['chassis'].update(data['chassis'])
-                            updateShadowSensors()
+                            publishSensorData()
 
                 syncShadow(serial = self)
 

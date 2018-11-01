@@ -46,6 +46,16 @@
                                 {
                                     "Permission": "ro",
                                     "ResourceId": "[ARTIFACTS]"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "deeplens_gpu_resource"
+                                }, {
+                                    "Permission": "rw",
+                                    "ResourceId": "sound_card_resource"
+                                }, {
+                                    "Permission": "rw",
+                                    "ResourceId": "sound_control_resource"
                                 }
                             ],
                             "Variables": {
@@ -65,26 +75,6 @@
                             "Variables": {}
                         },
                         "MemorySize": 32768,
-                        "Pinned": true,
-                        "Timeout": 3
-                    }
-                },
-                {
-                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
-                    "FunctionConfiguration": {
-                        "EncodingType": "json",
-                        "Environment": {
-                            "ResourceAccessPolicies": [{
-                                "Permission": "rw",
-                                "ResourceId": "serial-port"
-                            }],
-                            "Variables": {
-                                "SERIALPORT_PORT": "/dev/ttyUSB0",
-                                "SERIALPORT_SPEED": "115200",
-                                "THING_NAME": "[CORE]"
-                            }
-                        },
-                        "MemorySize": 131072,
                         "Pinned": true,
                         "Timeout": 3
                     }
@@ -131,18 +121,6 @@
                     }
                 }
             }, {
-                "Id": "serial-port",
-                "Name": "serial-port",
-                "ResourceDataContainer": {
-                    "LocalDeviceResourceData": {
-                        "GroupOwnerSetting": {
-                            "AutoAddGroupOwner": false,
-                            "GroupOwner": "dialout"
-                        },
-                        "SourcePath": "/dev/ttyUSB0"
-                    }
-                }
-            }, {
                 "Id": "tmp",
                 "Name": "tmp",
                 "ResourceDataContainer": {
@@ -166,16 +144,6 @@
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
                     "Subject": "mtm/[CORE]/admin",
                     "Target": "cloud"
-                },
-                {
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
-                    "Subject": "$aws/things/[CORE]/shadow/update",
-                    "Target": "cloud"
-                },
-                {
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
-                    "Subject": "$aws/things/[CORE]/shadow/update",
-                    "Target": "GGShadowService"
                 }
             ]
         }

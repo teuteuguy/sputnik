@@ -1,6 +1,6 @@
 // TODO: we probably need to check that the key alreay exists and then overwrite instead of concat !
 
-// Child gets pushed INTO Parent
+// Child gets pushed INTO Parent BUT Parent always wins.
 // Example: Devcice INTO DeviceType
 function extend(parent, child, type) { //parentKey, childKey, on) {
 
@@ -33,14 +33,10 @@ function extend(parent, child, type) { //parentKey, childKey, on) {
             switch (type) {
                 case 'Core':
                     // There can only be 1 Core device. So in this case, it's simple. We simply overwrite.
-                    if (result[parentKey][childKey].length === 1) {
-                        if (child[parentKey][childKey].length === 1) {
-                            result[parentKey][childKey] = child[parentKey][childKey];
-                        } else {
-                            // Do nothing cause this means that child either doesnt have any cores, or that the template has too many, and that's not good. Skip
-                        }
-                    } else {
+                    if (child[parentKey][childKey].length === 1 && result[parentKey][childKey].length === 0) {
                         result[parentKey][childKey] = child[parentKey][childKey];
+                    } else {
+                        // Do nothing cause this means that child either doesnt have any cores, or that the template has too many, and that's not good. Skip
                     }
                     break;
                 case 'Device':

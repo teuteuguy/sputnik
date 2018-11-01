@@ -47,6 +47,39 @@
                         "SourcePath": "/opt/awscam/out"
                     }
                 }
+            }, {
+                "Id": "deeplens_gpu_resource",
+                "Name": "deeplens_gpu_resource",
+                "ResourceDataContainer": {
+                    "LocalDeviceResourceData": {
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/dev/dri/renderD128"
+                    }
+                }
+            }, {
+                "Id": "sound_card_resource",
+                "Name": "sound_card_resource",
+                "ResourceDataContainer": {
+                    "LocalDeviceResourceData": {
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/dev/snd/pcmC0D0p"
+                    }
+                }
+            }, {
+                "Id": "sound_control_resource",
+                "Name": "sound_control_resource",
+                "ResourceDataContainer": {
+                    "LocalDeviceResourceData": {
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/dev/snd/controlC0"
+                    }
+                }
             }]
         }
     }

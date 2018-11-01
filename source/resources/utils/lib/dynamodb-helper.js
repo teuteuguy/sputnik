@@ -32,9 +32,9 @@ class dynamodbHelper {
         this.creds = new AWS.EnvironmentCredentials('AWS'); // Lambda provided credentials
     }
 
-    dynamodbPutObjectsFromS3Folder(sourceS3Bucket, sourceS3prefix, table) {
+    dynamodbPutObjectsFromS3Folder(sourceS3Bucket, sourceS3Prefix, table) {
         console.log(`source bucket: ${sourceS3Bucket}`);
-        console.log(`source prefix: ${sourceS3prefix}`);
+        console.log(`source prefix: ${sourceS3Prefix}`);
         console.log(`ddb table: ${table}`);
 
         const s3 = new AWS.S3();
@@ -45,7 +45,7 @@ class dynamodbHelper {
         function _listAllFiles(allFiles, token) {
             let opts = {
                 Bucket: sourceS3Bucket,
-                Prefix: sourceS3prefix
+                Prefix: sourceS3Prefix
             };
             if (token) {
                 opts.ContinuationToken = token;
@@ -53,7 +53,7 @@ class dynamodbHelper {
 
             return s3.listObjectsV2(opts).promise().then(data => {
                 allFiles = allFiles.concat(data.Contents.map((e) => {
-                    return e.Key.split(sourceS3prefix + '/').pop();
+                    return e.Key.split(sourceS3Prefix + '/').pop();
                 }));
                 if (data.IsTruncated) {
                     return _listAllFiles(allFiles, data.NextContinuationToken);
@@ -65,13 +65,15 @@ class dynamodbHelper {
         return _listAllFiles([], null).then(files => {
             console.log('Found:', JSON.stringify(files));
 
-            return files.map(file => {
+            return Promise.all(files.map(file => {
+
+                console.log('Getting:', file);
+
                 return s3.getObject({
                     Bucket: sourceS3Bucket,
-                    Key: sourceS3prefix + '/' + file
+                    Key: sourceS3Prefix + '/' + file
                 }).promise().then(data => {
-                    const object = JSON.parse(data.Body.toString('ascii'));
-                    console.log(file, object);
+                    let object = JSON.parse(data.Body.toString('ascii'));
 
                     object.createdAt = moment()
                         .utc()
@@ -80,19 +82,24 @@ class dynamodbHelper {
                         .utc()
                         .format();
 
+                    console.log(file, object);
+
                     const params = {
                         TableName: table,
-                        Item: object
+                        Item: object,
+                        ReturnValues: 'ALL_OLD'
                     };
 
                     return documentClient.put(params).promise();
 
                 }).then(result => {
+                    console.log('Put file', file, 'in db', result);
                     return {
                         file: file
                     };
                 });
-            });
+            }));
+
         }).then(results => {
             return {
                 result: results

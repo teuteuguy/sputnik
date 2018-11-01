@@ -22,15 +22,6 @@ const lib = 'addDeployment';
 
 
 
-function setAttribute(value) {
-
-}
-
-function on(value) {
-
-}
-
-
 module.exports = function (event, context) {
 
     let _device;
@@ -161,8 +152,6 @@ module.exports = function (event, context) {
             _newSpec = afterAction(_newSpec);
         });
 
-        // const test = "SetAtt(AMCF1_zmENs9ecm,On(arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM,FunctionArn,FunctionDefinitionVersion,Functions),FunctionConfiguration,Environment,Variables,BELT_IOT_THING_NAME)";
-        // SetAtt('AMCF1_zmENs9ecm', On('', spec, 'FunctionArn'))
         console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
 
         if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {
