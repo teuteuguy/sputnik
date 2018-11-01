@@ -261,6 +261,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     submitEditDevice(value: any) {
         const _self = this;
         _self.blockUI.start('Editing device...');
+        console.log(_self.deviceForEdit);
         _self.deviceService
             .updateDevice(_self.deviceForEdit)
             .then((resp: any) => {

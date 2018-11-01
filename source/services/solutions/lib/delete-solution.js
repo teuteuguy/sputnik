@@ -25,7 +25,7 @@ module.exports = function (event, context) {
             // - Delete Device
             // - Delete thingGroup
             const mtmThingGroups = new MTMThingGroups();
-            return mtmThingGroups.deleteThingGroup(event.solution.name);
+            return mtmThingGroups.deleteThingGroup(event.solution.thingGroupName);
 
         }).then(result => {
 

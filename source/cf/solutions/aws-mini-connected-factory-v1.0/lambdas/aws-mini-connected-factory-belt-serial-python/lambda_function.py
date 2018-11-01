@@ -1,24 +1,38 @@
 import os
 import sys
 import time
-import greengrasssdk
 import json
+
+from publish import Publisher
 
 import serial
 import serial.threaded
 
-# Creating a greengrass core sdk client
-client = greengrasssdk.client('iot-data')
-
-# THINGNAME = 'AMCF1_zmENs9ecm'
+# THING_NAME = 'AMCF1_zmENs9ecm'
 # SERIALPORT_PORT = '/dev/cu.SLAB_USBtoUART'
 # SERIALPORT_SPEED = 115200
 
-THINGNAME = '{}'.format(os.environ['THING_NAME'])
+THING_NAME = '{}'.format(os.environ['THING_NAME'])
 SERIALPORT_PORT = '{}'.format(os.environ['SERIALPORT_PORT'])
 SERIALPORT_SPEED = '{}'.format(os.environ['SERIALPORT_SPEED'])
 
-TOPIC_SENSORS = 'mtm/{}/sensors'.format(THINGNAME)
+TOPIC_SENSORS = 'mtm/{}/sensors'.format(THING_NAME)
+TOPIC_ADMIN = 'mtm/{}/admin'.format(THING_NAME)
+
+
+try:
+    PUB = Publisher(TOPIC_ADMIN, THING_NAME)
+
+    PUB.info("Restart of Lambda")
+
+    def function_handler(event, context):
+        return
+
+    PUB.info('Starting main loop')
+
+except Exception as err:
+    PUB.exception(str(err))
+    time.sleep(1)
 
 
 desiredBelt = {
@@ -42,6 +56,7 @@ reportedBeltSensors = {
     }
 }
 
+
 def getCharFor(speed, mode):
     char = '5'
     if speed == 1:
@@ -61,53 +76,37 @@ def getCharFor(speed, mode):
 
     return char
 
-def updateShadowControl():
-    payload = json.dumps({ 'state': { 'reported': reportedBeltControl } })
-    client.update_thing_shadow(thingName = THINGNAME, payload = payload)
-    # print 'updateShadowControl: ' + payload
-
-def publishSensorData():
-    payload = reportedBeltSensors
-    payload['thing'] = THINGNAME
-    client.publish(topic=TOPIC_SENSORS, payload=json.dumps(payload))
-    # client.update_thing_shadow(thingName = THINGNAME, payload = payload)
-    # print 'publishSensorData: ' + payload
 
 
-def syncShadow(serial):
+def syncShadow():
 
-    print 'SyncShadow'
+    result = False
 
-    response = client.get_thing_shadow(thingName=THINGNAME)
-    payloadDict = json.loads(response['payload'])
-    stateDict = payloadDict['state']
+    try:
 
-    # We are only interested in the Desired.
-    if 'desired' in stateDict:
+        state = PUB.getThingShadow()
 
-        print 'Syncshadow rx: ' + json.dumps(stateDict['desired'])
-        print 'Syncshadow vs: ' + json.dumps(desiredBelt)
+        if 'desired' in state:
 
-        try:
-
-            needSerial = False
+            print 'Syncshadow RX: ' + json.dumps(state['desired'])
+            print
+            print 'Syncshadow VS: ' + json.dumps(desiredBelt)
 
             if 'mode' in stateDict['desired'] and desiredBelt['mode'] != stateDict['desired']['mode']:
                 desiredBelt['mode'] = stateDict['desired']['mode']
-                needSerial = True
+                result = True
+
             if 'speed' in stateDict['desired'] and desiredBelt['speed'] != stateDict['desired']['speed']:
                 desiredBelt['speed'] = stateDict['desired']['speed']
-                needSerial = True
+                result = True
 
-            if needSerial:
-                    print '================================================'
-                    print 'Writing to belt on serial:'
-                    serial.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
-                    print '======== Updated speed & mode - DESIRED ========'
-                    print '================================================'
+    except Exception as err:
+        PUB.exception(str(err))
+        time.sleep(1)
+        print 'ERROR in syncShadow: {}'.format(err)
+        result = False
 
-        except Exception as ex:
-            print 'ERROR in syncShadow: {}'.format(ex)
+    return result
 
 
 class MySerial(serial.threaded.LineReader):
@@ -115,7 +114,6 @@ class MySerial(serial.threaded.LineReader):
         super(MySerial, self).__init__()
 
     def handle_line(self, data):
-        # print data
         try:
             found = False
             if " [BELT_SHADOW] {" in data:
@@ -128,6 +126,7 @@ class MySerial(serial.threaded.LineReader):
                 # print data
 
             if found:
+
                 if 'state' in data:
 
                     if 'reported' in data['state']:
@@ -147,7 +146,7 @@ class MySerial(serial.threaded.LineReader):
                             else:
                                 reportedBeltControl['speed'] = data['state']['reported']['speed']
 
-                        updateShadowControl()
+                        PUB.updateThingShadow(payload={'state': {'reported': reportedBeltControl}})
 
                 if 'chassis' in data:
 
@@ -158,73 +157,34 @@ class MySerial(serial.threaded.LineReader):
                            data['chassis']['z'] != reportedBeltSensors['chassis']['z']:
 
                             reportedBeltSensors['chassis'].update(data['chassis'])
-                            publishSensorData()
 
-                syncShadow(serial = self)
+                            PUB.publish(TOPIC_SENSORS, reportedBeltSensors)
 
+                if syncShadow():
+                    self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
 
         except Exception as ex:
             print 'ERROR in handle_line: {}'.format(ex)
 
-def greengrassInfiniteLoop():
-    """ Entry point of the lambda function"""
-    while True:
-        try:
-            print 'Start'
-            ser = serial.serial_for_url(SERIALPORT_PORT, int(SERIALPORT_SPEED))
-            with serial.threaded.ReaderThread(ser, MySerial) as protocol:
-                print 'Started'
-                while True:
-                    # syncShadow(protocol = protocol)
+
+def main_loop():
+    try:
+        print 'Start'
+        ser = serial.serial_for_url(SERIALPORT_PORT, int(SERIALPORT_SPEED))
+        with serial.threaded.ReaderThread(ser, MySerial) as protocol:
+            while True:
+                try:
                     time.sleep(1)
-                    # reportShadow()
-                    # time.sleep(0.5)
+                except Exception as err:
+                    PUB.exception(str(err))
+                    raise err
 
-        except Exception as ex:
-            print 'ERROR: {}'.format(ex)
+    except Exception as err:
+        PUB.exception(str(err))
+        time.sleep(1)
+        ser.close()
 
-        time.sleep(5)
+    Timer(0, main_loop).start()
 
-# Execute the function above
-greengrassInfiniteLoop()
+main_loop()
 
-# This is a dummy handler and will not be invoked
-# Instead the code above will be executed in an infinite loop for our example
-def function_handler(event, context):
-    return
-
-
-
-
-
-
-# def greengrassInfiniteLoop():
-#     """ Entry point of the lambda function"""
-#     while True:
-#         try:
-#             serialRXThread = SerialRXThread()
-#             serialRXThread.start()
-
-#             print 'Start of while Loop'
-
-#             # Do work until the lambda is killed.
-#             while True:
-#                 syncShadow()
-#                 time.sleep(0.5)
-#                 # reportShadow()
-#                 # time.sleep(0.5)
-
-#         except Exception as ex:
-#             print 'ERROR: {}'.format(ex)
-
-#         time.sleep(5)
-
-
-# # Execute the function above
-# greengrassInfiniteLoop()
-
-
-# # This is a dummy handler and will not be invoked
-# # Instead the code above will be executed in an infinite loop for our example
-# def function_handler(event, context):
-#     return

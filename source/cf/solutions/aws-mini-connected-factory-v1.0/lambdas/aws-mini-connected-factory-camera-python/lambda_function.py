@@ -82,32 +82,32 @@ def main_loop():
             frame = frame[y:y+h, x:x+w]
 
             PUB.info('Frame loaded')
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame = cv2.resize(frame, (inference_size_x, inference_size_y)) # resize
+            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # frame = cv2.resize(frame, (inference_size_x, inference_size_y)) # resize
 
-            PUB.info('Frame resized')
-            try:
-                category, probability = model.do(frame)
-                results.append(category)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                title = str(fps) + " - " + category + " - " + str(probability)
-                if probability > 0.6:
-                    prob_no_hat = probability
-                    if category == 'hat':
-                        prob_no_hat = 1.0 - probability
-                    elif category == 'nohat':
-                        probability =  1.0 - probability
-                    cv2.rectangle(frame, (0, 0), (int(frame.shape[1] * 0.2 * prob_no_hat), 80),
-                                (0, 0, 255), -1)
-                    cv2.rectangle(frame, (0, 90), (int(frame.shape[1] * 0.2 * probability), 170), (0, 255, 0), -1)
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    cv2.putText(frame, 'Not Safe', (10, 70), font, 1, (225, 225, 225), 8)
-                    cv2.putText(frame, 'Safe', (10, 160), font, 1, (225, 225, 225), 8)
+            # PUB.info('Frame resized')
+            # try:
+            #     category, probability = model.do(frame)
+            #     results.append(category)
+            #     font = cv2.FONT_HERSHEY_DUPLEX
+            #     title = str(fps) + " - " + category + " - " + str(probability)
+            #     if probability > 0.6:
+            #         prob_no_hat = probability
+            #         if category == 'hat':
+            #             prob_no_hat = 1.0 - probability
+            #         elif category == 'nohat':
+            #             probability =  1.0 - probability
+            #         cv2.rectangle(frame, (0, 0), (int(frame.shape[1] * 0.2 * prob_no_hat), 80),
+            #                     (0, 0, 255), -1)
+            #         cv2.rectangle(frame, (0, 90), (int(frame.shape[1] * 0.2 * probability), 170), (0, 255, 0), -1)
+            #         font = cv2.FONT_HERSHEY_SIMPLEX
+            #         cv2.putText(frame, 'Not Safe', (10, 70), font, 1, (225, 225, 225), 8)
+            #         cv2.putText(frame, 'Safe', (10, 160), font, 1, (225, 225, 225), 8)
 
-                    if prob_no_hat > 0.8: # definitely not safe
-                        PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
-                    elif probability > 0.8: # definitely safe
-                        PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
+            #         if prob_no_hat > 0.8: # definitely not safe
+            #             PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
+            #         elif probability > 0.8: # definitely safe
+            #             PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
             except Exception as err:
                 PUB.exception(str(err))
                 raise err

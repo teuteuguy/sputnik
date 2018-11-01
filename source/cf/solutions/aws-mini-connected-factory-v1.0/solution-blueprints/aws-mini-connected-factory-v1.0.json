@@ -39,7 +39,7 @@
                                             "THING_NAME": "!GetAtt[device_0.thingName]"
                                         }
                                     },
-                                    "MemorySize": 131072,
+                                    "MemorySize": 262144,
                                     "Pinned": true,
                                     "Timeout": 3
                                 }

@@ -151,7 +151,7 @@ module.exports = function (event, context) {
 
             const mtmGroups = new MTMThingGroups();
 
-            return mtmGroups.createThingGroup(event.name, event.description);
+            return mtmGroups.createThingGroup(shortid.generate(), event.description);
 
         }).then(group => {
 

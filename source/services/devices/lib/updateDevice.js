@@ -98,7 +98,7 @@ module.exports = function (event, context) {
                 ':dti': _deviceType.id,
                 ':dbi': event.deviceBlueprintId || 'UNKNOWN',
                 ':gid': groupId,
-                ':s': JSON.parse(event.spec),
+                ':s': event.spec,
                 ':n': event.name
             }
         };

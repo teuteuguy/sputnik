@@ -5,13 +5,6 @@
     "compatibility": ["all"],
     "deviceTypeMappings": [],
     "spec": {
-        "CoreDefinitionVersion": {
-            "Cores": [{
-                "CertificateArn": "[CORE_CERTIFICATE_ARN]",
-                "SyncShadow": true,
-                "ThingArn": "[CORE_ARN]"
-            }]
-        },
         "LoggerDefinitionVersion": {
             "Loggers": [{
                     "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
