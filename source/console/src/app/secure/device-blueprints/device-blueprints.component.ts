@@ -76,6 +76,7 @@ export class DeviceBlueprintsComponent extends GenericTableComponent implements 
                 viewElement: <GenericTableElementParams>{
                     text: 'View',
                     modal: DeviceBlueprintsModalComponent,
+                    modalName: 'defaultDeviceBlueprintsModal',
                     link: false
                 },
                 deleteElement: this.isAdminUser,

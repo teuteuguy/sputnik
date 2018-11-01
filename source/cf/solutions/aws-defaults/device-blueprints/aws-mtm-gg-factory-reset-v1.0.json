@@ -4,35 +4,5 @@
     "type": "GREENGRASS",
     "compatibility": ["all"],
     "deviceTypeMappings": [],
-    "spec": {
-        "LoggerDefinitionVersion": {
-            "Loggers": [{
-                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
-                    "Component": "GreengrassSystem",
-                    "Level": "INFO",
-                    "Type": "AWSCloudWatch"
-                },
-                {
-                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
-                    "Component": "Lambda",
-                    "Level": "INFO",
-                    "Type": "AWSCloudWatch"
-                },
-                {
-                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
-                    "Component": "GreengrassSystem",
-                    "Level": "INFO",
-                    "Space": 300000,
-                    "Type": "FileSystem"
-                },
-                {
-                    "Id": "deeplens-greengrass-FileSystem-Lambda",
-                    "Component": "Lambda",
-                    "Level": "INFO",
-                    "Space": 300000,
-                    "Type": "FileSystem"
-                }
-            ]
-        }
-    }
+    "spec": {}
 }

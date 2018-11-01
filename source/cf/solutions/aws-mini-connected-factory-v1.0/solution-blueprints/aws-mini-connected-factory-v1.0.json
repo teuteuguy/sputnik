@@ -55,7 +55,7 @@
                                             },
                                             {
                                                 "Permission": "rw",
-                                                "ResourceId": "model-lego-helmets"
+                                                "ResourceId": "mtm-model-lego-helmets"
                                             },
                                             {
                                                 "Permission": "ro",
@@ -71,13 +71,13 @@
                                             },
                                             {
                                                 "Permission": "rw",
-                                                "ResourceId": "deeplens_gpu_resource"
+                                                "ResourceId": "gpu"
                                             }, {
                                                 "Permission": "rw",
-                                                "ResourceId": "sound_card_resource"
+                                                "ResourceId": "sound_card"
                                             }, {
                                                 "Permission": "rw",
-                                                "ResourceId": "sound_control_resource"
+                                                "ResourceId": "sound_control"
                                             }
                                         ],
                                         "Variables": {

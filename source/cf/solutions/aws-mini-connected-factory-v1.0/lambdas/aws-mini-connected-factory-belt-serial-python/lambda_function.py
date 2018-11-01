@@ -36,13 +36,13 @@ except Exception as err:
 
 
 desiredBelt = {
-    "mode": 2,
-    "speed": 1
+    "beltMode": 2,
+    "beltSpeed": 1
 }
 
 reportedBeltControl = {
-    "mode": 2,
-    "speed": 1
+    "beltMode": 2,
+    "beltSpeed": 1
 }
 
 reportedBeltSensors = {
@@ -57,21 +57,21 @@ reportedBeltSensors = {
 }
 
 
-def getCharFor(speed, mode):
+def getCharFor(beltSpeed, beltMode):
     char = '5'
-    if speed == 1:
-        if mode == 1:
+    if beltSpeed == 1:
+        if beltMode == 1:
             char = '4'
-        elif mode == 2:
+        elif beltMode == 2:
             char = '5'
-        elif mode == 3:
+        elif beltMode == 3:
             char = '6'
-    elif speed == 2:
-        if mode == 1:
+    elif beltSpeed == 2:
+        if beltMode == 1:
             char = '3'
-        elif mode == 2:
+        elif beltMode == 2:
             char = '5'
-        elif mode == 3:
+        elif beltMode == 3:
             char = '7'
 
     return char
@@ -92,12 +92,12 @@ def syncShadow():
             print
             print 'Syncshadow VS: ' + json.dumps(desiredBelt)
 
-            if 'mode' in stateDict['desired'] and desiredBelt['mode'] != stateDict['desired']['mode']:
-                desiredBelt['mode'] = stateDict['desired']['mode']
+            if 'beltMode' in state['desired'] and desiredBelt['beltMode'] != state['desired']['beltMode']:
+                desiredBelt['beltMode'] = state['desired']['beltMode']
                 result = True
 
-            if 'speed' in stateDict['desired'] and desiredBelt['speed'] != stateDict['desired']['speed']:
-                desiredBelt['speed'] = stateDict['desired']['speed']
+            if 'beltSpeed' in state['desired'] and desiredBelt['beltSpeed'] != state['desired']['beltSpeed']:
+                desiredBelt['beltSpeed'] = state['desired']['beltSpeed']
                 result = True
 
     except Exception as err:
@@ -135,16 +135,16 @@ class MySerial(serial.threaded.LineReader):
                             if data['state']['reported']['speed'] != 1 and \
                                data['state']['reported']['speed'] != 2:
                                 print 'Incorrect speed reported'
-                                self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
+                                self.write_line(getCharFor(desiredBelt['beltSpeed'], desiredBelt['beltMode']))
                             else:
-                                reportedBeltControl['speed'] = data['state']['reported']['speed']
+                                reportedBeltControl['beltSpeed'] = data['state']['reported']['speed']
 
                         if 'mode' in data['state']['reported']:
                             if data['state']['reported']['mode'] != 1 and data['state']['reported']['mode'] != 2 and data['state']['reported']['mode'] != 3:
                                 print 'Incorrect mode reported'
-                                self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
+                                self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['beltMode']))
                             else:
-                                reportedBeltControl['speed'] = data['state']['reported']['speed']
+                                reportedBeltControl['mode'] = data['state']['reported']['mode']
 
                         PUB.updateThingShadow(payload={'state': {'reported': reportedBeltControl}})
 
@@ -161,7 +161,7 @@ class MySerial(serial.threaded.LineReader):
                             PUB.publish(TOPIC_SENSORS, reportedBeltSensors)
 
                 if syncShadow():
-                    self.write_line(getCharFor(desiredBelt['speed'], desiredBelt['mode']))
+                    self.write_line(getCharFor(desiredBelt['beltSpeed'], desiredBelt['beltMode']))
 
         except Exception as ex:
             print 'ERROR in handle_line: {}'.format(ex)

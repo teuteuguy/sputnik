@@ -16,7 +16,7 @@
     }, {
         "substitute": "AWS_CAM_STREAM",
         "value": {
-            "aws-deeplens-v1.0": "aws_cam_stream"
+            "aws-deeplens-v1.0": "stream"
         }
     }],
     "spec": {
@@ -33,7 +33,7 @@
                                 },
                                 {
                                     "Permission": "rw",
-                                    "ResourceId": "model-lego-helmets"
+                                    "ResourceId": "mtm-model-lego-helmets"
                                 },
                                 {
                                     "Permission": "ro",
@@ -49,87 +49,34 @@
                                 },
                                 {
                                     "Permission": "rw",
-                                    "ResourceId": "deeplens_gpu_resource"
+                                    "ResourceId": "gpu"
                                 }, {
                                     "Permission": "rw",
-                                    "ResourceId": "sound_card_resource"
+                                    "ResourceId": "sound_card"
                                 }, {
                                     "Permission": "rw",
-                                    "ResourceId": "sound_control_resource"
+                                    "ResourceId": "sound_control"
                                 }
                             ],
                             "Variables": {
                                 "ML_MODEL_PATH": "/ml/helmets/image-classification"
                             }
                         },
-                        "MemorySize": 1048576,
+                        "MemorySize": 2097152,
                         "Pinned": true,
                         "Timeout": 25
                     }
-                },
-                {
-                    "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
-                    "FunctionConfiguration": {
-                        "Environment": {
-                            "AccessSysfs": true,
-                            "Variables": {}
-                        },
-                        "MemorySize": 32768,
-                        "Pinned": true,
-                        "Timeout": 3
-                    }
-                }
-            ]
-        },
-        "LoggerDefinitionVersion": {
-            "Loggers": [{
-                    "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-GreengrassSystem",
-                    "Component": "GreengrassSystem",
-                    "Level": "INFO",
-                    "Type": "AWSCloudWatch"
-                },
-                {
-                    "Id": "aws-gg-mini-connected-factory-AWSCloudWatch-Lambda",
-                    "Component": "Lambda",
-                    "Level": "INFO",
-                    "Type": "AWSCloudWatch"
-                },
-                {
-                    "Id": "aws-gg-mini-connected-factory-FileSystem-GreengrassSystem",
-                    "Component": "GreengrassSystem",
-                    "Level": "INFO",
-                    "Space": 300000,
-                    "Type": "FileSystem"
-                },
-                {
-                    "Id": "aws-gg-mini-connected-factory-FileSystem-Lambda",
-                    "Component": "Lambda",
-                    "Level": "INFO",
-                    "Space": 300000,
-                    "Type": "FileSystem"
                 }
             ]
         },
         "ResourceDefinitionVersion": {
             "Resources": [{
-                "Id": "model-lego-helmets",
-                "Name": "mtm-model-lego-model",
+                "Id": "mtm-model-lego-helmets",
+                "Name": "mtm-model-lego-helmets",
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/AMCF1/models/legomodel.tar.gz"
-                    }
-                }
-            }, {
-                "Id": "tmp",
-                "Name": "tmp",
-                "ResourceDataContainer": {
-                    "LocalVolumeResourceData": {
-                        "DestinationPath": "/tmp",
-                        "GroupOwnerSetting": {
-                            "AutoAddGroupOwner": true
-                        },
-                        "SourcePath": "/tmp"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/aws-mini-connected-factory-v1.0/models/legomodel.tar.gz"
                     }
                 }
             }]

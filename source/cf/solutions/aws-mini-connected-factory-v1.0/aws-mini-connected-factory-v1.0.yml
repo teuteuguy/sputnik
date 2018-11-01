@@ -173,6 +173,6 @@ Resources:
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'legomodel.tar.gz']]
             destS3Bucket: !Ref dataS3Bucket
-            destS3Key: !Join ['/', ['AMCF1', 'models', 'legomodel.tar.gz']]
+            destS3Key: !Join ['/', ['aws-mini-connected-factory-v1.0', 'models', 'legomodel.tar.gz']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'

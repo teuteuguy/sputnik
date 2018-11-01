@@ -7,8 +7,8 @@
     "spec": {
         "Shadow": {
             "desired": {
-                "speed": 1,
-                "mode": 2
+                "beltSpeed": 1,
+                "beltMode": 2
             }
         }
     }
