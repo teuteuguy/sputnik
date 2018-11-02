@@ -28,6 +28,9 @@ Parameters:
     solutionsGreengrassGroupRoleArn:
         Type: String
         Description: My Things Management Greengrass Group Role ARN
+    solutionsGreengrassIoTPolicy:
+        Type: String
+        Description: My Things Management Greengrass IoT Policy
 
 
 Resources:
@@ -117,6 +120,7 @@ Resources:
                     TABLE_SETTINGS: !Ref settingsTable
                     AWS_ACCOUNT: !Ref 'AWS::AccountId'
                     IAM_GREENGRASS_GROUP_ARN: !Ref solutionsGreengrassGroupRoleArn
+                    IOT_GREENGRASS_POLICY: !Ref solutionsGreengrassIoTPolicy
                     DATA_BUCKET: !Ref dataBucket
                     LOGGING_LEVEL: 2
 

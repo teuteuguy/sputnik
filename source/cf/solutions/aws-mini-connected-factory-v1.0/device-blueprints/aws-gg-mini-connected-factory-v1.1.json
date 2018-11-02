@@ -1,19 +1,9 @@
 {
-    "id": "aws-gg-mini-connected-factory-v1.0",
-    "name": "AWS Greengrass Mini Connected Factory v1.0",
+    "id": "aws-gg-mini-connected-factory-v1.1",
+    "name": "AWS Greengrass Mini Connected Factory v1.1",
     "type": "GREENGRASS",
     "compatibility": ["aws-deeplens-v1.0"],
     "deviceTypeMappings": [{
-        "substitute": "ARTIFACTS",
-        "value": {
-            "aws-deeplens-v1.0": "artifacts"
-        }
-    }, {
-        "substitute": "AWS_CAM_HOME",
-        "value": {
-            "aws-deeplens-v1.0": "aws_cam_home"
-        }
-    }, {
         "substitute": "AWS_CAM_STREAM",
         "value": {
             "aws-deeplens-v1.0": "stream"
@@ -37,25 +27,11 @@
                                 },
                                 {
                                     "Permission": "ro",
-                                    "ResourceId": "[AWS_CAM_HOME]"
-                                },
-                                {
-                                    "Permission": "ro",
                                     "ResourceId": "[AWS_CAM_STREAM]"
-                                },
-                                {
-                                    "Permission": "ro",
-                                    "ResourceId": "[ARTIFACTS]"
                                 },
                                 {
                                     "Permission": "rw",
                                     "ResourceId": "gpu"
-                                }, {
-                                    "Permission": "rw",
-                                    "ResourceId": "sound_card"
-                                }, {
-                                    "Permission": "rw",
-                                    "ResourceId": "sound_control"
                                 }
                             ],
                             "Variables": {

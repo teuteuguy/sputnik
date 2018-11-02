@@ -97,7 +97,7 @@
                                     </span> -->
                                 </td>
                                 <td>
-                                    <h6>{{device.deviceTypeId}}</h6><small class="text-muted">{{device.deviceTypeId}}</small>
+                                    <h6>{{device.deviceTypeId | deviceTypeNameFromId : deviceTypeService.deviceTypes}}</h6><small class="text-muted">{{device.deviceTypeId}}</small>
                                 </td>
                                 <!-- <td><span [class]="user.status === 'CONFIRMED' ? 'label label-light-info' : 'label label-light-danger'">{{user.status}}</span></td> -->
                                 <td class="text-right">{{ device.createdAt | moment : 'MMM Do YYYY' }}</td>

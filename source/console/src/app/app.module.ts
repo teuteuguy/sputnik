@@ -64,6 +64,7 @@ import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/s
 // Pipes
 import { MomentPipe } from './pipes/moment.pipe';
 import { StringifyPipe } from './pipes/stringify.pipe';
+import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
 
 // Services
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
@@ -137,7 +138,8 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
 
         // Pipes
         MomentPipe,
-        StringifyPipe
+        StringifyPipe,
+        DeviceTypeNameFromIdPipe
     ],
     imports: [
         BrowserModule,

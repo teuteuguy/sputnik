@@ -32,7 +32,7 @@ export class DevicesComponent implements OnInit {
     private profile: ProfileInfo;
     public devices: Device[] = [];
     public newDevice: Device;
-    public deviceTypes: DeviceType[] = [];
+    // public deviceTypes: DeviceType[] = [];
     public pages: any = {
         current: 1,
         total: 0,
@@ -70,26 +70,11 @@ export class DevicesComponent implements OnInit {
             _self._ngZone.run(() => {});
         });
 
-        _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
-            _self.deviceTypes = message;
-            _self._ngZone.run(() => {});
-        });
+        // _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
+        //     _self.deviceTypes = message;
+        //     _self._ngZone.run(() => {});
+        // });
 
-        //     const _self = this;
-        //     // _self.statsService.statObservable$.subscribe(message => {
-        //     //     this.deviceStats = message;
-        //     //     this._ngZone.run(() => {});
-        //     // });
-
-        //     _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-        //         _self.profile = new ProfileInfo(profile);
-        //         _self.loadDeviceTypes();
-        //     });
-        //     _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
-        //         _self.loadDeviceTypes();
-        //     });
-
-        // this.loadDevices();
     }
 
     updatePaging() {
@@ -113,13 +98,6 @@ export class DevicesComponent implements OnInit {
             _self.logger.error(err);
             _self.router.navigate(['/securehome/devices']);
         });
-
-        // _self.devices = _self.deviceService.devices.slice(
-        //     (_self.pages.current - 1) * _self.pages.pageSize,
-        //     _self.pages.current * _self.pages.pageSize
-        // );
-        // _self.updatePaging();
-        // _self.blockUI.stop();
     }
 
     refreshData() {
@@ -180,4 +158,6 @@ export class DevicesComponent implements OnInit {
             });
 
     }
+
+
 }

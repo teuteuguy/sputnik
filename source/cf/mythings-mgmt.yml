@@ -64,26 +64,6 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/dynamodb/mythings-mgmt-ddb-tables.yml']]
 
-    # ##########################################################################
-    #
-    # IoT / Greengrass
-    #
-    # ##########################################################################
-    # DefaultGreengrass group role
-    DefaultGreengrassGroupRole:
-        Type: 'AWS::IAM::Role'
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: '2012-10-17'
-                Statement:
-                    - Effect: 'Allow'
-                      Principal:
-                          Service:
-                              - 'greengrass.amazonaws.com'
-                      Action:
-                          - 'sts:AssumeRole'
-            Path: '/'
-
 
     # ##########################################################################
     #
@@ -107,7 +87,8 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
-                solutionsGreengrassGroupRoleArn: !GetAtt DefaultGreengrassGroupRole.Arn
+                solutionsGreengrassGroupRoleArn: !GetAtt SolutionsGreengrassGroupRole.Arn
+                solutionsGreengrassIoTPolicy: !Ref SolutionsGreengrassIoTPolicy
 
     # ##########################################################################
     #
@@ -156,7 +137,41 @@ Resources:
                 deploymentUUID: '%%DEPLOYMENT_UUID%%'
                 dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
-                solutionsGreengrassGroupRole: !Ref DefaultGreengrassGroupRole
+                solutionsGreengrassGroupRole: !Ref SolutionsGreengrassGroupRole
+
+    # Solutions Greengrass group role
+    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
+    SolutionsGreengrassGroupRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'greengrass.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+
+    # Solutions IoT Policy for Greengrass devices
+    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
+    SolutionsGreengrassIoTPolicy:
+        Type: "AWS::IoT::Policy"
+        DeletionPolicy: Retain
+        Properties:
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iot:*"
+                            - "greengrass:*"
+                        Resource:
+                            - "*"
+
 
     # ##########################################################################
     #

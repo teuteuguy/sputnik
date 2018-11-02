@@ -41,7 +41,9 @@ Parameters:
     solutionsGreengrassGroupRoleArn:
         Type: String
         Description: My Things Management Greengrass group role ARN
-
+    solutionsGreengrassIoTPolicy:
+        Type: String
+        Description: My Things Management Greengrass IoT Policy
 
 Resources:
 
@@ -97,6 +99,7 @@ Resources:
                 deploymentsTable: !Ref deploymentsTable
                 dataBucket: !Ref dataBucket
                 solutionsGreengrassGroupRoleArn: !Ref solutionsGreengrassGroupRoleArn
+                solutionsGreengrassIoTPolicy: !Ref solutionsGreengrassIoTPolicy
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:

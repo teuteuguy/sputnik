@@ -146,14 +146,6 @@ Resources:
                     -
                         Effect: 'Allow'
                         Action:
-                            - 'logs:CreateLogStream'
-                            - 'logs:DescribeLogStreams'
-                            - 'logs:PutLogEvents'
-                            - 'logs:CreateLogGroup'
-                        Resource: "arn:aws:logs:*:*:log-group:/aws/greengrass/*"
-                    -
-                        Effect: 'Allow'
-                        Action:
                             - 's3:ListBucket'
                             - 's3:GetObject'
                             - 's3:ListObjects'

@@ -241,6 +241,17 @@ module.exports = function (event, context) {
 
             }).then(result => {
 
+                console.log('Attach IOT Greengrass policy to group just in case');
+
+                // TODO: this should ideally be in the specs!
+
+                return iot.attachPrincipalPolicy({
+                    policyName: process.env.IOT_GREENGRASS_POLICY,
+                    principal: _device.connectionState.certificateArn
+                }).promise();
+
+            }).then(result => {
+
                 console.log(`Deploy group:`);
 
                 return gg.createDeployment({

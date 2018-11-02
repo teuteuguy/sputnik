@@ -85,7 +85,7 @@ def main_loop():
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.resize(frame, (inference_size_x, inference_size_y)) # resize
 
-            PUB.info('Frame resized')
+            # PUB.info('Frame resized')
             try:
                 category, probability = model.do(frame)
                 results.append(category)
@@ -104,10 +104,13 @@ def main_loop():
                     cv2.putText(frame, 'Not Safe', (10, 70), font, 1, (225, 225, 225), 8)
                     cv2.putText(frame, 'Safe', (10, 160), font, 1, (225, 225, 225), 8)
 
+
                     # if prob_no_hat > 0.8: # definitely not safe
-                    #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
+                    #     PUB.info('')
+                    # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
                     # elif probability > 0.8: # definitely safe
-                    #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
+                    #     PUB.info('Frame resized')
+                    # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
 
             except Exception as err:
                 PUB.exception(str(err))
