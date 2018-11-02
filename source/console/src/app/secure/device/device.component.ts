@@ -1,34 +1,20 @@
 import {
-    Injectable,
     Component,
     OnInit,
     OnDestroy,
     NgZone,
-    ViewChild,
-    ViewContainerRef,
-    ComponentFactoryResolver,
-    ComponentRef,
-    ComponentFactory,
-    Output
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
-import { environment } from '../../../environments/environment';
 
-// Components
-// import { FactoryResetDeeplensV10Component } from './types/factory-reset-deeplens-v1.0.component';
-// import { MyDeeplensWebCameraV10Component } from './types/my-deeplens-web-camera-v1.0.component';
-// import { MiniConnectedFactoryV10Component } from './types/mini-connected-factory-v1.0.component';
 
 // Models
 import { Device } from '../../models/device.model';
 import { DeviceType } from '../../models/device-type.model';
 import { DeviceBlueprint } from '../../models/device-blueprint.model';
 import { ProfileInfo } from '../../models/profile-info.model';
-// import { GGDeploymentStatus } from '../../models/gg-deployment-status.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
@@ -37,19 +23,10 @@ import { DeviceService } from '../../services/device.service';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { DeviceBlueprintService } from '../../services/device-blueprint.service';
 import { LoggerService } from '../../services/logger.service';
-// import { StatsService } from '../../services/stats.service';
-// import { DeviceSubViewComponentService } from '../../services/device-sub-view-component.service';
 
 declare var jquery: any;
 declare var $: any;
 import * as _ from 'underscore';
-
-// const TYPE_COMPONENT_REGISTRY = {
-//     'deeplens-v1.0': {
-//         'factory-reset-deeplens-v1.0': FactoryResetDeeplensV10Component,
-//         'my-deeplens-web-camera-v1.0': MyDeeplensWebCameraV10Component
-//     }
-// };
 
 @Component({
     selector: 'app-root-device',
@@ -59,8 +36,6 @@ export class DeviceComponent implements OnInit, OnDestroy {
     public title = 'Device';
     public thingId: string;
     private profile: ProfileInfo;
-    // public deviceStats: any = {};
-    // private pollerInterval: any = null;
 
     public device: Device = new Device();
     public deviceType: DeviceType = new DeviceType();
@@ -70,16 +45,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
     public deviceForEdit: Device = new Device();
 
-    // public ggDeploymentStatus: GGDeploymentStatus = new GGDeploymentStatus();
-    // public deploying = false;
-
-    // private _myCustomComponent = null;
-
     @BlockUI()
     blockUI: NgBlockUI;
-
-    // @ViewChild('deviceTypeTemplate', { read: ViewContainerRef })
-    // entry: ViewContainerRef;
 
     constructor(
         public router: Router,
@@ -92,26 +59,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         private deviceService: DeviceService,
         private deviceBlueprintService: DeviceBlueprintService,
         private deviceTypeService: DeviceTypeService
-    ) {
-        // private resolver: ComponentFactoryResolver,
-        // private statsService: StatsService,
-        // private deviceSubViewComponentService: DeviceSubViewComponentService
-        // this.deviceSubViewComponentService.registerComponent(
-        //     'deeplens-v1.0',
-        //     'factory-reset-deeplens-v1.0',
-        //     FactoryResetDeeplensV10Component
-        // );
-        // this.deviceSubViewComponentService.registerComponent(
-        //     'deeplens-v1.0',
-        //     'my-deeplens-web-camera-v1.0',
-        //     MyDeeplensWebCameraV10Component
-        // );
-        // this.deviceSubViewComponentService.registerComponent(
-        //     'deeplens-v1.0',
-        //     'mini-connected-factory-v1.0',
-        //     MiniConnectedFactoryV10Component
-        // );
-    }
+    ) {}
 
     ngOnInit() {
         const _self = this;

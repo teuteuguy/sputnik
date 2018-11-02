@@ -41,16 +41,25 @@ module.exports = function (event, context) {
             Key: {
                 id: event.deviceTypeId
             }
-        }).promise().then(deviceType => _deviceType = deviceType.Item).catch(err => {
+        }).promise().then(deviceType => _deviceType = deviceType.Item)
+        // .catch(err => {
+        //     console.log(tag, 'DeviceType', event.deviceTypeId, 'does not exist. Setting to UNKNOWN');
+        //     _deviceType = {
+        //         id: 'UNKNOWN',
+        //         type: 'UNKNOWN'
+        //     };
+        //     return _deviceType;
+        // })
+
+    ]).then(results => {
+
+        if (!_deviceType) {
             console.log(tag, 'DeviceType', event.deviceTypeId, 'does not exist. Setting to UNKNOWN');
             _deviceType = {
                 id: 'UNKNOWN',
                 type: 'UNKNOWN'
             };
-            return _deviceType;
-        })
-
-    ]).then(results => {
+        }
 
         console.log(_deviceType.type, _deviceType.type === 'GREENGRASS');
 
@@ -77,6 +86,8 @@ module.exports = function (event, context) {
 
     }).then(groupId => {
 
+        console.log('spec:', event.spec, JSON.parse(event.spec));
+
         const updateParams = {
             TableName: process.env.TABLE_DEVICES,
             Key: {
@@ -98,7 +109,7 @@ module.exports = function (event, context) {
                 ':dti': _deviceType.id,
                 ':dbi': event.deviceBlueprintId || 'UNKNOWN',
                 ':gid': groupId,
-                ':s': event.spec,
+                ':s': JSON.parse(event.spec),
                 ':n': event.name
             }
         };
