@@ -31,7 +31,7 @@ module.exports = function (event, context) {
 
             console.log('Deleted ThingGroup:', event.solution.thingGroupName);
 
-            return Promise.all(event.solution.thingIds.map(id => {
+            return Promise.all(event.solution.deviceIds.map(id => {
                 return DevicesLibs.deleteDevice({
                     thingId: id
                 }).then(result => result).catch(err => {
@@ -45,7 +45,7 @@ module.exports = function (event, context) {
 
         }).then(result => {
 
-            console.log('Deleted Devices:', event.solution.thingIds);
+            console.log('Deleted Devices:', event.solution.deviceIds);
 
             return documentClient.delete({
                 TableName: process.env.TABLE_SOLUTIONS,

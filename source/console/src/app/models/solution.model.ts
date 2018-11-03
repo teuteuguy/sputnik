@@ -2,7 +2,7 @@ export class Solution {
     id: string;
     name = 'UNKNOWN';
     description = 'UNKNOWN';
-    thingIds: string[] = [];
+    deviceIds: string[] = [];
     solutionBlueprintId = 'UNKNOWN';
     createdAt: string;
     updatedAt: string;

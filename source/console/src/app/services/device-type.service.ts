@@ -42,7 +42,6 @@ export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, De
         _self.listRecursive(_self.limit, null).then((results: DeviceType[]) => {
             _self.deviceTypes.splice(0, _self.deviceTypes.length);
             results.forEach(r => {
-                console.log(r);
                 _self.deviceTypes.push(r);
             });
             _self.observable.next(_self.deviceTypes);

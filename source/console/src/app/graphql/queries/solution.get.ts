@@ -6,7 +6,7 @@ export default gql`
             id
             name
             description
-            thingIds
+            deviceIds
             solutionBlueprintId
             createdAt
             updatedAt

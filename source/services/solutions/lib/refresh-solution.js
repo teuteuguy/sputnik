@@ -146,11 +146,11 @@ module.exports = function (event, context) {
             throw 'SolutionBlueprint ' + _solution.solutionBlueprintId + ' does not exist.';
         } else {
 
-            if (_solution.thingIds.length !== _solutionBlueprint.spec.devices.length) {
-                throw 'Solution has inconsistent thingIds and devices length in spec';
+            if (_solution.deviceIds.length !== _solutionBlueprint.spec.devices.length) {
+                throw 'Solution has inconsistent deviceIds and devices length in spec';
             } else {
 
-                return Promise.all(_solution.thingIds.map(thingId => {
+                return Promise.all(_solution.deviceIds.map(thingId => {
                     return documentClient.get({
                         TableName: process.env.TABLE_DEVICES,
                         Key: {
@@ -210,7 +210,7 @@ module.exports = function (event, context) {
     //         }
 
     //         // TODO: for now We'll generate the devices.
-    //         // Later we can look at thingIds to check if no devices have been provided and if so, NOT create them, but associate them.
+    //         // Later we can look at deviceIds to check if no devices have been provided and if so, NOT create them, but associate them.
     //         // Same for the certs. For now we'll generate them.
 
     //         return processDeviceList(solutionBlueprint.prefix, solutionBlueprint.spec.devices);
@@ -219,7 +219,7 @@ module.exports = function (event, context) {
 
     //         console.log('ProcessDeviceList Result:', JSON.stringify(devices));
 
-    //         event.thingIds = devices.map(d => {
+    //         event.deviceIds = devices.map(d => {
     //             return d.device.thingId;
     //         });
 
@@ -238,7 +238,7 @@ module.exports = function (event, context) {
     //             thingGroupName: group.thingGroupName,
     //             name: event.name,
     //             description: event.description,
-    //             thingIds: event.thingIds || [],
+    //             deviceIds: event.deviceIds || [],
     //             solutionBlueprintId: event.solutionBlueprintId,
     //             createdAt: moment()
     //                 .utc()

@@ -1,12 +1,12 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation DeleteSolution($id: String!) {
-        deleteSolution(id: $id) {
+    mutation DeleteSolution($id: String!, $deleteResources: Boolean!) {
+        deleteSolution(id: $id, deleteResources: $deleteResources) {
             id
             name
             description
-            thingIds
+            deviceIds
             solutionBlueprintId
             createdAt
             updatedAt

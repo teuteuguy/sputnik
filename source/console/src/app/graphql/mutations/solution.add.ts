@@ -1,17 +1,17 @@
 import gql from 'graphql-tag';
 
 export default gql`
-    mutation AddSolution($name: String!, $description: String, $thingIds: [String]!, $solutionBlueprintId: String!) {
+    mutation AddSolution($name: String!, $description: String, $deviceIds: [String]!, $solutionBlueprintId: String!) {
         addSolution(
             name: $name
             description: $description
-            thingIds: $thingIds
+            deviceIds: $deviceIds
             solutionBlueprintId: $solutionBlueprintId
         ) {
             id
             name
             description
-            thingIds
+            deviceIds
             solutionBlueprintId
             createdAt
             updatedAt

@@ -72,13 +72,11 @@
                                 <th></th>
                                 <th>Name</th>
                                 <th>Type</th>
-                                <th class="text-right">Created At</th>
                                 <th class="text-right">Last Updated At</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let device of devices">
+<tr *ngFor="let device of devices" (click)="openDevice(device.thingId)">
                                 <td>
                                     <span class="round round-light-grey">
                                         <i class="mdi mdi-chip text-normal"></i>
@@ -97,20 +95,11 @@
                                     </span> -->
                                 </td>
                                 <td>
-                                    <h6>{{device.deviceTypeId | deviceTypeNameFromId : deviceTypeService.deviceTypes}}</h6><small class="text-muted">{{device.deviceTypeId}}</small>
+                                    <h6>{{device.deviceBlueprintId | deviceBlueprintNameFromId }}</h6><small class="text-muted">{{device.deviceTypeId
+                                        | deviceTypeNameFromId }}</small>
                                 </td>
                                 <!-- <td><span [class]="user.status === 'CONFIRMED' ? 'label label-light-info' : 'label label-light-danger'">{{user.status}}</span></td> -->
-                                <td class="text-right">{{ device.createdAt | moment : 'MMM Do YYYY' }}</td>
-                                <td class="text-right">{{formatDate(device.updatedAt)}}</td>
-                                <td>
-                                    <button type="button" class="pull-right btn btn-sm btn-success btn-rounded" (click)="openDevice(device.thingId)"><i
-                                            class="mdi mdi-information-outline"></i> View</button>
-                                    <!-- <div class="pull-right" role="group">
-                                        <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip"
-                                            title="Edit Device Type" data-placement="top" (click)="openDevice(device.thingId)"><i
-                                                class="mdi mdi-pencil"></i> Edit</button>
-                                    </div> -->
-                                </td>
+                                <td class="text-right">{{ device.updatedAt | fromNow }}</td>
                             </tr>
                         </tbody>
                         <tfoot>

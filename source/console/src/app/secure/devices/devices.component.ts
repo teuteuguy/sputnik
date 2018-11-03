@@ -13,6 +13,7 @@ import { DeviceType } from '../../models/device-type.model';
 // Services
 import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
 import { DeviceService } from '../../services/device.service';
+import { DeviceBlueprintService } from '../../services/device-blueprint.service';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { LoggerService } from '../../services/logger.service';
 import { StatService } from '../../services/stat.service';
@@ -46,7 +47,8 @@ export class DevicesComponent implements OnInit {
         public router: Router,
         private breadCrumbService: BreadCrumbService,
         private deviceService: DeviceService,
-        private deviceTypeService: DeviceTypeService,
+        public deviceBlueprintService: DeviceBlueprintService,
+        public deviceTypeService: DeviceTypeService,
         protected localStorage: LocalStorage,
         private logger: LoggerService,
         private statService: StatService,
@@ -58,27 +60,32 @@ export class DevicesComponent implements OnInit {
         _self.newDevice = new Device();
         _self.blockUI.start('Loading devices...');
 
-        _self.breadCrumbService.setup(_self.title, [new Crumb({ title: _self.title, active: true, link: 'devices' })]);
-
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
             _self.profile = new ProfileInfo(profile);
-            _self.loadDevices();
-        });
 
-        _self.statService.statObservable$.subscribe(message => {
-            _self.deviceStats = message.deviceStats;
-            _self._ngZone.run(() => {});
+            _self.breadCrumbService.setup(_self.title, [
+                new Crumb({ title: _self.title, active: true, link: 'devices' })
+            ]);
+
+            _self.loadDevices();
+
+            _self.statService.statObservable$.subscribe(message => {
+                _self.deviceStats = message.deviceStats;
+                _self._ngZone.run(() => {
+                    _self.updatePaging();
+                });
+            });
         });
 
         // _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
         //     _self.deviceTypes = message;
         //     _self._ngZone.run(() => {});
         // });
-
     }
 
     updatePaging() {
         const _self = this;
+        console.log(_self.pages.pageSize, _self.deviceStats.total);
         _self.pages.total = Math.ceil(_self.deviceStats.total / _self.pages.pageSize);
     }
 
@@ -87,17 +94,20 @@ export class DevicesComponent implements OnInit {
 
         _self.statService.refresh();
 
-        return _self.deviceService.listDevices(_self.pages.pageSize, null).then(results => {
-            console.log(results);
-            _self.devices = results.devices;
-            _self.updatePaging();
-            _self.blockUI.stop();
-        }).catch(err => {
-            swal('Oops...', 'Something went wrong! Unable to retrieve the devices.', 'error');
-            _self.logger.error('error occurred calling listDevices api, show message');
-            _self.logger.error(err);
-            _self.router.navigate(['/securehome/devices']);
-        });
+        return _self.deviceService
+            .listDevices(_self.pages.pageSize, null)
+            .then(results => {
+                console.log(results);
+                _self.devices = results.devices;
+                _self.updatePaging();
+                _self.blockUI.stop();
+            })
+            .catch(err => {
+                swal('Oops...', 'Something went wrong! Unable to retrieve the devices.', 'error');
+                _self.logger.error('error occurred calling listDevices api, show message');
+                _self.logger.error(err);
+                _self.router.navigate(['/securehome/devices']);
+            });
     }
 
     refreshData() {
@@ -156,8 +166,5 @@ export class DevicesComponent implements OnInit {
                 _self.logger.error(err);
                 _self.loadDevices();
             });
-
     }
-
-
 }

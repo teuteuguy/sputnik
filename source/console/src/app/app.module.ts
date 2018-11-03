@@ -62,8 +62,9 @@ import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/s
 // Directives
 
 // Pipes
-import { MomentPipe } from './pipes/moment.pipe';
+import { FromNowPipe, MomentPipe } from './pipes/moment.pipe';
 import { StringifyPipe } from './pipes/stringify.pipe';
+import { DeviceBlueprintNameFromIdPipe } from './pipes/device-blueprint-name-from-id.pipe';
 import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
 
 // Services
@@ -138,7 +139,9 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
 
         // Pipes
         MomentPipe,
+        FromNowPipe,
         StringifyPipe,
+        DeviceBlueprintNameFromIdPipe,
         DeviceTypeNameFromIdPipe
     ],
     imports: [

@@ -5,7 +5,7 @@
         "cmd": "addSolution",
         "name": "$context.arguments.name",
         "description": "$context.arguments.description",
-        "thingIds": "$context.arguments.thingIds",
+        "deviceIds": "$context.arguments.deviceIds",
         "solutionBlueprintId": "$context.arguments.solutionBlueprintId"
     }
 }

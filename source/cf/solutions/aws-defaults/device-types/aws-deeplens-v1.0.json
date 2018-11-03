@@ -1,6 +1,6 @@
 {
     "id": "aws-deeplens-v1.0",
-    "name": "Deeplens v1",
+    "name": "Deeplens v1.0",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {

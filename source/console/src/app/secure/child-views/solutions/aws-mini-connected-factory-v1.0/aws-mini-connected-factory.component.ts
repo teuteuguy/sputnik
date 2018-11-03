@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges} from '@angular/core';
 
 // Models
 import { Device } from 'src/app/models/device.model';
@@ -14,7 +14,7 @@ import { SolutionBlueprintService } from 'src/app/services/solution-blueprint.se
     selector: 'app-aws-mini-connected-factory-v1',
     templateUrl: './aws-mini-connected-factory.component.html'
 })
-export class AWSMiniConnectedFactoryV10Component implements OnInit {
+export class AWSMiniConnectedFactoryV10Component implements OnInit, OnChanges {
     @Input()
     solution: Solution = new Solution();
 
@@ -27,10 +27,16 @@ export class AWSMiniConnectedFactoryV10Component implements OnInit {
         // We know that Device 0 is a belt.
         // We know that Device 1 is a camera.
         // We know this from the blueprint.
-        Promise.all(this.solution.thingIds.map((thingId, index) => {
-            return this.deviceService.getDevice(thingId);
-        })).then(results => this.devices = results).catch(err => {
-            console.error(err);
-        });
+        Promise.all(this.solution.deviceIds.map((deviceId, index) => {
+                return this.deviceService.getDevice(deviceId);
+            }))
+            .then(results => (this.devices = results))
+            .catch(err => {
+                console.error(err);
+            });
+    }
+
+    ngOnChanges() {
+        this.ngOnInit();
     }
 }

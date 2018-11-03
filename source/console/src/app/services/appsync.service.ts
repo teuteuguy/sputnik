@@ -221,7 +221,9 @@ export class AppSyncService {
         );
     }
     public addDeployment(thingId: String) {
-        return this.mutation(addDeployment, { thingId: thingId }).then(result => this.cleanIncomingDeployment(result.data.addDeployment));
+        return this.mutation(addDeployment, { thingId: thingId }).then(result =>
+            this.cleanIncomingDeployment(result.data.addDeployment)
+        );
     }
 
     // Device Blueprints
@@ -442,11 +444,11 @@ export class AppSyncService {
     public getSolutionStats() {
         return this.query(getSolutionStats, {}).then(result => <SolutionStats>result.data.getSolutionStats);
     }
-    public addSolution(name: string, description: string, thingIds: string[], solutionBlueprintId: string) {
+    public addSolution(name: string, description: string, deviceIds: string[], solutionBlueprintId: string) {
         return this.mutation(addSolution, {
             name: name,
             description: description,
-            thingIds: thingIds,
+            deviceIds: deviceIds,
             solutionBlueprintId: solutionBlueprintId
         }).then(result => {
             return <Solution>result.data.solution;
@@ -457,12 +459,12 @@ export class AppSyncService {
             return <Solution>d.data.deleteSolution;
         });
     }
-    public updateSolution(id: string, name: string, description: string, thingIds: string[]) {
+    public updateSolution(id: string, name: string, description: string, deviceIds: string[]) {
         return this.mutation(updateSolution, {
             id: id,
             name: name,
             description: description,
-            thingIds: thingIds
+            deviceIds: deviceIds
         }).then(d => {
             return <Solution>d.data.updateSolution;
         });

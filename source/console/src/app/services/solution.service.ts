@@ -35,11 +35,11 @@ export class SolutionService implements AddedSolution, UpdatedSolution, DeletedS
     public getSolutionStats() {
         return this.appSyncService.getSolutionStats();
     }
-    public add(name: string, description: string, thingIds: string[], solutionBlueprintId: string) {
-        return this.appSyncService.addSolution(name, description, thingIds, solutionBlueprintId);
+    public add(name: string, description: string, deviceIds: string[], solutionBlueprintId: string) {
+        return this.appSyncService.addSolution(name, description, deviceIds, solutionBlueprintId);
     }
-    public update(id: string, name: string, description: string, thingIds: string[]) {
-        return this.appSyncService.updateSolution(id, name, description, thingIds);
+    public update(id: string, name: string, description: string, deviceIds: string[]) {
+        return this.appSyncService.updateSolution(id, name, description, deviceIds);
     }
     public delete(id: string) {
         return this.appSyncService.deleteSolution(id);

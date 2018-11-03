@@ -7,3 +7,10 @@ export class MomentPipe implements PipeTransform {
         return moment(value).format(format);
     }
 }
+
+@Pipe({ name: 'fromNow' })
+export class FromNowPipe implements PipeTransform {
+    transform(value: any): any {
+        return moment(value).fromNow();
+    }
+}

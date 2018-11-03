@@ -103,7 +103,7 @@ module.exports = function (event, context) {
     //     "cmd": "addSolution",
     //     "name": "new",
     //     "description": "New Solution",
-    //     "thingIds": [],
+    //     "deviceIds": [],
     //     "solutionBlueprintId": "aws-mini-connected-factory-v1.0"
     // }
 
@@ -132,7 +132,7 @@ module.exports = function (event, context) {
             }
 
             // TODO: for now We'll generate the devices.
-            // Later we can look at thingIds to check if no devices have been provided and if so, NOT create them, but associate them.
+            // Later we can look at deviceIds to check if no devices have been provided and if so, NOT create them, but associate them.
             // Same for the certs. For now we'll generate them.
 
             return processDeviceList(solutionBlueprint.prefix, solutionBlueprint.spec.devices);
@@ -141,7 +141,7 @@ module.exports = function (event, context) {
 
             console.log('ProcessDeviceList Result:', JSON.stringify(devices));
 
-            event.thingIds = devices.map(d => {
+            event.deviceIds = devices.map(d => {
                 return d.device.thingId;
             });
 
@@ -160,7 +160,7 @@ module.exports = function (event, context) {
                 thingGroupName: group.thingGroupName,
                 name: event.name,
                 description: event.description,
-                thingIds: event.thingIds || [],
+                deviceIds: event.deviceIds || [],
                 solutionBlueprintId: event.solutionBlueprintId,
                 createdAt: moment()
                     .utc()

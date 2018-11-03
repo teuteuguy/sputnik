@@ -25,26 +25,18 @@
                         <input type="text" class="form-control form-control-line" name="description" id="description"
                             #description="ngModel" [(ngModel)]="element.description" ngModel>
                     </div>
-                    <div *ngFor="let devicePossibility of deviceBlueprintPossibleDevices; let i = index" class="form-group">
-                        <label for="type" class="form-control-label">Device blueprint ({{
-                            deviceBlueprintNameFor(devicePossibility.device.deviceBlueprintId) }})</label>
-                        <select class="custom-select col-12" name="device{{i}}" id="device{{i}}" #type="ngModel"
-                            [(ngModel)]="devicePossibility.thingId" required ngModel>
-                            <option *ngFor="let device of devicePossibility.list; let j = index" value="{{device.thingId}}"
-                                ng-selected="device.thingId === devicePossibility.thingId">{{device.name}}</option>
-                        </select>
-                        <div class="form-control-feedback">
-                            <small>Device for the blueprint.</small>
-                        </div>
+                    <div *ngFor="let dev of solutionBlueprint.spec.devices; let i = index" class="form-group">
+                            <label for="type" class="form-control-label">Device blueprint
+                                ({{ dev.deviceBlueprintId | deviceBlueprintNameFromId }})</label>
+                            <select class="custom-select col-12" name="device{{i}}" id="device{{i}}" #type="ngModel"
+                                [(ngModel)]="element.deviceIds[i]" required ngModel>
+                                <option *ngFor="let device of deviceBlueprintPossibleDevices[i].list; let j = index" value="{{device.thingId}}"
+                                    ng-selected="device.thingId === devicePossibility.device.thingId">{{device.name}}</option>
+                            </select>
+                            <div class="form-control-feedback">
+                                <small>Device for the blueprint.</small>
+                            </div>
                     </div>
-
-                    <!-- <div class="form-group">
-                        <label for="type" class="form-control-label">Spec:</label>
-                        <app-pretty-json name="spec" [(ngModel)]="deviceForEdit.spec" [rows]="10"></app-pretty-json>
-                        <div class="form-control-feedback">
-                            <small>JSON document to use for the custom device type.</small>
-                        </div>
-                    </div> -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" (click)="refreshSpecs()">Refresh specs</button>
                         <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>

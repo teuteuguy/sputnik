@@ -1,6 +1,6 @@
 {
     "id": "aws-gg-mini-connected-factory-v1.0",
-    "name": "AWS Greengrass Mini Connected Factory v1.0",
+    "name": "GG Mini Connected Factory v1.0",
     "type": "GREENGRASS",
     "compatibility": ["aws-deeplens-v1.0"],
     "deviceTypeMappings": [{

@@ -42,6 +42,7 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
         return _self[listFunction](id, _self.limit, nextToken).then(result => {
             let _devices: Device[];
             _devices = result.devices;
+            console.log(_devices);
             if (result.nextToken) {
                 return _self.listRecursive(listFunction, id, limit, result.nextToken).then(data => {
                     data.forEach(d => {

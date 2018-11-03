@@ -78,7 +78,8 @@ type Solution {
     id: String!
     name: String!
     description: String
-    thingIds: [String]!
+    thingIds: [String]
+    deviceIds: [String]!
     solutionBlueprintId: String!
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
@@ -153,9 +154,9 @@ type Mutation {
 
     addDeployment(thingId: String!): Deployment! @aws_auth(cognito_groups: ["Administrators"])
 
-    addSolution(name: String!, description: String, thingIds: [String]!, solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
+    addSolution(name: String!, description: String, deviceIds: [String]!, solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
     deleteSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators"])
-    updateSolution(id: String!, name: String!, description: String, thingIds: [String]!): Solution @aws_auth(cognito_groups: ["Administrators"])
+    updateSolution(id: String!, name: String!, description: String, deviceIds: [String]!): Solution @aws_auth(cognito_groups: ["Administrators"])
     refreshSolution(id: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
 
     addSolutionBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint! @aws_auth(cognito_groups: ["Administrators"])

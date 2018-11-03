@@ -4,7 +4,7 @@ export default gql`
     subscription UpdatedSolution {
         updatedSolution {
             id
-            thingIds
+            deviceIds
             name
             solutionBlueprintId
             createdAt

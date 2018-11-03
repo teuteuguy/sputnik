@@ -37,7 +37,7 @@ export class SolutionsModalComponent {
                 .add(
                     this.element.name,
                     this.element.description,
-                    this.element.thingIds,
+                    this.element.deviceIds,
                     this.element.solutionBlueprintId
                 )
                 .then(solution => {
@@ -50,7 +50,7 @@ export class SolutionsModalComponent {
                 });
         } else if (this.modalType === 'edit') {
             this.solutionService
-                .update(this.element.id, this.element.name, this.element.description, this.element.thingIds)
+                .update(this.element.id, this.element.name, this.element.description, this.element.deviceIds)
                 .then(solution => {
                     console.log(solution);
                     this.submitSubject.next({ data: solution, error: null });

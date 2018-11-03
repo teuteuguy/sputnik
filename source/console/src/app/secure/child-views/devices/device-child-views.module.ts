@@ -11,8 +11,20 @@ import { AWSGGMiniConnectedFactoryV10Module } from './aws-gg-mini-connected-fact
 @Component({
     selector: 'app-device-child-view',
     template: `
-        <app-aws-afr-3d-belt-mini-connected-factory-v1 *ngIf="device.deviceBlueprintId === 'aws-afr-3d-belt-mini-connected-factory-v1.0'" [device]="device"></app-aws-afr-3d-belt-mini-connected-factory-v1>
-        <app-aws-gg-mini-connected-factory-v1 *ngIf="device.deviceBlueprintId === 'aws-gg-mini-connected-factory-v1.0'" [device]="device"></app-aws-gg-mini-connected-factory-v1>
+        <app-aws-afr-3d-belt-mini-connected-factory-v1
+            *ngIf="device
+                && device.deviceBlueprintId
+                && device.deviceBlueprintId === 'aws-afr-3d-belt-mini-connected-factory-v1.0'
+                && device.deviceBlueprintId === 'aws-afr-3d-belt-mini-connected-factory-v1.1'
+                "
+            [device]="device"></app-aws-afr-3d-belt-mini-connected-factory-v1>
+        <app-aws-gg-mini-connected-factory-v1
+            *ngIf="device
+                && device.deviceBlueprintId
+                && device.deviceBlueprintId === 'aws-gg-mini-connected-factory-v1.0'
+                && device.deviceBlueprintId === 'aws-gg-mini-connected-factory-v1.1'
+                "
+            [device]="device"></app-aws-gg-mini-connected-factory-v1>
     `
 })
 export class DeviceChildViewComponent {

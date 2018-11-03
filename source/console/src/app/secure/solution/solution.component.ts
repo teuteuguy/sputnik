@@ -114,7 +114,7 @@ export class SolutionComponent implements OnInit {
 
     // getTheExtraResources() {
     //     const _self = this;
-    //     _self.solution.thingIds.forEach((thingId: string) => {
+    //     _self.solution.deviceIds.forEach((thingId: string) => {
     //         _self.deviceService
     //             .getDevice(thingId)
     //             .then((device: Device) => {
@@ -175,7 +175,7 @@ export class SolutionComponent implements OnInit {
     }
 
     deploy() {
-        console.log('Deploy', this.solution.thingIds);
+        console.log('Deploy', this.solution.deviceIds);
         swal({
             title: 'Are you sure you want to deploy this solution?',
             text: `This will overwrite whatever the device is doing!`,
@@ -188,14 +188,17 @@ export class SolutionComponent implements OnInit {
             if (result.value) {
                 this.blockUI.start('Deploying solution...');
                 Promise.all(
-                    this.solution.thingIds.map(thingId => {
-                        return this.deploymentService.addDeployment(thingId).then(deployment => {
-                            console.log(deployment);
-                            return deployment;
-                        }).catch(err => {
-                            console.error(err);
-                            throw err;
-                        });
+                    this.solution.deviceIds.map(deviceId => {
+                        return this.deploymentService
+                            .addDeployment(deviceId)
+                            .then(deployment => {
+                                console.log(deployment);
+                                return deployment;
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                throw err;
+                            });
                     })
                 )
                     .then(results => {

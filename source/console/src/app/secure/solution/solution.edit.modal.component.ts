@@ -5,17 +5,19 @@ import swal from 'sweetalert2';
 // Models
 import { Device } from '../../models/device.model';
 import { Solution } from '../../models/solution.model';
+import { SolutionBlueprint } from '../../models/solution-blueprint.model';
 
 // Services
 import { DeviceService } from '../../services/device.service';
 import { DeviceBlueprintService } from '../../services/device-blueprint.service';
 import { SolutionService } from '../../services/solution.service';
+import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
 
 import { _ } from 'underscore';
 
 class DeviceBlueprintPossibleDevices {
-    thingId: string;
     device: Device;
+    deviceBlueprintId: string;
     list: Device[];
     constructor(values: Object = {}) {
         Object.assign(this, values);
@@ -37,9 +39,11 @@ export class SolutionEditModalComponent implements OnInit {
     submitSubject: Subject<any>;
 
     public deviceBlueprintPossibleDevices: DeviceBlueprintPossibleDevices[] = [];
+    public solutionBlueprint: SolutionBlueprint = new SolutionBlueprint();
 
     constructor(
         private solutionService: SolutionService,
+        private solutionBlueprintService: SolutionBlueprintService,
         private deviceService: DeviceService,
         private deviceBlueprintService: DeviceBlueprintService
     ) {
@@ -51,37 +55,75 @@ export class SolutionEditModalComponent implements OnInit {
 
     ngOnInit() {
         // this.deviceBlueprintService.blueprintsObservable$.subscribe(message => {
-        Promise.all(
-            this.element.thingIds.map(thingId => {
-                return this.deviceService.getDevice(thingId).then(device => {
-                    // console.log('Found device:', device);
-                    return this.deviceService
-                        .listRecursive('listDevicesWithDeviceBlueprint', device.deviceBlueprintId, 10, null)
-                        .then(devices => {
-                            // console.log(this.element.id, this.element.name, this.element.description, this.element.thingIds);
-                            return new DeviceBlueprintPossibleDevices({
-                                thingId: thingId,
-                                device: device,
-                                list: devices
+        // Promise.all(
+        //     this.element.deviceIds.map(deviceId => {
+        //         return this.deviceService.getDevice(deviceId).then(device => {
+        //             // console.log('Found device:', device);
+        //             return this.deviceService
+        //                 .listRecursive('listDevicesWithDeviceBlueprint', device.deviceBlueprintId, 10, null)
+        //                 .then(devices => {
+        //                     // console.log(this.element.id, this.element.name, this.element.description, this.element.deviceIds);
+        //                     return new DeviceBlueprintPossibleDevices({
+        //                         thingId: deviceId,
+        //                         device: device,
+        //                         list: devices
+        //                     });
+        //                 });
+        //         });
+        //     })
+        // )
+        let _solutionBlueprint;
+        this.solutionBlueprintService
+            .get(this.element.solutionBlueprintId)
+            .then((solutionBlueprint: SolutionBlueprint) => {
+                _solutionBlueprint = solutionBlueprint;
+                return Promise.all(solutionBlueprint.spec.devices.map((specDevice, index) => {
+                        return this.deviceService
+                            .listRecursive(
+                                'listDevicesWithDeviceBlueprint',
+                                specDevice.deviceBlueprintId,
+                                10,
+                                null
+                            )
+                            .then((devices: Device[]) => {
+                                if (this.element.deviceIds[index]) {
+                                    return this.deviceService
+                                        .getDevice(this.element.deviceIds[index])
+                                        .then((device: Device) => {
+                                            return new DeviceBlueprintPossibleDevices({
+                                                deviceBlueprintId: specDevice.deviceBlueprintId,
+                                                device: device,
+                                                list: devices
+                                            });
+                                        });
+                                } else {
+                                    return new DeviceBlueprintPossibleDevices({
+                                        deviceBlueprintId: specDevice.deviceBlueprintId,
+                                        device: null,
+                                        list: devices
+                                    });
+                                }
                             });
-                        });
-                });
+                    })
+                );
             })
-        )
-            .then((results: DeviceBlueprintPossibleDevices[]) => (this.deviceBlueprintPossibleDevices = results))
+            .then((results: DeviceBlueprintPossibleDevices[]) => {
+                console.log(results);
+                this.deviceBlueprintPossibleDevices = results;
+                this.solutionBlueprint = new SolutionBlueprint(_solutionBlueprint);
+            })
             .catch(err => console.error(err));
-        // });
     }
 
     submit() {
-        // console.log(this.element.thingIds, this.deviceBlueprintPossibleDevices);
-        // console.log(this.deviceBlueprintPossibleDevices.map(d => d.thingId));
+        // console.log(this.element, this.deviceBlueprintPossibleDevices, this.solutionBlueprint);
         this.solutionService
             .update(
                 this.element.id,
                 this.element.name,
                 this.element.description,
-                this.deviceBlueprintPossibleDevices.map(d => d.thingId)
+                this.element.deviceIds
+                // this.deviceBlueprintPossibleDevices.map(d => d.device.thingId)
             )
             .then((solution: Solution) => {
                 console.log(solution);
