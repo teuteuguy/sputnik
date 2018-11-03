@@ -648,6 +648,16 @@ Resources:
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # RESOLVERS - MUTATIONS - Solutions
+    # appSyncResolverMutationAddSolution:
+    #     Type: 'AWS::AppSync::Resolver'
+    #     DependsOn: appSyncSchema
+    #     Properties:
+    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
+    #         TypeName: Mutation
+    #         FieldName: addSolution
+    #         DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
+    #         RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-add.gql']]
+    #         ResponseMappingTemplate: '$util.toJson($context.result)'
     appSyncResolverMutationAddSolution:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
@@ -655,7 +665,7 @@ Resources:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Mutation
             FieldName: addSolution
-            DataSourceName: !GetAtt appSyncDataSourceSolutionsLambda.Name
+            DataSourceName: !GetAtt appSyncDataSourceSolutionsDynamoDB.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solutions', 'solutions-request-mapping-template-add.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
     appSyncResolverMutationDeleteSolution:

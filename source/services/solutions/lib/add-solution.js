@@ -108,82 +108,82 @@ module.exports = function (event, context) {
     // }
 
     // First check a group with that name does not already exist. If so, exit.
-    return iot.describeThingGroup({
-        thingGroupName: event.thingGroupName
-    }).promise().then(group => {
-        // Group already exists.
-        console.log('thingGroup already exists, exiting call');
-        callback('ERROR: thingGroup already exists', null);
-    }).catch(err => {
-        // Group does not exist, lets create it.
+    // return iot.describeThingGroup({
+    //     thingGroupName: event.thingGroupName
+    // }).promise().then(group => {
+    //     // Group already exists.
+    //     console.log('thingGroup already exists, exiting call');
+    //     callback('ERROR: thingGroup already exists', null);
+    // }).catch(err => {
+    //     // Group does not exist, lets create it.
 
-        return documentClient.get({
-            TableName: process.env.TABLE_SOLUTION_BLUEPRINTS,
-            Key: {
-                id: event.solutionBlueprintId
-            }
-        }).promise().then(solutionBlueprint => {
+    //     return documentClient.get({
+    //         TableName: process.env.TABLE_SOLUTION_BLUEPRINTS,
+    //         Key: {
+    //             id: event.solutionBlueprintId
+    //         }
+    //     }).promise().then(solutionBlueprint => {
 
-            solutionBlueprint = solutionBlueprint.Item;
+    //         solutionBlueprint = solutionBlueprint.Item;
 
-            console.log('solutionBlueprint:', JSON.stringify(solutionBlueprint, null, 2));
-            if (!solutionBlueprint.spec || !solutionBlueprint.spec.devices) {
-                throw 'solutionBlueprintId: ' + event.solutionBlueprintId + ' does not have a spec and devices';
-            }
+    //         console.log('solutionBlueprint:', JSON.stringify(solutionBlueprint, null, 2));
+    //         if (!solutionBlueprint.spec || !solutionBlueprint.spec.devices) {
+    //             throw 'solutionBlueprintId: ' + event.solutionBlueprintId + ' does not have a spec and devices';
+    //         }
 
-            // TODO: for now We'll generate the devices.
-            // Later we can look at deviceIds to check if no devices have been provided and if so, NOT create them, but associate them.
-            // Same for the certs. For now we'll generate them.
+    //         // TODO: for now We'll generate the devices.
+    //         // Later we can look at deviceIds to check if no devices have been provided and if so, NOT create them, but associate them.
+    //         // Same for the certs. For now we'll generate them.
 
-            return processDeviceList(solutionBlueprint.prefix, solutionBlueprint.spec.devices);
+    //         return processDeviceList(solutionBlueprint.prefix, solutionBlueprint.spec.devices);
 
-        }).then(devices => {
+    //     }).then(devices => {
 
-            console.log('ProcessDeviceList Result:', JSON.stringify(devices));
+    //         console.log('ProcessDeviceList Result:', JSON.stringify(devices));
 
-            event.deviceIds = devices.map(d => {
-                return d.device.thingId;
-            });
+    //         event.deviceIds = devices.map(d => {
+    //             return d.device.thingId;
+    //         });
 
-            // Second let's create the group.
-            // Third based on the spec, we need to read the spec and create the different resources!
-            // Fourth let's create the solution in the DB to reference the Group as well as the Blueprint.
+    //         // Second let's create the group.
+    //         // Third based on the spec, we need to read the spec and create the different resources!
+    //         // Fourth let's create the solution in the DB to reference the Group as well as the Blueprint.
 
-            const mtmGroups = new MTMThingGroups();
+    //         const mtmGroups = new MTMThingGroups();
 
-            return mtmGroups.createThingGroup(shortid.generate(), event.description);
+    //         return mtmGroups.createThingGroup(shortid.generate(), event.description);
 
-        }).then(group => {
+    //     }).then(group => {
 
-            const newSolution = {
-                id: group.thingGroupId,
-                thingGroupName: group.thingGroupName,
-                name: event.name,
-                description: event.description,
-                deviceIds: event.deviceIds || [],
-                solutionBlueprintId: event.solutionBlueprintId,
-                createdAt: moment()
-                    .utc()
-                    .format(),
-                updatedAt: moment()
-                    .utc()
-                    .format()
-            };
+    //         const newSolution = {
+    //             id: group.thingGroupId,
+    //             thingGroupName: group.thingGroupName,
+    //             name: event.name,
+    //             description: event.description,
+    //             deviceIds: event.deviceIds || [],
+    //             solutionBlueprintId: event.solutionBlueprintId,
+    //             createdAt: moment()
+    //                 .utc()
+    //                 .format(),
+    //             updatedAt: moment()
+    //                 .utc()
+    //                 .format()
+    //         };
 
-            return Promise.all([newSolution, documentClient
-                .put({
-                    TableName: process.env.TABLE_SOLUTIONS,
-                    Item: newSolution,
-                    ReturnValues: 'ALL_OLD'
-                })
-                .promise()]);
+    //         return Promise.all([newSolution, documentClient
+    //             .put({
+    //                 TableName: process.env.TABLE_SOLUTIONS,
+    //                 Item: newSolution,
+    //                 ReturnValues: 'ALL_OLD'
+    //             })
+    //             .promise()]);
 
-        }).then(results => {
-            console.log('Created solution', results[0]);
-            return results[0];
-        });
+    //     }).then(results => {
+    //         console.log('Created solution', results[0]);
+    //         return results[0];
+    //     });
 
-    });
+    // });
 
 
     // // TODO: deal with creating a greengrass group if required.

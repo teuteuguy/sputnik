@@ -1,11 +1,22 @@
+#set( $values = $util.dynamodb.toMapValues($ctx.args) )
+$!{values.put("createdAt", $util.dynamodb.toDynamoDB($util.time.nowISO8601()))}
+$!{values.put("updatedAt", $values.get("createdAt"))}
 {
     "version" : "2017-02-28",
-    "operation" : "Invoke",
-    "payload": {
-        "cmd": "addSolution",
-        "name": "$context.arguments.name",
-        "description": "$context.arguments.description",
-        "deviceIds": "$context.arguments.deviceIds",
-        "solutionBlueprintId": "$context.arguments.solutionBlueprintId"
-    }
+    "operation" : "PutItem",
+    "key" : {
+        "id" : $util.dynamodb.toStringJson($util.autoId())
+    },
+    "attributeValues" : $util.toJson($values)
 }
+##{
+##    "version" : "2017-02-28",
+##    "operation" : "Invoke",
+##    "payload": {
+##        "cmd": "addSolution",
+##        "name": "$context.arguments.name",
+##        "description": "$context.arguments.description",
+##        "deviceIds": "$context.arguments.deviceIds",
+##        "solutionBlueprintId": "$context.arguments.solutionBlueprintId"
+##    }
+##}

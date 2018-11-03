@@ -22,12 +22,16 @@ export class SolutionsModalComponent {
     @Input()
     submitSubject: Subject<any>;
 
+    public createResources;
+
     constructor(private solutionService: SolutionService, public solutionBlueprintService: SolutionBlueprintService) {
         this.element = new Solution({
             id: 'new',
             name: 'new',
             description: 'New Solution'
         });
+
+        this.createResources = false;
     }
 
     submit() {

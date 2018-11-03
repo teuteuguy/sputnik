@@ -66,6 +66,7 @@ import { FromNowPipe, MomentPipe } from './pipes/moment.pipe';
 import { StringifyPipe } from './pipes/stringify.pipe';
 import { DeviceBlueprintNameFromIdPipe } from './pipes/device-blueprint-name-from-id.pipe';
 import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
+import { SolutionBlueprintFromSolutionBlueprintIdPipe } from './pipes/solution-blueprint-from-solution-blueprint-id.pipe';
 
 // Services
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
@@ -142,7 +143,8 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         FromNowPipe,
         StringifyPipe,
         DeviceBlueprintNameFromIdPipe,
-        DeviceTypeNameFromIdPipe
+        DeviceTypeNameFromIdPipe,
+        SolutionBlueprintFromSolutionBlueprintIdPipe
     ],
     imports: [
         BrowserModule,

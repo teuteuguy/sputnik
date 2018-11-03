@@ -3,7 +3,7 @@ export class Solution {
     name = 'UNKNOWN';
     description = 'UNKNOWN';
     deviceIds: string[] = [];
-    solutionBlueprintId = 'UNKNOWN';
+    solutionBlueprintId: string; // = 'UNKNOWN';
     createdAt: string;
     updatedAt: string;
 
