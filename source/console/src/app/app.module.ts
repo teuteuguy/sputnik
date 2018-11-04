@@ -62,11 +62,12 @@ import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/s
 // Directives
 
 // Pipes
-import { FromNowPipe, MomentPipe } from './pipes/moment.pipe';
-import { StringifyPipe } from './pipes/stringify.pipe';
-import { DeviceBlueprintNameFromIdPipe } from './pipes/device-blueprint-name-from-id.pipe';
-import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
-import { SolutionBlueprintFromSolutionBlueprintIdPipe } from './pipes/solution-blueprint-from-solution-blueprint-id.pipe';
+import { AppPipesModule } from './pipes/pipes.module';
+// import { FromNowPipe, MomentPipe } from './pipes/moment.pipe';
+// import { StringifyPipe } from './pipes/stringify.pipe';
+// import { DeviceBlueprintNameFromIdPipe } from './pipes/device-blueprint-name-from-id.pipe';
+// import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
+// import { SolutionBlueprintFromSolutionBlueprintIdPipe } from './pipes/solution-blueprint-from-solution-blueprint-id.pipe';
 
 // Services
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
@@ -139,12 +140,12 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         // Directives
 
         // Pipes
-        MomentPipe,
-        FromNowPipe,
-        StringifyPipe,
-        DeviceBlueprintNameFromIdPipe,
-        DeviceTypeNameFromIdPipe,
-        SolutionBlueprintFromSolutionBlueprintIdPipe
+        // MomentPipe,
+        // FromNowPipe,
+        // StringifyPipe,
+        // DeviceBlueprintNameFromIdPipe,
+        // DeviceTypeNameFromIdPipe,
+        // SolutionBlueprintFromSolutionBlueprintIdPipe
     ],
     imports: [
         BrowserModule,
@@ -167,7 +168,11 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
             //   confirmButtonClass: 'btn btn-primary',
             //   cancelButtonClass: 'btn'
             // }
-            ()
+            (),
+
+        // // Pipes
+        AppPipesModule
+        // .forRoot()
     ],
     providers: [
         AmplifyService,

@@ -13,18 +13,15 @@
                     <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
                         <label for="name" class="form-control-label">Solution name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
-                            name="name" id="name" #name="ngModel" [(ngModel)]="element.name" pattern="[a-zA-Z0-9:_-]+"
-                            required ngModel [readonly]="modalType === 'view'">
+                            name="name" id="name" #name="ngModel" [(ngModel)]="element.name" required ngModel>
                         <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
-                            <small>Name of your solution.</small>
+                            <small>Easy to remember name for your solution.</small>
                         </div>
                         <div *ngIf="(name.invalid && (name.dirty || name.touched)) && name.errors" class="form-control-feedback">
-                            <small>Name of soluion is required or has errors.</small>
+                            <small>Name of solution is required.</small>
                         </div>
-                        <!-- <div *ngIf=".errors?.pattern">
-                            newDevice.thingName not valid.
-                        </div> -->
                     </div>
+
                     <!-- <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
                         <label for="name" class="form-control-label">Solution Name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"

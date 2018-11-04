@@ -34,18 +34,14 @@ export class AWSGGMiniConnectedFactoryV10Component implements OnInit, OnDestroy 
         // } catch (ex) {
         //     console.error(ex);
         // }
-
         // .subscribe({
         //     next: data => console.log('Message received', data),
         //     error: error => console.error(error),
         //     close: () => console.log('Done'),
         // });
-
         // this.iotService.subscribe('toto/titi').subscribe(res => console.log(res), err => console.error(err));
-
         // console.log(this.iotService.subscribe('toto'));
         // const obs: any = PubSub.subscribe('mtm/#', {});
-
         // obs.subscribe({
         //     next: data => console.log('Message received', data),
         //     error: error => console.error(error),

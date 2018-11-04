@@ -11,7 +11,7 @@
             },
             {
                 "defaultDeviceTypeId": "aws-deeplens-v1.0",
-                "deviceBlueprintId": "aws-gg-mini-connected-factory-v1.0",
+                "deviceBlueprintId": "aws-gg-mini-connected-factory-v1.1",
                 "ref": "device_1",
                 "spec": {
                     "DeviceDefinitionVersion": {

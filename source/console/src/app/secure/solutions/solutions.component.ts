@@ -81,34 +81,6 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
                 ],
                 cachedMode: false
             };
-            this.handleDelete.subscribe((element: Solution) => {
-                const _self = this;
-                swal({
-                    title: 'Are you sure you want to delete this solution?',
-                    text: `You won't be able to revert this!`,
-                    type: 'question',
-                    showCancelButton: true,
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then(result => {
-                    if (result.value) {
-                        _self.blockUI.start('Deleting device...');
-                        _self.solutionService
-                            .delete(element.id)
-                            .then((resp: any) => {
-                                console.log(resp);
-                                _self.blockUI.stop();
-                            })
-                            .catch(err => {
-                                _self.blockUI.stop();
-                                swal('Oops...', 'Something went wrong! Unable to delete the solution.', 'error');
-                                _self.logger.error('error occurred calling deleteSolution api, show message');
-                                _self.logger.error(err);
-                            });
-                    }
-                });
-            });
         });
 
         statService.statObservable$.subscribe((message: Stats) => {
@@ -126,6 +98,34 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
         _self.breadCrumbService.setup(_self.params.pageTitle, [
             new Crumb({ title: _self.params.pageTitle, active: true, link: 'solutions' })
         ]);
+
+        _self.handleDelete.subscribe((element: Solution) => {
+            swal({
+                title: 'Are you sure you want to delete this solution?',
+                text: `You won't be able to revert this!`,
+                type: 'question',
+                showCancelButton: true,
+                cancelButtonColor: '#3085d6',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(result => {
+                if (result.value) {
+                    _self.blockUI.start('Deleting device...');
+                    _self.solutionService
+                        .delete(element.id)
+                        .then((resp: any) => {
+                            console.log(resp);
+                            _self.blockUI.stop();
+                        })
+                        .catch(err => {
+                            _self.blockUI.stop();
+                            swal('Oops...', 'Something went wrong! Unable to delete the solution.', 'error');
+                            _self.logger.error('error occurred calling deleteSolution api, show message');
+                            _self.logger.error(err);
+                        });
+                }
+            });
+        });
 
         _self.load();
     }

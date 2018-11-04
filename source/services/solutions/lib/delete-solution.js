@@ -11,79 +11,86 @@ const lib = 'deleteSolution';
 
 module.exports = function (event, context) {
 
-    return documentClient
-        .get({
-            TableName: process.env.TABLE_SOLUTIONS,
-            Key: {
-                id: event.id
-            }
-        })
-        .promise().then(solution => {
-            event.solution = solution.Item;
-            // To delete:
-            // - Delete Solution
-            // - Delete Device
-            // - Delete thingGroup
-            const mtmThingGroups = new MTMThingGroups();
-            return mtmThingGroups.deleteThingGroup(event.solution.thingGroupName);
+    return documentClient.delete({
+        TableName: process.env.TABLE_SOLUTIONS,
+        Key: {
+            id: event.id
+        }
+    }).promise();
 
-        }).then(result => {
+    // return documentClient
+    //     .get({
+    //         TableName: process.env.TABLE_SOLUTIONS,
+    //         Key: {
+    //             id: event.id
+    //         }
+    //     })
+    //     .promise().then(solution => {
+    //         event.solution = solution.Item;
+    //         // To delete:
+    //         // - Delete Solution
+    //         // - Delete Device
+    //         // - Delete thingGroup
+    //     //     const mtmThingGroups = new MTMThingGroups();
+    //     //     return mtmThingGroups.deleteThingGroup(event.solution.thingGroupName);
 
-            console.log('Deleted ThingGroup:', event.solution.thingGroupName);
+    //     // }).then(result => {
 
-            return Promise.all(event.solution.deviceIds.map(id => {
-                return DevicesLibs.deleteDevice({
-                    thingId: id
-                }).then(result => result).catch(err => {
-                    if (err.error === 404) {
-                        return null;
-                    } else {
-                        throw err;
-                    }
-                });
-            }));
+    //     //     console.log('Deleted ThingGroup:', event.solution.thingGroupName);
 
-        }).then(result => {
+    //     //     return Promise.all(event.solution.deviceIds.map(id => {
+    //     //         return DevicesLibs.deleteDevice({
+    //     //             thingId: id
+    //     //         }).then(result => result).catch(err => {
+    //     //             if (err.error === 404) {
+    //     //                 return null;
+    //     //             } else {
+    //     //                 throw err;
+    //     //             }
+    //     //         });
+    //     //     }));
 
-            console.log('Deleted Devices:', event.solution.deviceIds);
+    //     // }).then(result => {
 
-            return documentClient.delete({
-                TableName: process.env.TABLE_SOLUTIONS,
-                Key: {
-                    id: event.id
-                }
-            }).promise();
+    //         // console.log('Deleted Devices:', event.solution.deviceIds);
 
-        }).then(result => {
-            console.log('Deleted Solution:', event.id);
-            return event.solution;
-        });
+    //         return documentClient.delete({
+    //             TableName: process.env.TABLE_SOLUTIONS,
+    //             Key: {
+    //                 id: event.id
+    //             }
+    //         }).promise();
+
+    //     }).then(result => {
+    //         console.log('Deleted Solution:', event.id);
+    //         return event.solution;
+    //     });
 
 
-            // TODO: implement this
-        //     if (solution.Item) {
-        //         console.log('Solution:', solution);
-        //         const iotParams = {
-        //             thingName: solution.Item.thingName
-        //         };
-        //         const ddbParams = {
-        //             TableName: process.env.TABLE_DEVICES,
-        //             Key: {
-        //                 thingId: event.thingId
-        //             }
-        //         };
-        //         return Promise.all([
-        //             solution.Item,
-        //             documentClient.delete(ddbParams).promise(),
-        //             iot.deleteThing(iotParams).promise()
-        //         ]);
-        //     } else {
-        //         throw 'Device ' + event.thingId + ' does not exist.';
-        //     }
-        // })
-        // .then(results => {
-        //     const oldDevice = results[0];
-        //     console.log(oldDevice);
-        //     callback(null, oldDevice);
+    //         // TODO: implement this
+    //     //     if (solution.Item) {
+    //     //         console.log('Solution:', solution);
+    //     //         const iotParams = {
+    //     //             thingName: solution.Item.thingName
+    //     //         };
+    //     //         const ddbParams = {
+    //     //             TableName: process.env.TABLE_DEVICES,
+    //     //             Key: {
+    //     //                 thingId: event.thingId
+    //     //             }
+    //     //         };
+    //     //         return Promise.all([
+    //     //             solution.Item,
+    //     //             documentClient.delete(ddbParams).promise(),
+    //     //             iot.deleteThing(iotParams).promise()
+    //     //         ]);
+    //     //     } else {
+    //     //         throw 'Device ' + event.thingId + ' does not exist.';
+    //     //     }
+    //     // })
+    //     // .then(results => {
+    //     //     const oldDevice = results[0];
+    //     //     console.log(oldDevice);
+    //     //     callback(null, oldDevice);
 
 };

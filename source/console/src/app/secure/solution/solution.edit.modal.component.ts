@@ -128,6 +128,9 @@ export class SolutionEditModalComponent implements OnInit {
             .then((solution: Solution) => {
                 console.log(solution);
                 this.submitSubject.next({ data: solution, error: null });
+                this.solutionService.refreshSolution(this.element.id);
+            }).then((result) => {
+                console.log(result);
             })
             .catch(err => {
                 console.error(err);

@@ -11,13 +11,15 @@ import { AWSMiniConnectedFactoryV10Module } from './aws-mini-connected-factory-v
     selector: 'app-solution-child-view',
     template: `
         <app-aws-mini-connected-factory-v1
-            *ngIf="solution.solutionBlueprintId === 'aws-mini-connected-factory-v1.0'"
+            *ngIf="solution.solutionBlueprintId === 'aws-mini-connected-factory-v1.0' ||
+                solution.solutionBlueprintId === 'aws-mini-connected-factory-v1.1'"
             [solution]="solution"
         ></app-aws-mini-connected-factory-v1>
     `
 })
 export class SolutionChildViewComponent {
-    @Input() solution: Solution = new Solution();
+    @Input()
+    solution: Solution = new Solution();
 }
 
 @NgModule({

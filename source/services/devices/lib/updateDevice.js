@@ -86,7 +86,7 @@ module.exports = function (event, context) {
 
     }).then(groupId => {
 
-        console.log('spec:', event.spec, JSON.parse(event.spec));
+        console.log('spec:', event.spec);
 
         const updateParams = {
             TableName: process.env.TABLE_DEVICES,

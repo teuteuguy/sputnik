@@ -60,6 +60,9 @@ export class GenericTableComponent {
     protected handleDeleteSubject: Subject<any> = new Subject<any>();
     protected handleDelete = this.handleDeleteSubject.asObservable();
 
+    protected handleSubmitSubject: Subject<any> = new Subject<any>();
+    protected handleSubmit = this.handleSubmitSubject.asObservable();
+
     @BlockUI()
     blockUI: NgBlockUI;
     @ViewChild('createModalTemplate', { read: ViewContainerRef })
@@ -136,7 +139,9 @@ export class GenericTableComponent {
                     title: 'Success',
                     type: 'success',
                     showConfirmButton: false
-                }).then();
+                }).then(() => {
+                    this.handleSubmitSubject.next();
+                });
             }
             this.handleCancel(type);
             this.load();

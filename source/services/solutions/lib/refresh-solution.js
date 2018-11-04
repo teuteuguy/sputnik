@@ -8,7 +8,7 @@ const shortid = require('shortid');
 const MTMThingGroups = require('mythings-mgmt-custom-resource-helper-thing-groups');
 const DevicesLibs = require('mythings-mgmt-devices-service');
 
-const lib = 'addSolution';
+const lib = 'refreshSolution';
 
 
 // "spec": {
@@ -53,7 +53,7 @@ function processDeviceList(deviceListSpec, deviceList) {
                 console.log(tag, 'GetAtt:', JSON.stringify(occurencesOfGetAtt, null, 4));
                 occurencesOfGetAtt.forEach((occurence, i) => {
                     if (i !== 0) {
-                        console.log(tag, 'GetAtt: occurencesOfGetAtt[i]:', i, occurencesOfGetAtt[i]);
+                        console.log(tag, `GetAtt: occurencesOfGetAtt[${i}]:`, occurencesOfGetAtt[i]);
                         let split = occurence.split(']');
                         const attributes = split[0].split('.');
                         const value = attributes.reduce((pv, cv, j) => {
@@ -67,7 +67,9 @@ function processDeviceList(deviceListSpec, deviceList) {
                                     return chainResults[indexOfDevice].device;
                                 }
                             } else {
-                                return pv[cv];
+                                if (pv) {
+                                    return pv[cv];
+                                }
                             }
                         }, '');
                         console.log(tag, 'GetAtt: value:', value);
@@ -83,30 +85,34 @@ function processDeviceList(deviceListSpec, deviceList) {
 
             currentValue.device = deviceList[index];
 
-
             console.log(tag, 'Updating device', currentValue.spec);
-            return documentClient.update({
-                TableName: process.env.TABLE_DEVICES,
-                Key: {
-                    thingId: currentValue.device.thingId
-                },
-                UpdateExpression: 'set #ua = :ua, #spec = :spec',
-                ExpressionAttributeNames: {
-                    '#ua': 'updatedAt',
-                    '#spec': 'spec'
-                },
-                ExpressionAttributeValues: {
-                    ':ua': moment()
-                        .utc()
-                        .format(),
-                    ':spec': currentValue.spec || {}
-                }
-            }).promise().then(result => {
-                currentValue.device.spec = currentValue.spec;
-                return [...chainResults, currentValue];
-            });
-        });
 
+            if (currentValue.device) {
+                return documentClient.update({
+                    TableName: process.env.TABLE_DEVICES,
+                    Key: {
+                        thingId: currentValue.device.thingId
+                    },
+                    UpdateExpression: 'set #ua = :ua, #spec = :spec',
+                    ExpressionAttributeNames: {
+                        '#ua': 'updatedAt',
+                        '#spec': 'spec'
+                    },
+                    ExpressionAttributeValues: {
+                        ':ua': moment()
+                            .utc()
+                            .format(),
+                        ':spec': currentValue.spec || {}
+                    }
+                }).promise().then(result => {
+                    currentValue.device.spec = currentValue.spec;
+                    return [...chainResults, currentValue];
+                });
+            } else {
+                return [...chainResults, currentValue];
+            }
+
+        });
     }, Promise.resolve([]).then(arrayOfResults => arrayOfResults));
 }
 
@@ -147,7 +153,8 @@ module.exports = function (event, context) {
         } else {
 
             if (_solution.deviceIds.length !== _solutionBlueprint.spec.devices.length) {
-                throw 'Solution has inconsistent deviceIds and devices length in spec';
+                // throw 'Solution has inconsistent deviceIds and devices length in spec';
+                return [];
             } else {
 
                 return Promise.all(_solution.deviceIds.map(thingId => {
@@ -170,6 +177,7 @@ module.exports = function (event, context) {
 
     }).then(devices => {
 
+        console.log(lib, 'end:', devices);
         return processDeviceList(_solutionBlueprint.spec.devices, devices);
 
     });
