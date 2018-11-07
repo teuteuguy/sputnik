@@ -82,7 +82,7 @@ function processDeviceList(prefix, deviceListSpec) {
                 thingName: '' + prefix + shortid.generate(),
                 deviceTypeId: currentValue.defaultDeviceTypeId,
                 deviceBlueprintId: currentValue.deviceBlueprintId,
-                spec: JSON.stringify(currentValue.spec || {}),
+                spec: currentValue.spec || {},
                 generateCert: true
             }).then(device => {
                 // if (device.spec) {

@@ -22,7 +22,8 @@
                         }]
                     },
                     "FunctionDefinitionVersion": {
-                        "Functions": [{
+                        "Functions": [
+                            {
                                 "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
                                 "FunctionConfiguration": {
                                     "EncodingType": "json",
@@ -39,6 +40,14 @@
                                     },
                                     "MemorySize": 262144,
                                     "Pinned": true,
+                                    "Timeout": 3
+                                }
+                            }, {
+                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-python:MTM",
+                                "FunctionConfiguration": {
+                                    "EncodingType": "json",
+                                    "MemorySize": 65536,
+                                    "Pinned": false,
                                     "Timeout": 3
                                 }
                             }
@@ -63,6 +72,14 @@
                         "Subscriptions": [{
                             "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
                             "Subject": "mtm/!GetAtt[device_0.thingName]/sensors",
+                            "Target": "cloud"
+                        }, {
+                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
+                            "Subject": "mtm/!GetAtt[device_0.thingName]/admin",
+                            "Target": "cloud"
+                        }, {
+                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-python:MTM",
+                            "Subject": "mtm/[CORE]/factory",
                             "Target": "cloud"
                         }]
                     }

@@ -103,7 +103,7 @@ function handler(event, context, callback) {
                                     return addDevice({
                                         deviceTypeId: 'UNKNOWN',
                                         deviceBlueprintId: 'UNKNOWN',
-                                        spec: '{}',
+                                        spec: {},
                                         thingName: thing.thingName,
                                         generateCert: false
                                     }).then(device => {

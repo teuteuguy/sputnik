@@ -13,8 +13,6 @@ module.exports = function (event, context) {
 
     console.log(tag, event);
 
-    // Note: in order to be consistent with the rest of the Appsync API, event.spec is a stringified json object!
-
     // Event needs to be:
     // event.thingId
     // event.deviceTypeId
@@ -109,7 +107,7 @@ module.exports = function (event, context) {
                 ':dti': _deviceType.id,
                 ':dbi': event.deviceBlueprintId || 'UNKNOWN',
                 ':gid': groupId,
-                ':s': JSON.parse(event.spec),
+                ':s': event.spec,
                 ':n': event.name
             }
         };

@@ -5,7 +5,7 @@
         "cmd": "updateDevice",
         "thingId": "$context.arguments.thingId",
         "name": "$context.arguments.name",
-        "spec": "$context.arguments.spec",
+        "spec": $util.toJson($context.arguments.spec),
         "deviceTypeId": "$context.arguments.deviceTypeId",
         "deviceBlueprintId": "$context.arguments.deviceBlueprintId"
     }

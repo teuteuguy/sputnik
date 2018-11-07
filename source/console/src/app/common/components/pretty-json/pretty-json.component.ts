@@ -60,7 +60,7 @@ export class PrettyJsonComponent implements ControlValueAccessor {
             _self.parseError = false;
 
             this.keyUpTimeOut1 = setTimeout(function () {
-                console.log('prettifying');
+                // console.log('prettifying');
                 _self.prettifying = true;
                 _self.keyUpTimeOut2 = setTimeout(function () {
                     try {
@@ -69,7 +69,7 @@ export class PrettyJsonComponent implements ControlValueAccessor {
                     } catch (ex) {
                         console.log(ex);
                     }
-                    console.log('prettifying done');
+                    // console.log('prettifying done');
                     _self.prettifying = false;
                 }, 500);
             }, 2000);

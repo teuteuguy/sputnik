@@ -85,7 +85,7 @@ export class DevicesComponent implements OnInit {
 
     updatePaging() {
         const _self = this;
-        console.log(_self.pages.pageSize, _self.deviceStats.total);
+        // console.log(_self.pages.pageSize, _self.deviceStats.total);
         _self.pages.total = Math.ceil(_self.deviceStats.total / _self.pages.pageSize);
     }
 
@@ -97,7 +97,7 @@ export class DevicesComponent implements OnInit {
         return _self.deviceService
             .listDevices(_self.pages.pageSize, null)
             .then(results => {
-                console.log(results);
+                // console.log(results);
                 _self.devices = results.devices;
                 _self.updatePaging();
                 _self.blockUI.stop();

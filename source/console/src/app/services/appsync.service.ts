@@ -375,13 +375,18 @@ export class AppSyncService {
         );
     }
     public updateDevice(device: Device) {
-        return this.mutation(updateDevice, {
+        const obj = {
             thingId: device.thingId,
             name: device.name,
             spec: JSON.stringify(device.spec),
             deviceTypeId: device.deviceTypeId,
             deviceBlueprintId: device.deviceBlueprintId
-        }).then(d => this.cleanIncomingDevice(d.data.updateDevice));
+        };
+        // console.log('updateDevice mutation with:', obj);
+        return this.mutation(updateDevice, obj).then(d => {
+            // console.log('updateDevice mutation return:', d);
+            return this.cleanIncomingDevice(d.data.updateDevice);
+        });
     }
     public onAddedDevice(hook: AddedDevice) {
         this.subscribe(addedDevice, {}).subscribe({

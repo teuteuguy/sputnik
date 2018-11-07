@@ -1,14 +1,8 @@
-import {
-    Component,
-    OnInit,
-    OnDestroy,
-    NgZone,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
-
 
 // Models
 import { Device } from '../../models/device.model';
@@ -91,7 +85,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.logger.info('destroying device page, attempting to remove poller.');
+        // this.logger.info('destroying device page, attempting to remove poller.');
         // clearInterval(this.pollerInterval);
     }
 
@@ -102,6 +96,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             .getDevice(_self.thingId)
             .then((device: Device) => {
                 _self.logger.info('device:', device);
+                // _self.logger.info('device stringified:', JSON.stringify(device, null, 2));
                 _self.device = device;
                 _self.deviceTypes = _self.deviceTypeService.deviceTypes;
                 _self.deviceBlueprints = _self.deviceBlueprintService.deviceBlueprints;
@@ -209,7 +204,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     submitEditDevice(value: any) {
         const _self = this;
         _self.blockUI.start('Editing device...');
-        console.log(_self.deviceForEdit);
+        // console.log(JSON.stringify(_self.deviceForEdit, null, 4));
         _self.deviceService
             .updateDevice(_self.deviceForEdit)
             .then((resp: any) => {

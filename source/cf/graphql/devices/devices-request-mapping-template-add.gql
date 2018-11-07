@@ -5,7 +5,7 @@
         "cmd": "addDevice",
         "thingName": "$context.arguments.thingName",
         "generateCert": "$context.arguments.generateCert",
-        "spec": "$context.arguments.spec",
+        "spec": $util.toJson($context.arguments.spec),
         "deviceTypeId": "$context.arguments.deviceTypeId",
         "deviceBlueprintId": "$context.arguments.deviceBlueprintId",
     }
