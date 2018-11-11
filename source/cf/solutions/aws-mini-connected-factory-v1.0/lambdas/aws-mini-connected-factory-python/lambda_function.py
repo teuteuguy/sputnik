@@ -14,7 +14,7 @@ try:
 
     PUB.info("Restart of Lambda")
 
-    def function_handler(event, context):
+    def lambda_handler(event, context):
         PUB.info(json.dumps(event))
         return
 

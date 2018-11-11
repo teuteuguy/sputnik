@@ -135,6 +135,32 @@ Resources:
             FunctionVersion: !GetAtt AMCF1BeltLambdaVersion.Version
             Name: 'MTM'
 
+    AMCF1BeltNodeLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'aws-mini-connected-factory-belt-serial-node'
+            Description: 'My Things Management AWS Mini Connected Factory Belt Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-mini-connected-factory-belt-serial-node.zip']]
+            Handler: index.handler
+            Runtime: 'nodejs6.10'
+            Role: !GetAtt AMCF1LambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    AMCF1BeltNodeLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'AMCF1BeltNodeLambda'
+            Description: 'A first version of aws-mini-connected-factory-belt-serial-node'
+    AMCF1BeltNodeLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref AMCF1BeltNodeLambda
+            FunctionVersion: !GetAtt AMCF1BeltNodeLambdaVersion.Version
+            Name: 'MTM'
+
     AMCF1FactoryLambda:
         Type: 'AWS::Lambda::Function'
         Properties:

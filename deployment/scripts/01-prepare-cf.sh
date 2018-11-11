@@ -17,6 +17,9 @@ rm -rf $2/cf
 echo "cp -R $1/cf $2"
 cp -R $1/cf $2
 
+echo "Removing the solution lambda function code"
+find $2/cf/solutions -type d -name lambdas -prune -exec rm -v -rf {} \;
+
 UUID=`uuidgen`
 echo $UUID
 mv $2/cf/graphql $2/cf/graphql-$UUID

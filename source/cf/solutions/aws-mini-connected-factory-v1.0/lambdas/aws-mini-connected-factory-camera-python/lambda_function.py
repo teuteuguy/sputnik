@@ -2,6 +2,7 @@ import os
 import cv2
 import time
 from threading import Event, Thread, Timer
+import math
 
 import awscam
 from file_output import FileOutput
@@ -185,6 +186,7 @@ def lambda_handler(event, context):
         now = time.time()
         if now - last_update >= 1:
             fps = nbFramesProcessed / (now - last_update)
+            fps = math.floor(fps * 100) / 100
             last_update = time.time()
             nbFramesProcessed = 0
 
