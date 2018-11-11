@@ -62,7 +62,7 @@
                                 "ML_MODEL_PATH": "/ml/helmets/image-classification"
                             }
                         },
-                        "MemorySize": 1048576,
+                        "MemorySize": 2097152,
                         "Pinned": true,
                         "Timeout": 25
                     }

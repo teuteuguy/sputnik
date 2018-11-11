@@ -75,8 +75,12 @@
                             "Target": "cloud"
                         }, {
                             "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
-                            "Subject": "mtm/!GetAtt[device_0.thingName]/admin",
+                            "Subject": "mtm/!GetAtt[device_0.thingName]/logger",
                             "Target": "cloud"
+                        }, {
+                            "Source": "GGShadowService",
+                            "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update/accepted",
+                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM"
                         }, {
                             "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-python:MTM",
                             "Subject": "mtm/[CORE]/factory",
