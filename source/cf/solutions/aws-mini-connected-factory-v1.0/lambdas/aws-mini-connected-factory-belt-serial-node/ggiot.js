@@ -3,7 +3,6 @@ const os = require('os');
 class GGIoT {
 
     constructor(thingName = 'default', prefix = 'mtm') {
-        console.log('GGIOT: init for:', thingName);
         this.thingName = thingName;
         this.prefix = prefix;
         this.topicPrefix = this.prefix + '/' + this.thingName + '/';
@@ -15,7 +14,7 @@ class GGIoT {
                     getThingShadow: (params = {
                         thingName: self.thingName
                     }, callback = (err, data) => {
-                        console.log('Default callback:', err, data);
+                        console.log('Default callback');
                     }) => {
                         callback(null, {});
                     },
@@ -23,82 +22,66 @@ class GGIoT {
                         topic: 'default/topic',
                         payload: JSON.stringify({})
                     }, callback = (err, data) => {
-                        console.log('Default callback:', err, data);
+                        console.log('Default callback');
                     }) => {
                         // console.log('iotData.publish: ', params.topic, params.payload);
                         callback(null, 'success');
                     },
                     updateThingShadow: (params = {}, callback = (err, data) => {
-                        console.log('Default callback:', err, data);
+                        console.log('Default callback');
                     }) => {
                         callback(null, 'success');
                     }
                 };
                 break;
             default:
+                console.log('GGIOT: not running on a mac');
                 this.ggSDK = require('./aws-greengrass-core-sdk');
                 this.iotData = new this.ggSDK.IotData();
                 break;
         }
 
+        console.log('GGIOT: init for: ' + thingName);
     }
 
-    getThingShadow(thingName = this.thingName) {
-        return new Promise((resolve, reject) => {
-            this.iotData.getThingShadow({
-                thingName: thingName
-            }, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
+    getThingShadow(callback, thingName = this.thingName) {
+        this.iotData.getThingShadow({
+            thingName: thingName
+        }, (err, data) => {
+            if (err) {
+                callback(err, data);
+            } else {
+                callback(err, JSON.parse(data.Payload));
+            }
         });
     }
 
-    publish(topic, payload) {
-        return new Promise((resolve, reject) => {
-            this.iotData.publish({
-                topic: topic,
-                payload: JSON.stringify(payload)
-            }, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+    publish(topic, payload, callback) {
+        this.iotData.publish({
+            topic: topic,
+            payload: JSON.stringify(payload)
+        }, callback);
     }
 
-    updateThingShadow(payload, thingName = self.thingName) {
-        return new Promise((resolve, reject) => {
-            this.iotData.updateThingShadow({
-                thingName: thingName,
-                payload: JSON.stringify(payload)
-            }, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+    updateThingShadow(payload, callback, thingName = self.thingName) {
+        this.iotData.updateThingShadow({
+            thingName: thingName,
+            payload: JSON.stringify(payload)
+        }, callback);
     }
 
-    info(message) {
-        return this.publish(this.topicLogger, {
+    info(message, callback) {
+        this.publish(this.topicLogger, {
             type: 'info',
             payload: message
-        });
+        }, callback);
     }
 
-    exception(ex) {
-        return this.publish(this.topicLogger, {
+    exception(ex, callback) {
+        this.publish(this.topicLogger, {
             type: 'exception',
             payload: ex
-        });
+        }, callback);
     }
 }
 

@@ -47,8 +47,8 @@ class Belt extends events.EventEmitter {
             "speed": 1
         };
         this.SHADOW_REPORTED = {
-            "mode": 2,
-            "speed": 1
+            "mode": 0,
+            "speed": 0
         };
 
         this.parser.on('data', (data) => {
@@ -61,6 +61,7 @@ class Belt extends events.EventEmitter {
         this.shadowPoller = setInterval(() => {
             this.port.write('1');
         }, pollerFreq);
+        
     }
     
     close(callback) {
@@ -82,21 +83,20 @@ class Belt extends events.EventEmitter {
 
             if (data.includes(TELEMETRY_STRING + '{')) {
                 beltData = JSON.parse(data.split(TELEMETRY_STRING)[1]);
-            }
-            if (data.includes(SHADOW_WATCHDOGTASK_STRING + '{')) {
+            } else if (data.includes(SHADOW_WATCHDOGTASK_STRING + '{')) {
                 beltData = JSON.parse(data.split(SHADOW_WATCHDOGTASK_STRING)[1]);
-            }
-            if (data.includes(SHADOW_SERIALINPUTTASK_STRING + '{')) {
+            } else if (data.includes(SHADOW_SERIALINPUTTASK_STRING + '{')) {
                 beltData = JSON.parse(data.split(SHADOW_SERIALINPUTTASK_STRING)[1]);
             }
 
             if (beltData && beltData.hasOwnProperty('state') && beltData.state.hasOwnProperty('reported')) {
 
                 const reported = beltData.state.reported;
+                console.log('parseIncomingSerialLine: reported: ' + JSON.stringify(reported));
 
                 this.emit('shadow', {
                     type: 'info',
-                    data: reported
+                    data: beltData
                 });
 
                 let needToUpdateShadow = false;
@@ -137,15 +137,8 @@ class Belt extends events.EventEmitter {
                 }
             }
 
-            if (beltData && beltData.hasOwnProperty('chassis')) {
-                const chassis = beltData.chassis;
-
-                this.emit('sensors', chassis);
-
-                // if (chassis.hasOwnProperty('x') && chassis.hasOwnProperty('y') && chassis.hasOwnProperty('z')) {
-                //    // ggIoT.publish(TOPIC_FOR_SENSORS, data);
-                // }
-
+            if (beltData && (beltData.hasOwnProperty('chassis') || beltData.hasOwnProperty('speed'))) {
+                this.emit('sensors', beltData);
             }
             // console.log(tag, 'desired vs. reported:', this.SHADOW_DESIRED, this.SHADOW_REPORTED);
             if (this.SHADOW_REPORTED.mode != this.SHADOW_DESIRED.mode || this.SHADOW_REPORTED.speed != this.SHADOW_DESIRED.speed) {
@@ -160,7 +153,10 @@ class Belt extends events.EventEmitter {
     }
 
     parseIncomingShadow(data) {
-        if (data.hasOwnProperty('state') && data.state.hasOwnProperty('desired')) {
+        
+        console.log('parseIncomingShadow: ' + JSON.stringify(data));
+        
+        if (data && data.hasOwnProperty('state') && data.state.hasOwnProperty('desired')) {
             const desired = data.state.desired;
 
             if (desired.hasOwnProperty('mode') && desired.mode !== this.SHADOW_DESIRED.mode) {
@@ -174,8 +170,10 @@ class Belt extends events.EventEmitter {
                 type: 'desired',
                 data: this.SHADOW_DESIRED
             });
-            // ggIoT.info('New Shadow Received');
+        } else {
+            console.log('parseIncomingShadow: data is not a proper state.desired object');
         }
+
     }
 
 }
