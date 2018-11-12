@@ -1,162 +1,64 @@
-const SerialPort = require('serialport');
-const Readline = require('@serialport/parser-readline');
 const os = require('os');
 
-const port = new SerialPort('/dev/cu.SLAB_USBtoUART', {
-    baudRate: 115200
+const SYNC_SHADOW_FREQ = 1000;
+const THING_NAME = process.env.THING_NAME || 'default';
+const SERIALPORT_PORT = process.env.SERIALPORT_PORT || (os.platform() === 'darwin' ? '/dev/cu.SLAB_USBtoUART' : '/dev/null');
+const SERIALPORT_SPEED = process.env.SERIALPORT_SPEED || 115200;
+
+const PREFIX = 'mtm';
+const TOPIC_FOR_SENSORS = PREFIX + '/' + THING_NAME + '/sensors';
+
+const Belt = require('./belt');
+const belt = new Belt(SERIALPORT_PORT, SERIALPORT_SPEED, SYNC_SHADOW_FREQ);
+
+const GGIOT = require('./ggiot');
+const ggIoT = new GGIOT(THING_NAME, PREFIX);
+
+// belt.on('data', (data) => {
+//     console.log('raw:', data);
+// });
+
+belt.on('shadow', (data) => {
+    let action = null;
+    if (data.hasOwnProperty('type')) {
+        switch (data.type) {
+            case 'reported':
+                action = ggIoT.updateThingShadow({
+                    'state': {
+                        'reported': data
+                    }
+                });
+                break;
+            case 'desired':
+                action = ggIoT.info('Shadow desired updated to: ' + JSON.stringify(data));
+                break;
+            case 'info':
+                // console.log('shadow:', data);
+                break;
+            default:
+                break;
+        }
+    }
+    if (action) {
+        action.then().catch(err => {
+            console.error('ERROR in belt.on.shadow:', err);
+        });
+    }
 });
-const parser = port.pipe(new Readline({
-    delimiter: '\n'
-}));
-
-
-console.log(os.platform());
-
-if (os.platform() === 'darwin') {
-    // The mac
-    const toto = 'titi';
-}
-
-
-const GGIOT_c = require('./ggiot');
-GGIOT = new GGIOT_c();
-
-
-let SHADOW_DESIRED = {
-    "mode": 2,
-    "speed": 1
-};
-let SHADOW_REPORTED = {
-    "mode": 2,
-    "speed": 1
-};
-
-
-function getCharFor(speed, mode) {
-    let char = '5';
-
-    if (speed === 1) {
-        if (mode === 1) {
-            char = '4';
-        } else if (mode === 2) {
-            char = '5';
-        } else if (mode === 3) {
-            char = '6';
-        }
-    } else if (speed === 2) {
-        if (mode === 1) {
-            char = '3';
-        } else if (mode === 2) {
-            char = '5';
-        } else if (mode === 3) {
-            char = '7';
-        }
-    }
-
-    return char;
-}
-
-
-exports.handler = (event) => {
-
-    console.log('handler:', JSON.stringify(event, null, 2));
-
-    if (event.hasOwnProperty('state') && event.state.hasOwnProperty('desired')) {
-        const desired = event.state.desired;
-
-        if (desired.hasOwnProperty('mode') && desired.mode !== SHADOW_DESIRED.mode) {
-            SHADOW_DESIRED.mode = desired.mode;
-        }
-        if (desired.hasOwnProperty('speed') && desired.speed !== SHADOW_DESIRED.speed) {
-            SHADOW_DESIRED.speed = desired.speed;
-        }
-
-        GGIOT.info('New Shadow Received');
-    }
-
-    return;
-};
-
-
-function parseIncomingSerialLine(data, serialWrite) {
-
-    const TELEMETRY_STRING = ' [TelemetryTask] [BELT_TELEMETRY] ';
-    const SHADOW_STRING = ' [WatchdogTask] [BELT_SHADOW] ';
-    const tag = 'parseIncomingSerialLine:';
-
-    try {
-        // console.log(tag, data);
-
-        let beltData = null;
-
-
-        if (data.includes(TELEMETRY_STRING + '{')) {
-            beltData = JSON.parse(data.split(TELEMETRY_STRING)[1]);
-        }
-        if (data.includes(SHADOW_STRING + '{')) {
-            beltData = JSON.parse(data.split(SHADOW_STRING)[1]);
-        }
-
-        if (beltData && beltData.hasOwnProperty('state') && beltData.state.hasOwnProperty('reported')) {
-
-            const reported = beltData.state.reported;
-            let needToUpdateShadow = false;
-
-            if (reported.hasOwnProperty('speed')) {
-                if (reported.speed !== 1 && reported.speed !== 2) {
-                    console.log(tag, 'Incorrect speed reported');
-                    serialWrite(getCharFor(SHADOW_DESIRED.speed, SHADOW_DESIRED.mode));
-                } else {
-                    if (SHADOW_REPORTED.speed != reported.speed) {
-                        needToUpdateShadow = true;
-                        SHADOW_REPORTED.speed = reported.speed;
-                    }
-                }
-
-                if (reported.hasOwnProperty('mode')) {
-                    if (reported.mode !== 1 && reported.mode !== 2 && reported.mode !== 3) {
-                        console.log(tag, 'Incorrect mode reported');
-                        serialWrite(getCharFor(SHADOW_DESIRED.speed, SHADOW_DESIRED.mode));
-                    } else {
-                        if (SHADOW_REPORTED.mode != reported.mode) {
-                            needToUpdateShadow = true;
-                            SHADOW_REPORTED.mode = reported.mode;
-                        }
-                    }
-                }
-
-                if (needToUpdateShadow) {
-                    // GGIOT.updateThingShadow(
-                    //     payload = {
-                    //         'state': {
-                    //             'reported': SHADOW_REPORTED
-                    //         }
-                    //     })
-                }
-
-
-            }
-            if (beltData && beltData.hasOwnProperty('chassis')) {
-                const chassis = beltData.chassis;
-                if (chassis.hasOwnProperty('x') && chassis.hasOwnProperty('y') && chassis.hasOwnProperty('z')) {
-                    // GGIOT.publish(TOPIC_FOR_SENSORS, data);
-                }
-
-            }
-            console.log(tag, 'desired vs. reported:', SHADOW_DESIRED, SHADOW_REPORTED);
-            if (SHADOW_REPORTED.mode != SHADOW_DESIRED.mode || SHADOW_REPORTED.speed != SHADOW_DESIRED.speed) {
-                serialWrite(getCharFor(SHADOW_DESIRED.speed, SHADOW_DESIRED.mode));
-            }
-        }
-
-    } catch (ex) {
-        console.log('parseIncomingSerialLine: ERROR:', ex);
-        // GGIOT.exception(str(ex))
-    }
-}
-
-parser.on('data', (data) => {
-    parseIncomingSerialLine(data, (data) => {
-        console.log('writeSerial:', data);
+belt.on('sensors', (data) => {
+    ggIoT.publish(TOPIC_FOR_SENSORS, data).then().catch(err => {
+        console.error('ERROR publishing in belt.on.sensors:', data, err);
     });
 });
+
+belt.on('error', (error) => {
+    ggIoT.exception(error).then();
+});
+
+belt.parseIncomingShadow(ggIoT.getThingShadow());
+
+exports.handler = (event) => {
+    console.log('handler:', JSON.stringify(event, null, 2));
+    belt.parseIncomingShadow(event);
+    return;
+};

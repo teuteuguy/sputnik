@@ -24,25 +24,6 @@
                     "FunctionDefinitionVersion": {
                         "Functions": [
                             {
-                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-python:MTM",
-                                "FunctionConfiguration": {
-                                    "EncodingType": "json",
-                                    "Environment": {
-                                        "ResourceAccessPolicies": [{
-                                            "Permission": "rw",
-                                            "ResourceId": "serial-port"
-                                        }],
-                                        "Variables": {
-                                            "SERIALPORT_PORT": "/dev/ttyUSB0",
-                                            "SERIALPORT_SPEED": "115200",
-                                            "THING_NAME": "!GetAtt[device_0.thingName]"
-                                        }
-                                    },
-                                    "MemorySize": 262144,
-                                    "Pinned": true,
-                                    "Timeout": 3
-                                }
-                            }, {
                                 "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-node:MTM",
                                 "FunctionConfiguration": {
                                     "EncodingType": "json",
@@ -59,14 +40,6 @@
                                     },
                                     "MemorySize": 262144,
                                     "Pinned": true,
-                                    "Timeout": 3
-                                }
-                            }, {
-                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-python:MTM",
-                                "FunctionConfiguration": {
-                                    "EncodingType": "json",
-                                    "MemorySize": 65536,
-                                    "Pinned": false,
                                     "Timeout": 3
                                 }
                             }
@@ -100,10 +73,6 @@
                             "Source": "GGShadowService",
                             "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update/accepted",
                             "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-belt-serial-node:MTM"
-                        }, {
-                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-python:MTM",
-                            "Subject": "mtm/[CORE]/factory",
-                            "Target": "cloud"
                         }]
                     }
 

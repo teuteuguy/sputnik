@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "dependencies": {
-        "serialport": "^7.0.2"
+        "serialport": "^7.0.2",
+        "underscore": "^1.9.1"
     },
     "devDependencies": {},
     "author": "teuteuguy",
@@ -19,5 +20,4 @@
         "fast-build": "rm -rf dist && yarn run build:zip && yarn run build:dist",
         "build": "yarn run build:init && yarn install --production && yarn run build:zip && yarn run build:dist"
     }
-
 }
