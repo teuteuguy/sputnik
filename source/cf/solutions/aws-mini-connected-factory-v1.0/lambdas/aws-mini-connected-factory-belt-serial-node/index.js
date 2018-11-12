@@ -9,7 +9,7 @@ const PREFIX = 'mtm';
 const TOPIC_FOR_SENSORS = PREFIX + '/' + THING_NAME + '/sensors';
 
 const Belt = require('./belt');
-const belt = new Belt(SERIALPORT_PORT, SERIALPORT_SPEED, SYNC_SHADOW_FREQ);
+const belt = new Belt(SERIALPORT_PORT, parseInt(SERIALPORT_SPEED), SYNC_SHADOW_FREQ);
 
 const GGIOT = require('./ggiot');
 const ggIoT = new GGIOT(THING_NAME, PREFIX);

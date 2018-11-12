@@ -20,15 +20,14 @@ Blablabla
 * For a given thing, check which solution they are part of.
 * have the factory reset refer to the cf scripts.
 * Simplify cloudformation script, databucket vs databucketarn
+* see if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ?
 
 ## Notes
 
 Public access to the website has been disabled by default.
 In order to enable it, you need to un-comment the policy in the s3bucket-website CF script: mythings-mgmt-s3bucket-website.yml
 
-## Limitations
-
-A user can only be in 1 group at a time
+The node lambda functions for some of the solutions require building on the final target => deeplens.
 
 ## Build
 * Configure the bucket name of your target Amazon S3 distribution bucket
