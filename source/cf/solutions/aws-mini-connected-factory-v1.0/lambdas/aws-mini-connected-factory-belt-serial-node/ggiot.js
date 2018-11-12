@@ -11,7 +11,7 @@ class GGIoT {
 
         switch (os.platform()) {
             case 'darwin':
-                this.ggSDK = {
+                this.iotData = {
                     getThingShadow: (params = {
                         thingName: self.thingName
                     }, callback = (err, data) => {
@@ -25,7 +25,7 @@ class GGIoT {
                     }, callback = (err, data) => {
                         console.log('Default callback:', err, data);
                     }) => {
-                        // console.log('ggSDK.publish: ', params.topic, params.payload);
+                        // console.log('iotData.publish: ', params.topic, params.payload);
                         callback(null, 'success');
                     },
                     updateThingShadow: (params = {}, callback = (err, data) => {
@@ -37,6 +37,7 @@ class GGIoT {
                 break;
             default:
                 this.ggSDK = require('./aws-greengrass-core-sdk');
+                this.iotData = new this.ggSDK.IotData();
                 break;
         }
 
@@ -44,7 +45,7 @@ class GGIoT {
 
     getThingShadow(thingName = this.thingName) {
         return new Promise((resolve, reject) => {
-            this.ggSDK.getThingShadow({
+            this.iotData.getThingShadow({
                 thingName: thingName
             }, (err, data) => {
                 if (err) {
@@ -58,7 +59,7 @@ class GGIoT {
 
     publish(topic, payload) {
         return new Promise((resolve, reject) => {
-            this.ggSDK.publish({
+            this.iotData.publish({
                 topic: topic,
                 payload: JSON.stringify(payload)
             }, (err, data) => {
@@ -73,7 +74,7 @@ class GGIoT {
 
     updateThingShadow(payload, thingName = self.thingName) {
         return new Promise((resolve, reject) => {
-            this.ggSDK.updateThingShadow({
+            this.iotData.updateThingShadow({
                 thingName: thingName,
                 payload: JSON.stringify(payload)
             }, (err, data) => {

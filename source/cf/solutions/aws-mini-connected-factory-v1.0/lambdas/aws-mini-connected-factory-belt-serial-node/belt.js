@@ -62,6 +62,10 @@ class Belt extends events.EventEmitter {
             this.port.write('1');
         }, pollerFreq);
     }
+    
+    close(callback) {
+        this.port.close(callback);
+    }
 
     parseIncomingSerialLine(data, serialWrite) {
 

@@ -62,3 +62,12 @@ exports.handler = (event) => {
     belt.parseIncomingShadow(event);
     return;
 };
+
+
+process.on('SIGTERM', function () {
+    console.log('Caught SIGTERM in the app. Closing serialport first');
+    belt.close(() => {
+        console.log('Port closed, exiting');
+        process.exit(0); 
+    });
+});
