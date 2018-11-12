@@ -9,9 +9,6 @@ fi
 
 set -e
 
-echo "Removing the solution lambda function code"
-find $2/cf/solutions -type d -name lambdas -prune -exec rm -v -rf {} \;
-
 echo "mkdir -p $1/greengrass"
 mkdir -p $2/greengrass
 
