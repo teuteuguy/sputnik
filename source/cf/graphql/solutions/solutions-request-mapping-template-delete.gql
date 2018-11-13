@@ -1,0 +1,16 @@
+##{
+##    "version" : "2017-02-28",
+##    "operation" : "Invoke",
+##    "payload": {
+##        "cmd": "deleteSolution",
+##        "id": "$context.arguments.id"
+##    }
+##}
+
+{
+    "version" : "2017-02-28",
+    "operation" : "DeleteItem",
+    "key" : {
+        "id" : $util.dynamodb.toStringJson($ctx.args.id)
+    }
+}

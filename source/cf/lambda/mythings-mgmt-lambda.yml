@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - Lambda - Version %%VERSION%%'
+
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    destBucketArn:
+        Type: String
+        Description: ARN of the My Things Management Website Bucket.
+    dataBucket:
+        Type: String
+        Description: My Things Management Data Bucket
+    dataBucketArn:
+        Type: String
+        Description: ARN of the My Things Management Data Bucket.
+    settingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    devicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the devices
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deploymentsTable:
+        Type: String
+        Description: DynamoDB Table for storing the deployments
+    solutionsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solutions
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    solutionsGreengrassGroupRoleArn:
+        Type: String
+        Description: My Things Management Greengrass group role ARN
+    solutionsGreengrassIoTPolicy:
+        Type: String
+        Description: My Things Management Greengrass IoT Policy
+
+Resources:
+
+    # Nested stack - Custom resource - S3 Helper
+    CFStackForCustomResourceS3Helper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-helper-s3.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                destBucketArn: !Ref destBucketArn
+                dataBucketArn: !Ref dataBucketArn
+
+    # Nested stack - Custom resource - Thing Groups Helper
+    CFStackForCustomResourceThingGroupsHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-helper-thing-groups.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+
+    # Nested stack - Custom resource - Utils Helper
+    CFStackForCustomResourceUtilsHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-helper-utils.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                destBucketArn: !Ref destBucketArn
+                dataBucketArn: !Ref dataBucketArn
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionsTable: !Ref solutionsTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+
+    # Nested stack - MicroService - Deployments
+    CFStackForDeploymentsService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-deployments.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceTypesTable: !Ref deviceTypesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deploymentsTable: !Ref deploymentsTable
+                dataBucket: !Ref dataBucket
+                solutionsGreengrassGroupRoleArn: !Ref solutionsGreengrassGroupRoleArn
+                solutionsGreengrassIoTPolicy: !Ref solutionsGreengrassIoTPolicy
+
+    # Nested stack - MicroService - Devices
+    CFStackForDevicesService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-devices.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceTypesTable: !Ref deviceTypesTable
+
+    # Nested stack - MicroService - Factory Reset
+    CFStackForFactoryResetService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-factoryreset.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                settingsTable: !Ref settingsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+
+    # Nested stack - MicroService - Settings
+    CFStackForSettingsService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-settings.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                iotThingAutoRegistrationTopicRuleName: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
+                settingsTable: !Ref settingsTable
+
+    # Nested stack - MicroService - Solutions
+    CFStackForSolutionsService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-solutions.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceTypesTable: !Ref deviceTypesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                solutionsTable: !Ref solutionsTable
+
+    # Nested stack - MicroService - Thing Auto Registration
+    CFStackForThingAutoRegistrationService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-thing-auto-registration.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+
+Outputs:
+    customResourceS3HelperArn:
+        Description: 'Custom Resource S3 Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceS3Helper.Outputs.customResourceS3HelperArn
+    customResourceThingGroupsHelperArn:
+        Description: 'Custom Resource Thing Groups Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceThingGroupsHelper.Outputs.customResourceThingGroupsHelperArn
+    customResourceUtilsHelperArn:
+        Description: 'Custom Resource Utils Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceUtilsHelper.Outputs.customResourceUtilsHelperArn
+    lambdaServiceDeploymentsArn:
+        Description: 'Deployments Service ARN'
+        Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
+    lambdaServiceDevicesArn:
+        Description: 'Devices Service ARN'
+        Value: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
+    lambdaServiceFactoryResetArn:
+        Description: "Stats Service ARN"
+        Value: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn
+    lambdaServiceSettingsArn:
+        Description: "Settings Service ARN"
+        Value: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
+    lambdaServiceSolutionsArn:
+        Description: 'Solutions Service ARN'
+        Value: !GetAtt CFStackForSolutionsService.Outputs.lambdaServiceSolutionsArn
+    lambdaServiceThingAutoRegistrationArn:
+        Description: "Thing Auto Registration Service ARN"
+        Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.lambdaServiceThingAutoRegistrationArn
+    iotThingAutoRegistrationTopicRuleName:
+        Description: "ThingAutoRegistration Topic Rule Name"
+        Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
+

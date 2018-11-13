@@ -1,0 +1,7 @@
+{
+    "id": "app-config",
+    "type": "config",
+    "setting": {
+        "mapboxToken": "NA"
+    }
+}

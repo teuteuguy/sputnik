@@ -1,0 +1,112 @@
+{
+    "id": "deeplens-v1.0-factory-reset-v1.0",
+    "name": "Deeplens v1.0 Factory Reset State v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["deeplensv1.0"],
+    "deviceTypeMappings": [{
+        "substitute": "ARTIFACTS",
+        "value": {
+            "deeplensv1.0": "artifacts"
+        }
+    }],
+    "spec": {
+        "CoreDefinitionVersion": {
+            "Cores": [{
+                "SyncShadow": true,
+                "ThingArn": "[CORE_ARN]",
+                "CertificateArn": "[CORE_CERTIFICATE_ARN]"
+            }]
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
+                    "FunctionConfiguration": {
+                        "MemorySize": 160000,
+                        "Environment": {
+                            "Variables": {},
+                            "AccessSysfs": true,
+                            "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "[ARTIFACTS]"
+                            }]
+                        },
+                        "Executable": "das_mutter.function_handler",
+                        "Pinned": true,
+                        "Timeout": 1200
+                    }
+                },
+                {
+                    "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
+                    "FunctionConfiguration": {
+                        "MemorySize": 32768,
+                        "Environment": {
+                            "Variables": {},
+                            "AccessSysfs": true
+                        },
+                        "Pinned": true,
+                        "Timeout": 3
+                    }
+                },
+                {
+                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_version_poller:1",
+                    "FunctionConfiguration": {
+                        "MemorySize": 160000,
+                        "Environment": {
+                            "Variables": {},
+                            "AccessSysfs": true,
+                            "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "[ARTIFACTS]"
+                            }]
+                        },
+                        "Executable": "version_poller.function_handler",
+                        "Pinned": true,
+                        "Timeout": 1200
+                    }
+                }
+            ]
+        },
+        "LoggerDefinitionVersion": {
+            "Loggers": [{
+                    "Type": "AWSCloudWatch",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
+                    "Component": "GreengrassSystem"
+                },
+                {
+                    "Type": "AWSCloudWatch",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
+                    "Component": "Lambda"
+                },
+                {
+                    "Space": 300000,
+                    "Type": "FileSystem",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
+                    "Component": "GreengrassSystem"
+                },
+                {
+                    "Space": 300000,
+                    "Type": "FileSystem",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-FileSystem-Lambda",
+                    "Component": "Lambda"
+                }
+            ]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                    "Target": "cloud",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
+                    "Subject": "$aws/things/[THING_NAME]/shadow/update"
+                },
+                {
+                    "Target": "cloud",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_version_poller:1",
+                    "Subject": "$aws/things/[THING_NAME]/shadow/update"
+                }
+            ]
+        }
+    }
+}

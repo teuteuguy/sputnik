@@ -1,0 +1,45 @@
+{
+    "id": "factory-reset-v1.0",
+    "name": "Factory Reset v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["all"],
+    "deviceTypeMappings": null,
+    "spec": {
+        "CoreDefinitionVersion": {
+            "Cores": [{
+                "SyncShadow": true,
+                "ThingArn": "[CORE_ARN]",
+                "CertificateArn": "[CORE_CERTIFICATE_ARN]"
+            }]
+        },
+        "LoggerDefinitionVersion": {
+            "Loggers": [{
+                    "Type": "AWSCloudWatch",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
+                    "Component": "GreengrassSystem"
+                },
+                {
+                    "Type": "AWSCloudWatch",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
+                    "Component": "Lambda"
+                },
+                {
+                    "Space": 300000,
+                    "Type": "FileSystem",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
+                    "Component": "GreengrassSystem"
+                },
+                {
+                    "Space": 300000,
+                    "Type": "FileSystem",
+                    "Level": "INFO",
+                    "Id": "deeplens-greengrass-FileSystem-Lambda",
+                    "Component": "Lambda"
+                }
+            ]
+        }
+    }
+}

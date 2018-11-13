@@ -1,0 +1,98 @@
+{
+    "id": "aws-gg-mini-connected-factory-v1.0",
+    "name": "GG Mini Connected Factory v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["aws-deeplens-v1.0"],
+    "deviceTypeMappings": [{
+        "substitute": "ARTIFACTS",
+        "value": {
+            "aws-deeplens-v1.0": "artifacts"
+        }
+    }, {
+        "substitute": "AWS_CAM_HOME",
+        "value": {
+            "aws-deeplens-v1.0": "aws_cam_home"
+        }
+    }, {
+        "substitute": "AWS_CAM_STREAM",
+        "value": {
+            "aws-deeplens-v1.0": "stream"
+        }
+    }],
+    "spec": {
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                    "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
+                    "FunctionConfiguration": {
+                        "EncodingType": "json",
+                        "Environment": {
+                            "AccessSysfs": false,
+                            "ResourceAccessPolicies": [{
+                                    "Permission": "rw",
+                                    "ResourceId": "tmp"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "mtm-model-lego-helmets"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "[AWS_CAM_HOME]"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "[AWS_CAM_STREAM]"
+                                },
+                                {
+                                    "Permission": "ro",
+                                    "ResourceId": "[ARTIFACTS]"
+                                },
+                                {
+                                    "Permission": "rw",
+                                    "ResourceId": "gpu"
+                                }, {
+                                    "Permission": "rw",
+                                    "ResourceId": "sound_card"
+                                }, {
+                                    "Permission": "rw",
+                                    "ResourceId": "sound_control"
+                                }
+                            ],
+                            "Variables": {
+                                "ML_MODEL_PATH": "/ml/helmets/image-classification"
+                            }
+                        },
+                        "MemorySize": 2097152,
+                        "Pinned": true,
+                        "Timeout": 25
+                    }
+                }
+            ]
+        },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                "Id": "mtm-model-lego-helmets",
+                "Name": "mtm-model-lego-helmets",
+                "ResourceDataContainer": {
+                    "S3MachineLearningModelResourceData": {
+                        "DestinationPath": "/ml/helmets/",
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/aws-mini-connected-factory-v1.0/models/legomodel.tar.gz"
+                    }
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/inference",
+                    "Target": "cloud"
+                },
+                {
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/admin",
+                    "Target": "cloud"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "name": "aws-mini-connected-factory-belt-serial-node",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "serialport": "^7.0.2"
+    },
+    "devDependencies": {},
+    "author": "teuteuguy",
+    "license": "ISC",
+    "private": true,
+    "scripts": {
+        "prestart": "yarn install",
+        "start": "node index.js",
+        "build:init": "rm -rf dist && rm -rf node_modules",
+        "build:zip": "zip -rq `jq -cr '.name' package.json`.zip .",
+        "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
+        "fast-build": "rm -rf dist && yarn run build:zip && yarn run build:dist",
+        "build": "yarn run build:init && npm install && yarn run build:zip && yarn run build:dist"
+    }
+}

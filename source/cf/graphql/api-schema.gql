@@ -1,0 +1,193 @@
+type ConnectionState {
+    state: String!
+    at: AWSDateTime!
+    certificateArn: String!
+    certificateId: String!
+}
+type Device {
+    thingId: String!
+    thingName: String!
+    thingArn: String!
+    name: String!
+    deviceTypeId: String!
+    deviceBlueprintId: String!
+    connectionState: ConnectionState
+    greengrassGroupId: String!
+    spec: AWSJSON
+    lastDeploymentId: String
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedDevices {
+    devices: [Device]
+    nextToken: String
+}
+type Deployment {
+    thingId: String!
+    deploymentId: String!
+    type: String!
+    spec: AWSJSON
+    greengrassGroup: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedDeployments {
+    deployments: [Deployment]
+    nextToken: String
+}
+type DeviceStat {
+    total: Int!
+    connected: Int!
+    disconnected: Int!
+}
+type DeviceType {
+    id: String!
+    name: String!
+    type: String!
+    spec: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedDeviceTypes {
+    deviceTypes: [DeviceType]
+    nextToken: String
+}
+type DeviceBlueprint {
+    id: String!
+    name: String!
+    type: String!
+    compatibility: [String]
+    deviceTypeMappings: AWSJSON
+    spec: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedDeviceBlueprints {
+    deviceBlueprints: [DeviceBlueprint]
+    nextToken: String
+}
+type Setting {
+    id: String!
+    type: String!
+    setting: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+
+type Solution {
+    id: String!
+    name: String!
+    description: String
+    thingIds: [String]
+    deviceIds: [String]!
+    solutionBlueprintId: String!
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedSolutions {
+    solutions: [Solution]
+    nextToken: String
+}
+type SolutionStat {
+    total: Int!
+}
+
+type SolutionBlueprint {
+    id: String!
+    name: String!
+    description: String
+    prefix: String!
+    spec: AWSJSON
+    createdAt: AWSDateTime
+    updatedAt: AWSDateTime
+}
+type PaginatedSolutionBlueprints {
+    solutionBlueprints: [SolutionBlueprint]
+    nextToken: String
+}
+type SolutionBlueprintStat {
+    total: Int!
+}
+
+type Query {
+    listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesOfDeviceType(deviceTypeId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    listDevicesWithDeviceBlueprint(deviceBlueprintId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDeviceStats: DeviceStat @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listDeviceTypes(limit: Int, nextToken: String): PaginatedDeviceTypes @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    getSetting(id: String!): Setting @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    getThingAutoRegistrationState: Boolean @aws_auth(cognito_groups: ["Administrators"])
+
+    listDeviceBlueprints(limit: Int, nextToken: String): PaginatedDeviceBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listDeployments(limit: Int, nextToken: String): PaginatedDeployments @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listSolutions(limit: Int, nextToken: String): PaginatedSolutions @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolutionStats: SolutionStat @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    listSolutionBlueprints(limit: Int, nextToken: String): PaginatedSolutionBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
+    getSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
+}
+type Mutation {
+    addDevice(thingName: String!, spec: AWSJSON, generateCert: Boolean!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
+    deleteDevice(thingId: String!): Device @aws_auth(cognito_groups: ["Administrators"])
+    updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!, spec: AWSJSON!): Device! @aws_auth(cognito_groups: ["Administrators"])
+
+    addDeviceType(name: String!, type: String!, spec: AWSJSON): DeviceType! @aws_auth(cognito_groups: ["Administrators"])
+    deleteDeviceType(id: String!): DeviceType @aws_auth(cognito_groups: ["Administrators"])
+    updateDeviceType(id: String!, name: String!, type: String!, spec: AWSJSON): DeviceType @aws_auth(cognito_groups: ["Administrators"])
+
+    addDeviceBlueprint(name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON!): DeviceBlueprint! @aws_auth(cognito_groups: ["Administrators"])
+    deleteDeviceBlueprint(id: String!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
+    updateDeviceBlueprint(id: String!, name: String!, type: String!, compatibility: [String]!, deviceTypeMappings: AWSJSON!, spec: AWSJSON!): DeviceBlueprint @aws_auth(cognito_groups: ["Administrators"])
+
+    factoryReset(cmd: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
+
+    setThingAutoRegistrationState(enabled: Boolean!): Boolean @aws_auth(cognito_groups: ["Administrators"])
+
+    addDeployment(thingId: String!): Deployment! @aws_auth(cognito_groups: ["Administrators"])
+
+    addSolution(name: String!, description: String, deviceIds: [String]!, solutionBlueprintId: String!): Solution! @aws_auth(cognito_groups: ["Administrators"])
+    deleteSolution(id: String!): Solution @aws_auth(cognito_groups: ["Administrators"])
+    updateSolution(id: String!, name: String!, description: String, deviceIds: [String]!): Solution @aws_auth(cognito_groups: ["Administrators"])
+    refreshSolution(id: String!): Boolean @aws_auth(cognito_groups: ["Administrators"])
+
+    addSolutionBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint! @aws_auth(cognito_groups: ["Administrators"])
+    deleteSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])
+    updateSolutionBlueprint(id: String!, name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])
+
+    attachPrincipalPolicy(policyName: String!, principal: String!): Boolean @aws_auth(cognito_groups: ["Administrators", "Members"])
+}
+type Subscription {
+    addedDeviceType: DeviceType @aws_subscribe(mutations: ["addDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDeviceType: DeviceType @aws_subscribe(mutations: ["updateDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDeviceType: DeviceType @aws_subscribe(mutations: ["deleteDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    addedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["addDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["updateDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["deleteDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    addedDevice: Device @aws_subscribe(mutations: ["addDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDevice: Device @aws_subscribe(mutations: ["updateDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDevice: Device @aws_subscribe(mutations: ["deleteDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    addedSolution: [Solution] @aws_subscribe(mutations: ["addSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedSolution: [Solution] @aws_subscribe(mutations: ["updateSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedSolution: [Solution] @aws_subscribe(mutations: ["deleteSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    addedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["addSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["updateSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["deleteSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+}
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}

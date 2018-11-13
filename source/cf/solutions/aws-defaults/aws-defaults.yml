@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS My Things Management Defaults v1.0'
+Parameters:
+    sourceS3Bucket:
+        Type: String
+        Description: My Things Management S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: My Things management Source key prefix.
+    greengrassSourceKeyPrefix:
+        Type: String
+        Description: My Things management source key prefix for the greengrass lambda function code
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    deploymentUUID:
+        Type: String
+        Description: Used to force update / create of inits
+    dataS3Bucket:
+        Type: String
+        Description: My Things Management Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: My Things Management Data S3 Bucket ARN
+    solutionsGreengrassGroupRole:
+        Type: String
+        Description: Greengrass Group Role
+
+Resources:
+
+    AMCF1GreengrassGroupPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'Policy for the My Things Management Greengrass Role.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:DescribeLogStreams'
+                            - 'logs:PutLogEvents'
+                            - 'logs:CreateLogGroup'
+                        Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                        Resource:
+                            - 'arn:aws:s3:::deeplens*/*'
+                            - 'arn:aws:s3:::deeplens*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'deeplens:*'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'kinesisvideo:DescribeStream'
+                            - 'kinesisvideo:CreateStream'
+                            - 'kinesisvideo:GetDataEndpoint'
+                            - 'kinesisvideo:PutMedia'
+                        Resource:
+                            - '*'
+            Roles:
+                -
+                    !Ref solutionsGreengrassGroupRole
+
+
+
+
+    DEFAULTSDeviceBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    DEFAULTSDeviceTypes:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceTypesTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DEFAULTSSolutionBlueprints:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !Ref customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Ref sourceS3Bucket
+    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'solution-blueprints']]
+    #         uuid: !Ref deploymentUUID
+    #         table: !Ref solutionBlueprintsTable
+    #         customAction: 'dynamodbPutObjectsFromS3Folder'

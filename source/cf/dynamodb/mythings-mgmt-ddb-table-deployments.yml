@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My Things Management - DynamoDB Table - Deployments - Version %%VERSION%%'
+
+Resources:
+    deploymentsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "thingId"
+                    AttributeType: "S"
+                -
+                    AttributeName: "deploymentId"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "thingId"
+                    KeyType: "HASH"
+                -
+                    AttributeName: "deploymentId"
+                    KeyType: "RANGE"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "mythings-mgmt-deployments"
+
+Outputs:
+    deploymentsTable:
+        Description: "DynamoDB Deployments Table"
+        Value: !Ref deploymentsTable

@@ -1,0 +1,12 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "Invoke",
+    "payload": {
+        "cmd": "addDevice",
+        "thingName": "$context.arguments.thingName",
+        "generateCert": "$context.arguments.generateCert",
+        "spec": $util.toJson($context.arguments.spec),
+        "deviceTypeId": "$context.arguments.deviceTypeId",
+        "deviceBlueprintId": "$context.arguments.deviceBlueprintId",
+    }
+}
