@@ -16,9 +16,11 @@ Amplify.configure({
         userPoolId: appVariables.USER_POOL_ID, // OPTIONAL - Amazon Cognito User Pool ID
         userPoolWebClientId: appVariables.USER_POOL_CLIENT_ID // OPTIONAL - Amazon Cognito Web Client ID,
     },
-    aws_appsync_graphqlEndpoint: appVariables.APP_SYNC_GRAPHQL_ENDPOINT,
-    aws_appsync_region: appVariables.REGION,
-    aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS'
+    API: {
+        aws_appsync_graphqlEndpoint: appVariables.APP_SYNC_GRAPHQL_ENDPOINT,
+        aws_appsync_region: appVariables.REGION,
+        aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS'
+    }
     // API: {
     //     graphql_endpoint: appVariables.APP_SYNC_GRAPHQL_ENDPOINT,
     //     region: appVariables.REGION,

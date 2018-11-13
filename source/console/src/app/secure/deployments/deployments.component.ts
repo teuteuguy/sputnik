@@ -5,6 +5,9 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
+// Components
+import { ProfileInfoComponent } from '../common/profile-info.component';
+
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 import { Deployment } from '../../models/deployment.model';
@@ -23,9 +26,8 @@ declare var $: any;
     selector: 'app-root-deployments',
     templateUrl: './deployments.component.html'
 })
-export class DeploymentsComponent implements OnInit {
+export class DeploymentsComponent extends ProfileInfoComponent implements OnInit {
     public title = 'Deployments';
-    private profile: ProfileInfo;
 
     public pages: any = {
         current: 1,
@@ -48,7 +50,9 @@ export class DeploymentsComponent implements OnInit {
         private logger: LoggerService,
         private _ngZone: NgZone,
         private deploymentService: DeploymentService
-    ) {}
+    ) {
+        super(localStorage);
+    }
 
     ngOnInit() {
         const _self = this;
@@ -58,10 +62,7 @@ export class DeploymentsComponent implements OnInit {
             new Crumb({ title: _self.title, active: true, link: 'deployments' })
         ]);
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            _self.loadDeployments();
-        });
+        _self.loadDeployments();
     }
 
     updatePaging() {
@@ -117,5 +118,4 @@ export class DeploymentsComponent implements OnInit {
         this.blockUI.start('Loading device types...');
         this.loadDeployments();
     }
-
 }

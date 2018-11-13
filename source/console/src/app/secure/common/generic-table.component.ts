@@ -4,7 +4,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Services
-import { LoggerService } from '../../../services/logger.service';
+import { LoggerService } from '../../services/logger.service';
 
 // Helpers
 import { _ } from 'underscore';
@@ -46,7 +46,7 @@ export class DataStat {
     selector: 'app-root',
     templateUrl: './generic-table.component.html'
 })
-export class GenericTableComponent {
+export class GenericTableComponent  {
     public pages: any = {
         current: 1,
         total: 0,

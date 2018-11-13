@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
+// Components
+import { ProfileInfoComponent } from '../common/profile-info.component';
+
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 import { Setting } from '../../models/setting.model';
@@ -17,7 +20,7 @@ import { FactoryResetService } from '../../services/factoryreset.service';
     selector: 'app-root-settings',
     templateUrl: './settings.component.html'
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent extends ProfileInfoComponent implements OnInit {
     public title = 'System Settings';
 
     public isAdminUser = false;
@@ -31,7 +34,7 @@ export class SettingsComponent implements OnInit {
     public thingAutoRegistrationConfigErrorMessage = '';
     public thingAutoRegistrationState = false;
 
-    private profile: ProfileInfo;
+    // private profile: ProfileInfo;
 
     public factoryResetTables = [
         {
@@ -62,7 +65,9 @@ export class SettingsComponent implements OnInit {
         private logger: LoggerService,
         private settingService: SettingService,
         private factoryResetService: FactoryResetService
-    ) {}
+    ) {
+        super(localStorage);
+    }
 
     ngOnInit() {
         this.blockUI.start('Loading settings...');
@@ -77,11 +82,11 @@ export class SettingsComponent implements OnInit {
 
         const _self = this;
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            _self.isAdminUser = _self.profile.isAdmin();
+        // _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+        //     _self.profile = new ProfileInfo(profile);
+        //     _self.isAdminUser = _self.profile.isAdmin();
             _self.loadAllSettings();
-        });
+        // });
     }
 
     loadAllSettings() {

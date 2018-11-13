@@ -6,6 +6,9 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { _ } from 'underscore';
 import * as moment from 'moment';
 
+// Components
+import { ProfileInfoComponent } from '../common/profile-info.component';
+
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 
@@ -22,12 +25,12 @@ declare var swal: any;
     selector: 'app-root',
     templateUrl: './profile.component.html'
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent extends ProfileInfoComponent implements OnInit {
 
     public cognitoId: string;
     public title = 'My Profile';
     public deviceStats: any = {};
-    public profile: ProfileInfo = new ProfileInfo();
+    // public profile: ProfileInfo = new ProfileInfo();
 
     @BlockUI() blockUI: NgBlockUI;
 
@@ -36,6 +39,7 @@ export class ProfileComponent implements OnInit {
         public userService: UserLoginService,
         protected localStorage: LocalStorage,
         private logger: LoggerService) {
+            super(localStorage);
     }
 
     ngOnInit() {
@@ -47,8 +51,8 @@ export class ProfileComponent implements OnInit {
         //     _self.deviceStats = stats;
         // });
 
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile) => {
-            _self.profile = new ProfileInfo(profile);
+        // this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile) => {
+        //     _self.profile = new ProfileInfo(profile);
             // refresh profile info
             _self.loadProfileData().then(() => {
                 this.blockUI.stop();
@@ -59,7 +63,7 @@ export class ProfileComponent implements OnInit {
                     'Something went wrong! Unable to retrieve the user\'s profile.',
                     'error');
             });
-        });
+        // });
     }
 
     loadProfileData() {

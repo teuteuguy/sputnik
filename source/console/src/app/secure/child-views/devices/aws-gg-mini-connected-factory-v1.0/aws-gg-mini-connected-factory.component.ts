@@ -1,5 +1,7 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+
+// Components
+import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
 
 // Models
 import { Device } from 'src/app/models/device.model';
@@ -7,65 +9,42 @@ import { Device } from 'src/app/models/device.model';
 // Services
 import { IOTService } from 'src/app/services/iot.service';
 
-import { PubSub } from 'aws-amplify';
-
 @Component({
     selector: 'app-aws-gg-mini-connected-factory-v1',
     templateUrl: './aws-gg-mini-connected-factory.component.html'
 })
-export class AWSGGMiniConnectedFactoryV10Component implements OnInit, OnDestroy {
+export class AWSGGMiniConnectedFactoryV10Component extends IoTPubSuberComponent implements OnInit {
     @Input()
     device: Device = new Device();
 
-    private obs: Observable<any>;
-    private subscriptions = [];
+    latestInference: any = null;
 
-    constructor(private iotService: IOTService) {}
-
-    ngOnInit() {
-        // try {
-        //     PubSub.subscribe('mytopic', {}).subscribe(
-        //         data => {
-        //             console.log('Message received', data);
-        //         },
-        //         error => console.error('Error', error),
-        //         () => console.log('Done')
-        //     );
-        // } catch (ex) {
-        //     console.error(ex);
-        // }
-        // .subscribe({
-        //     next: data => console.log('Message received', data),
-        //     error: error => console.error(error),
-        //     close: () => console.log('Done'),
-        // });
-        // this.iotService.subscribe('toto/titi').subscribe(res => console.log(res), err => console.error(err));
-        // console.log(this.iotService.subscribe('toto'));
-        // const obs: any = PubSub.subscribe('mtm/#', {});
-        // obs.subscribe({
-        //     next: data => console.log('Message received', data),
-        //     error: error => console.error(error),
-        //     close: () => console.log('Done')
-        // });
-        // const sub = this.iotService.subscribe('mtm/#');
-        // sub.subscribe({
-        //     next: data => {
-        //         console.log('Message received', data);
-        //     },
-        //     error: error => {
-        //         console.error(error);
-        //     },
-        //     close: () => {
-        //         console.log('Done');
-        //     }
-        // });
-        // this.subscriptions.push(sub);
+    constructor(private iotService: IOTService) {
+        super(iotService);
     }
 
-    ngOnDestroy() {
-        this.subscriptions.forEach(sub => {
-            sub.unsubscribe();
-        });
-        this.subscriptions = [];
+    ngOnInit() {
+        this.subscribe([
+            {
+                topic: 'mtm/' + this.device.thingName + '/inference',
+                onMessage: data => {
+                    console.log('Inference:', data.value);
+                    data.value.payload.probability = Math.floor(data.value.payload.probability * 1000) / 10;
+                    this.latestInference = data.value.payload;
+                },
+                onError: err => {
+                    console.error('Error:', err);
+                }
+            },
+            {
+                topic: 'mtm/' + this.device.thingName + '/admin',
+                onMessage: data => {
+                    console.log('Admin:', data.value);
+                },
+                onError: err => {
+                    console.error('Error:', err);
+                }
+            }
+        ]);
     }
 }

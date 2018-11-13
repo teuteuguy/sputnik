@@ -9,7 +9,7 @@ import {
     GenericTableComponent,
     GenericTableParams,
     GenericTableElementParams
-} from '../../common/components/generic-table/generic-table.component';
+} from '../common/generic-table.component';
 
 // Childs
 import { SolutionsModalComponent } from './solutions.modal.component';
@@ -51,7 +51,7 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
     ) {
         super(logger, resolver);
 
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             this.profile = new ProfileInfo(profile);
             this.isAdminUser = this.profile.isAdmin();
 

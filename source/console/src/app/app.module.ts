@@ -26,12 +26,16 @@ import { ResendCodeComponent } from './public/auth/resend/resend-code.component'
 import { ForgotPasswordStep1Component, ForgotPassword2Component } from './public/auth/forgot/forgot-password.component';
 import { RegisterComponent } from './public/auth/register/registration.component';
 import { NewPasswordComponent } from './public/auth/newpassword/new-password.component';
-// Components - Secure
+// Components - Secure - Common
+import { GenericTableComponent } from './secure/common/generic-table.component';
+import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
+import { PrettifierComponent } from './secure/common/prettifier.component';
+import { ProfileInfoComponent } from './secure/common/profile-info.component';
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
+// Components - Secure
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
-import { PrettifierComponent } from './secure/common/prettifier.component';
 import { DeviceTypesComponent } from './secure/device-types/device-types.component';
 // import { DeviceTypeComponent } from './secure/device-type/device-type.component';
 import { DevicesComponent } from './secure/devices/devices.component';
@@ -42,7 +46,6 @@ import { DeploymentsComponent } from './secure/deployments/deployments.component
 import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
-import { GenericTableComponent } from './common/components/generic-table/generic-table.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -111,12 +114,16 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         NewPasswordComponent,
         HomeComponent,
 
+        // Components - Secure - Common
+        GenericTableComponent,
+        IoTPubSuberComponent,
+        PrettifierComponent,
+        ProfileInfoComponent,
         // Components - Secure
         SecureHomeCommonComponent,
         SecureHomeComponent,
         SettingsComponent,
         ProfileComponent,
-        PrettifierComponent,
         DeviceTypesComponent,
         // DeviceTypeComponent,
         DevicesComponent,
@@ -128,14 +135,12 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         SolutionsComponent,
         SolutionBlueprintsComponent,
 
-        GenericTableComponent,
-
         // Sub Components
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
         SolutionEditModalComponent,
         SolutionsModalComponent,
-        SolutionBlueprintsModalComponent,
+        SolutionBlueprintsModalComponent
 
         // Directives
 
@@ -147,6 +152,7 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         // DeviceTypeNameFromIdPipe,
         // SolutionBlueprintFromSolutionBlueprintIdPipe
     ],
+    // exports: [GenericTableComponent, IoTPubSuberComponent, PrettifierComponent, ProfileInfoComponent],
     imports: [
         BrowserModule,
         FormsModule,
