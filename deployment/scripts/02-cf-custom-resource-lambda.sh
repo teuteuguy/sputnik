@@ -10,26 +10,30 @@ fi
 set -e
 
 echo "02-cf-custom-resource-lambda.sh-----------------------------------------------"
-echo "------------------------------------------------------------------------------"
+echo "mkdir -p $2/lambda"
+mkdir -p $2/lambda
+echo
 echo "[Rebuild] Cloudformation custom resource - S3 Helper"
-echo "------------------------------------------------------------------------------"
 cd $1/resources/cf-helper-s3
 yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
+cp $1/resources/cf-helper-s3/dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
-echo "------------------------------------------------------------------------------"
+echo
 echo "[Rebuild] Cloudformation custom resource - ThingGroups"
-echo "------------------------------------------------------------------------------"
+echo
 cd $1/resources/mtm-thing-groups
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
-echo "------------------------------------------------------------------------------"
+echo
 echo "[Rebuild] Cloudformation custom resource - Utils"
-echo "------------------------------------------------------------------------------"
+echo
 cd $1/resources/utils
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo
+echo "------------------------------------------------------------------------------"
+echo
+
 exit 0

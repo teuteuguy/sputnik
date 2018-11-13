@@ -17,6 +17,6 @@
         "build:zip": "zip -rq `jq -cr '.name' package.json`.zip .",
         "build:dist": "mkdir dist && mv `jq -cr '.name' package.json`.zip dist/",
         "fast-build": "rm -rf dist && yarn run build:zip && yarn run build:dist",
-        "build": "yarn run build:init && npm install && yarn run build:zip && yarn run build:dist"
+        "build": "yarn run build:init && yarn install --production --ignore-engines && yarn run build:zip && yarn run build:dist"
     }
 }
