@@ -2,11 +2,11 @@
     "id": "aws-gg-mini-connected-factory-v1.1",
     "name": "GG Mini Connected Factory v1.1",
     "type": "GREENGRASS",
-    "compatibility": ["aws-deeplens-v1.0"],
+    "compatibility": ["aws-deeplens-no-lambda-v1.0"],
     "deviceTypeMappings": [{
         "substitute": "AWS_CAM_STREAM",
         "value": {
-            "aws-deeplens-v1.0": "stream"
+            "aws-deeplens-no-lambda-v1.0": "stream"
         }
     }],
     "spec": {

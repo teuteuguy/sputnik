@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import cv2
 import time
 from threading import Event, Thread, Timer
@@ -6,8 +7,8 @@ import math
 
 import awscam
 from file_output import FileOutput
-from publish import Publisher
-from inference import Infer
+
+from ggiot import GGIoT
 
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
@@ -19,37 +20,15 @@ IOT_TOPIC_ADMIN = 'mtm/{}/admin'.format(THING_NAME)
 IOT_TOPIC_SHADOW_UPDATE = '$aws/things/{}/shadow/update'.format(THING_NAME)
 CAPTURE_FREQ = get_parameter('CAPTURE_FREQ', '0.5')
 
-try:
-    GGIOT = GGIoT(thing=THING_NAME, prefix='mtm')
-
-    GGIOT.info("Loading new Thread")
-    GGIOT.info('OpenCV '+cv2.__version__)
-
-    GGIOT.info('Getting last camera frame')
-    ret, frame = awscam.getLastFrame()
-    ret, frame = awscam.getLastFrame()
-
-    GGIOT.info('Initilizing ouput file')
-    OUTPUT = FileOutput('/tmp/results.mjpeg', frame, GGIOT)
-    OUTPUT.start()
-
-    GGIOT.info('Starting main loop')
-
-except Exception as err:
-    GGIOT.exception(str(err))
-    time.sleep(1)
-
-
 SIMPLE_CAMERA = {
     "capture": "Off",
     "sleepInSecsAsStr": CAPTURE_FREQ,
-    "s3Bucket": "Off"
+    "s3Bucket": "Off",
+    "resolution": "1920x1080"
 }
-#     "saveOriginals": "Off",
-#     "pathToPictures": "/tmp/",
-#     "jpegQuality": 50
-# }
 
+
+def timeInMillis(): return int(round(time.time() * 1000))
 
 def parseIncomingShadow(shadow):
 
@@ -73,14 +52,11 @@ def parseIncomingShadow(shadow):
                 if 's3Bucket' in simpleCamera and SIMPLE_CAMERA['s3Bucket'] != simpleCamera['s3Bucket']:
                     SIMPLE_CAMERA['s3Bucket'] = simpleCamera['s3Bucket']
                     print("parseIncomingShadow: updating s3Bucket to {}".format(SIMPLE_CAMERA['s3Bucket']))
+                if 'resolution' in simpleCamera and SIMPLE_CAMERA['resolution'] != simpleCamera['resolution']:
+                    SIMPLE_CAMERA['resolution'] = simpleCamera['resolution']
+                    print("parseIncomingShadow: updating resolution to {}".format(SIMPLE_CAMERA['resolution']))
 
-                # if 'beltMode' in state['desired'] and SHADOW_DESIRED['beltMode'] != state['desired']['beltMode']:
-                #     SHADOW_DESIRED['beltMode'] = state['desired']['beltMode']
-                #     print("parseIncomingShadow: updating beltMode to {}".format(SHADOW_DESIRED['beltMode']))
-                # if 'beltSpeed' in state['desired'] and SHADOW_DESIRED['beltSpeed'] != state['desired']['beltSpeed']:
-                #     SHADOW_DESIRED['beltSpeed'] = state['desired']['beltSpeed']
-                #     print("parseIncomingShadow: updating beltSpeed to {}".format(SHADOW_DESIRED['beltSpeed']))
-                # GGIOT.info("New Shadow received")
+                GGIOT.updateThingShadow(payload={'state': {'reported': {'simpleCamera': SIMPLE_CAMERA}}})
 
 def lambda_handler(event, context):
     GGIOT.info({"location": "lambda_handler", "event": event})
@@ -88,12 +64,51 @@ def lambda_handler(event, context):
     return
 
 
-GGIOT.info("Lambda restart")
+def parseResolution(strResolution):
+    resolution = strResolution.split('x')
+    resolution[0] = int(resolution[0])
+    resolution[1] = int(resolution[1])
+    return (resolution[0], resolution[1])
 
-parseIncomingShadow(GGIOT.getThingShadow())
+try:
+    print("Start of lambda function")
+    GGIOT = GGIoT(thing=THING_NAME, prefix='mtm')
+
+    GGIOT.info("Loading new Thread")
+    GGIOT.info('OpenCV '+cv2.__version__)
+
+    parseIncomingShadow(GGIOT.getThingShadow())
+
+    GGIOT.info('Initilizing ouput file')
+    resolution = parseResolution(SIMPLE_CAMERA['resolution'])
+    frame = 255*np.ones([resolution[0], resolution[1], 3])
+    OUTPUT = FileOutput('/tmp/results.mjpeg', frame, GGIOT)
+    OUTPUT.start()
+
+    GGIOT.info('Getting last camera frame')
+    ret, frame = awscam.getLastFrame()
+    ret, frame = awscam.getLastFrame()
+
+except Exception as err:
+    GGIOT.exception(str(err))
+    time.sleep(1)
+
+def getTimestamp():
+    return '{}'.format(int(round(time.time() * 1000)))
 
 
-last_update = time.time()
+def saveFrameToFile(filename, frame):
+    localFilename = '/tmp/' + filename
+    print("saveFrameToFile: Saving frame to {}".format(localFilename))
+
+    localWriteReturn = cv2.imwrite(localFilename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    if not localWriteReturn:
+        raise Exception('Failed to save frame to file')
+
+    return True, filename, localFilename
+
+
+last_update = timeInMillis()
 nbFramesProcessed = 0
 fps = 0
 
@@ -105,32 +120,49 @@ def camera_handler():
     global SIMPLE_CAMERA
 
     ret, frame = awscam.getLastFrame()
+    frame = cv2.resize(frame, parseResolution(SIMPLE_CAMERA['resolution']))
+    font = cv2.FONT_HERSHEY_SIMPLEX
 
     nbFramesProcessed += 1
 
-    now = time.time()
-    if now - last_update >= 1:
-        fps = nbFramesProcessed / (now - last_update)
-        fps = math.floor(fps * 100) / 100
-        last_update = time.time()
+    timeBetweenFrames = timeInMillis() - last_update
+    if timeBetweenFrames > 1000:
+        fps = math.floor(100 * (fps + (1000 * nbFramesProcessed / timeBetweenFrames)) / 2 ) / 100
         nbFramesProcessed = 0
+        last_update = timeInMillis()
 
-    if SIMPLE_CAMERA['capture'] == 'On':
 
-        GGIOT.publish(IOT_TOPIC_ADMIN, {
-            "type":  "info",
-            "payload": {
-                "fps": str(fps),
-                "frame": {
-                    "size": frame.size,
-                    "shape": frame.shape
-                }
-            }
-        })
+    cv2.putText(frame, 'FPS: {}'.format(str(fps)), (5, parseResolution(
+        SIMPLE_CAMERA['resolution'])[1] - 5), font, 0.4, (0, 0, 255), 1)
 
     OUTPUT.update(frame)
 
-    time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
+    if SIMPLE_CAMERA['capture'] == 'On':
+
+        # Create a filename for the given frame to be used through this loop
+        timestamp = getTimestamp()
+
+        filename = timestamp + '.jpg'
+
+        # Save frame to disk
+        result, filename, localFilename = saveFrameToFile(
+            filename=filename,
+            frame=frame
+        )
+        if result == True:
+            GGIOT.publish(IOT_TOPIC_ADMIN, {
+                "type":  "info",
+                "payload": {
+                    "fps": str(fps),
+                    "frame": {
+                        "size": frame.size,
+                        "shape": frame.shape
+                    },
+                    "filename": filename
+                }
+            })
+
+        time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
 
     return
 

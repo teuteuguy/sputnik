@@ -2,11 +2,11 @@
     "id": "aws-deeplens-image-capture-v1.0",
     "name": "AWS Deeplens Image Capture v1.0",
     "type": "GREENGRASS",
-    "compatibility": ["aws-deeplens-v1.0"],
+    "compatibility": ["aws-deeplens-no-lambda-v1.0"],
     "deviceTypeMappings": [{
         "substitute": "AWS_CAM_STREAM",
         "value": {
-            "aws-deeplens-v1.0": "stream"
+            "aws-deeplens-no-lambda-v1.0": "stream"
         }
     }],
     "spec": {
@@ -15,7 +15,8 @@
                 "simpleCamera": {
                     "capture": "Off",
                     "sleepInSecsAsStr": "0.5",
-                    "s3Bucket": "[DATA_BUCKET]"
+                    "s3Bucket": "[DATA_BUCKET]",
+                    "resolution": "858x480"
                 }
             }
         },
@@ -52,8 +53,12 @@
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM",
-                    "Subject": "mtm/[CORE]/admin",
+                    "Subject": "mtm/[CORE]/logger",
                     "Target": "cloud"
+                }, {
+                    "Source": "GGShadowService",
+                    "Subject": "$aws/things/[CORE]/shadow/update/accepted",
+                    "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM"
                 }
             ]
         }
