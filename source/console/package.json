@@ -29,7 +29,6 @@
     "@angular/platform-browser": "^7.0.3",
     "@angular/platform-browser-dynamic": "^7.0.3",
     "@angular/router": "^7.0.3",
-    "@fortawesome/fontawesome-free": "^5.5.0",
     "@ngx-pwa/local-storage": "^7.0.0",
     "@toverux/ngx-sweetalert2": "^4.0.0",
     "@uirouter/angular": "^2.0.2",
