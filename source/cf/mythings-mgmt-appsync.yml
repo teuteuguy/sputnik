@@ -769,7 +769,7 @@ Resources:
     # ####################################################################################################
     # ####################################################################################################
 
-    # RESOLVERS - MUTATIONS - Utils -
+    # RESOLVERS - MUTATIONS - Utils
     appSyncResolverMutationAttachPrincipalPolicy:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
@@ -779,6 +779,26 @@ Resources:
             FieldName: attachPrincipalPolicy
             DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-attach-principal-policy.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationGetThingShadow:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getThingShadow
+            DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-iotdata-get-thing-shadow.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationUpdateThingShadow:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateThingShadow
+            DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-iotdata-update-thing-shadow.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
 

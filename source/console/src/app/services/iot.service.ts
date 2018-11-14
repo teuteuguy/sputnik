@@ -9,6 +9,8 @@ import Amplify from 'aws-amplify';
 import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
 import attachPrincipalPolicy from '../graphql/mutations/attach-principal-policy';
+import getThingShadow from '../graphql/queries/iotdata-thing-shadow.get';
+import updateThingShadow from '../graphql/mutations/iotdata-thing-shadow.update';
 
 declare var appVariables: any;
 
@@ -92,5 +94,32 @@ export class IOTService {
         //     error => console.error(error),
         //     () => console.log('Done'),
         // );
+    }
+
+    getThingShadow(params: any) {
+        const promise: any = this.amplifyService.api().graphql({
+            query: getThingShadow.loc.source.body,
+            variables: {
+                params: JSON.stringify(params)
+            }
+        });
+
+        return promise.then(result => {
+            // console.log(result);
+            return JSON.parse(result.data.getThingShadow.payload);
+        });
+    }
+    updateThingShadow(params: any) {
+        const promise: any = this.amplifyService.api().graphql({
+            query: updateThingShadow.loc.source.body,
+            variables: {
+                params: JSON.stringify(params)
+            }
+        });
+
+        return promise.then(result => {
+            // console.log(result);
+            return JSON.parse(result.data.updateThingShadow.payload);
+        });
     }
 }

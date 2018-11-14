@@ -100,6 +100,10 @@ Resources:
                         Action:
                             - "iot:DescribeEndpoint"
                             - "iot:AttachPrincipalPolicy"
+                            - "iot:GetThingShadow"
+                            - "iot:UpdateThingShadow"
+                            - "iot:Publish"
+                            - "iot:DeleteThingShadow"
                         Resource:
                             - "*"
 

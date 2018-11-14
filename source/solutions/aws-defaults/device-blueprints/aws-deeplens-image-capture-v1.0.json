@@ -1,0 +1,61 @@
+{
+    "id": "aws-deeplens-image-capture-v1.0",
+    "name": "AWS Deeplens Image Capture v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["aws-deeplens-v1.0"],
+    "deviceTypeMappings": [{
+        "substitute": "AWS_CAM_STREAM",
+        "value": {
+            "aws-deeplens-v1.0": "stream"
+        }
+    }],
+    "spec": {
+        "Shadow": {
+            "desired": {
+                "simpleCamera": {
+                    "capture": "Off",
+                    "sleepInSecsAsStr": "0.5",
+                    "s3Bucket": "[DATA_BUCKET]"
+                }
+            }
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": false,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "tmp"
+                            },
+                            {
+                                "Permission": "ro",
+                                "ResourceId": "[AWS_CAM_STREAM]"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "gpu"
+                            }
+                        ],
+                        "Variables": {
+                            "CAPTURE_FREQ": "0.5"
+                        }
+                    },
+                    "MemorySize": 2097152,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM",
+                    "Subject": "mtm/[CORE]/admin",
+                    "Target": "cloud"
+                }
+            ]
+        }
+    }
+}

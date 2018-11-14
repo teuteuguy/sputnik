@@ -52,6 +52,19 @@ class iotHelper {
             return false;
         });
     }
+
+    iotdata(cmd, params) {
+        cmd = cmd.split('.')[1];
+        return this.describeEndpoint().then(endpoint => {
+            const iotdata = new AWS.IotData({
+                endpoint: endpoint.endpointAddress
+            });
+            return iotdata[cmd](params).promise();
+        }).then(result => {
+            console.log('Result:', result);
+            return result;
+        });
+    }
 }
 
 module.exports = iotHelper;

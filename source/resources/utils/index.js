@@ -96,6 +96,12 @@ exports.handler = (event, context, callback) => {
                 const blueprintParser = new BlueprintParser();
                 blueprintParser.parse(event.message).then(result => callback(null, result)).catch(err => callback(err, null));
                 break;
+            case 'iotdata.deleteThingShadow':
+            case 'iotdata.getThingShadow':
+            case 'iotdata.publish':
+            case 'iotdata.updateThingShadow':
+                iotHelper.iotdata(event.cmd, event.params).then(result => callback(null, result)).catch(err => callback(err, null));
+                break;
             default:
                 callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
                 break;

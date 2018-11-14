@@ -109,6 +109,10 @@ type SolutionBlueprintStat {
     total: Int!
 }
 
+type ThingShadowResponse {
+    payload: String
+}
+
 type Query {
     listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     listDevicesOfDeviceType(deviceTypeId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
@@ -134,6 +138,8 @@ type Query {
 
     listSolutionBlueprints(limit: Int, nextToken: String): PaginatedSolutionBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
     getSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    getThingShadow(params: AWSJSON!): ThingShadowResponse @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, spec: AWSJSON, generateCert: Boolean!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])
@@ -164,6 +170,8 @@ type Mutation {
     updateSolutionBlueprint(id: String!, name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])
 
     attachPrincipalPolicy(policyName: String!, principal: String!): Boolean @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    updateThingShadow(params: AWSJSON!): ThingShadowResponse @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Subscription {
     addedDeviceType: DeviceType @aws_subscribe(mutations: ["addDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])

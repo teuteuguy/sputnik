@@ -41,6 +41,7 @@ module.exports = function (event, context) {
         CORE_CERTIFICATE_ARN: null,
         AWS_REGION: null,
         AWS_ACCOUNT: null,
+        DATA_BUCKET: null,
         DATA_BUCKET_S3_URL: null
     };
 
@@ -87,6 +88,7 @@ module.exports = function (event, context) {
         _substitutions.CORE = _device.thingName;
         _substitutions.CORE_ARN = _device.thingArn;
         _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
+        _substitutions.DATA_BUCKET = process.env.DATA_BUCKET;
         _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
 
         // Order is important
@@ -118,6 +120,7 @@ module.exports = function (event, context) {
         console.log('Going to substitute in the spec');
         // Construct the spec:
         let strSpec = JSON.stringify(_newSpec);
+        let strShadow = JSON.stringify(_newShadow);
         for (var key in _substitutions) {
             // skip loop if the property is from prototype
             if (!_substitutions.hasOwnProperty(key)) continue;
@@ -130,6 +133,7 @@ module.exports = function (event, context) {
                 // your code
                 let regExp = new RegExp('[' + key + ']', 'gi');
                 strSpec = strSpec.split('[' + key + ']').join(value);
+                strShadow = strShadow.split('[' + key + ']').join(value);
             }
         }
 
@@ -143,6 +147,7 @@ module.exports = function (event, context) {
 
         _newSpec = JSON.parse(strSpec);
 
+        _newShadow = JSON.parse(strShadow);
         _newSpec.Shadow = _newShadow;
 
         // TODO: this eval thing could be a security risk. Need to potentially rethink this.

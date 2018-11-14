@@ -40,6 +40,12 @@ cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-facto
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
+echo "[Build] Solution - aws-defaults - aws-deeplens-image-capture-python"
+echo
+cd $1/solutions/aws-defaults/lambdas/aws-deeplens-image-capture-python
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
 echo "--------------------------------------------------------------------------------------------------------"
 echo
 exit 0
