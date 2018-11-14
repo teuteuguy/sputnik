@@ -18,17 +18,7 @@ THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
 IOT_TOPIC_INFERENCE = 'mtm/{}/inference'.format(THING_NAME)
 IOT_TOPIC_ADMIN = 'mtm/{}/admin'.format(THING_NAME)
 IOT_TOPIC_SHADOW_UPDATE = '$aws/things/{}/shadow/update'.format(THING_NAME)
-# BELT_NAME = get_parameter('BELT_IOT_THING_NAME', 'Unknown')
-# BELT_IOT_TOPIC_SHADOW_UPDATE = '$aws/things/{}/shadow/update'.format(BELT_NAME)
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
-# BELT_MODE_FORWARD = 1
-# BELT_MODE_STOP = 2
-# BELT_MODE_FORWARD = "f"
-# BELT_MODE_STOP = "s"
-
-# BELT_DEFAULT_SPEED = 1
-# RESUME_COMMAND_FILE_PATH = '/tmp/resume'
-
 
 try:
     PUB = Publisher(IOT_TOPIC_ADMIN, IOT_TOPIC_INFERENCE, THING_NAME)
@@ -47,14 +37,110 @@ try:
     PUB.info('Loading model at ' + ML_MODEL_PATH)
     model = Infer(ML_MODEL_PATH)
 
-    # PUB.info('Initilizing belt')
-    # PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, {"state": {"desired": {"mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED}}})
-
     PUB.info('Starting main loop')
 
 except Exception as err:
     PUB.exception(str(err))
     time.sleep(1)
+
+last_update = time.time()
+nbFramesProcessed = 0
+fps = 0
+
+
+def lambda_handler(event, context):
+
+    global last_update
+    global fps
+    global nbFramesProcessed
+
+    ret, frame = awscam.getLastFrame()
+
+    inference_size_x = 224
+    inference_size_y = 224
+
+    w = inference_size_x * 2
+    h = inference_size_y * 2
+    x = 1920 / 2 - w / 2
+    y = 1080 / 2 - h / 2
+
+    frame = frame[y:y+h, x:x+w]
+
+    PUB.info('Frame loaded: {}, {}'.format(frame.size, frame.shape))
+
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.resize(frame, (inference_size_x, inference_size_y))  # resize
+
+    PUB.info('Frame resized: {}, {}'.format(frame.size, frame.shape))
+
+    try:
+        category, probability = model.do(frame)
+
+        nbFramesProcessed += 1
+
+        now = time.time()
+        if now - last_update >= 1:
+            fps = nbFramesProcessed / (now - last_update)
+            fps = math.floor(fps * 100) / 100
+            last_update = time.time()
+            nbFramesProcessed = 0
+
+
+        advice = 'inconclusive'
+
+        if probability > 0.8:
+            if category == 'hat':
+                advice = 'safe'
+            elif category == 'nohat':
+                advice = 'not safe'
+
+        PUB.publish(IOT_TOPIC_INFERENCE, {
+            "type":  "inference",
+            "payload": {
+                "probability": str(probability),
+                "advice": advice,
+                "fps": str(fps),
+                "category": category,
+                "frame": {
+                    "size": frame.size,
+                    "shape": frame.shape
+                }
+            }
+        })
+
+    except Exception as err:
+        PUB.exception(str(err))
+        raise err
+
+    OUTPUT.update(frame)
+
+    return
+
+class MainAppThread(Thread):
+
+    def __init__(self):
+        super(MainAppThread, self).__init__()
+        self.stop_request = Event()
+        print("MainAppThread.init")
+
+    def join(self):
+        self.stop_request.set()
+
+    def run(self):
+        try:
+            while 42:
+                lambda_handler({}, {})
+
+        except Exception as err:
+            PUB.exception(str(err))
+            time.sleep(1)
+
+        # mainAppThread.start()
+
+
+mainAppThread = MainAppThread()
+mainAppThread.start()
+
 
 # def main_loop():
 #     try:
@@ -145,159 +231,3 @@ except Exception as err:
 # VS.stop()
 
 # main_loop()
-
-
-last_update = time.time()
-# results = []
-nbFramesProcessed = 0
-fps = 0
-
-
-def lambda_handler(event, context):
-
-    global last_update
-    global fps
-    global nbFramesProcessed
-
-    ret, frame = awscam.getLastFrame()
-
-    inference_size_x = 224
-    inference_size_y = 224
-
-    w = inference_size_x * 2
-    h = inference_size_y * 2
-    x = 1920 / 2 - w / 2
-    y = 1080 / 2 - h / 2
-
-    frame = frame[y:y+h, x:x+w]
-
-    PUB.info('Frame loaded {}, {}'.format(frame.size, frame.shape))
-
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = cv2.resize(frame, (inference_size_x, inference_size_y))  # resize
-
-    PUB.info('Frame resized')
-
-    try:
-        category, probability = model.do(frame)
-
-        nbFramesProcessed += 1
-
-        now = time.time()
-        if now - last_update >= 1:
-            fps = nbFramesProcessed / (now - last_update)
-            fps = math.floor(fps * 100) / 100
-            last_update = time.time()
-            nbFramesProcessed = 0
-
-        PUB.publish(IOT_TOPIC_INFERENCE, {
-            "type":  "inference",
-            "payload": {
-                "probability": str(probability),
-                "fps": str(fps),
-                "category": category
-            }
-        })
-
-    except Exception as err:
-        PUB.exception(str(err))
-        raise err
-
-    OUTPUT.update(frame)
-
-    return
-
-class MainAppThread(Thread):
-
-    def __init__(self):
-        super(MainAppThread, self).__init__()
-        self.stop_request = Event()
-        print("MainAppThread.init")
-
-    def join(self):
-        self.stop_request.set()
-
-    def run(self):
-        try:
-            while 42:
-                lambda_handler({}, {})
-
-                # ret, frame = awscam.getLastFrame()
-
-                # inference_size_x = 224
-                # inference_size_y = 224
-
-                # w = inference_size_x * 2
-                # h = inference_size_y * 2
-                # x = 1920 / 2 - w / 2
-                # y = 1080 / 2 - h / 2
-
-                # frame = frame[y:y+h, x:x+w]
-
-                # PUB.info('Frame loaded {}, {}'.format(frame.size, frame.shape))
-
-                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                # frame = cv2.resize(frame, (inference_size_x, inference_size_y))  # resize
-
-                # PUB.info('Frame resized')
-
-                # try:
-                #     category, probability = model.do(frame)
-
-                #     # results.append(category)
-
-                #     # title = str(fps) + " - " + category + " - " + str(probability)
-
-                #     PUB.publish(IOT_TOPIC_INFERENCE, {
-                #         "type":  "inference",
-                #         "payload": {
-                #             "probability": str(probability),
-                #             "fps": str(fps),
-                #             "category": category
-                #         }
-                #     })
-
-                #     # font = cv2.FONT_HERSHEY_DUPLEX
-                #     # if probability > 0.6:
-                #     #     prob_no_hat = probability
-                #     #     if category == 'hat':
-                #     #         prob_no_hat = 1.0 - probability
-                #     #     elif category == 'nohat':
-                #     #         probability = 1.0 - probability
-                #     #     cv2.rectangle(frame, (0, 0), (int(frame.shape[1] * 0.2 * prob_no_hat), 80),
-                #     #                 (0, 0, 255), -1)
-                #     #     cv2.rectangle(frame, (0, 90), (int(frame.shape[1] * 0.2 * probability), 170), (0, 255, 0), -1)
-                #     #     font = cv2.FONT_HERSHEY_SIMPLEX
-                #     #     cv2.putText(frame, 'Not Safe', (10, 70), font, 1, (225, 225, 225), 8)
-                #     #     cv2.putText(frame, 'Safe', (10, 160), font, 1, (225, 225, 225), 8)
-
-                #     #     # if prob_no_hat > 0.8: # definitely not safe
-                #     #     #     PUB.info('')
-                #     #     # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
-                #     #     # elif probability > 0.8: # definitely safe
-                #     #     #     PUB.info('Frame resized')
-                #     #     # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
-
-                # except Exception as err:
-                #     PUB.exception(str(err))
-                #     raise err
-
-                # # now = time.time()
-                # # if now - last_update >= 1:
-                # #     last_update = time.time()
-                # #     PUB.events(results)
-                # #     fps = len(results)
-                # #     results = []
-
-                OUTPUT.update(frame)
-
-        except Exception as err:
-            PUB.exception(str(err))
-            time.sleep(1)
-
-        # mainAppThread.start()
-
-
-mainAppThread = MainAppThread()
-mainAppThread.start()
-

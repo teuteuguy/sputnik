@@ -24,7 +24,7 @@ export class AWSAFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCom
         this.subscribe([{
             topic: 'mtm/' + this.device.thingName + '/sensors',
             onMessage: data => {
-                console.log('Sensors:', data.value);
+                // console.log('Sensors:', data.value);
             },
             onError: err => {
                 console.error('Error:', err);

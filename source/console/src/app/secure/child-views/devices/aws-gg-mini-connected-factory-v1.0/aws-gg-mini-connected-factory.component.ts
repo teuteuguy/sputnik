@@ -39,7 +39,7 @@ export class AWSGGMiniConnectedFactoryV10Component extends IoTPubSuberComponent 
             {
                 topic: 'mtm/' + this.device.thingName + '/admin',
                 onMessage: data => {
-                    console.log('Admin:', data.value);
+                    // console.log('Admin:', data.value);
                 },
                 onError: err => {
                     console.error('Error:', err);
