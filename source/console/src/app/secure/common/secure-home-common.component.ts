@@ -39,6 +39,8 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     public deviceStats: DeviceStats = new DeviceStats();
     public solutionStats: SolutionStats = new SolutionStats();
 
+    public fullpage = false;
+
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -100,6 +102,11 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
 
         _self.prepUI();
         // this.iotService.connect();
+
+        if (_self.router.url === '/securehome/maps') {
+            _self.fullpage = true;
+        }
+        console.log(_self.router.url);
     }
 
     prepUI() {

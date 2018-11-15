@@ -27,7 +27,7 @@ import { LoggerService } from '../../services/logger.service';
 @Component({
     selector: 'app-root-device-types',
     // templateUrl: './device-types.component.html'
-    templateUrl: '../../common/components/generic-table/generic-table.component.html'
+    templateUrl: '../common/generic-table.component.html'
 })
 export class DeviceTypesComponent extends GenericTableComponent implements OnInit {
     private isAdminUser: boolean;

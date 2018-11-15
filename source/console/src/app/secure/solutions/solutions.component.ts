@@ -30,7 +30,7 @@ import * as moment from 'moment';
 
 @Component({
     selector: 'app-root-solutions',
-    templateUrl: '../../common/components/generic-table/generic-table.component.html'
+    templateUrl: '../common/generic-table.component.html'
 })
 export class SolutionsComponent extends GenericTableComponent implements OnInit {
     private isAdminUser: boolean;

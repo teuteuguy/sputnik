@@ -29,6 +29,7 @@ import { DeploymentsComponent } from './secure/deployments/deployments.component
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
 import { SolutionComponent } from './secure/solution/solution.component';
+import { MapsComponent } from './secure/maps/maps.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -86,6 +87,7 @@ const secureHomeRoutes: Routes = [
             { path: 'solutions', component: SolutionsComponent },
             { path: 'solutions/:solutionId', component: SolutionComponent },
             { path: 'solution-blueprints', component: SolutionBlueprintsComponent },
+            { path: 'maps', component: MapsComponent },
             // { path: 'solution-blueprints/:solutionBlueprintId', component: SolutionBlueprintsComponent },
             { path: '', component: SecureHomeComponent }
         ]

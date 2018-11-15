@@ -45,6 +45,7 @@ import { DeploymentsComponent } from './secure/deployments/deployments.component
 import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
+import { MapsComponent } from './secure/maps/maps.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -132,6 +133,8 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         SolutionComponent,
         SolutionsComponent,
         SolutionBlueprintsComponent,
+        MapsComponent,
+
 
         // Sub Components
         DeviceBlueprintsModalComponent,

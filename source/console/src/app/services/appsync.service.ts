@@ -50,6 +50,7 @@ import setThingAutoRegistrationState from '../graphql/mutations/thing-auto-regis
 import updateDevice from '../graphql/mutations/device.update';
 import updateDeviceBlueprint from '../graphql/mutations/device-blueprint.update';
 import updateDeviceType from '../graphql/mutations/device-type.update';
+import updateSetting from '../graphql/mutations/setting.update';
 import updateSolution from '../graphql/mutations/solution.update';
 import updateSolutionBlueprint from '../graphql/mutations/solution-blueprint.update';
 // Subscriptions
@@ -424,6 +425,14 @@ export class AppSyncService {
                 result.data.getSetting.setting = JSON.parse(result.data.getSetting.setting);
             }
             return <Setting>result.data.getSetting;
+        });
+    }
+    public updateSetting(setting: Setting) {
+        return this.query(updateSetting, { id: setting.id, type: setting.type, setting: JSON.stringify(setting.setting) }).then(result => {
+            if (result.data.updateSetting !== null) {
+                result.data.updateSetting.setting = JSON.parse(result.data.updateSetting.setting);
+            }
+            return <Setting>result.data.updateSetting;
         });
     }
     public getThingAutoRegistrationState() {

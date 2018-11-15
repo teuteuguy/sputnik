@@ -16,6 +16,9 @@ export class SettingService {
     public getSetting(id: string) {
         return this.appSyncService.getSetting(id);
     }
+    public updateSetting(setting: Setting) {
+        return this.appSyncService.updateSetting(setting);
+    }
     public getThingAutoRegistrationState() {
         return this.appSyncService.getThingAutoRegistrationState();
     }

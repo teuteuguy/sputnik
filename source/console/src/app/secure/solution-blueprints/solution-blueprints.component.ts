@@ -27,7 +27,7 @@ import { _ } from 'underscore';
 
 @Component({
     selector: 'app-root-solution-blueprints',
-    templateUrl: '../../common/components/generic-table/generic-table.component.html'
+    templateUrl: '../common/generic-table.component.html'
 })
 export class SolutionBlueprintsComponent extends GenericTableComponent implements OnInit {
     private isAdminUser: boolean;

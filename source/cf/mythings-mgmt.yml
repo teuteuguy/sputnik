@@ -229,10 +229,36 @@ Resources:
             destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             customAction: 'init'
 
+    # Initialization - Init Settings
+    initSettings:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            ddbTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
+            ddbItem:
+                id: "app-config"
+                type: "config"
+                setting:
+                    uuid: !GetAtt initAppUUID.UUID
+                    mapboxToken: "NA"
+                    # iotEndpoint: !GetAtt iotEndpoint.endpointAddress
+                    # anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+            customAction: 'dynamodbSaveItem'
 
-
+    # Initialization - UUID
+    initAppUUID:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            customAction: "createUUID"
 
 Outputs:
+    # UUID
+    AppUUID:
+        Description: "App UUID"
+        Value: !GetAtt initAppUUID.UUID
     # Website
     websiteUrl:
         Description: 'My Things Management Website URL'
@@ -253,6 +279,7 @@ Outputs:
     websiteCognitoIoTPolicy:
         Description: "IoT Policy to access resources"
         Value: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
+    # IOT
     iotEndpoint:
         Description: "IoT Endpoint"
         Value: !GetAtt iotEndpoint.endpointAddress

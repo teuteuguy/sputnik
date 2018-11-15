@@ -368,6 +368,18 @@ Resources:
                 }
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
+    # RESOLVERS - MUTATIONS - Settings
+    appSyncResolverMutationUpdateSetting:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateSetting
+            DataSourceName: !GetAtt appSyncDataSourceSettingsDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'settings', 'settings-request-mapping-template-update.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+
     # ####################################################################################################
     # ####################################################################################################
     #

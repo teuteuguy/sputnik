@@ -7,11 +7,11 @@
                 <h6 class="card-subtitle">Configuration settings used for the general application, micro services and
                     reseting to application defaults.</h6>
             </div>
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <!-- <li class="nav-item">
+            <ul class="nav nav-tabs" id="myTab" role="tablist" style="padding-left: 1.25rem; padding-right: 1.25rem;">
+                <li class="nav-item">
                     <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab"
                         aria-controls="general" aria-selected="true">General</a>
-                </li> -->
+                </li>
                 <!-- <li class="nav-item">
                     <a class="nav-link" id="thing-auto-registration-tab" data-toggle="tab" href="#thing-auto-registration"
                         role="tab" aria-controls="thing-auto-registration" aria-selected="false">Services</a>
@@ -66,8 +66,8 @@
                             </div>
                         </div> -->
                         <div>
-                            <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="save(appConfig)">Save</button>
-                            <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel(appConfig)">Cancel</button>
+                            <button type="button" class="btn btn-success-alt btn-rounded m-r-15" (click)="update(appConfig)">Save</button>
+                            <!-- <button type="button" class="btn btn-secondary btn-rounded" (click)="cancel(appConfig)">Cancel</button> -->
                         </div>
                     </form>
                 </div>
@@ -88,21 +88,6 @@
                         </div>
                     </form>
                 </div> -->
-                <div class="tab-pane p-20 fade" id="factoryreset" role="tabpanel" aria-labelledby="factoryreset-tab">
-                    <div class="fm-t-40">
-                        <button type="button" class="btn btn-danger btn-rounded m-r-15" (click)="factoryreset()">Factory
-                            Reset</button>
-                    </div>
-                    <form class="fm-t-40" *ngFor="let t of factoryResetTables" style="margin-top: 10px;">
-                        <div class="input-group-text">
-                            <div class="form-check" style="padding: 0px; margin-bottom: -4px;">
-                                <input type="checkbox" id="{{t.table}}" style="padding-left: 18px;" [checked]="t.done"
-                                    disabled>
-                                <label class="form-check-label" for="{{t.table}}" style="padding-left: 25px;">{{t.table}}</label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
                 <div class="tab-pane p-20 fade" id="about" role="tabpanel" aria-labelledby="about-tab">
                     <div class="fm-t-40">
                         About

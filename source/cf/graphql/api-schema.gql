@@ -170,6 +170,8 @@ type Mutation {
     deleteSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])
     updateSolutionBlueprint(id: String!, name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators"])
 
+    updateSetting(id: String!, type: String!, setting: AWSJSON!): Setting @aws_auth(cognito_groups: ["Administrators"])
+
     attachPrincipalPolicy(policyName: String!, principal: String!): Boolean @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     updateThingShadow(params: AWSJSON!): ThingShadowResponse @aws_auth(cognito_groups: ["Administrators", "Members"])

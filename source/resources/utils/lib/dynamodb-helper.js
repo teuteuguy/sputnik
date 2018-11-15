@@ -108,6 +108,20 @@ class dynamodbHelper {
 
     }
 
+    dynamodbSaveItem(item, ddbTable) {
+
+        item.created_at = moment.utc().format();
+        item.updated_at = moment.utc().format();
+
+        const docClient = new AWS.DynamoDB.DocumentClient();
+        return docClient.put({
+            TableName: ddbTable,
+            Item: item
+        }).promise().then(result => {
+            return item;
+        });
+
+    }
 }
 
 module.exports = dynamodbHelper;

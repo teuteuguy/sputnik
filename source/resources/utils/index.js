@@ -17,6 +17,7 @@ console.log('Loading function');
 
 const https = require('https');
 const url = require('url');
+const UUID = require('uuid');
 
 const DDBHelper = require('./lib/dynamodb-helper');
 const S3Helper = require('./lib/s3-helper');
@@ -40,6 +41,17 @@ exports.handler = (event, context, callback) => {
         sendResponse(event, callback, context.logStreamName, 'SUCCESS');
     }
 
+    if (event.RequestType === 'Create') {
+        if (event.ResourceProperties.customAction === 'createUUID') {
+            responseStatus = 'SUCCESS';
+            responseData = {
+                UUID: UUID.v4()
+            };
+            console.log(responseData);
+            sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+        }
+    }
+
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
         if (event.ResourceProperties.customAction === 'dynamodbPutObjectsFromS3Folder') {
             ddbHelper.dynamodbPutObjectsFromS3Folder(event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3Key, event.ResourceProperties.table).then(data => {
@@ -50,6 +62,19 @@ exports.handler = (event, context, callback) => {
                 console.log('error');
                 responseData = {
                     Error: `dynamodbPutObjectsFromS3Folder failed`
+                };
+                console.log([responseData.Error, ':\n', err].join(''));
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            });
+
+        } else if (event.ResourceProperties.customAction === 'dynamodbSaveItem') {
+            ddbHelper.dynamodbSaveItem(event.ResourceProperties.ddbItem, event.ResourceProperties.ddbTable).then(data => {
+                responseStatus = 'SUCCESS';
+                responseData = data;
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }).catch((err) => {
+                responseData = {
+                    Error: `Saving item to DyanmoDB table ${event.ResourceProperties.ddbTable} failed`
                 };
                 console.log([responseData.Error, ':\n', err].join(''));
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
@@ -67,6 +92,7 @@ exports.handler = (event, context, callback) => {
                 console.log([responseData.Error, ':\n', err].join(''));
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
             });
+
         } else if (event.ResourceProperties.customAction === 'iotDescribeEndpoint') {
             iotHelper.describeEndpoint(event.ResourceProperties.endpointType).then(data => {
                 responseStatus = 'SUCCESS';
