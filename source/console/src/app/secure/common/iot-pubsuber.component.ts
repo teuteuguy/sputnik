@@ -31,7 +31,6 @@ export class IoTPubSuberComponent implements OnDestroy {
 
     private setSubscriptions() {
         if (this._iotService.isConnected) {
-            console.log('Connected to AWS IoT');
             this.iotSubscriptions.forEach((sub: IoTSubscription) => {
                 console.log('Subscribing to topic:', sub.topic);
                 this.subscriptions.add(this._iotService.subscribe(sub.topic, sub.onMessage, sub.onError));

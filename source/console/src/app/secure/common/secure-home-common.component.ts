@@ -98,8 +98,8 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
             _self._ngZone.run(() => { });
         });
 
-        this.prepUI();
-        this.iotService.connect();
+        _self.prepUI();
+        // this.iotService.connect();
     }
 
     prepUI() {

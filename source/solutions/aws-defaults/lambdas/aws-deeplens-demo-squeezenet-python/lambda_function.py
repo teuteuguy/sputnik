@@ -81,7 +81,7 @@ def camera_handler():
         payload = []
 
         try:
-            predictions = MODEL.predict_from_image(cvimage=frame, reshape=(inference_size_x, inference_size_y), N=5)
+            predictions = MODEL.predict_from_image(cvimage=frame, reshape=(inference_size_x, inference_size_y), N=15)
             print(predictions)
 
             for item in predictions:
