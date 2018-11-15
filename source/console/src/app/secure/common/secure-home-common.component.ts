@@ -3,9 +3,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
-// Components
-import { ProfileInfoComponent } from '../common/profile-info.component';
-
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 import { DeviceStats, SolutionStats } from '../../models/stats.model';
@@ -31,7 +28,12 @@ import { _ } from 'underscore';
     selector: 'app-root',
     templateUrl: './secure-home-common.component.html'
 })
-export class SecureHomeCommonComponent extends ProfileInfoComponent implements OnInit, LoggedInCallback {
+export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
+
+    public profile: ProfileInfo = null;
+    private isAdminUser = false;
+    private loadedProfile = false;
+
     public title: '';
     public crumbs: Crumb[] = [];
     public deviceStats: DeviceStats = new DeviceStats();
@@ -55,57 +57,47 @@ export class SecureHomeCommonComponent extends ProfileInfoComponent implements O
         private deviceBlueprintService: DeviceBlueprintService,
         private solutionBlueprintService: SolutionBlueprintService
     ) {
-        super(localStorage);
-
         const _self = this;
 
         _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
         _self.isAdminUser = false;
         _self.loadedProfile = false;
+    }
+
+    ngOnInit() {
+        const _self = this;
 
         const _deviceStats = { total: 0, connected: 0, disconnected: 0 };
-        _self.localStorage.setItem('deviceStats', _deviceStats).subscribe(() => {});
+        _self.localStorage.setItem('deviceStats', _deviceStats).subscribe(() => { });
 
         _self.statService.statObservable$.subscribe((message: Stats) => {
             _self.deviceStats = message.deviceStats;
             _self.solutionStats = message.solutionStats;
-            _self._ngZone.run(() => {});
+            _self._ngZone.run(() => { });
         });
         _self.statService.refresh();
 
-        if (_self.profile) {
-            _self.logger.info('SecureHomeComponent.constructor: profile exists, issuing no request profile');
-            _self.userService.isAuthenticated(_self, false);
-        } else {
-            _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
-            _self.loadedProfile = true;
-            _self.userService.isAuthenticated(_self, true);
-        }
-
-        // _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
-        //     if (profile) {
-        //         _self.logger.info('SecureHomeComponent.constructor: profile exists, issuing no request profile');
-        //         _self.profile = new ProfileInfo(profile);
-        //         _self.isAdminUser = _self.profile.isAdmin();
-        //         _self.userService.isAuthenticated(_self, false);
-
-        //         _self.iotService.connect();
-        //     } else {
-        //         _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
-        //         _self.loadedProfile = true;
-        //         _self.userService.isAuthenticated(_self, true);
-        //     }
-        // });
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            if (profile) {
+                _self.logger.info('SecureHomeComponent.constructor: profile exists, issuing no request profile');
+                _self.profile = new ProfileInfo(profile);
+                _self.isAdminUser = _self.profile.isAdmin();
+                _self.userService.isAuthenticated(_self, false);
+                _self.iotService.connect();
+            } else {
+                _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
+                _self.loadedProfile = true;
+                _self.userService.isAuthenticated(_self, true);
+            }
+        });
 
         _self.breadCrumbService.pageTitleObservable$.subscribe(title => (_self.title = title));
         _self.breadCrumbService.crumbObservable$.subscribe(crumbs => {
             _self.crumbs.splice(0, _self.crumbs.length);
             _self.crumbs.push(...crumbs);
-            _self._ngZone.run(() => {});
+            _self._ngZone.run(() => { });
         });
-    }
 
-    ngOnInit() {
         this.prepUI();
         this.iotService.connect();
     }

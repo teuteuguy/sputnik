@@ -5,9 +5,6 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
-// Components
-import { ProfileInfoComponent } from '../common/profile-info.component';
-
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 import { Device } from '../../models/device.model';
@@ -30,10 +27,10 @@ declare var $: any;
     selector: 'app-root-devices',
     templateUrl: './devices.component.html'
 })
-export class DevicesComponent extends ProfileInfoComponent implements OnInit {
+export class DevicesComponent implements OnInit {
     public title = 'Devices';
     public deviceStats: any = {};
-    // private profile: ProfileInfo;
+    private profile: ProfileInfo = null;
     public devices: Device[] = [];
     public newDevice: Device;
     // public deviceTypes: DeviceType[] = [];
@@ -56,17 +53,15 @@ export class DevicesComponent extends ProfileInfoComponent implements OnInit {
         private logger: LoggerService,
         private statService: StatService,
         private _ngZone: NgZone
-    ) {
-        super(localStorage);
-    }
+    ) {}
 
     ngOnInit() {
         const _self = this;
         _self.newDevice = new Device();
         _self.blockUI.start('Loading devices...');
 
-        // _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-        //     _self.profile = new ProfileInfo(profile);
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            _self.profile = new ProfileInfo(profile);
 
             _self.breadCrumbService.setup(_self.title, [
                 new Crumb({ title: _self.title, active: true, link: 'devices' })
@@ -80,7 +75,7 @@ export class DevicesComponent extends ProfileInfoComponent implements OnInit {
                     _self.updatePaging();
                 });
             });
-        // });
+        });
 
         // _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
         //     _self.deviceTypes = message;

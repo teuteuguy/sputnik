@@ -1,6 +1,6 @@
 {
     "id": "aws-deeplens-no-lambda-v1.0",
-    "name": "Deeplens v1.0 (Lambdas removed)",
+    "name": "Deeplens v1.0 (AWS Deeplens Lambdas removed)",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {

@@ -185,6 +185,8 @@ Resources:
             ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             customAction: 'iotDescribeEndpoint'
+            # endpointType: 'iot:Data'
+            endpointType: 'iot:Data-ATS'
 
     # Initialization - Copy of website assets (html/js/css/assets)
     website:
@@ -251,6 +253,9 @@ Outputs:
     websiteCognitoIoTPolicy:
         Description: "IoT Policy to access resources"
         Value: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
+    iotEndpoint:
+        Description: "IoT Endpoint"
+        Value: !GetAtt iotEndpoint.endpointAddress
     # # Data Bucket
     # dataBucketAccessPolicy:
     #     Description: "IAM Policy to access the My Things Management Data bucket"

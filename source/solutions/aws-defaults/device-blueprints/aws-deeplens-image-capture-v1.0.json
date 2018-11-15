@@ -15,8 +15,11 @@
                 "simpleCamera": {
                     "capture": "Off",
                     "sleepInSecsAsStr": "0.5",
+                    "s3UploadSleepInSecsAsStr": "0.5",
+                    "s3Upload": "Off",
                     "s3Bucket": "[DATA_BUCKET]",
-                    "resolution": "858x480"
+                    "resolution": "858x480",
+                    "s3KeyPrefix": "aws-deeplens-image-capture-v1.0/[CORE]/default"
                 }
             }
         },
@@ -40,9 +43,7 @@
                                 "ResourceId": "gpu"
                             }
                         ],
-                        "Variables": {
-                            "CAPTURE_FREQ": "0.5"
-                        }
+                        "Variables": {}
                     },
                     "MemorySize": 2097152,
                     "Pinned": true,
@@ -54,6 +55,10 @@
             "Subscriptions": [{
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM",
                     "Subject": "mtm/[CORE]/logger",
+                    "Target": "cloud"
+                }, {
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-image-capture-python:MTM",
+                    "Subject": "mtm/[CORE]/camera",
                     "Target": "cloud"
                 }, {
                     "Source": "GGShadowService",

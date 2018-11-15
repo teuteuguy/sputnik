@@ -8,6 +8,9 @@ import math
 import awscam
 from file_output import FileOutput
 
+from botocore.session import Session
+import boto3
+
 from ggiot import GGIoT
 
 def get_parameter(name, default):
@@ -16,14 +19,16 @@ def get_parameter(name, default):
     return default
 
 THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
-IOT_TOPIC_ADMIN = 'mtm/{}/admin'.format(THING_NAME)
-IOT_TOPIC_SHADOW_UPDATE = '$aws/things/{}/shadow/update'.format(THING_NAME)
-CAPTURE_FREQ = get_parameter('CAPTURE_FREQ', '0.5')
+PREFIX = 'mtm'
+TOPIC_CAMERA = 'mtm/{}/camera'.format(THING_NAME)
 
 SIMPLE_CAMERA = {
     "capture": "Off",
-    "sleepInSecsAsStr": CAPTURE_FREQ,
+    "sleepInSecsAsStr": "0.5",
+    "s3UploadSleepInSecsAsStr": "5",
+    "s3Upload": "Off",
     "s3Bucket": "Off",
+    "s3KeyPrefix": "aws-deeplens-image-capture/{}/default".format(THING_NAME),
     "resolution": "1920x1080"
 }
 
@@ -31,6 +36,8 @@ SIMPLE_CAMERA = {
 def timeInMillis(): return int(round(time.time() * 1000))
 
 def parseIncomingShadow(shadow):
+
+    global SIMPLE_CAMERA
 
     if 'state' in shadow:
         state = shadow['state']
@@ -49,9 +56,19 @@ def parseIncomingShadow(shadow):
                     SIMPLE_CAMERA['sleepInSecsAsStr'] = simpleCamera['sleepInSecsAsStr']
                     print("parseIncomingShadow: updating sleepInSecsAsStr to {}".format(
                         SIMPLE_CAMERA['sleepInSecsAsStr']))
+                if 's3UploadSleepInSecsAsStr' in simpleCamera and SIMPLE_CAMERA['s3UploadSleepInSecsAsStr'] != simpleCamera['s3UploadSleepInSecsAsStr']:
+                    SIMPLE_CAMERA['s3UploadSleepInSecsAsStr'] = simpleCamera['s3UploadSleepInSecsAsStr']
+                    print("parseIncomingShadow: updating s3UploadSleepInSecsAsStr to {}".format(
+                        SIMPLE_CAMERA['s3UploadSleepInSecsAsStr']))
+                if 's3Upload' in simpleCamera and SIMPLE_CAMERA['s3Upload'] != simpleCamera['s3Upload']:
+                    SIMPLE_CAMERA['s3Upload'] = simpleCamera['s3Upload']
+                    print("parseIncomingShadow: updating s3Upload to {}".format(SIMPLE_CAMERA['s3Upload']))
                 if 's3Bucket' in simpleCamera and SIMPLE_CAMERA['s3Bucket'] != simpleCamera['s3Bucket']:
                     SIMPLE_CAMERA['s3Bucket'] = simpleCamera['s3Bucket']
                     print("parseIncomingShadow: updating s3Bucket to {}".format(SIMPLE_CAMERA['s3Bucket']))
+                if 's3KeyPrefix' in simpleCamera and SIMPLE_CAMERA['s3KeyPrefix'] != simpleCamera['s3KeyPrefix']:
+                    SIMPLE_CAMERA['s3KeyPrefix'] = simpleCamera['s3KeyPrefix']
+                    print("parseIncomingShadow: updating s3KeyPrefix to {}".format(SIMPLE_CAMERA['s3KeyPrefix']))
                 if 'resolution' in simpleCamera and SIMPLE_CAMERA['resolution'] != simpleCamera['resolution']:
                     SIMPLE_CAMERA['resolution'] = simpleCamera['resolution']
                     print("parseIncomingShadow: updating resolution to {}".format(SIMPLE_CAMERA['resolution']))
@@ -98,19 +115,71 @@ def getTimestamp():
 
 
 def saveFrameToFile(filename, frame):
-    localFilename = '/tmp/' + filename
-    print("saveFrameToFile: Saving frame to {}".format(localFilename))
+    fullPath = '/tmp/' + filename
+    print("saveFrameToFile: Saving frame to {}".format(fullPath))
 
-    localWriteReturn = cv2.imwrite(localFilename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    localWriteReturn = cv2.imwrite(fullPath, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
     if not localWriteReturn:
         raise Exception('Failed to save frame to file')
 
-    return True, filename, localFilename
+    return fullPath
+
+
+def sendFileToS3(fullPath, filename):
+
+    global SIMPLE_CAMERA
+
+    print("sendFileToS3: Going to try sending {} to S3".format(filename))
+
+    try:
+        session = Session()
+        s3 = session.create_client('s3')
+
+        with open(fullPath, 'rb') as f:
+            data = f.read()
+
+        s3Key = SIMPLE_CAMERA['s3KeyPrefix'] + '/' + filename
+        s3.put_object(Bucket=SIMPLE_CAMERA['s3Bucket'], Key=s3Key, Body=data)
+
+        return True, s3Key
+
+    except Exception as ex:
+        print("Failed to upload to s3: {}".format(ex))
+        return False, False
 
 
 last_update = timeInMillis()
 nbFramesProcessed = 0
 fps = 0
+
+
+class S3Thread(Thread):
+
+    def __init__(self, fullPath, filename):
+        super(S3Thread, self).__init__()
+        self.stop_request = Event()
+        self.fullPath = fullPath
+        self.filename = filename
+        print("S3Thread.init")
+
+    def join(self):
+        self.stop_request.set()
+
+    def run(self):
+        try:
+            result, s3Key = sendFileToS3(fullPath=self.fullPath, filename=self.filename)
+            if result == True:
+                os.remove(self.fullPath)
+                message = "Upload to S3 done: {}".format(s3Key)
+                print("S3Thread: {}".format(message))
+                GGIOT.info(message)
+            else:
+                message = "Upload to S3 failed for: {}".format(self.filename)
+                print("S3Thread: {}".format(message))
+                GGIOT.exception('Upload to S3 failed for: {}'.format(self.filename))
+        except Exception as err:
+            GGIOT.exception(str(err))
+            time.sleep(1)
 
 def camera_handler():
 
@@ -145,24 +214,27 @@ def camera_handler():
         filename = timestamp + '.jpg'
 
         # Save frame to disk
-        result, filename, localFilename = saveFrameToFile(
+        fullPath = saveFrameToFile(
             filename=filename,
             frame=frame
         )
-        if result == True:
-            GGIOT.publish(IOT_TOPIC_ADMIN, {
-                "type":  "info",
-                "payload": {
-                    "fps": str(fps),
-                    "frame": {
-                        "size": frame.size,
-                        "shape": frame.shape
-                    },
-                    "filename": filename
-                }
-            })
 
-        time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
+        GGIOT.publish(TOPIC_CAMERA, {
+            "fps": str(fps),
+            "frame": {
+                "size": frame.size,
+                "shape": frame.shape
+            },
+            "filename": filename
+        })
+
+        if SIMPLE_CAMERA['s3Bucket'] != 'Off' and SIMPLE_CAMERA['s3Upload'] == 'On':
+            s3Thread = S3Thread(fullPath, filename)
+            s3Thread.start()
+            time.sleep(float(SIMPLE_CAMERA['s3UploadSleepInSecsAsStr']))
+
+        if SIMPLE_CAMERA['s3Upload'] == 'Off':
+            time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
 
     return
 
@@ -185,11 +257,17 @@ class MainAppThread(Thread):
             GGIOT.exception(str(err))
             time.sleep(1)
 
-        # mainAppThread.start()
-
-
 mainAppThread = MainAppThread()
 mainAppThread.start()
+
+
+
+
+
+
+
+
+
 
 
 # def main_loop():

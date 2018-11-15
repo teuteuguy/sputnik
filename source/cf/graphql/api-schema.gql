@@ -139,6 +139,7 @@ type Query {
     listSolutionBlueprints(limit: Int, nextToken: String): PaginatedSolutionBlueprints @aws_auth(cognito_groups: ["Administrators", "Members"])
     getSolutionBlueprint(id: String!): SolutionBlueprint @aws_auth(cognito_groups: ["Administrators", "Members"])
 
+    describeEndpoint(endpointType: String): String @aws_auth(cognito_groups: ["Administrators", "Members"])
     getThingShadow(params: AWSJSON!): ThingShadowResponse @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {

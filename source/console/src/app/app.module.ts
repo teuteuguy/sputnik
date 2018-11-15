@@ -30,7 +30,6 @@ import { NewPasswordComponent } from './public/auth/newpassword/new-password.com
 import { GenericTableComponent } from './secure/common/generic-table.component';
 import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
-import { ProfileInfoComponent } from './secure/common/profile-info.component';
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
 // Components - Secure
 import { SecureHomeComponent } from './secure/home/secure-home.component';
@@ -118,7 +117,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         GenericTableComponent,
         IoTPubSuberComponent,
         PrettifierComponent,
-        ProfileInfoComponent,
         // Components - Secure
         SecureHomeCommonComponent,
         SecureHomeComponent,
@@ -152,7 +150,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         // DeviceTypeNameFromIdPipe,
         // SolutionBlueprintFromSolutionBlueprintIdPipe
     ],
-    // exports: [GenericTableComponent, IoTPubSuberComponent, PrettifierComponent, ProfileInfoComponent],
     imports: [
         BrowserModule,
         FormsModule,

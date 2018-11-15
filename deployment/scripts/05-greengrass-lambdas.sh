@@ -46,6 +46,12 @@ cd $1/solutions/aws-defaults/lambdas/aws-deeplens-image-capture-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
+echo "[Build] Solution - aws-defaults - aws-deeplens-demo-squeezenet-python"
+echo
+cd $1/solutions/aws-defaults/lambdas/aws-deeplens-demo-squeezenet-python
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
 echo "--------------------------------------------------------------------------------------------------------"
 echo
 exit 0

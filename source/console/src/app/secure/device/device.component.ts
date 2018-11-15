@@ -4,9 +4,6 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
-// Components
-import { ProfileInfoComponent } from '../common/profile-info.component';
-
 // Models
 import { Device } from '../../models/device.model';
 import { DeviceType } from '../../models/device-type.model';
@@ -29,10 +26,10 @@ import * as _ from 'underscore';
     selector: 'app-root-device',
     templateUrl: './device.component.html'
 })
-export class DeviceComponent extends ProfileInfoComponent implements OnInit, OnDestroy {
+export class DeviceComponent implements OnInit, OnDestroy {
     public title = 'Device';
     public thingId: string;
-    // private profile: ProfileInfo;
+    private profile: ProfileInfo = null;
 
     public device: Device = new Device();
     public deviceType: DeviceType = new DeviceType();
@@ -56,9 +53,7 @@ export class DeviceComponent extends ProfileInfoComponent implements OnInit, OnD
         private deviceService: DeviceService,
         private deviceBlueprintService: DeviceBlueprintService,
         private deviceTypeService: DeviceTypeService
-    ) {
-        super(localStorage);
-    }
+    ) {}
 
     ngOnInit() {
         const _self = this;
@@ -80,13 +75,13 @@ export class DeviceComponent extends ProfileInfoComponent implements OnInit, OnD
 
         _self.blockUI.start('Loading device...');
 
-        // _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-        //     _self.profile = new ProfileInfo(profile);
-        _self.loadDevice();
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            _self.profile = new ProfileInfo(profile);
+            _self.loadDevice();
             // this.pollerInterval = setInterval(function() {
             //     _self.loadDevice();
             // }, environment.refreshInterval);
-        // });
+        });
     }
 
     ngOnDestroy() {

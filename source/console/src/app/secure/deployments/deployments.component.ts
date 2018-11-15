@@ -5,9 +5,6 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
-// Components
-import { ProfileInfoComponent } from '../common/profile-info.component';
-
 // Models
 import { ProfileInfo } from '../../models/profile-info.model';
 import { Deployment } from '../../models/deployment.model';
@@ -26,7 +23,10 @@ declare var $: any;
     selector: 'app-root-deployments',
     templateUrl: './deployments.component.html'
 })
-export class DeploymentsComponent extends ProfileInfoComponent implements OnInit {
+export class DeploymentsComponent implements OnInit {
+
+    private profile: ProfileInfo = null;
+
     public title = 'Deployments';
 
     public pages: any = {
@@ -50,9 +50,7 @@ export class DeploymentsComponent extends ProfileInfoComponent implements OnInit
         private logger: LoggerService,
         private _ngZone: NgZone,
         private deploymentService: DeploymentService
-    ) {
-        super(localStorage);
-    }
+    ) {}
 
     ngOnInit() {
         const _self = this;

@@ -10,7 +10,7 @@ import { Device } from 'src/app/models/device.model';
 import { IOTService } from 'src/app/services/iot.service';
 
 @Component({
-    selector: 'app-aws-gg-mini-connected-factory-v1',
+    selector: 'app-aws-gg-mini-connected-factory-v1-0',
     templateUrl: './aws-gg-mini-connected-factory.component.html'
 })
 export class AWSGGMiniConnectedFactoryV10Component extends IoTPubSuberComponent implements OnInit {

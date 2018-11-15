@@ -31,9 +31,12 @@ class iotHelper {
         this.creds = new AWS.EnvironmentCredentials('AWS'); // Lambda provided credentials
     }
 
-    describeEndpoint() {
+    describeEndpoint(endpointType = 'iot:Data') {
         const iot = new AWS.Iot();
-        return iot.describeEndpoint().promise().then(data => {
+        console.log('describeEndpoint:', endpointType);
+        return iot.describeEndpoint({
+            endpointType: endpointType
+        }).promise().then(data => {
             console.log('Returned endpoint', data);
             return data;
         });

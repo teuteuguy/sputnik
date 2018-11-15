@@ -9,6 +9,7 @@ import Amplify from 'aws-amplify';
 import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
 import attachPrincipalPolicy from '../graphql/mutations/attach-principal-policy';
+import describeEndpoint from '../graphql/queries/describe-endpoint.get';
 import getThingShadow from '../graphql/queries/iotdata-thing-shadow.get';
 import updateThingShadow from '../graphql/mutations/iotdata-thing-shadow.update';
 

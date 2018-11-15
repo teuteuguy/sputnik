@@ -68,7 +68,7 @@ exports.handler = (event, context, callback) => {
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
             });
         } else if (event.ResourceProperties.customAction === 'iotDescribeEndpoint') {
-            iotHelper.describeEndpoint().then(data => {
+            iotHelper.describeEndpoint(event.ResourceProperties.endpointType).then(data => {
                 responseStatus = 'SUCCESS';
                 responseData = data;
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
@@ -95,6 +95,9 @@ exports.handler = (event, context, callback) => {
                 const BlueprintParser = require('./lib/blueprint-parser');
                 const blueprintParser = new BlueprintParser();
                 blueprintParser.parse(event.message).then(result => callback(null, result)).catch(err => callback(err, null));
+                break;
+            case 'describeEndpoint':
+                iotHelper.describeEndpoint(event.endpointType).then(result => callback(null, result.endpointAddress)).catch(err => callback(err, null));
                 break;
             case 'iotdata.deleteThingShadow':
             case 'iotdata.getThingShadow':
