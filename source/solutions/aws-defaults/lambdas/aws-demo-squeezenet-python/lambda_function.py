@@ -1,15 +1,17 @@
+import sys
 import os
-import numpy as np
-import cv2
+import numpy as np  # pylint: disable=import-error
+import cv2 # pylint: disable=import-error
 import time
 from threading import Event, Thread, Timer
 import math
 import load_model
 
-import awscam
+# import awscam  # pylint: disable=import-error
 from file_output import FileOutput
 
 from ggiot import GGIoT
+from camera import VideoStream
 
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
@@ -17,10 +19,12 @@ def get_parameter(name, default):
     return default
 
 THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
+PATH_TO_CAMERA = get_parameter('PATH_TO_CAMERA', '/dev/null')
 PREFIX = 'mtm'
 TOPIC_CAMERA = 'mtm/{}/camera'.format(THING_NAME)
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
 RESOLUTION = "858x480"
+CAMERA = None
 
 def timeInMillis(): return int(round(time.time() * 1000))
 
@@ -45,13 +49,22 @@ try:
     frame = 255*np.ones([resolution[0], resolution[1], 3])
     OUTPUT = FileOutput('/tmp/results.mjpeg', frame, GGIOT)
     OUTPUT.start()
+    OUTPUT.update(frame)
 
     GGIOT.info('Getting last camera frame')
-    ret, frame = awscam.getLastFrame()
-    ret, frame = awscam.getLastFrame()
+    CAMERA = VideoStream(PATH_TO_CAMERA, resolution[0], resolution[1])
+    # CAMERA.start()
+    ret, frame = CAMERA.read()
+    ret, frame = CAMERA.read()
+    # ret, frame = awscam.getLastFrame()
+    # ret, frame = awscam.getLastFrame()
 
     GGIOT.info('Loading model at ' + ML_MODEL_PATH)
-    MODEL = load_model.ImagenetModel(ML_MODEL_PATH + 'synset.txt', ML_MODEL_PATH + 'squeezenet_v1.1')
+    MODEL = load_model.ImagenetModel(
+        synset_path=ML_MODEL_PATH + 'synset.txt',
+        network_prefix=ML_MODEL_PATH + 'squeezenet_v1.1',
+        label_names=None
+        )
 
 
 except Exception as err:
@@ -64,14 +77,24 @@ fps = 0
 
 def camera_handler():
 
+    global CAMERA
     global last_update
     global fps
     global nbFramesProcessed
 
-    ret, frame = awscam.getLastFrame()
+    ret, frame = CAMERA.read()
+    print('Frame read')
+    if ret == False:
+        print('Something is wrong, cant read frame')
+        time.sleep(5)
+        return
+
+    # ret, frame = awscam.getLastFrame()
+    print('Frame resize')
     frame = cv2.resize(frame, parseResolution(RESOLUTION))
     font = cv2.FONT_HERSHEY_SIMPLEX
 
+    print('Frame resized')
     inference_size_x = parseResolution(RESOLUTION)[0] / 2
     inference_size_y = parseResolution(RESOLUTION)[1] / 2
 
@@ -81,7 +104,10 @@ def camera_handler():
         payload = []
 
         try:
-            predictions = MODEL.predict_from_image(cvimage=frame, reshape=(inference_size_x, inference_size_y), N=15)
+            predictions = MODEL.predict_from_image(
+                cvimage=frame,
+                reshape=(inference_size_x, inference_size_y),
+                N=15)
             print(predictions)
 
             for item in predictions:

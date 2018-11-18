@@ -10,10 +10,10 @@ import { Device } from 'src/app/models/device.model';
 import { IOTService } from 'src/app/services/iot.service';
 
 @Component({
-    selector: 'app-aws-deeplens-demo-squeezenet-v1-0',
-    templateUrl: './aws-deeplens-demo-squeezenet.component.html'
+    selector: 'app-aws-demo-squeezenet-v1-0',
+    templateUrl: './aws-demo-squeezenet.component.html'
 })
-export class AWSDeeplensDemoSqueezenetV10Component extends IoTPubSuberComponent implements OnInit {
+export class AWSDemoSqueezenetV10Component extends IoTPubSuberComponent implements OnInit {
     @Input()
     device: Device = new Device();
     latestData: any = null;
@@ -27,7 +27,7 @@ export class AWSDeeplensDemoSqueezenetV10Component extends IoTPubSuberComponent 
             {
                 topic: 'mtm/' + this.device.thingName + '/camera',
                 onMessage: data => {
-                    // console.log('Data:', data.value);
+                    console.log('Data:', data.value);
                     this.latestData = data.value;
                 },
                 onError: err => {

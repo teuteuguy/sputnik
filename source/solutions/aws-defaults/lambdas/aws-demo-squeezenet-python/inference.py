@@ -27,7 +27,7 @@ class Infer:
         frame = mx.nd.array(frame)
         frame = frame.transpose((2, 0, 1))
         frame = frame.expand_dims(axis=0)
-        
+
         self.mod.forward(self.Batch([frame]))
         prob = self.mod.get_outputs()[0].asnumpy()
 

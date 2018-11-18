@@ -31,7 +31,7 @@ import { _ } from 'underscore';
 export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
 
     public profile: ProfileInfo = null;
-    private isAdminUser = false;
+    public isAdminUser = false;
     private loadedProfile = false;
 
     public title: '';

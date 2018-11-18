@@ -78,6 +78,17 @@
                             "SourcePath": "/tmp"
                         }
                     }
+                }, {
+                    "Id": "video0",
+                    "Name": "dev_video0_resource",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/video0"
+                        }
+                    }
                 }
             ]
         }

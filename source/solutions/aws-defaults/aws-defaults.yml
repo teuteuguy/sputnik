@@ -138,56 +138,56 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
 
-    DefaultDeeplensImageCaptureLambda:
+    DefaultImageCaptureLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
-            FunctionName: 'aws-deeplens-image-capture-python'
+            FunctionName: 'aws-image-capture-python'
             Description: 'My Things Management Image Capture Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-deeplens-image-capture-python.zip']]
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-image-capture-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
             Role: !GetAtt DefaultLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
-    DefaultDeeplensImageCaptureLambdaVersion:
+    DefaultImageCaptureLambdaVersion:
         Type: 'AWS::Lambda::Version'
         Properties:
             FunctionName:
-                Ref: 'DefaultDeeplensImageCaptureLambda'
-            Description: 'A first version of aws-deeplens-image-capture-python'
-    DefaultDeeplensImageCaptureLambdaAlias:
+                Ref: 'DefaultImageCaptureLambda'
+            Description: 'A first version of aws-image-capture-python'
+    DefaultImageCaptureLambdaAlias:
         Type: 'AWS::Lambda::Alias'
         Properties:
-            FunctionName: !Ref DefaultDeeplensImageCaptureLambda
-            FunctionVersion: !GetAtt DefaultDeeplensImageCaptureLambdaVersion.Version
+            FunctionName: !Ref DefaultImageCaptureLambda
+            FunctionVersion: !GetAtt DefaultImageCaptureLambdaVersion.Version
             Name: 'MTM'
 
-    DefaultDeeplensDemoSqueezenetLambda:
+    DefaultDemoSqueezenetLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
-            FunctionName: 'aws-deeplens-demo-squeezenet-python'
-            Description: 'AWS Squeezenet Demo for Deeplens Lambda Code'
+            FunctionName: 'aws-demo-squeezenet-python'
+            Description: 'AWS Squeezenet Demo Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-deeplens-demo-squeezenet-python.zip']]
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'aws-demo-squeezenet-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
             Role: !GetAtt DefaultLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
-    DefaultDeeplensDemoSqueezenetLambdaVersion:
+    DefaultDemoSqueezenetLambdaVersion:
         Type: 'AWS::Lambda::Version'
         Properties:
             FunctionName:
-                Ref: 'DefaultDeeplensDemoSqueezenetLambda'
-            Description: 'A first version of aws-deeplens-demo-squeezenet-python'
-    DefaultDeeplensDemoSqueezenetLambdaAlias:
+                Ref: 'DefaultDemoSqueezenetLambda'
+            Description: 'A first version of aws-demo-squeezenet-python'
+    DefaultDemoSqueezenetLambdaAlias:
         Type: 'AWS::Lambda::Alias'
         Properties:
-            FunctionName: !Ref DefaultDeeplensDemoSqueezenetLambda
-            FunctionVersion: !GetAtt DefaultDeeplensDemoSqueezenetLambdaVersion.Version
+            FunctionName: !Ref DefaultDemoSqueezenetLambda
+            FunctionVersion: !GetAtt DefaultDemoSqueezenetLambdaVersion.Version
             Name: 'MTM'
 
     DefaultSqueezenetModel:
@@ -198,6 +198,6 @@ Resources:
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'squeezenet.zip']]
             destS3Bucket: !Ref dataS3Bucket
-            destS3Key: !Join ['/', ['aws-deeplens-demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
+            destS3Key: !Join ['/', ['aws-demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'

@@ -40,15 +40,15 @@ cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-facto
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-defaults - aws-deeplens-image-capture-python"
+echo "[Build] Solution - aws-defaults - aws-image-capture-python"
 echo
-cd $1/solutions/aws-defaults/lambdas/aws-deeplens-image-capture-python
+cd $1/solutions/aws-defaults/lambdas/aws-image-capture-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-defaults - aws-deeplens-demo-squeezenet-python"
+echo "[Build] Solution - aws-defaults - aws-demo-squeezenet-python"
 echo
-cd $1/solutions/aws-defaults/lambdas/aws-deeplens-demo-squeezenet-python
+cd $1/solutions/aws-defaults/lambdas/aws-demo-squeezenet-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo

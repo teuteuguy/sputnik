@@ -11,8 +11,8 @@ import { Device } from '../../../models/device.model';
 // Devices
 import { AWSAFR3DBeltMiniConnectedFactoryV10Module } from './aws-afr-3d-belt-mini-connected-factory-v1.0/aws-afr-3d-belt-mini-connected-factory.module';
 import { AWSGGMiniConnectedFactoryV10Module } from './aws-gg-mini-connected-factory-v1.0/aws-gg-mini-connected-factory.module';
-import { AWSDeeplensImageCaptureV10Module } from './aws-deeplens-image-capture-v1.0/aws-deeplens-image-capture.module';
-import { AWSDeeplensDemoSqueezenetV10Module } from './aws-deeplens-demo-squeezenet-v1.0/aws-deeplens-demo-squeezenet.module';
+import { AWSImageCaptureV10Module } from './aws-image-capture-v1.0/aws-image-capture.module';
+import { AWSDemoSqueezenetV10Module } from './aws-demo-squeezenet-v1.0/aws-demo-squeezenet.module';
 
 @Component({
     selector: 'app-device-child-view',
@@ -37,18 +37,18 @@ import { AWSDeeplensDemoSqueezenetV10Module } from './aws-deeplens-demo-squeezen
             [device]="device"
         >
         </app-aws-gg-mini-connected-factory-v1-0>
-        <app-aws-deeplens-image-capture-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-deeplens-image-capture-v1.0'"
+        <app-aws-image-capture-v1-0
+            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-image-capture-v1.0'"
             [device]="device"
         >
-        </app-aws-deeplens-image-capture-v1-0>
-        <app-aws-deeplens-demo-squeezenet-v1-0
+        </app-aws-image-capture-v1-0>
+        <app-aws-demo-squeezenet-v1-0
             *ngIf="
-                device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-deeplens-demo-squeezenet-v1.0'
+                device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-demo-squeezenet-v1.0'
             "
             [device]="device"
         >
-        </app-aws-deeplens-demo-squeezenet-v1-0>
+        </app-aws-demo-squeezenet-v1-0>
     `
 })
 export class DeviceChildViewComponent {
@@ -64,8 +64,8 @@ export class DeviceChildViewComponent {
         // AppPipesModule,
         AWSAFR3DBeltMiniConnectedFactoryV10Module,
         AWSGGMiniConnectedFactoryV10Module,
-        AWSDeeplensImageCaptureV10Module,
-        AWSDeeplensDemoSqueezenetV10Module
+        AWSImageCaptureV10Module,
+        AWSDemoSqueezenetV10Module
     ]
 })
 export class DeviceChildViewsModule {}

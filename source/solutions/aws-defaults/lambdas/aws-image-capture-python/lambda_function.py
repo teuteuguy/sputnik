@@ -1,15 +1,15 @@
 import os
-import numpy as np
-import cv2
+import numpy as np  # pylint: disable=import-error
+import cv2  # pylint: disable=import-error
 import time
 from threading import Event, Thread, Timer
 import math
 
-import awscam
+import awscam  # pylint: disable=import-error
 from file_output import FileOutput
 
-from botocore.session import Session
-import boto3
+from botocore.session import Session  # pylint: disable=import-error
+import boto3  # pylint: disable=import-error
 
 from ggiot import GGIoT
 

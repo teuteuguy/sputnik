@@ -10,10 +10,10 @@ import { Device } from 'src/app/models/device.model';
 import { IOTService } from 'src/app/services/iot.service';
 
 @Component({
-    selector: 'app-aws-deeplens-image-capture-v1-0',
-    templateUrl: './aws-deeplens-image-capture.component.html'
+    selector: 'app-aws-image-capture-v1-0',
+    templateUrl: './aws-image-capture.component.html'
 })
-export class AWSDeeplensImageCaptureV10Component extends IoTPubSuberComponent implements OnInit {
+export class AWSImageCaptureV10Component extends IoTPubSuberComponent implements OnInit {
     @Input()
     device: Device = new Device();
 

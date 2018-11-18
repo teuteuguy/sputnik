@@ -1,18 +1,41 @@
 {
-    "id": "aws-deeplens-demo-squeezenet-v1.0",
-    "name": "AWS Squeezenet Demo for Deeplens v1.0",
+    "id": "aws-demo-squeezenet-v1.0",
+    "name": "AWS Squeezenet Demo v1.0",
     "type": "GREENGRASS",
-    "compatibility": ["aws-deeplens-no-lambda-v1.0"],
+    "compatibility": ["aws-deeplens-no-lambda-v1.0", "intel-up2-v0.1"],
     "deviceTypeMappings": [{
-        "substitute": "AWS_CAM_STREAM",
+        "substitute": "CAM_STREAM_ID",
         "value": {
-            "aws-deeplens-no-lambda-v1.0": "stream"
+            "aws-deeplens-no-lambda-v1.0": "stream",
+            "aws-deeplens-v1.0": "stream",
+            "intel-up2-v0.1": "video0"
+        }
+    }, {
+        "substitute": "CAM_STREAM_PERMISSIONS",
+        "value": {
+            "aws-deeplens-no-lambda-v1.0": "ro",
+            "aws-deeplens-v1.0": "ro",
+            "intel-up2-v0.1": "rw"
+        }
+    }, {
+        "substitute": "PATH_TO_CAMERA",
+        "value": {
+            "aws-deeplens-no-lambda-v1.0": "awscam",
+            "aws-deeplens-v1.0": "awscam",
+            "intel-up2-v0.1": "/dev/video0"
+        }
+    }, {
+        "substitute": "GPU",
+        "value": {
+            "aws-deeplens-no-lambda-v1.0": "gpu",
+            "aws-deeplens-v1.0": "gpu",
+            "intel-up2-v0.1": "gpu"
         }
     }],
     "spec": {
         "FunctionDefinitionVersion": {
             "Functions": [{
-                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-demo-squeezenet-python:MTM",
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-demo-squeezenet-python:MTM",
                 "FunctionConfiguration": {
                     "EncodingType": "json",
                     "Environment": {
@@ -26,16 +49,17 @@
                                 "ResourceId": "mtm-model-squeezenet"
                             },
                             {
-                                "Permission": "ro",
-                                "ResourceId": "[AWS_CAM_STREAM]"
+                                "Permission": "[CAM_STREAM_PERMISSIONS]",
+                                "ResourceId": "[CAM_STREAM_ID]"
                             },
                             {
                                 "Permission": "rw",
-                                "ResourceId": "gpu"
+                                "ResourceId": "[GPU]"
                             }
                         ],
                         "Variables": {
-                            "ML_MODEL_PATH": "/greengrass-machine-learning/mxnet/squeezenet/"
+                            "ML_MODEL_PATH": "/greengrass-machine-learning/mxnet/squeezenet/",
+                            "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
                         }
                     },
                     "MemorySize": 2097152,
@@ -51,18 +75,18 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/greengrass-machine-learning/mxnet/squeezenet/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/aws-deeplens-demo-squeezenet-v1.0/models/squeezenet.zip"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/aws-demo-squeezenet-v1.0/models/squeezenet.zip"
                     }
                 }
             }]
         },
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-demo-squeezenet-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-demo-squeezenet-python:MTM",
                     "Subject": "mtm/[CORE]/logger",
                     "Target": "cloud"
                 }, {
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-deeplens-demo-squeezenet-python:MTM",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:aws-demo-squeezenet-python:MTM",
                     "Subject": "mtm/[CORE]/camera",
                     "Target": "cloud"
                 }

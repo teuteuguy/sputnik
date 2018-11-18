@@ -45,7 +45,7 @@ class ImagenetModel(object):
         # Load the network into an MXNet module and bind the corresponding parameters
         self.mod = mx.mod.Module(symbol=sym, label_names=label_names, context=context)
         self.mod.bind(for_training=False, data_shapes=input_shapes)
-        self.mod.set_params(arg_params, aux_params)
+        self.mod.set_params(arg_params, aux_params, allow_missing=True)
         self.camera = None
         self.start_time = None
         self.elapsed1 = None
