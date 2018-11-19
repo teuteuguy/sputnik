@@ -61,9 +61,11 @@ class Belt extends events.EventEmitter {
         this.shadowPoller = setInterval(() => {
             this.port.write('1');
         }, pollerFreq);
-        
+
+        this.debug = false;
+
     }
-    
+
     close(callback) {
         this.port.close(callback);
     }
@@ -77,7 +79,9 @@ class Belt extends events.EventEmitter {
 
         try {
             // console.log(tag, data);
-            this.emit('data', data);
+            if (this.debug) {
+                this.emit('data', data);
+            }
 
             let beltData = null;
 
@@ -153,9 +157,9 @@ class Belt extends events.EventEmitter {
     }
 
     parseIncomingShadow(data) {
-        
+
         console.log('parseIncomingShadow: ' + JSON.stringify(data));
-        
+
         if (data && data.hasOwnProperty('state') && data.state.hasOwnProperty('desired')) {
             const desired = data.state.desired;
 
@@ -164,6 +168,9 @@ class Belt extends events.EventEmitter {
             }
             if (desired.hasOwnProperty('speed') && desired.speed !== this.SHADOW_DESIRED.speed) {
                 this.SHADOW_DESIRED.speed = desired.speed;
+            }
+            if (desired.hasOwnProperty('debug')) {
+                this.debug = desired.debug;
             }
 
             this.emit('shadow', {

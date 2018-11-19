@@ -14,12 +14,11 @@ const belt = new Belt(SERIALPORT_PORT, parseInt(SERIALPORT_SPEED), SYNC_SHADOW_F
 const GGIOT = require('./ggiot');
 const ggIoT = new GGIOT(THING_NAME, PREFIX);
 
-// belt.on('data', (data) => {
-//     console.log('raw:', data);
-// });
+belt.on('data', (data) => {
+    console.log('raw: ' + data);
+});
 
 belt.on('shadow', (data) => {
-
     if (data.hasOwnProperty('type')) {
         switch (data.type) {
             case 'reported':
@@ -42,7 +41,7 @@ belt.on('shadow', (data) => {
                     if (err) {
                         console.error('ERROR: info: ' + JSON.stringify(err));
                     } else {
-                        console.log('belt.on.shadow.desired: info successful: ' + JSON.stringify(data));    
+                        console.log('belt.on.shadow.desired: info successful: ' + JSON.stringify(data));
                     }
                 });
                 break;
@@ -60,7 +59,7 @@ belt.on('sensors', (data) => {
         if (err) {
             console.error('ERROR publishing in belt.on.sensors: ' + JSON.stringify(err));
         } else {
-            console.log('belt.on.sensors: publish successful: ' + JSON.stringify(data));    
+            console.log('belt.on.sensors: publish successful: ' + JSON.stringify(data));
         }
     });
 });
@@ -70,14 +69,14 @@ belt.on('error', (error) => {
         if (err) {
             console.error('ERROR publishing exception in belt.on.error: ' + JSON.stringify(err));
         } else {
-            console.log('belt.on.error: publish successful: ' + JSON.stringify(data)); 
+            console.log('belt.on.error: publish successful: ' + JSON.stringify(data));
         }
     });
 });
 
 ggIoT.getThingShadow((err, data) => {
     if (err) {
-        console.error('ERROR: getThingShadow: ' + JSON.stringify(err));    
+        console.error('ERROR: getThingShadow: ' + JSON.stringify(err));
     } else {
         console.log('getThingShadow: ' + JSON.stringify(data));
         belt.parseIncomingShadow(data);
@@ -87,9 +86,9 @@ ggIoT.getThingShadow((err, data) => {
 exports.handler = (event, context, callback) => {
     console.log('handler: ' + JSON.stringify(event));
     console.log('handler: ' + JSON.stringify(context));
-    
+
     belt.parseIncomingShadow(event);
-    
+
     callback(null, 'finished');
 };
 
@@ -99,5 +98,5 @@ process.on('SIGTERM', function () {
     belt.close((err) => {
         console.log('Port closed: ' + JSON.stringify(err));
     });
-    process.exit(0); 
+    process.exit(0);
 });

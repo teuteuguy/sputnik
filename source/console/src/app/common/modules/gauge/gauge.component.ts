@@ -1,23 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit } from '@angular/core';
 declare var Gauge: any;
 
 @Component({
     selector: 'app-gauge',
     template: '<canvas id="{{id}}-gauge" class="gaugejs"></canvas>'
 })
-export class GaugeComponent implements OnInit {
+export class GaugeComponent implements AfterViewInit {
     private gauge = null;
 
+    private _value = '0';
+
     @Input() id = '';
-    @Input() value = 0;
     @Input() opts: any;
-    @Input() maxValue = 0;
-    @Input() minValue = 0;
-    @Input() animationSpeed = 0;
+    @Input() maxValue = '0';
+    @Input() minValue = '0';
+    @Input() animationSpeed = '0';
 
     constructor() {}
 
-    ngOnInit() {
+    ngAfterViewInit() {
         if (!this.opts) {
             this.opts = {
                 angle: 0,
@@ -33,12 +34,21 @@ export class GaugeComponent implements OnInit {
                 highDpiSupport: true
             };
         }
-        const target = document.getElementById(this.id + '-gauge'); // your canvas element
-        console.log(target);
+        const id = this.id + '-gauge';
+        const target = document.getElementById(id); // your canvas element
         this.gauge = new Gauge(target).setOptions(this.opts); // create sexy gauge!
-        this.gauge.maxValue = this.maxValue || 0; // set max gauge value
-        this.gauge.setMinValue(this.minValue || 0); // Prefer setter over gauge.minValue = 0
-        this.gauge.animationSpeed = this.animationSpeed || 0; // set animation speed (32 is default value)
-        this.gauge.set(this.value || 0); // set actual value
+        this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
+        this.gauge.setMinValue = parseInt(this.minValue || '0', 10); // set max gauge value
+        this.gauge.animationSpeed = parseInt(this.animationSpeed || '0', 10); // set max gauge value
+        this.gauge.set(parseInt(this._value || '0', 10)); // set actual value
     }
+
+    @Input()
+    set value(val: any) {
+        this._value = val;
+        if (this.gauge) {
+            this.gauge.set(this._value);
+        }
+    }
+
 }

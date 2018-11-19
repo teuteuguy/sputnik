@@ -6,7 +6,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <span class="float-right" *ngIf="latestInference">{{
                         latestInference.fps }}fps</span></h6>
                 <div class="card-text text-center">
-                    <div *ngIf="latestInference" style="font-size: 10em;">
+                    <div *ngIf="latestInference" style="font-size: 8em;">
                         <i class="fa" [class.fa-thumbs-up]="latestInference.advice === 'safe'" [class.fa-thumbs-down]="latestInference.advice === 'not safe'">
                         </i>
                         <span *ngIf="latestInference.advice != 'inconclusive'">{{ latestInference.probability }}%</span>

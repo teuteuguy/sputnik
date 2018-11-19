@@ -18,6 +18,34 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
 
     public sensors: any = {};
 
+    public buttons = [
+        {
+            value: -2,
+            mode: 1,
+            speed: 2
+        },
+        {
+            value: -1,
+            mode: 1,
+            speed: 1
+        },
+        {
+            value: 0,
+            mode: 2,
+            speed: 1
+        },
+        {
+            value: 1,
+            mode: 3,
+            speed: 1
+        },
+        {
+            value: 2,
+            mode: 3,
+            speed: 2
+        }
+    ];
+
     constructor(private iotService: IOTService) {
         super(iotService);
     }
@@ -27,6 +55,7 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             {
                 topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
                 onMessage: data => {
+                    console.log('Shadow', data);
                     this.updateIncomingShadow(data.value);
                 },
                 onError: err => {
@@ -37,7 +66,7 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
                 topic: 'mtm/' + this.device.thingName + '/sensors',
                 onMessage: data => {
                     this.sensors = data.value;
-                    // console.log('Sensors:', data.value);
+                    console.log('Sensors:', this.sensors);
                 },
                 onError: err => {
                     console.error('Error:', err);
@@ -48,5 +77,43 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
         this.getLastState(this.device.thingName).then(data => {
             console.log(data);
         });
+    }
+
+    desiredStateChange(button) {
+
+        const desired = {
+            mode: button.mode,
+            speed: button.speed
+        };
+
+        this.iotService
+            .updateThingShadow({
+                thingName: this.device.thingName,
+                payload: JSON.stringify({
+                    state: {
+                        desired: desired
+                    }
+                })
+            })
+            .then(result => {
+                this.getLastState(this.device.thingName).then(data => {
+                    console.log(data);
+                });
+                // this.getLastState();
+                // console.log('updateThingShadow:', result);
+                // this.shadow = result;
+                // if (
+                //     this.shadow &&
+                //     this.shadow.hasOwnProperty('state') &&
+                //     this.shadow.state.hasOwnProperty('desired') &&
+                //     this.shadow.state.desired.hasOwnProperty('simpleCamera')
+                // ) {
+                //     this.simpleCamera = this.shadow.state.desired.simpleCamera;
+                // }
+                return result;
+            })
+            .catch(err => {
+                console.error(err);
+            });
     }
 }

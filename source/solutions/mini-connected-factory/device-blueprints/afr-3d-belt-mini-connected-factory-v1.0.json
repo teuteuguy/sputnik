@@ -8,7 +8,8 @@
         "Shadow": {
             "desired": {
                 "speed": 1,
-                "mode": 2
+                "mode": 2,
+                "debug": false
             }
         }
     }
