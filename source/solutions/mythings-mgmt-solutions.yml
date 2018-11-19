@@ -40,8 +40,8 @@ Parameters:
 Mappings:
     Solutions:
         Solution:
-            AMCF1: 'aws-mini-connected-factory-v1.0'
-            DEFAULTS: 'aws-defaults'
+            AMCF1: 'mini-connected-factory'
+            DEFAULTS: 'defaults'
 
 Resources:
 

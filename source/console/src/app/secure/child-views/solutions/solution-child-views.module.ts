@@ -5,16 +5,16 @@ import { CommonModule } from '@angular/common';
 import { Solution } from '../../../models/solution.model';
 
 // Solutions
-import { AWSMiniConnectedFactoryV10Module } from './aws-mini-connected-factory-v1.0/aws-mini-connected-factory.module';
+import { MiniConnectedFactoryV10Module } from './mini-connected-factory-v1.0/mini-connected-factory.module';
 
 @Component({
     selector: 'app-solution-child-view',
     template: `
-        <app-aws-mini-connected-factory-v1
-            *ngIf="solution.solutionBlueprintId === 'aws-mini-connected-factory-v1.0' ||
-                solution.solutionBlueprintId === 'aws-mini-connected-factory-v1.1'"
+        <app-mini-connected-factory-v1
+            *ngIf="solution.solutionBlueprintId === 'mini-connected-factory-v1.0' ||
+                solution.solutionBlueprintId === 'mini-connected-factory-v1.1'"
             [solution]="solution"
-        ></app-aws-mini-connected-factory-v1>
+        ></app-mini-connected-factory-v1>
     `
 })
 export class SolutionChildViewComponent {
@@ -25,6 +25,6 @@ export class SolutionChildViewComponent {
 @NgModule({
     declarations: [SolutionChildViewComponent],
     exports: [SolutionChildViewComponent],
-    imports: [CommonModule, AWSMiniConnectedFactoryV10Module]
+    imports: [CommonModule, MiniConnectedFactoryV10Module]
 })
 export class SolutionChildViewsModule {}

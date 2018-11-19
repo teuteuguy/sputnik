@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // AWS
-import * as AWS from 'aws-sdk';
+// import * as AWS from 'aws-sdk';
 import { AmplifyService } from 'aws-amplify-angular';
 
 import Amplify from 'aws-amplify';
@@ -24,7 +24,7 @@ export class IOTService {
     public isConnected = false;
 
     constructor(private amplifyService: AmplifyService) {
-        this.iot = new AWS.Iot({ region: appVariables.REGION });
+        // this.iot = new AWS.Iot({ region: appVariables.REGION });
     }
 
     connect() {

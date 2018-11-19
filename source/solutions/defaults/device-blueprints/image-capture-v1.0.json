@@ -1,0 +1,94 @@
+{
+    "id": "image-capture-v1.0",
+    "name": "Image Capture v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["deeplens-v1.0", "deeplens-no-lambda-v1.0", "intel-up2-webcam-v0.1"],
+    "deviceTypeMappings": [{
+        "substitute": "CAM_STREAM_ID",
+        "value": {
+            "deeplens-no-lambda-v1.0": "stream",
+            "deeplens-v1.0": "stream",
+            "intel-up2-webcam-v0.1": "video0"
+        }
+    }, {
+        "substitute": "CAM_STREAM_PERMISSIONS",
+        "value": {
+            "deeplens-no-lambda-v1.0": "ro",
+            "deeplens-v1.0": "ro",
+            "intel-up2-webcam-v0.1": "rw"
+        }
+    }, {
+        "substitute": "PATH_TO_CAMERA",
+        "value": {
+            "deeplens-no-lambda-v1.0": "awscam",
+            "deeplens-v1.0": "awscam",
+            "intel-up2-webcam-v0.1": "/dev/video0"
+        }
+    }, {
+        "substitute": "GPU",
+        "value": {
+            "deeplens-no-lambda-v1.0": "gpu",
+            "deeplens-v1.0": "gpu",
+            "intel-up2-webcam-v0.1": "gpu"
+        }
+    }],
+    "spec": {
+        "Shadow": {
+            "desired": {
+                "simpleCamera": {
+                    "capture": "Off",
+                    "sleepInSecsAsStr": "0.5",
+                    "s3UploadSleepInSecsAsStr": "0.5",
+                    "s3Upload": "Off",
+                    "s3Bucket": "[DATA_BUCKET]",
+                    "resolution": "858x480",
+                    "s3KeyPrefix": "image-capture-v1.0/[CORE]/default"
+                }
+            }
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:image-capture-python:MTM",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": false,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "tmp"
+                            },
+                            {
+                                "Permission": "[CAM_STREAM_PERMISSIONS]",
+                                "ResourceId": "[CAM_STREAM_ID]"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "[GPU]"
+                            }
+                        ],
+                        "Variables": {}
+                    },
+                    "MemorySize": 2097152,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:image-capture-python:MTM",
+                    "Subject": "mtm/[CORE]/logger",
+                    "Target": "cloud"
+                }, {
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:image-capture-python:MTM",
+                    "Subject": "mtm/[CORE]/camera",
+                    "Target": "cloud"
+                }, {
+                    "Source": "GGShadowService",
+                    "Subject": "$aws/things/[CORE]/shadow/update/accepted",
+                    "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:image-capture-python:MTM"
+                }
+            ]
+        }
+    }
+}

@@ -22,6 +22,15 @@ declare var jquery: any;
 declare var $: any;
 import * as _ from 'underscore';
 
+class PossibleDeviceBlueprintsForDevice {
+    // device: Device;
+    // deviceBlueprintId: string;
+    // list: Device[];
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+    }
+}
+
 @Component({
     selector: 'app-root-device',
     templateUrl: './device.component.html'
@@ -38,6 +47,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     public deviceBlueprint: DeviceBlueprint = new DeviceBlueprint();
 
     public deviceForEdit: Device = new Device();
+    public possibleDeviceBlueprintsForDevice: PossibleDeviceBlueprintsForDevice[] = [];
 
     @BlockUI()
     blockUI: NgBlockUI;

@@ -93,8 +93,13 @@ import { SolutionBlueprintService } from './services/solution-blueprint.service'
 // import { MQTTService } from './services/mqtt.service';
 // import { DeviceSubViewComponentService } from './services/device-sub-view-component.service';
 
+// Common Modules
+import { GaugeModule } from './common/modules/gauge/gauge.module';
+
 // Solution Modules
 import { ChildViewsModule } from './secure/child-views/child-views.module';
+
+
 
 @NgModule({
     declarations: [
@@ -163,6 +168,7 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         AppRoutingModule,
 
         ChildViewsModule,
+        GaugeModule,
 
         AmplifyAngularModule,
         BlockUIModule.forRoot(),

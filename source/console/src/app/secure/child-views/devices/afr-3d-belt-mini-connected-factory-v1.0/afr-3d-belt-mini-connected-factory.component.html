@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">AWS 3D Printed Belt</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
+                <div class="card-text">
+                    <div class="form-group" *ngIf="desired && reported">
+                        <label for="desired" class="form-control-label">Control:</label>
+                        <div class="ml-4" id="desired">
+                            <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 1 && desired.speed == 2"
+                                [ngStyle]="{
+                                    'border': desired.mode == 1 && desired.speed == 2 || reported.mode == 1 && reported.speed == 2 ? '5px' : '0px',
+                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
+                                    'border-style': 'solid'
+                                }">-2</button>
+                            <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 1 && desired.speed == 1"
+                                [ngStyle]="{
+                                    'border': (desired.mode == 1 && desired.speed == 1) || (reported.mode == 1 && reported.speed == 1) ? '5px' : '0px',
+                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
+                                    'border-style': 'solid'
+                                }">-1</button>
+                            <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 2" [ngStyle]="{
+                                    'border': (desired.mode == 2 || reported.mode == 2) && (desired.mode != reported.mode) ? '5px' : '0px',
+                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
+                                    'border-style': 'solid'
+                                }">Stop</button>
+                            <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 3 && desired.speed == 1"
+                                [ngStyle]="{
+                                    'border': (desired.mode == 3 && desired.speed == 1) || (reported.mode == 3 && reported.speed == 1) ? '5px' : '0px',
+                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
+                                    'border-style': 'solid'
+                                }">+1</button>
+                            <button type="button" class="btn" [class.btn-success]="desired.mode == 3 && desired.speed == 2"
+                                [ngStyle]="{
+                                    'border': (desired.mode == 3 && desired.speed == 2) || (reported.mode == 3 && reported.speed == 2) ? '5px' : '0px',
+                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
+                                    'border-style': 'solid'
+                                }">+2</button>
+                        </div>
+                    </div>
+                    <app-gauge *ngIf="sensors.hasOwnProperty('speed') && sensors.speed.hasOwnProperty('rpm')" id="speed"
+                        minValue="0" maxValue="1000" value={{sensors.speed.rpm}} animationSpeed="45"></app-gauge>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

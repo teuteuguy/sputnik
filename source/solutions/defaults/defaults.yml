@@ -1,0 +1,203 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS My Things Management Defaults v1.0'
+Parameters:
+    sourceS3Bucket:
+        Type: String
+        Description: My Things Management S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: My Things management Source key prefix.
+    greengrassSourceKeyPrefix:
+        Type: String
+        Description: My Things management source key prefix for the greengrass lambda function code
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    deploymentUUID:
+        Type: String
+        Description: Used to force update / create of inits
+    dataS3Bucket:
+        Type: String
+        Description: My Things Management Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: My Things Management Data S3 Bucket ARN
+    solutionsGreengrassGroupRole:
+        Type: String
+        Description: Greengrass Group Role
+
+Resources:
+
+    DEFAULTSGreengrassGroupPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'Policy for the My Things Management Greengrass Role.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:DescribeLogStreams'
+                            - 'logs:PutLogEvents'
+                            - 'logs:CreateLogGroup'
+                        Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                        Resource:
+                            - 'arn:aws:s3:::deeplens*/*'
+                            - 'arn:aws:s3:::deeplens*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'deeplens:*'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'kinesisvideo:DescribeStream'
+                            - 'kinesisvideo:CreateStream'
+                            - 'kinesisvideo:GetDataEndpoint'
+                            - 'kinesisvideo:PutMedia'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                            - 's3:PutObject'
+                        Resource:
+                            - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
+                            - !Join ['', [!Ref dataS3BucketArn, '*']]
+            Roles:
+                -
+                    !Ref solutionsGreengrassGroupRole
+
+    DEFAULTSDeviceBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    DEFAULTSDeviceTypes:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
+            uuid: !Ref deploymentUUID
+            table: !Ref deviceTypesTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DEFAULTSSolutionBlueprints:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !Ref customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Ref sourceS3Bucket
+    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'solution-blueprints']]
+    #         uuid: !Ref deploymentUUID
+    #         table: !Ref solutionBlueprintsTable
+    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+
+
+    DefaultLambdaRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'lambda.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
+
+    DefaultImageCaptureLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'image-capture-python'
+            Description: 'My Things Management Image Capture Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'image-capture-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt DefaultLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    DefaultImageCaptureLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'DefaultImageCaptureLambda'
+            Description: 'A first version of image-capture-python'
+    DefaultImageCaptureLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref DefaultImageCaptureLambda
+            FunctionVersion: !GetAtt DefaultImageCaptureLambdaVersion.Version
+            Name: 'MTM'
+
+    DefaultDemoSqueezenetLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'demo-squeezenet-python'
+            Description: 'AWS Squeezenet Demo Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'demo-squeezenet-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt DefaultLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    DefaultDemoSqueezenetLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'DefaultDemoSqueezenetLambda'
+            Description: 'A first version of demo-squeezenet-python'
+    DefaultDemoSqueezenetLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref DefaultDemoSqueezenetLambda
+            FunctionVersion: !GetAtt DefaultDemoSqueezenetLambdaVersion.Version
+            Name: 'MTM'
+
+    DefaultSqueezenetModel:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'squeezenet.zip']]
+            destS3Bucket: !Ref dataS3Bucket
+            destS3Key: !Join ['/', ['demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
+            uuid: !Ref deploymentUUID
+            customAction: 'copyFileFromS3ToS3'

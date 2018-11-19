@@ -15,40 +15,40 @@ mkdir -p $2/greengrass
 
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
 echo
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-camera-python"
+echo "[Build] Solution - mini-connected-factory - mini-connected-factory-camera-python"
 echo
-cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-camera-python
+cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-camera-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-belt-serial-python"
+echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
 echo
-cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-belt-serial-python
+cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-belt-serial-node"
+echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-node"
 echo
-cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-belt-serial-node
+cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-node
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/greengrass/`jq -cr '.name' package.json`.zip
 
 echo
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-python"
+echo "[Build] Solution - mini-connected-factory - mini-connected-factory-python"
 echo
-cd $1/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-python
+cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-defaults - aws-image-capture-python"
+echo "[Build] Solution - defaults - image-capture-python"
 echo
-cd $1/solutions/aws-defaults/lambdas/aws-image-capture-python
+cd $1/solutions/defaults/lambdas/image-capture-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - aws-defaults - aws-demo-squeezenet-python"
+echo "[Build] Solution - defaults - demo-squeezenet-python"
 echo
-cd $1/solutions/aws-defaults/lambdas/aws-demo-squeezenet-python
+cd $1/solutions/defaults/lambdas/demo-squeezenet-python
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo

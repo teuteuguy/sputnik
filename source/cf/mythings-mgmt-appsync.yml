@@ -762,16 +762,16 @@ Resources:
     # ####################################################################################################
 
     # RESOLVERS - MUTATIONS - FactoryReset
-    appSyncResolverMutationFactoryResetDeviceTypes:
-        Type: 'AWS::AppSync::Resolver'
-        DependsOn: appSyncSchema
-        Properties:
-            ApiId: !GetAtt appSyncGraphQLApi.ApiId
-            TypeName: Mutation
-            FieldName: factoryReset
-            DataSourceName: !GetAtt appSyncDataSourceFactoryResetLambda.Name
-            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
-            ResponseMappingTemplate: '$util.toJson($context.result)'
+    # appSyncResolverMutationFactoryResetDeviceTypes:
+    #     Type: 'AWS::AppSync::Resolver'
+    #     DependsOn: appSyncSchema
+    #     Properties:
+    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
+    #         TypeName: Mutation
+    #         FieldName: factoryReset
+    #         DataSourceName: !GetAtt appSyncDataSourceFactoryResetLambda.Name
+    #         RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
+    #         ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################
     # ####################################################################################################

@@ -1,0 +1,8 @@
+{
+    "id": "mtm-gg-factory-reset-v1.0",
+    "name": "Empty Greengrass v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["all"],
+    "deviceTypeMappings": [],
+    "spec": {}
+}

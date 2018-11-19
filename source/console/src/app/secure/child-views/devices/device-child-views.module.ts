@@ -9,46 +9,46 @@ import { Device } from '../../../models/device.model';
 // import { DeviceBlueprintNameFromIdPipe } from '../../../pipes/device-blueprint-name-from-id.pipe';
 
 // Devices
-import { AWSAFR3DBeltMiniConnectedFactoryV10Module } from './aws-afr-3d-belt-mini-connected-factory-v1.0/aws-afr-3d-belt-mini-connected-factory.module';
-import { AWSGGMiniConnectedFactoryV10Module } from './aws-gg-mini-connected-factory-v1.0/aws-gg-mini-connected-factory.module';
-import { AWSImageCaptureV10Module } from './aws-image-capture-v1.0/aws-image-capture.module';
-import { AWSDemoSqueezenetV10Module } from './aws-demo-squeezenet-v1.0/aws-demo-squeezenet.module';
+import { AFR3DBeltMiniConnectedFactoryV10Module } from './afr-3d-belt-mini-connected-factory-v1.0/afr-3d-belt-mini-connected-factory.module';
+import { GGMiniConnectedFactoryV10Module } from './gg-mini-connected-factory-v1.0/gg-mini-connected-factory.module';
+import { ImageCaptureV10Module } from './image-capture-v1.0/image-capture.module';
+import { DemoSqueezenetV10Module } from './demo-squeezenet-v1.0/demo-squeezenet.module';
 
 @Component({
     selector: 'app-device-child-view',
     template: `
-        <app-aws-afr-3d-belt-mini-connected-factory-v1-0
+        <app-afr-3d-belt-mini-connected-factory-v1-0
             *ngIf="
                 device &&
                 device.deviceBlueprintId &&
-                (device.deviceBlueprintId === 'aws-afr-3d-belt-mini-connected-factory-v1.0' ||
-                    device.deviceBlueprintId === 'aws-afr-3d-belt-mini-connected-factory-v1.1')
+                (device.deviceBlueprintId === 'afr-3d-belt-mini-connected-factory-v1.0' ||
+                    device.deviceBlueprintId === 'afr-3d-belt-mini-connected-factory-v1.1')
             "
             [device]="device"
         >
-        </app-aws-afr-3d-belt-mini-connected-factory-v1-0>
-        <app-aws-gg-mini-connected-factory-v1-0
+        </app-afr-3d-belt-mini-connected-factory-v1-0>
+        <app-gg-mini-connected-factory-v1-0
             *ngIf="
                 device &&
                 device.deviceBlueprintId &&
-                (device.deviceBlueprintId === 'aws-gg-mini-connected-factory-v1.0' ||
-                    device.deviceBlueprintId === 'aws-gg-mini-connected-factory-v1.1')
+                (device.deviceBlueprintId === 'gg-mini-connected-factory-v1.0' ||
+                    device.deviceBlueprintId === 'gg-mini-connected-factory-v1.1')
             "
             [device]="device"
         >
-        </app-aws-gg-mini-connected-factory-v1-0>
-        <app-aws-image-capture-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-image-capture-v1.0'"
+        </app-gg-mini-connected-factory-v1-0>
+        <app-image-capture-v1-0
+            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'image-capture-v1.0'"
             [device]="device"
         >
-        </app-aws-image-capture-v1-0>
-        <app-aws-demo-squeezenet-v1-0
+        </app-image-capture-v1-0>
+        <app-demo-squeezenet-v1-0
             *ngIf="
-                device && device.deviceBlueprintId && device.deviceBlueprintId === 'aws-demo-squeezenet-v1.0'
+                device && device.deviceBlueprintId && device.deviceBlueprintId === 'demo-squeezenet-v1.0'
             "
             [device]="device"
         >
-        </app-aws-demo-squeezenet-v1-0>
+        </app-demo-squeezenet-v1-0>
     `
 })
 export class DeviceChildViewComponent {
@@ -62,10 +62,10 @@ export class DeviceChildViewComponent {
     imports: [
         CommonModule,
         // AppPipesModule,
-        AWSAFR3DBeltMiniConnectedFactoryV10Module,
-        AWSGGMiniConnectedFactoryV10Module,
-        AWSImageCaptureV10Module,
-        AWSDemoSqueezenetV10Module
+        AFR3DBeltMiniConnectedFactoryV10Module,
+        GGMiniConnectedFactoryV10Module,
+        ImageCaptureV10Module,
+        DemoSqueezenetV10Module
     ]
 })
 export class DeviceChildViewsModule {}
