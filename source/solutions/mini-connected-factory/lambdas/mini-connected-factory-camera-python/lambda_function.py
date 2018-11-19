@@ -139,6 +139,7 @@ def camera_handler():
     crop = parseResolution(FACTORY_CAMERA['crop'])
 
     frame = cv2.resize(frame, size)
+    font = cv2.FONT_HERSHEY_SIMPLEX
 
     topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
     bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
@@ -176,6 +177,8 @@ def camera_handler():
         GGIOT.exception(str(err))
         raise err
 
+    # cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
+    cv2.putText(frame, 'FPS: {}'.format(str(fps)), (5, size[1] - 5), font, 0.4, (0, 0, 255), 1)
     OUTPUT.update(frame)
 
     return
