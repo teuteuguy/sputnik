@@ -21,12 +21,12 @@ cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-camera-pyt
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
-echo
-echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
-echo
-cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+# echo
+# echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
+# echo
+# cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
 echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-node"

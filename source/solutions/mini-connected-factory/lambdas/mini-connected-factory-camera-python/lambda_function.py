@@ -30,7 +30,8 @@ FACTORY_CAMERA = {
     "s3Bucket": "Off",
     "resolution": "858x480",
     "crop": "224x224",
-    "s3KeyPrefix": "mini-connected-factory-camera-v1.1/{}/default".format(THING_NAME)
+    "s3KeyPrefix": "mini-connected-factory-camera-v1.1/{}/default".format(THING_NAME),
+    "categories": ["hat", "nohat"]
 }
 
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
@@ -74,16 +75,17 @@ def parseIncomingShadow(shadow):
                 if 'crop' in factoryCamera and FACTORY_CAMERA['crop'] != factoryCamera['crop']:
                     FACTORY_CAMERA['crop'] = factoryCamera['crop']
                     print("parseIncomingShadow: updating crop to {}".format(FACTORY_CAMERA['crop']))
+                if 'categories' in factoryCamera and FACTORY_CAMERA['categories'] != factoryCamera['categories']:
+                    FACTORY_CAMERA['categories'] = factoryCamera['categories']
+                    print("parseIncomingShadow: updating categories to {}".format(FACTORY_CAMERA['categories']))
 
                 GGIOT.updateThingShadow(payload={'state': {'reported': {'factoryCamera': FACTORY_CAMERA}}})
-
 
 def parseResolution(strResolution):
     resolution = strResolution.split('x')
     resolution[0] = int(resolution[0])
     resolution[1] = int(resolution[1])
     return (resolution[0], resolution[1])
-
 
 try:
     GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
@@ -102,8 +104,9 @@ try:
     ret, frame = CAMERA.read()
     ret, frame = CAMERA.read()
 
-    PUB.info('Loading model at ' + ML_MODEL_PATH)
-    model = Infer(path=ML_MODEL_PATH)
+    GGIOT.info('Loading model at ' + ML_MODEL_PATH)
+    model = Infer(path=ML_MODEL_PATH, size=parseResolution(
+        FACTORY_CAMERA['crop'])[1], categories=FACTORY_CAMERA['categories'])
 
     print("Starting")
 
@@ -132,18 +135,20 @@ def camera_handler():
         time.sleep(5)
         return
 
-    size = parseResolution(SIMPLE_CAMERA['resolution'])
-    crop = parseResolution(SIMPLE_CAMERA['crop'])
+    size = parseResolution(FACTORY_CAMERA['resolution'])
+    crop = parseResolution(FACTORY_CAMERA['crop'])
+
+    frame = cv2.resize(frame, size)
 
     topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
     bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
 
-    frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
+    inference_frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
 
     GGIOT.info('Frame loaded: {}, {}'.format(frame.size, frame.shape))
 
     try:
-        category, probability = model.do(frame)
+        category, probability = model.do(inference_frame)
 
         nbFramesProcessed += 1
 
@@ -154,35 +159,56 @@ def camera_handler():
             last_update = time.time()
             nbFramesProcessed = 0
 
-        advice = 'inconclusive'
+        GGIOT.publish(TOPIC_INFERENCE, {
+            "type":  "inference",
+            "payload": {
+                "probability": str(probability),
+                "fps": str(fps),
+                "category": category,
+                "frame": {
+                    "size": inference_frame.size,
+                    "shape": inference_frame.shape
+                }
+            }
+        })
 
-    #         if probability > 0.8:
-    #             if category == 'hat':
-    #                 advice = 'safe'
-    #             elif category == 'nohat':
-    #                 advice = 'not safe'
+    except Exception as err:
+        GGIOT.exception(str(err))
+        raise err
 
-    #         PUB.publish(IOT_TOPIC_INFERENCE, {
-    #             "type":  "inference",
-    #             "payload": {
-    #                 "probability": str(probability),
-    #                 "advice": advice,
-    #                 "fps": str(fps),
-    #                 "category": category,
-    #                 "frame": {
-    #                     "size": frame.size,
-    #                     "shape": frame.shape
-    #                 }
-    #             }
-    #         })
+    OUTPUT.update(frame)
 
-    #     except Exception as err:
-    #         PUB.exception(str(err))
-    #         raise err
+    return
 
-    #     OUTPUT.update(frame)
 
-    #     return
+class MainAppThread(Thread):
+
+    def __init__(self):
+        super(MainAppThread, self).__init__()
+        self.stop_request = Event()
+        print("MainAppThread.init")
+
+    def join(self):
+        self.stop_request.set()
+
+    def run(self):
+        try:
+            while 42:
+                camera_handler()
+
+        except Exception as err:
+            GGIOT.exception(str(err))
+            time.sleep(1)
+
+
+mainAppThread = MainAppThread()
+mainAppThread.start()
+
+
+def lambda_handler(event, context):
+    GGIOT.info({"location": "lambda_handler", "event": event})
+    camera_handler()
+    return
 
 
 # def lambda_handler(event, context):

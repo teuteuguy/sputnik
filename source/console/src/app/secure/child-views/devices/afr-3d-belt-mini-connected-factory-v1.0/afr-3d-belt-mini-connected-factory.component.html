@@ -8,8 +8,6 @@
                     <div class="row">
                         <div class="col-12 text-center">
                             <div class="form-group" *ngIf="desired && reported">
-                                <!-- <label for="desired" class="form-control-label">Control:</label> -->
-                                <!-- <div id="desired"> -->
                                 <button type="button" class="btn ml-1 mr-1" *ngFor="let button of buttons"
                                     [class.btn-success]="desired.mode == button.mode && desired.speed == button.speed"
                                     [class.btn-light]="desired.mode != button.mode || desired.speed != button.speed"
@@ -19,42 +17,6 @@
                                     }"
                                     (click)="desiredStateChange(button)"
                                     >{{button.value > 0 ? '+' : ''}}{{button.value != 0 ? button.value : 'STOP'}}</button>
-                                <!-- <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 1 && desired.speed == 2"
-                                    [ngStyle]="{
-                                    'border': desired.mode == 1 && desired.speed == 2 || reported.mode == 1 && reported.speed == 2 ? '5px' : '0px',
-                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
-                                    'border-style': 'solid'
-                                }"
-                                    (click)="desiredStateChange(-2)">-2</button>
-                                <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 1 && desired.speed == 1"
-                                    [ngStyle]="{
-                                    'border': (desired.mode == 1 && desired.speed == 1) || (reported.mode == 1 && reported.speed == 1) ? '5px' : '0px',
-                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
-                                    'border-style': 'solid'
-                                }"
-                                    (click)="desiredStateChange(-1)">-1</button>
-                                <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 2"
-                                    [ngStyle]="{
-                                    'border': reported.mode == 2 && (desired.mode != reported.mode || desired.speed != reported.speed) ? '5px' : '0px',
-                                    'border-color': 'orange',
-                                    'border-style': 'solid'
-                                }"
-                                    (click)="desiredStateChange(0)">Stop</button>
-                                <button type="button" class="btn mr-1" [class.btn-success]="desired.mode == 3 && desired.speed == 1"
-                                    [ngStyle]="{
-                                    'border': (desired.mode == 3 && desired.speed == 1) || (reported.mode == 3 && reported.speed == 1) ? '5px' : '0px',
-                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
-                                    'border-style': 'solid'
-                                }"
-                                    (click)="desiredStateChange(1)">+1</button>
-                                <button type="button" class="btn" [class.btn-success]="desired.mode == 3 && desired.speed == 2"
-                                    [ngStyle]="{
-                                    'border': (desired.mode == 3 && desired.speed == 2) || (reported.mode == 3 && reported.speed == 2) ? '5px' : '0px',
-                                    'border-color': desired.mode != reported.mode && desired.speed != reported.speed ? 'red' : 'green',
-                                    'border-style': 'solid'
-                                }"
-                                    (click)="desiredStateChange(2)">+2</button> -->
-                                <!-- </div> -->
                             </div>
                         </div>
                         <div class="col-12 text-center">

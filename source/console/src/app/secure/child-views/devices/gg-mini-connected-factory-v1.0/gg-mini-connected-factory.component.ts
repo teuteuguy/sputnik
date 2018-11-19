@@ -31,6 +31,14 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
                     // console.log('Inference:', data.value);
                     data.value.payload.probability = Math.floor(data.value.payload.probability * 1000) / 10;
                     this.latestInference = data.value.payload;
+                    this.latestInference.advice = 'inconclusive';
+                    if (this.latestInference.probability > 0.8) {
+                        if (this.latestInference.category === 'hat') {
+                            this.latestInference.advice = 'safe';
+                        } else if (this.latestInference.category === 'nohat') {
+                            this.latestInference.advice = 'not save';
+                        }
+                    }
                 },
                 onError: err => {
                     console.error('Error:', err);

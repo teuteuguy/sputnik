@@ -41,7 +41,8 @@
                     "s3Bucket": "[DATA_BUCKET]",
                     "resolution": "858x480",
                     "crop": "224x224",
-                    "s3KeyPrefix": "mini-connected-factory-camera-v1.1/[CORE]/default"
+                    "s3KeyPrefix": "mini-connected-factory-camera-v1.1/[CORE]/default",
+                    "categories": ["hat", "nohat"]
                 }
             }
         },
@@ -70,7 +71,8 @@
                                 }
                             ],
                             "Variables": {
-                                "ML_MODEL_PATH": "/ml/helmets/image-classification"
+                                "ML_MODEL_PATH": "/ml/helmets/image-classification",
+                                "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
                             }
                         },
                         "MemorySize": 2097152,

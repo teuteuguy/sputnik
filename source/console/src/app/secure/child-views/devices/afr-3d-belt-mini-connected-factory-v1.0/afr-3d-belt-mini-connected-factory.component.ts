@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, NgZone } from '@angular/core';
 
 // Components
 import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
@@ -46,7 +46,7 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
         }
     ];
 
-    constructor(private iotService: IOTService) {
+    constructor(private iotService: IOTService, private ngZone: NgZone) {
         super(iotService);
     }
 
@@ -75,12 +75,11 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
         ]);
 
         this.getLastState(this.device.thingName).then(data => {
-            console.log(data);
+            console.log('getLastState:', data);
         });
     }
 
     desiredStateChange(button) {
-
         const desired = {
             mode: button.mode,
             speed: button.speed
@@ -97,7 +96,9 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             })
             .then(result => {
                 this.getLastState(this.device.thingName).then(data => {
-                    console.log(data);
+                    this.ngZone.run(() => {
+                        console.log('getLastState here:', data);
+                    });
                 });
                 // this.getLastState();
                 // console.log('updateThingShadow:', result);

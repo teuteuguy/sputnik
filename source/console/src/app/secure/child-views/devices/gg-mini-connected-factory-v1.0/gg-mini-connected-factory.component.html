@@ -3,7 +3,7 @@
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">GG Mini Connected Factory</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <span class="float-right" *ngIf="latestInference">{{
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <small>({{device.thingName}})</small> <span class="float-right" *ngIf="latestInference">{{
                         latestInference.fps }}fps</span></h6>
                 <div class="card-text text-center">
                     <div *ngIf="latestInference" style="font-size: 8em;">
