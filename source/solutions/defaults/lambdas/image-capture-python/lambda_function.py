@@ -5,13 +5,14 @@ import time
 from threading import Event, Thread, Timer
 import math
 
-import awscam  # pylint: disable=import-error
+# import awscam  # pylint: disable=import-error
 from file_output import FileOutput
 
 from botocore.session import Session  # pylint: disable=import-error
 import boto3  # pylint: disable=import-error
 
 from ggiot import GGIoT
+from camera import VideoStream
 
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
@@ -19,8 +20,10 @@ def get_parameter(name, default):
     return default
 
 THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
+PATH_TO_CAMERA = get_parameter('PATH_TO_CAMERA', '/dev/null')
 PREFIX = 'mtm'
-TOPIC_CAMERA = 'mtm/{}/camera'.format(THING_NAME)
+TOPIC_CAMERA = '{}/{}/camera'.format(PREFIX, THING_NAME)
+CAMERA = None
 
 SIMPLE_CAMERA = {
     "capture": "Off",
@@ -29,7 +32,8 @@ SIMPLE_CAMERA = {
     "s3Upload": "Off",
     "s3Bucket": "Off",
     "s3KeyPrefix": "deeplens-image-capture/{}/default".format(THING_NAME),
-    "resolution": "1920x1080"
+    "resolution": "1920x1080",
+    "crop": "224x224"
 }
 
 
@@ -72,14 +76,11 @@ def parseIncomingShadow(shadow):
                 if 'resolution' in simpleCamera and SIMPLE_CAMERA['resolution'] != simpleCamera['resolution']:
                     SIMPLE_CAMERA['resolution'] = simpleCamera['resolution']
                     print("parseIncomingShadow: updating resolution to {}".format(SIMPLE_CAMERA['resolution']))
+                if 'crop' in simpleCamera and SIMPLE_CAMERA['crop'] != simpleCamera['crop']:
+                    SIMPLE_CAMERA['crop'] = simpleCamera['crop']
+                    print("parseIncomingShadow: updating crop to {}".format(SIMPLE_CAMERA['crop']))
 
                 GGIOT.updateThingShadow(payload={'state': {'reported': {'simpleCamera': SIMPLE_CAMERA}}})
-
-def lambda_handler(event, context):
-    GGIOT.info({"location": "lambda_handler", "event": event})
-    parseIncomingShadow(event)
-    return
-
 
 def parseResolution(strResolution):
     resolution = strResolution.split('x')
@@ -88,31 +89,32 @@ def parseResolution(strResolution):
     return (resolution[0], resolution[1])
 
 try:
-    print("Start of lambda function")
-    GGIOT = GGIoT(thing=THING_NAME, prefix='mtm')
+    GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
-    GGIOT.info("Loading new Thread")
+    GGIOT.info("Start of lambda function")
     GGIOT.info('OpenCV '+cv2.__version__)
 
     parseIncomingShadow(GGIOT.getThingShadow())
 
-    GGIOT.info('Initilizing ouput file')
     resolution = parseResolution(SIMPLE_CAMERA['resolution'])
     frame = 255*np.ones([resolution[0], resolution[1], 3])
     OUTPUT = FileOutput('/tmp/results.mjpeg', frame, GGIOT)
     OUTPUT.start()
 
-    GGIOT.info('Getting last camera frame')
-    ret, frame = awscam.getLastFrame()
-    ret, frame = awscam.getLastFrame()
+    CAMERA = VideoStream(PATH_TO_CAMERA, resolution[0], resolution[1])
+    ret, frame = CAMERA.read()
+    ret, frame = CAMERA.read()
+
+    print("Starting")
+
 
 except Exception as err:
     GGIOT.exception(str(err))
+    print("Error: {}".format(str(err)))
     time.sleep(1)
 
 def getTimestamp():
     return '{}'.format(int(round(time.time() * 1000)))
-
 
 def saveFrameToFile(filename, frame):
     fullPath = '/tmp/' + filename
@@ -123,7 +125,6 @@ def saveFrameToFile(filename, frame):
         raise Exception('Failed to save frame to file')
 
     return fullPath
-
 
 def sendFileToS3(fullPath, filename):
 
@@ -147,11 +148,9 @@ def sendFileToS3(fullPath, filename):
         print("Failed to upload to s3: {}".format(ex))
         return False, False
 
-
 last_update = timeInMillis()
 nbFramesProcessed = 0
 fps = 0
-
 
 class S3Thread(Thread):
 
@@ -188,7 +187,14 @@ def camera_handler():
     global nbFramesProcessed
     global SIMPLE_CAMERA
 
-    ret, frame = awscam.getLastFrame()
+    print('Frame: reading')
+    ret, frame = CAMERA.read()
+    print('Frame: read')
+    if ret == False:
+        print('Something is wrong, cant read frame')
+        time.sleep(5)
+        return
+
     frame = cv2.resize(frame, parseResolution(SIMPLE_CAMERA['resolution']))
     font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -200,11 +206,8 @@ def camera_handler():
         nbFramesProcessed = 0
         last_update = timeInMillis()
 
-
     cv2.putText(frame, 'FPS: {}'.format(str(fps)), (5, parseResolution(
         SIMPLE_CAMERA['resolution'])[1] - 5), font, 0.4, (0, 0, 255), 1)
-
-    OUTPUT.update(frame)
 
     if SIMPLE_CAMERA['capture'] == 'On':
 
@@ -236,6 +239,16 @@ def camera_handler():
         if SIMPLE_CAMERA['s3Upload'] == 'Off':
             time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
 
+    size = parseResolution(SIMPLE_CAMERA['resolution'])
+    crop = parseResolution(SIMPLE_CAMERA['crop'])
+
+    topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
+    bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
+
+    cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
+
+    OUTPUT.update(frame)
+
     return
 
 class MainAppThread(Thread):
@@ -260,6 +273,11 @@ class MainAppThread(Thread):
 mainAppThread = MainAppThread()
 mainAppThread.start()
 
+
+def lambda_handler(event, context):
+    GGIOT.info({"location": "lambda_handler", "event": event})
+    parseIncomingShadow(event)
+    return
 
 
 

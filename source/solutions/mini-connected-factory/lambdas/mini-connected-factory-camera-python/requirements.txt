@@ -1,0 +1,3 @@
+../../../defaults/lambdas/common/ggiot
+../../../defaults/lambdas/common/camera
+../../../defaults/lambdas/common/file_output

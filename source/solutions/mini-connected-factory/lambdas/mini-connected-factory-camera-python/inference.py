@@ -1,6 +1,6 @@
-import mxnet as mx
-import cv2
-import numpy as np
+import mxnet as mx  # pylint: disable=import-error
+import cv2  # pylint: disable=import-error
+import numpy as np # pylint: disable=import-error
 from collections import namedtuple
 
 # to run locally
@@ -8,11 +8,11 @@ from collections import namedtuple
 
 class Infer:
     Batch = namedtuple('Batch', ['data'])
-    size = 224
-    categories = ['hat', 'nohat']
 
-    def __init__(self, path="/ml/helmets/image-classification"): ## TODO: Update the path
+    def __init__(self, path="/ml/image-classification", size=224, categories=['cat1', 'cat2']): ## TODO: Update the path
         sym, args, auxs = mx.model.load_checkpoint(path, 20)
+        self.size = size
+        self.categories = categories
         self.mod = mx.mod.Module(sym, label_names=None, context=mx.cpu())
         self.mod.bind(
             for_training=False,
@@ -27,7 +27,7 @@ class Infer:
         frame = mx.nd.array(frame)
         frame = frame.transpose((2, 0, 1))
         frame = frame.expand_dims(axis=0)
-        
+
         self.mod.forward(self.Batch([frame]))
         prob = self.mod.get_outputs()[0].asnumpy()
 

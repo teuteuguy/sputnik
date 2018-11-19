@@ -33,6 +33,18 @@
         }
     }],
     "spec": {
+        "Shadow": {
+            "desired": {
+                "factoryCamera": {
+                    "capture": "Off",
+                    "s3Upload": "Off",
+                    "s3Bucket": "[DATA_BUCKET]",
+                    "resolution": "858x480",
+                    "crop": "224x224",
+                    "s3KeyPrefix": "mini-connected-factory-camera-v1.1/[CORE]/default"
+                }
+            }
+        },
         "FunctionDefinitionVersion": {
             "Functions": [{
                     "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
