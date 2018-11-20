@@ -22,39 +22,32 @@ pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 # echo
-# echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
+# echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-node"
 # echo
-# cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-python
+# cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-node
+# yarn run build
+# cp ./dist/`jq -cr '.name' package.json`.zip $2/greengrass/`jq -cr '.name' package.json`.zip
+
+# echo
+# echo "[Build] Solution - mini-connected-factory - mini-connected-factory-python"
+# echo
+# cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-python
 # pip install -r requirements.txt -t . --upgrade
 # zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
-echo
-echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-node"
-echo
-cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-node
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/greengrass/`jq -cr '.name' package.json`.zip
+# echo
+# echo "[Build] Solution - defaults - image-capture-python"
+# echo
+# cd $1/solutions/defaults/lambdas/image-capture-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
-echo
-echo "[Build] Solution - mini-connected-factory - mini-connected-factory-python"
-echo
-cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
-
-echo
-echo "[Build] Solution - defaults - image-capture-python"
-echo
-cd $1/solutions/defaults/lambdas/image-capture-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
-
-echo
-echo "[Build] Solution - defaults - demo-squeezenet-python"
-echo
-cd $1/solutions/defaults/lambdas/demo-squeezenet-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+# echo
+# echo "[Build] Solution - defaults - demo-squeezenet-python"
+# echo
+# cd $1/solutions/defaults/lambdas/demo-squeezenet-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
 echo "--------------------------------------------------------------------------------------------------------"

@@ -3,14 +3,31 @@
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">GG Mini Connected Factory</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <small>({{device.thingName}})</small> <span class="float-right" *ngIf="latestInference">{{
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <small>({{device.thingName}})</small> <span
+                        class="float-right" *ngIf="latestInference">{{
                         latestInference.fps }}fps</span></h6>
                 <div class="card-text text-center">
                     <div *ngIf="latestInference" style="font-size: 8em;">
-                        <i class="fa" [class.fa-thumbs-up]="latestInference.advice === 'safe'" [class.fa-thumbs-down]="latestInference.advice === 'not safe'">
+                        <i class="fa" [class.fa-thumbs-up]="latestInference.category === 'hat'" [class.fa-thumbs-down]="latestInference.category === 'nohat'">
                         </i>
-                        <span *ngIf="latestInference.advice != 'inconclusive'">{{ latestInference.probability }}%</span>
-                        <span *ngIf="latestInference.advice == 'inconclusive'">Inconclusive</span>
+                        <span>{{ latestInference.probability }}%</span>
+                        <!-- <span *ngIf="latestInference.advice != 'inconclusive'">{{ latestInference.probability }}%</span>
+                        <span *ngIf="latestInference.advice == 'inconclusive'">Inconclusive</span> -->
+                    </div>
+                    <div class="form-check" *ngIf="desired">
+                        <div>
+                            <input type="checkbox" id="capture" style="padding-left: 18px;" [checked]="desired.capture == 'On'"
+                                (change)="desiredStateChange($event.target.id)">
+                            <label class="form-check-label" for="capture" style="padding-left: 25px;">Capture images ?
+                                <small>(reported: {{ reported.capture }})</small></label>
+                        </div>
+                        <!-- <div>
+                            <input type="checkbox" id="s3Upload" style="padding-left: 18px;" [checked]="desired.s3Upload == 'On'"
+                                (change)="desiredStateChange($event.target.id)">
+                            <label class="form-check-label" for="capture" style="padding-left: 25px;">Upload Images to
+                                S3 ?
+                                <small>(reported: {{ reported.s3Upload }})</small></label>
+                        </div> -->
                     </div>
                 </div>
             </div>

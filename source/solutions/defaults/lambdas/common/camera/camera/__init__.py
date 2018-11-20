@@ -15,31 +15,32 @@ class VideoStream:
     '''
     def __init__(self, device, width, height):
         ''' Constructor. Chooses a camera to read from. '''
-        print('VideoStream: {}, {}, {}'.format(device, width, height))
+        print("VideoStream: {}, {}, {}".format(device, width, height))
         self.device = device
         self.width = width
         self.height = height
 
-        if self.device == 'Darwin':
-            print('Opening webcam')
-            self.device = 'Webcam'
+        if self.device == "Darwin":
+            print("VideoStream: Opening webcam")
+            self.device = "Webcam"
             self.stream = cv2.VideoCapture(0)
             self.stream.set(3, self.width)
             self.stream.set(4, self.height)
-        elif self.device == '/dev/video0':
-            print('Opening /dev/video0')
+        elif self.device == "/dev/video0":
+            print("VideoStream: Opening /dev/video0")
             self.stream = cv2.VideoCapture(self.device)
-            print('Stream opened = {}'.format(self.stream.isOpened()))
-        elif self.device == '/dev/video1':
-            print('Opening /dev/video1')
+            print("VideoStream: Stream opened = {}".format(self.stream.isOpened()))
+        elif self.device == "/dev/video1":
+            print("VideoStream: Opening /dev/video1")
             self.stream = cv2.VideoCapture(self.device)
-            print('Stream opened = {}'.format(self.stream.isOpened()))
-        elif self.device == 'awscam':
-            print('Opening awscam')
+            print("VideoStream: Stream opened = {}".format(self.stream.isOpened()))
+        elif self.device == "awscam":
+            print("VideoStream: Opening awscam")
             import awscam  # pylint: disable=import-error
             self.awscam = awscam
+            print("VideoStream: awscam opened")
         else:
-            self.device = 'GStreamer'
+            self.device = "GStreamer"
             HD_2K = False
             if HD_2K:
                 self.width = 2592  # 648
@@ -55,10 +56,6 @@ class VideoStream:
                        "format=(string)BGRx ! videoconvert ! appsink").format(self.width, self.height)
             self.stream = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
-        self.stopped = False
-
-        self.read()
-
     def get_height(self):
         return self.height
 
@@ -67,7 +64,7 @@ class VideoStream:
 
     def read(self):
         '''read() return the last frame captured'''
-        if self.device == 'awscam':
+        if self.device == "awscam":
             return self.awscam.getLastFrame()
         else:
             return self.stream.read()

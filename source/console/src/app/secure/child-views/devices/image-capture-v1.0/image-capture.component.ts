@@ -63,7 +63,7 @@ export class ImageCaptureV10Component extends IoTPubSuberComponent implements On
             }
         ]);
 
-        this.getLastState(this.device.thingName);
+        this.getLastState(this.device.thingName, this.shadowField);
     }
 
     desiredStateChange(field) {

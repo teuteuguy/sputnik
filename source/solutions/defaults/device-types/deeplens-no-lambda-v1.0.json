@@ -10,20 +10,6 @@
                 "ThingArn": "[CORE_ARN]"
             }]
         },
-        "FunctionDefinitionVersion": {
-            "Functions": [{
-                "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
-                "FunctionConfiguration": {
-                    "Environment": {
-                        "AccessSysfs": true,
-                        "Variables": {}
-                    },
-                    "MemorySize": 32768,
-                    "Pinned": true,
-                    "Timeout": 3
-                }
-            }]
-        },
         "LoggerDefinitionVersion": {
             "Loggers": [{
                     "Component": "GreengrassSystem",

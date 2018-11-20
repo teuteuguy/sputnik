@@ -37,6 +37,7 @@
             "desired": {
                 "factoryCamera": {
                     "capture": "Off",
+                    "threaded": "Off",
                     "s3Upload": "Off",
                     "s3Bucket": "[DATA_BUCKET]",
                     "resolution": "858x480",
@@ -52,7 +53,7 @@
                     "FunctionConfiguration": {
                         "EncodingType": "json",
                         "Environment": {
-                            "AccessSysfs": false,
+                            "AccessSysfs": true,
                             "ResourceAccessPolicies": [{
                                     "Permission": "rw",
                                     "ResourceId": "tmp"
@@ -71,7 +72,8 @@
                                 }
                             ],
                             "Variables": {
-                                "ML_MODEL_PATH": "/ml/helmets/image-classification",
+                                "ML_MODEL_PATH": "/ml/helmets/",
+                                "ML_MODEL_NAME": "image-classification",
                                 "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
                             }
                         },
@@ -89,7 +91,7 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/legomodel-v1.0.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/legomodel-v1.1.3.tar.gz"
                     }
                 }
             }]
@@ -102,8 +104,12 @@
                 },
                 {
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
-                    "Subject": "mtm/[CORE]/admin",
+                    "Subject": "mtm/[CORE]/logger",
                     "Target": "cloud"
+                }, {
+                    "Source": "GGShadowService",
+                    "Subject": "$aws/things/[CORE]/shadow/update/accepted",
+                    "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM"
                 }
             ]
         }
