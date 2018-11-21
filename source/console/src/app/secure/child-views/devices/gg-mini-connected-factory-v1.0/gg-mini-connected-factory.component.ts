@@ -30,6 +30,7 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
             {
                 topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
                 onMessage: data => {
+                    console.log(data.value);
                     this.updateIncomingShadow(data.value, this.shadowField);
                 },
                 onError: err => {
@@ -40,7 +41,8 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
                 topic: 'mtm/' + this.device.thingName + '/inference',
                 onMessage: data => {
                     console.log('Inference:', data.value);
-                    data.value.payload.probability = Math.floor(data.value.payload.probability * 1000) / 10;
+                    // console.log(data.value.payload.fps);
+                    data.value.payload.probability = data.value.payload.probability;
                     this.latestInference = data.value.payload;
                     // this.latestInference.advice = 'inconclusive';
                     // if (this.latestInference.probability > 0.8) {
@@ -69,29 +71,39 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
         this.getLastState(this.device.thingName, this.shadowField);
     }
 
-    desiredStateChange(field) {
+    desiredStateChange(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const field = event.target.id;
         let update = false;
+        const desired = {};
         if (field === 'capture') {
-            this.desired.capture = this.desired.capture === 'On' ? 'Off' : 'On';
+            desired['capture'] = this.desired.capture === 'On' ? 'Off' : 'On';
+            update = true;
+        }
+        if (field === 'threaded') {
+            desired['threaded'] = this.desired.threaded === 'On' ? 'Off' : 'On';
             update = true;
         }
         if (field === 's3Upload') {
-            this.desired.s3Upload = this.desired.s3Upload === 'On' ? 'Off' : 'On';
+            desired['s3Upload'] = this.desired.s3Upload === 'On' ? 'Off' : 'On';
             update = true;
         }
         if (update) {
+            console.log('desired', desired);
             this.iotService
                 .updateThingShadow({
                     thingName: this.device.thingName,
                     payload: JSON.stringify({
                         state: {
                             desired: {
-                                factoryCamera: this.desired
+                                factoryCamera: desired
                             }
                         }
                     })
                 })
                 .then(result => {
+                    console.log(result);
                     // this.getLastState();
                     // console.log('updateThingShadow:', result);
                     // this.shadow = result;
@@ -109,5 +121,27 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
                     console.error(err);
                 });
         }
+    }
+
+    betterProb(value) {
+        return Math.floor(value * 10000) / 100;
+    }
+
+    maxProb(results) {
+        let result = {
+            category: '',
+            probability: 0
+        };
+        for (let key in results) {
+            if (results.hasOwnProperty(key)) {
+                // console.log(key, dictionary[key]);
+                if (result.probability <= results[key]) {
+                    result.category = key;
+                    result.probability = results[key];
+                }
+            }
+        }
+        result.probability = Math.floor(result.probability * 10000) / 100;
+        return result;
     }
 }

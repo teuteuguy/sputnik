@@ -3,7 +3,7 @@ import numpy as np  # pylint: disable=import-error
 import cv2  # pylint: disable=import-error
 import mxnet as mx  # pylint: disable=import-error
 import time
-from threading import Event, Thread, Timer
+from threading import Event, Thread, Timer, Lock
 import math
 
 # import awscam
@@ -37,8 +37,9 @@ FACTORY_CAMERA = {
     "resolution": "858x480",
     "crop": "224x224",
     "s3KeyPrefix": "mini-connected-factory-camera-v1.1/{}/default".format(THING_NAME),
-    "categories": ["hat", "nohat"]
+    "categories": ["hat", "nohat", "nolego"]
 }
+FACTORY_LOCK = Lock()
 
 # IOT_TOPIC_INFERENCE = "mtm/{}/inference".format(THING_NAME)
 # IOT_TOPIC_ADMIN = "mtm/{}/admin".format(THING_NAME)
@@ -60,6 +61,8 @@ def parseIncomingShadow(shadow):
             if "factoryCamera" in desired:
 
                 factoryCamera = desired["factoryCamera"]
+
+                FACTORY_LOCK.acquire()
 
                 if "capture" in factoryCamera and FACTORY_CAMERA["capture"] != factoryCamera["capture"]:
                     FACTORY_CAMERA["capture"] = factoryCamera["capture"]
@@ -85,6 +88,8 @@ def parseIncomingShadow(shadow):
                 if "categories" in factoryCamera and FACTORY_CAMERA["categories"] != factoryCamera["categories"]:
                     FACTORY_CAMERA["categories"] = factoryCamera["categories"]
                     print("parseIncomingShadow: updating categories to {}".format(FACTORY_CAMERA["categories"]))
+
+                FACTORY_LOCK.release()
 
                 GGIOT.updateThingShadow(payload={"state": {"reported": {"factoryCamera": FACTORY_CAMERA}}})
 
@@ -151,73 +156,79 @@ def camera_handler():
     global FACTORY_CAMERA
     global MODEL
 
-    print("Frame: reading")
-    ret, frame = CAMERA.read()
-    if ret == False:
-        print("Something is wrong, cant read frame")
-        time.sleep(5)
-        return
+    FACTORY_LOCK.acquire()
 
-    size = parseResolution(FACTORY_CAMERA["resolution"])
-    crop = parseResolution(FACTORY_CAMERA["crop"])
+    if "threaded" in FACTORY_CAMERA and FACTORY_CAMERA["threaded"] == "On":
 
-    frame = cv2.resize(frame, size)
-    font = cv2.FONT_HERSHEY_SIMPLEX
+        FACTORY_LOCK.release()
 
-    topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
-    bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
+        print("Frame: reading")
+        ret, frame = CAMERA.read()
+        if ret == False:
+            print("Something is wrong, cant read frame")
+            time.sleep(5)
+            return
 
-    cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
-    print(frame.shape)
+        size = parseResolution(FACTORY_CAMERA["resolution"])
+        crop = parseResolution(FACTORY_CAMERA["crop"])
 
-    inference_frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
+        frame = cv2.resize(frame, size)
+        font = cv2.FONT_HERSHEY_SIMPLEX
 
-    GGIOT.info("Frame loaded: {}, {}, {}, {}".format(inference_frame.size, inference_frame.shape, topleft, bottomright))
+        topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
+        bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
 
-    try:
-        print(MODEL.do(inference_frame))
-        # category, probability = MODEL.do(inference_frame)
+        cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
 
-        # print("Inference result: {} {}".format(category, probability))
+        inference_frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
 
-        # NB_FRAMES_PROCESSED += 1
+        # GGIOT.info("Frame loaded: {}, {}, {}, {}".format(inference_frame.size, inference_frame.shape, topleft, bottomright))
 
-        # now = time.time()
-        # if now - LAST_UPDATE >= 1:
-        #     FPS = NB_FRAMES_PROCESSED / (now - LAST_UPDATE)
-        #     FPS = math.floor(FPS * 100) / 100
-        #     LAST_UPDATE = time.time()
-        #     NB_FRAMES_PROCESSED = 0
+        try:
 
-        # GGIOT.publish(TOPIC_INFERENCE, {
-        #     "type":  "inference",
-        #     "payload": {
-        #         "probability": str(probability),
-        #         "fps": str(FPS),
-        #         "category": category,
-        #         "frame": {
-        #             "size": inference_frame.size,
-        #             "shape": inference_frame.shape
-        #         }
-        #     }
-        # })
+            result = MODEL.do(inference_frame)
+            print("Inference result: {}".format(result))
 
-        # result = "{} - {}".format(category, str(probability))
+            NB_FRAMES_PROCESSED += 1
 
-        # if FACTORY_CAMERA["capture"] == "On":
-        #     filename = category + "-" + SAVE_FRAMES.getTimestampFilename()
-        #     SAVE_FRAMES.saveToFile(
-        #         filename=filename,
-        #         frame=frame
-        #     )
+            now = timeInMillis()
+            if now - LAST_UPDATE >= 1000:
+                FPS = 1000 * NB_FRAMES_PROCESSED / (now - LAST_UPDATE)
+                FPS = math.floor(FPS * 10000) / 10000
+                LAST_UPDATE = timeInMillis()
+                NB_FRAMES_PROCESSED = 0
 
+            GGIOT.publish(TOPIC_INFERENCE, {
+                "type":  "inference",
+                "payload": {
+                    "results": result,
+                    "fps": str(FPS),
+                    "frame": {
+                        "size": inference_frame.size,
+                        "shape": inference_frame.shape
+                    }
+                }
+            })
 
-    except Exception as err:
-        GGIOT.exception(str(err))
-        raise err
+            cv2.rectangle(frame, (0, size[1] - 40), (size[0], size[1]), (0, 0, 0), -1)
+            cv2.putText(frame, "FPS: {} {}".format(str(FPS), result), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
 
-    cv2.putText(frame, "FPS: {} {}".format(str(FPS), result), (5, size[1] - 5), font, 0.4, (0, 0, 255), 1)
-    OUTPUT.update(frame)
+            if FACTORY_CAMERA["capture"] == "On":
+                filename = SAVE_FRAMES.getTimestampFilename()
+                SAVE_FRAMES.saveToFile(
+                    filename=filename,
+                    frame=frame
+                )
+
+        except Exception as err:
+            GGIOT.exception(str(err))
+            raise err
+
+        OUTPUT.update(frame)
+
+    else:
+        FACTORY_LOCK.release()
+        time.sleep(0.2)
 
     return
 
@@ -233,13 +244,9 @@ class MainAppThread(Thread):
         self.stop_request.set()
 
     def run(self):
-        global FACTORY_CAMERA
         try:
             while 42:
-                if "threaded" in FACTORY_CAMERA and FACTORY_CAMERA["threaded"] == "On":
-                    camera_handler()
-                else:
-                    time.sleep(1)
+                camera_handler()
 
         except Exception as err:
             GGIOT.exception(str(err))

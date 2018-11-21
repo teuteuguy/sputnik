@@ -43,7 +43,7 @@
                     "resolution": "858x480",
                     "crop": "224x224",
                     "s3KeyPrefix": "mini-connected-factory-camera-v1.1/[CORE]/default",
-                    "categories": ["hat", "nohat"]
+                    "categories": ["hat", "nohat", "nolego"]
                 }
             }
         },
@@ -91,7 +91,7 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/legomodel-v1.1.3.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/legomodel-v1.1.6.tar.gz"
                     }
                 }
             }]

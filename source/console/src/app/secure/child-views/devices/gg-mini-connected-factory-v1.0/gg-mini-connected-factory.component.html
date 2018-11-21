@@ -7,19 +7,37 @@
                         class="float-right" *ngIf="latestInference">{{
                         latestInference.fps }}fps</span></h6>
                 <div class="card-text text-center">
-                    <div *ngIf="latestInference" style="font-size: 8em;">
-                        <i class="fa" [class.fa-thumbs-up]="latestInference.category === 'hat'" [class.fa-thumbs-down]="latestInference.category === 'nohat'">
+                    <div *ngIf="latestInference" style="font-size: 4em;">
+                        <div class="row">
+                            <div class="col-4 text-center">Hat</div>
+                            <div class="col-4 text-center">No Hat</div>
+                            <div class="col-4 text-center">No Lego</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 text-center">{{betterProb(latestInference.results.hat)}}</div>
+                            <div class="col-4 text-center">{{betterProb(latestInference.results.nohat)}}</div>
+                            <div class="col-4 text-center">{{betterProb(latestInference.results.nolego)}}</div>
+                        </div>
+                        <!-- <i class="fa" [class.fa-thumbs-up]="maxProb(latestInference.results).category === 'hat'"
+                            [class.fa-thumbs-down]="maxProb(latestInference.results).category === 'nohat'">
                         </i>
-                        <span>{{ latestInference.probability }}%</span>
+                        <span>{{ maxProb(latestInference.results).probability }}%</span> -->
                         <!-- <span *ngIf="latestInference.advice != 'inconclusive'">{{ latestInference.probability }}%</span>
                         <span *ngIf="latestInference.advice == 'inconclusive'">Inconclusive</span> -->
                     </div>
                     <div class="form-check" *ngIf="desired">
                         <div>
                             <input type="checkbox" id="capture" style="padding-left: 18px;" [checked]="desired.capture == 'On'"
-                                (change)="desiredStateChange($event.target.id)">
+                                (click)="desiredStateChange($event)">
                             <label class="form-check-label" for="capture" style="padding-left: 25px;">Capture images ?
                                 <small>(reported: {{ reported.capture }})</small></label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="threaded" style="padding-left: 18px;" [checked]="desired.threaded == 'On'"
+                                (click)="desiredStateChange($event)">
+                            <label class="form-check-label" for="threaded" style="padding-left: 25px;">Threaded camera
+                                ?
+                                <small>(reported: {{ reported.threaded }})</small></label>
                         </div>
                         <!-- <div>
                             <input type="checkbox" id="s3Upload" style="padding-left: 18px;" [checked]="desired.s3Upload == 'On'"
