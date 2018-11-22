@@ -11,98 +11,83 @@ import math
 class Infer:
     Batch = namedtuple('Batch', ['data'])
 
-    def __init__(self, camera=None, path="/ml", model_name="image-classification", width=224, height=224, categories=['cat1', 'cat2']):
+    # def __init__(self, camera=None, path="/ml", model_name="image-classification", width=224, height=224, categories=['cat1', 'cat2']):
+    def __init__(self,
+            model_type=None,
+            model_path="/ml/",
+            model_name="image-classification",
+            width=224,
+            height=224,
+            categories=['cat1', 'cat2'],
+            stream=None
+        ):
 
         self.width = width
         self.height = height
         self.categories = categories
-        self.camera = camera
-        self.path = path
+        self.model_type = model_type
+        self.model_path = model_path
         self.model_name = model_name
+        self.optimized_model_path = self.model_path + self.model_name
 
-        print("Infer.init(): camera: {}".format(self.path))
-        print("Infer.init(): path: {}".format(self.path))
+        print("Infer.init(): model_type: {}".format(self.model_type))
+        print("Infer.init(): model_path: {}".format(self.model_path))
         print("Infer.init(): model_name: {}".format(self.model_name))
         print("Infer.init(): width: {}, height: {}".format(self.width, self.height))
         print("Infer.init(): categories: {}".format(self.categories))
 
-        epoch = int(glob.glob(self.path + "/" + self.model_name + '*.params')
+        epoch = int(glob.glob(self.model_path + self.model_name + '*.params')
                     [0].split(self.model_name + "-")[1].split('.params')[0])
 
         print("Infer.init(): epoch: {}".format(epoch))
 
-        if self.camera == "awscam":
+        if self.model_type == "optimized":
+
             import mo  # pylint: disable=import-error
             self.mo = mo
 
-            error, model_path = self.mo.optimize(model_name=self.model_name, input_width=self.width, input_height=self.height, platform="mx", aux_inputs={
+            error, self.optimized_model_path = self.mo.optimize(model_name=self.model_name, input_width=self.width, input_height=self.height, platform="mx", aux_inputs={
                 "--epoch": epoch,
-                "--models-dir": self.path,
-                "--output-dir": self.path
+                "--models-dir": self.model_path,
+                "--output-dir": self.model_path
             })
 
-            print("Infer.init(): Model optimization result: {} {}".format(error, model_path))
+            print("Infer.init(): Model optimization result: {} {}".format(error, self.optimized_model_path))
 
-            if error == 0:
-                print("Infer.init(): Model optimization worked")
-                import awscam # pylint: disable=import-error
-                self.awscam = awscam
-                self.model = self.awscam.Model(model_path, {'GPU': 1})
-                print("Infer.init(): Model loaded")
-                # # Since this is a binary classifier only retrieve 2 classes.
-                # self.num_top_k = 2
+            if error == 0 and stream.Model:
+                self.model = stream.Model(self.optimized_model_path, {'GPU': 1})
+                print("Infer.init(): Optimized Model loaded to awscam")
             else:
-                print("Infer.init(): Model optimization failed. Reverting to normal mode.")
-                self.camera = None
+                self.model_type = "non_optimized"
 
-        if self.camera != "awscam":
-            sym, args, auxs = mx.model.load_checkpoint(path, epoch)
+        if self.model_type == "non_optimized":
+            sym, args, auxs = mx.model.load_checkpoint(self.model_path + self.model_name, epoch)
             self.mod = mx.mod.Module(sym, label_names=None, context=mx.cpu())
             self.mod.bind(for_training=False, data_shapes=[('data', (1, 3, self.width, self.height))], label_shapes=self.mod._label_shapes)
             self.mod.set_params(args, auxs, allow_missing=True)
 
     def do(self, original):
 
-        if self.camera == "awscam":
-            model_type = "classification"
+        if self.model_type == "optimized":
             frame_resize = cv2.resize(original, (self.height, self.width))
             inference_results = self.model.doInference(frame_resize)
-            parsed_inference_results = self.model.parseResult(model_type, inference_results)
-
+            parsed_inference_results = self.model.parseResult("classification", inference_results)
             # print("parsed_inference_results: {}".format(parsed_inference_results))
-
-            top_k = parsed_inference_results[model_type][0:len(self.categories)]
-
+            top_k = parsed_inference_results["classification"][0:len(self.categories)]
             # print("top_k: {}".format(top_k))
-
             output_map = {}
             for i in range(len(self.categories)):
                 output_map[i] = self.categories[i]
             cloud_output = {}
             for obj in top_k:
                 cloud_output[output_map[obj['label']]] = math.floor(obj['prob'] * 10000) / 100
-
             return cloud_output
 
-        if self.camera != "awscam":
-            # original = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-            # frame = cv2.resize(original, (224, 224)) # resize
-            frame = original
-            frame = mx.nd.array(frame)
-            frame = frame.transpose((2, 0, 1))
-            frame = frame.expand_dims(axis=0)
-
+        if self.model_type == "non_optimized":
             self.mod.forward(self.Batch([original]))
             prob = self.mod.get_outputs()[0].asnumpy()
-            print("Normal: {}".format(prob))
             prob = np.squeeze(prob)
             cloud_output = {}
             for i in range(len(self.categories)):
                 cloud_output[self.categories[i]] = math.floor(prob[i] * 10000) / 100
             return cloud_output
-
-            # # print the top-5
-            # prob = np.squeeze(prob)
-            # x = np.argmax(prob)
-            # print("Infer.do(): x: {} {}".format(x, prob))
-            # return self.categories[x], prob[x]

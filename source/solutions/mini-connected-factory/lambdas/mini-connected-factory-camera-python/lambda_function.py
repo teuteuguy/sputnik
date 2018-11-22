@@ -21,9 +21,11 @@ def get_parameter(name, default):
     return default
 
 THING_NAME = get_parameter("AWS_IOT_THING_NAME", "Unknown")
-PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/null")
+CAMERA_TYPE = get_parameter("CAMERA_TYPE", "")
+PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
 ML_MODEL_PATH = get_parameter("ML_MODEL_PATH", "")
 ML_MODEL_NAME = get_parameter("ML_MODEL_NAME", "")
+ML_MODEL_TYPE = get_parameter("ML_MODEL_TYPE", "")
 PREFIX = "mtm"
 TOPIC_INFERENCE = "{}/{}/inference".format(PREFIX, THING_NAME)
 TOPIC_SHADOW_ACCEPTED = "$aws/things/{}/shadow/update/accepted".format(THING_NAME)
@@ -40,11 +42,6 @@ FACTORY_CAMERA = {
     "categories": ["hat", "nohat", "nolego"]
 }
 FACTORY_LOCK = Lock()
-
-# IOT_TOPIC_INFERENCE = "mtm/{}/inference".format(THING_NAME)
-# IOT_TOPIC_ADMIN = "mtm/{}/admin".format(THING_NAME)
-# IOT_TOPIC_SHADOW_UPDATE = "$aws/things/{}/shadow/update".format(THING_NAME)
-
 
 def timeInMillis(): return int(round(time.time() * 1000))
 
@@ -107,10 +104,11 @@ try:
     # GGIOT.info("MXNET: {}".format(mx.__version__))
     # GGIOT.info("Model: {}".format(ML_MODEL_PATH))
 
+    # GGIOT.updateThingShadow(payload={"state": {"reported": {"factoryCamera": FACTORY_CAMERA}}})
     parseIncomingShadow(GGIOT.getThingShadow())
 
     resolution = parseResolution(FACTORY_CAMERA["resolution"])
-    frame = 255*np.ones([resolution[0], resolution[1], 3])
+    frame = 255*np.ones([resolution[1], resolution[0], 3])
     OUTPUT = FileOutput("/tmp/results.mjpeg", frame, GGIOT)
     OUTPUT.start()
 
@@ -120,20 +118,29 @@ try:
         "message": "Start of lambda function",
         "OpenCV": cv2.__version__,
         "MXNET": mx.__version__,
-        "Model": ML_MODEL_PATH + "/" + ML_MODEL_NAME,
+        "Model": ML_MODEL_PATH + ML_MODEL_NAME,
         "FileOutput": "/tmp/results.mjpeg",
         "Categories": FACTORY_CAMERA["categories"],
-        "Camera": PATH_TO_CAMERA,
+        "Camera": CAMERA_TYPE,
+        "PathToCamera": PATH_TO_CAMERA,
         "Resolution": resolution,
         "Crop": crop
     })
 
-    MODEL = Infer(camera=PATH_TO_CAMERA, path=ML_MODEL_PATH, model_name=ML_MODEL_NAME, width=crop[0], height=crop[1], categories=FACTORY_CAMERA["categories"])
-
-    CAMERA = VideoStream(PATH_TO_CAMERA, resolution[0], resolution[1])
+    CAMERA = VideoStream(camera_type=CAMERA_TYPE, path_to_camera=PATH_TO_CAMERA, width=resolution[0], height=resolution[1])
     print("CAMERA: Starting the camera with 2 reads...")
     print("CAMERA.read(): {}".format(CAMERA.read()[0]))
     print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+
+    MODEL = Infer(
+        model_type=ML_MODEL_TYPE,
+        model_path=ML_MODEL_PATH,
+        model_name=ML_MODEL_NAME,
+        width=crop[0],
+        height=crop[1],
+        categories=FACTORY_CAMERA["categories"],
+        stream=CAMERA.stream
+    )
 
     SAVE_FRAMES = SaveFrames(path="/tmp/")
 
@@ -262,8 +269,6 @@ def lambda_handler(event, context):
         "location": "lambda_handler",
         "event": event
     })
-
-    # parseIncomingShadow(event)
 
     try:
         topic = context.client_context.custom["subject"]

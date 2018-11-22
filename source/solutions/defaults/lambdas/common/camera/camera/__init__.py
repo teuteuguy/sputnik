@@ -9,38 +9,41 @@ import cv2 # pylint: disable=import-error
 
 class VideoStream:
     '''
-    Instantiate the VideStream class and call the start() method
-    to be able to read from the camera, instantiate only once.
-    Use the method read() to get the latest frame.
+    Instantiate the VideoStream class.
+    Use the method read() to get the frame.
     '''
-    def __init__(self, device, width, height):
+    def __init__(self, camera_type="video0", path_to_camera="/dev/video0", width="1920", height="1080"):
         ''' Constructor. Chooses a camera to read from. '''
-        print("VideoStream: {}, {}, {}".format(device, width, height))
-        self.device = device
+        print("VideoStream: {}, {}, {}, {}".format(camera_type, path_to_camera, width, height))
+        self.camera_type = camera_type
+        self.path_to_camera = path_to_camera
         self.width = width
         self.height = height
 
-        if self.device == "Darwin":
+        if self.camera_type == "Darwin":
+
             print("VideoStream: Opening webcam")
-            self.device = "Webcam"
+            self.path_to_camera = "Webcam"
             self.stream = cv2.VideoCapture(0)
             self.stream.set(3, self.width)
             self.stream.set(4, self.height)
-        elif self.device == "/dev/video0":
-            print("VideoStream: Opening /dev/video0")
-            self.stream = cv2.VideoCapture(self.device)
+
+        elif self.camera_type == "video0":
+
+            print("VideoStream: Opening {}".format(self.path_to_camera))
+            self.stream = cv2.VideoCapture(self.path_to_camera)
             print("VideoStream: Stream opened = {}".format(self.stream.isOpened()))
-        elif self.device == "/dev/video1":
-            print("VideoStream: Opening /dev/video1")
-            self.stream = cv2.VideoCapture(self.device)
-            print("VideoStream: Stream opened = {}".format(self.stream.isOpened()))
-        elif self.device == "awscam":
+
+        elif self.camera_type == "awscam":
+
             print("VideoStream: Opening awscam")
             import awscam  # pylint: disable=import-error
-            self.awscam = awscam
+            self.stream = awscam
+            self.stream.read = self.stream.getLastFrame
             print("VideoStream: awscam opened")
+
         else:
-            self.device = "GStreamer"
+            self.path_to_camera = "GStreamer"
             HD_2K = False
             if HD_2K:
                 self.width = 2592  # 648
@@ -64,7 +67,4 @@ class VideoStream:
 
     def read(self):
         '''read() return the last frame captured'''
-        if self.device == "awscam":
-            return self.awscam.getLastFrame()
-        else:
-            return self.stream.read()
+        return self.stream.read()

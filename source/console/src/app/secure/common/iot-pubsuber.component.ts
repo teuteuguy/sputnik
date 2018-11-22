@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 // Services
 import { IOTService } from 'src/app/services/iot.service';
 
+import { _ } from 'underscore';
+
 export class IoTSubscription {
     topic: string;
     onMessage: (data: any) => void;
@@ -18,8 +20,8 @@ export class IoTPubSuberComponent implements OnDestroy {
     private subscriptions: Subscription = new Subscription();
     private iotSubscriptions: IoTSubscription[];
 
-    public desired: any = null;
-    public reported: any = null;
+    public desired: any = {};
+    public reported: any = {};
 
     constructor(private _iotService: IOTService) {}
 
@@ -50,16 +52,20 @@ export class IoTPubSuberComponent implements OnDestroy {
     protected updateIncomingShadow(incoming, shadowField = null) {
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('reported')) {
             if (shadowField !== null && incoming.state.reported.hasOwnProperty(shadowField)) {
-                this.reported = incoming.state.reported[shadowField];
+                _.extend(this.reported, incoming.state.reported[shadowField]);
+                // this.reported = incoming.state.reported[shadowField];
             } else {
-                this.reported = incoming.state.reported;
+                _.extend(this.reported, incoming.state.reported);
+                // this.reported = incoming.state.reported;
             }
         }
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('desired')) {
             if (shadowField !== null && incoming.state.desired.hasOwnProperty(shadowField)) {
-                this.desired = incoming.state.desired[shadowField];
+                _.extend(this.desired, incoming.state.desired[shadowField]);
+                // this.desired = incoming.state.desired[shadowField];
             } else {
-                this.desired = incoming.state.desired;
+                _.extend(this.desired, incoming.state.desired);
+                // this.desired = incoming.state.desired;
             }
         }
     }

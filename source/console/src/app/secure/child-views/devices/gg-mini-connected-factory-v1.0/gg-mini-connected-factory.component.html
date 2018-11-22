@@ -14,9 +14,9 @@
                             <div class="col-4 text-center">No Lego</div>
                         </div>
                         <div class="row">
-                            <div class="col-4 text-center">{{betterProb(latestInference.results.hat)}}</div>
-                            <div class="col-4 text-center">{{betterProb(latestInference.results.nohat)}}</div>
-                            <div class="col-4 text-center">{{betterProb(latestInference.results.nolego)}}</div>
+                            <div class="col-4 text-center">{{latestInference.results.hat}}%</div>
+                            <div class="col-4 text-center">{{latestInference.results.nohat}}%</div>
+                            <div class="col-4 text-center">{{latestInference.results.nolego}}%</div>
                         </div>
                         <!-- <i class="fa" [class.fa-thumbs-up]="maxProb(latestInference.results).category === 'hat'"
                             [class.fa-thumbs-down]="maxProb(latestInference.results).category === 'nohat'">
