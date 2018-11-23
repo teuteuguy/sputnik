@@ -99,12 +99,8 @@ def parseResolution(strResolution):
 try:
     GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
-    GGIOT.info("Start of lambda function")
-    # GGIOT.info("OpenCV: {}".format(cv2.__version__))
-    # GGIOT.info("MXNET: {}".format(mx.__version__))
-    # GGIOT.info("Model: {}".format(ML_MODEL_PATH))
+    print("Start of lambda function")
 
-    # GGIOT.updateThingShadow(payload={"state": {"reported": {"factoryCamera": FACTORY_CAMERA}}})
     parseIncomingShadow(GGIOT.getThingShadow())
 
     resolution = parseResolution(FACTORY_CAMERA["resolution"])
@@ -114,7 +110,7 @@ try:
 
     crop = parseResolution(FACTORY_CAMERA["crop"])
 
-    GGIOT.info({
+    print({
         "message": "Start of lambda function",
         "OpenCV": cv2.__version__,
         "MXNET": mx.__version__,
@@ -163,79 +159,70 @@ def camera_handler():
     global FACTORY_CAMERA
     global MODEL
 
-    FACTORY_LOCK.acquire()
+    print("Frame: reading")
+    ret, frame = CAMERA.read()
+    if ret == False:
+        print("Something is wrong, cant read frame")
+        time.sleep(5)
+        return
 
-    if "threaded" in FACTORY_CAMERA and FACTORY_CAMERA["threaded"] == "On":
+    size = parseResolution(FACTORY_CAMERA["resolution"])
+    crop = parseResolution(FACTORY_CAMERA["crop"])
 
-        FACTORY_LOCK.release()
+    frame = cv2.resize(frame, size)
+    font = cv2.FONT_HERSHEY_SIMPLEX
 
-        print("Frame: reading")
-        ret, frame = CAMERA.read()
-        if ret == False:
-            print("Something is wrong, cant read frame")
-            time.sleep(5)
-            return
+    topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
+    bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
 
-        size = parseResolution(FACTORY_CAMERA["resolution"])
-        crop = parseResolution(FACTORY_CAMERA["crop"])
+    cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
 
-        frame = cv2.resize(frame, size)
-        font = cv2.FONT_HERSHEY_SIMPLEX
+    inference_frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
 
-        topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
-        bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
+    # GGIOT.info("Frame loaded: {}, {}, {}, {}".format(inference_frame.size, inference_frame.shape, topleft, bottomright))
 
-        cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
+    try:
 
-        inference_frame = frame[topleft[1]:bottomright[1]:1, topleft[0]:bottomright[0]:1]
+        result = MODEL.do(inference_frame)
+        print("Inference result: {}".format(result))
 
-        # GGIOT.info("Frame loaded: {}, {}, {}, {}".format(inference_frame.size, inference_frame.shape, topleft, bottomright))
+        NB_FRAMES_PROCESSED += 1
 
-        try:
+        now = timeInMillis()
+        if now - LAST_UPDATE >= 1000:
+            FPS = 1000 * NB_FRAMES_PROCESSED / (now - LAST_UPDATE)
+            FPS = math.floor(FPS * 10000) / 10000
+            LAST_UPDATE = timeInMillis()
+            NB_FRAMES_PROCESSED = 0
 
-            result = MODEL.do(inference_frame)
-            print("Inference result: {}".format(result))
-
-            NB_FRAMES_PROCESSED += 1
-
-            now = timeInMillis()
-            if now - LAST_UPDATE >= 1000:
-                FPS = 1000 * NB_FRAMES_PROCESSED / (now - LAST_UPDATE)
-                FPS = math.floor(FPS * 10000) / 10000
-                LAST_UPDATE = timeInMillis()
-                NB_FRAMES_PROCESSED = 0
-
-            GGIOT.publish(TOPIC_INFERENCE, {
-                "type":  "inference",
-                "payload": {
-                    "results": result,
-                    "fps": str(FPS),
-                    "frame": {
-                        "size": inference_frame.size,
-                        "shape": inference_frame.shape
-                    }
+        GGIOT.publish(TOPIC_INFERENCE, {
+            "type":  "inference",
+            "payload": {
+                "results": result,
+                "fps": str(FPS),
+                "frame": {
+                    "size": inference_frame.size,
+                    "shape": inference_frame.shape
                 }
-            })
+            }
+        })
 
-            cv2.rectangle(frame, (0, size[1] - 40), (size[0], size[1]), (0, 0, 0), -1)
-            cv2.putText(frame, "FPS: {} {}".format(str(FPS), result), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
+        cv2.rectangle(frame, (0, size[1] - 40), (size[0], size[1]), (0, 0, 0), -1)
+        cv2.putText(frame, "FPS: {} {}".format(str(FPS), result), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
 
-            if FACTORY_CAMERA["capture"] == "On":
-                filename = SAVE_FRAMES.getTimestampFilename()
-                SAVE_FRAMES.saveToFile(
-                    filename=filename,
-                    frame=frame
-                )
+        if FACTORY_CAMERA["capture"] == "On":
+            filename = SAVE_FRAMES.getTimestampFilename()
+            SAVE_FRAMES.saveToFile(
+                filename=filename,
+                frame=frame
+            )
 
-        except Exception as err:
-            GGIOT.exception(str(err))
-            raise err
+    except Exception as err:
+        GGIOT.exception(str(err))
+        raise err
 
-        OUTPUT.update(frame)
+    OUTPUT.update(frame)
 
-    else:
-        FACTORY_LOCK.release()
-        time.sleep(0.2)
 
     return
 
@@ -253,7 +240,10 @@ class MainAppThread(Thread):
     def run(self):
         try:
             while 42:
-                camera_handler()
+                # FACTORY_LOCK.acquire()
+                if "threaded" in FACTORY_CAMERA and FACTORY_CAMERA["threaded"] == "On":
+                    # FACTORY_LOCK.release()
+                    camera_handler()
 
         except Exception as err:
             GGIOT.exception(str(err))

@@ -24,10 +24,11 @@
                     "FunctionDefinitionVersion": {
                         "Functions": [
                             {
-                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-node:MTM",
+                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-python:MTM",
                                 "FunctionConfiguration": {
                                     "EncodingType": "json",
                                     "Environment": {
+                                        "AccessSysfs": true,
                                         "ResourceAccessPolicies": [{
                                             "Permission": "rw",
                                             "ResourceId": "serial-port"
@@ -67,8 +68,7 @@
                             "ResourceDataContainer": {
                                 "LocalDeviceResourceData": {
                                     "GroupOwnerSetting": {
-                                        "AutoAddGroupOwner": false,
-                                        "GroupOwner": "dialout"
+                                        "AutoAddGroupOwner": true
                                     },
                                     "SourcePath": "/dev/ttyUSB0"
                                 }
@@ -77,26 +77,26 @@
                     },
                     "SubscriptionDefinitionVersion": {
                         "Subscriptions": [{
-                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-node:MTM",
-                            "Subject": "mtm/!GetAtt[device_0.thingName]/sensors",
-                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-node:MTM"
-                        }, {
-                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-node:MTM",
-                            "Subject": "mtm/!GetAtt[device_0.thingName]/logger",
-                            "Target": "cloud"
-                        }, {
-                            "Source": "GGShadowService",
-                            "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update/accepted",
-                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-node:MTM"
-                        }, {
-                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-node:MTM",
-                            "Subject": "mtm/[CORE]/action",
-                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM"
-                        }, {
-                            "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
-                            "Subject": "mtm/[CORE]/inference",
-                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-node:MTM"
-                        }]
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-python:MTM",
+                                "Source": "GGShadowService",
+                                "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update/accepted"
+                            },
+                            {
+                                "Source": "arn:aws:iot:[AWS_REGION]:[AWS_ACCOUNT]:thing/!GetAtt[device_0.thingName]",
+                                "Subject": "make/inference",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM"
+                            },
+                            {
+                                "Source": "arn:aws:iot:[AWS_REGION]:[AWS_ACCOUNT]:thing/!GetAtt[device_0.thingName]",
+                                "Subject": "make/inference",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-python:MTM"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-python:MTM",
+                                "Subject": "mtm/!GetAtt[device_0.thingName]/sensors",
+                                "Target": "cloud"
+                            }
+                        ]
                     }
 
                 }
