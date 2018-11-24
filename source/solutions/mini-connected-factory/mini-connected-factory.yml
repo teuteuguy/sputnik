@@ -161,6 +161,33 @@ Resources:
             FunctionVersion: !GetAtt AMCF1BeltNodeLambdaVersion.Version
             Name: 'MTM'
 
+
+    AMCF1FactoryPythonLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'mini-connected-factory-python'
+            Description: 'My Things Management AWS Mini Connected Factory Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'mini-connected-factory-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt AMCF1LambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    AMCF1FactoryPythonLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'AMCF1FactoryPythonLambda'
+            Description: 'A first version of mini-connected-factory-python'
+    AMCF1FactoryPythonLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref AMCF1FactoryPythonLambda
+            FunctionVersion: !GetAtt AMCF1FactoryPythonLambdaVersion.Version
+            Name: 'MTM'
+
     AMCF1FactoryNodeLambda:
         Type: 'AWS::Lambda::Function'
         Properties:

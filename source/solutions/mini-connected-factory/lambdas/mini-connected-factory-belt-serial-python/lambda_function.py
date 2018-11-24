@@ -38,6 +38,7 @@ class MainThread(Thread):
     def run(self):
         while 42:
             try:
+                print("Opening Serial port")
                 SERIAL = serial.serial_for_url(SERIALPORT_PORT, int(SERIALPORT_SPEED))
 
                 class LineReaderClass(serial.threaded.LineReader):

@@ -45,13 +45,14 @@
                                 }
                             },
                             {
-                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-node:MTM",
+                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-python:MTM",
                                 "FunctionConfiguration": {
                                     "EncodingType": "json",
                                     "Environment": {
                                         "ResourceAccessPolicies": [],
                                         "Variables": {
-                                            "THING_NAME": "!GetAtt[device_0.thingName]"
+                                            "THING_NAME_CAMERA": "[CORE]",
+                                            "THING_NAME_BELT": "!GetAtt[device_0.thingName]"
                                         }
                                     },
                                     "MemorySize": 262144,
@@ -93,8 +94,18 @@
                             },
                             {
                                 "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-belt-serial-python:MTM",
-                                "Subject": "mtm/!GetAtt[device_0.thingName]/sensors",
-                                "Target": "cloud"
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-python:MTM",
+                                "Subject": "mtm/!GetAtt[device_0.thingName]/sensors"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-python:MTM",
+                                "Subject": "mtm/[CORE]/inference"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
+                                "Subject": "make/inference"
                             }
                         ]
                     }

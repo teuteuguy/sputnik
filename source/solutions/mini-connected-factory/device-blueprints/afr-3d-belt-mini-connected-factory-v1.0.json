@@ -9,7 +9,9 @@
             "desired": {
                 "speed": 1,
                 "mode": 2,
-                "debug": false
+                "rpm": true,
+                "chassis": false,
+                "proximity": true
             }
         }
     }

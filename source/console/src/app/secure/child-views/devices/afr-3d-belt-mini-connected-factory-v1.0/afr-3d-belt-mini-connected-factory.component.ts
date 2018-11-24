@@ -65,7 +65,16 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             {
                 topic: 'mtm/' + this.device.thingName + '/sensors',
                 onMessage: data => {
-                    this.sensors = data.value;
+                    if (data.value.hasOwnProperty('speed')) {
+                        this.sensors.speed = data.value.speed;
+                    }
+                    if (data.value.hasOwnProperty('chassis')) {
+                        this.sensors.chassis = data.value.chassis;
+                    }
+                    if (data.value.hasOwnProperty('proximity')) {
+                        this.sensors.proximity = data.value.proximity;
+                    }
+                    // this.sensors = data.value;
                     console.log('Sensors:', this.sensors);
                 },
                 onError: err => {
