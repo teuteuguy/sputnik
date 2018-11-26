@@ -10,18 +10,18 @@ Resources:
                 IndexDocument: 'index.html'
                 ErrorDocument: 'index.html'
 
-    # Uncomment this to make bucket public
-    # websiteBucketPolicy:
-    #     Type: 'AWS::S3::BucketPolicy'
-    #     Properties:
-    #         Bucket:
-    #             !Ref 'websiteBucket'
-    #         PolicyDocument:
-    #             Statement:
-    #                 Action: 's3:GetObject'
-    #                 Effect: 'Allow'
-    #                 Resource: !Join ['', ['arn:aws:s3:::', !Ref websiteBucket, '/*']]
-    #                 Principal: '*'
+    # Comment/Uncomment this to make bucket public
+    websiteBucketPolicy:
+        Type: 'AWS::S3::BucketPolicy'
+        Properties:
+            Bucket:
+                !Ref 'websiteBucket'
+            PolicyDocument:
+                Statement:
+                    Action: 's3:GetObject'
+                    Effect: 'Allow'
+                    Resource: !Join ['', ['arn:aws:s3:::', !Ref websiteBucket, '/*']]
+                    Principal: '*'
 
 Outputs:
     websiteBucket:

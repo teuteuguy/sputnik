@@ -59,12 +59,36 @@ class VideoStream:
                        "format=(string)BGRx ! videoconvert ! appsink").format(self.width, self.height)
             self.stream = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
+        self.stopped = False
+        self.ret, self.frame = self.stream.read()
+
     def get_height(self):
         return self.height
 
     def get_width(self):
         return self.width
 
+    def start(self):
+        '''start() starts the thread'''
+        thread = Thread(target=self.update, args=())
+        thread.daemon = True
+        thread.start()
+        return self
+
+    def update(self):
+        '''update() constantly read the camera stream'''
+        print("VideoStream: udpate: starting the camera reads")
+        while not self.stopped:
+            self.ret, self.frame = self.stream.read()
+
     def read(self):
         '''read() return the last frame captured'''
-        return self.stream.read()
+        return self.ret, self.frame
+
+    # def read(self):
+    #     '''read() return the last frame captured'''
+    #     return self.stream.read()
+
+    def stop(self):
+        '''stop() set a flag to stop the update loop'''
+        self.stopped = True

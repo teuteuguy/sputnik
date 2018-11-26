@@ -8,10 +8,7 @@
         "Shadow": {
             "desired": {
                 "speed": 1,
-                "mode": 2,
-                "rpm": true,
-                "chassis": false,
-                "proximity": true
+                "mode": 2
             }
         }
     }

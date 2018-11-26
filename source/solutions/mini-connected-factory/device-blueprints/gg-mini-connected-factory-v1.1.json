@@ -117,6 +117,14 @@
                     "Source": "GGShadowService",
                     "Subject": "$aws/things/[CORE]/shadow/update/accepted",
                     "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM"
+                }, {
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/logger",
+                    "Target": "cloud"
+                }, {
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:mini-connected-factory-camera-python:MTM",
+                    "Subject": "mtm/[CORE]/inference",
+                    "Target": "cloud"
                 }
             ]
         }

@@ -127,6 +127,7 @@ try:
     print("CAMERA: Starting the camera with 2 reads...")
     print("CAMERA.read(): {}".format(CAMERA.read()[0]))
     print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+    CAMERA.start()
 
     MODEL = Infer(
         model_type=ML_MODEL_TYPE,
@@ -163,6 +164,7 @@ def camera_handler():
     ret, frame = CAMERA.read()
     if ret == False:
         print("Something is wrong, cant read frame")
+        print(frame)
         time.sleep(5)
         return
 
@@ -196,15 +198,15 @@ def camera_handler():
             NB_FRAMES_PROCESSED = 0
 
         GGIOT.publish(TOPIC_INFERENCE, {
-            "type":  "inference",
-            "payload": {
-                "results": result,
-                "fps": str(FPS),
-                "frame": {
-                    "size": inference_frame.size,
-                    "shape": inference_frame.shape
-                }
+            # "type":  "inference",
+            # "payload": {
+            "results": result,
+            "fps": str(FPS),
+            "frame": {
+                "size": inference_frame.size,
+                "shape": inference_frame.shape
             }
+            # }
         })
 
         cv2.rectangle(frame, (0, size[1] - 40), (size[0], size[1]), (0, 0, 0), -1)
