@@ -9,18 +9,10 @@ const uuid = require('uuid');
 
 const createGreengrassXDefinitionVersion = require('./createGreengrassXDefinitionVersion');
 
-const createGreengrassCoreDefinitionVersion = require('./createGreengrassCoreDefinitionVersion');
-const createGreengrassFunctionDefinitionVersion = require('./createGreengrassFunctionDefinitionVersion');
-const createGreengrassLoggerDefinitionVersion = require('./createGreengrassLoggerDefinitionVersion');
-const createGreengrassResourceDefinitionVersion = require('./createGreengrassResourceDefinitionVersion');
-const createGreengrassSubscriptionDefinitionVersion = require('./createGreengrassSubscriptionDefinitionVersion');
-
 const mergeMTMSpecs = require('./merge-mtm-specs');
 const mergeMTMShadows = require('./merge-mtm-shadows');
 
 const lib = 'addDeployment';
-
-
 
 module.exports = function (event, context) {
 
@@ -150,12 +142,12 @@ module.exports = function (event, context) {
         _newShadow = JSON.parse(strShadow);
         _newSpec.Shadow = _newShadow;
 
-        // TODO: this eval thing could be a security risk. Need to potentially rethink this.
-        _newSpec.afterActions.forEach(a => {
-            console.log('Evaluating:', a);
-            eval(a);
-            _newSpec = afterAction(_newSpec);
-        });
+        // // TODO: this eval thing could be a security risk. Need to potentially rethink this.
+        // _newSpec.afterActions.forEach(a => {
+        //     console.log('Evaluating:', a);
+        //     eval(a);
+        //     _newSpec = afterAction(_newSpec);
+        // });
 
         console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
 
@@ -219,11 +211,6 @@ module.exports = function (event, context) {
                         }
                         return d;
                     })
-                    // createGreengrassCoreDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(c => _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn),
-                    // createGreengrassFunctionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(f => _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn),
-                    // createGreengrassLoggerDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(l => _newGreengrassGroupVersion.LoggerDefinitionVersionArn = l.Arn),
-                    // createGreengrassResourceDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(r => _newGreengrassGroupVersion.ResourceDefinitionVersionArn = r.Arn),
-                    // createGreengrassSubscriptionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(s => _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn)
                 ]);
 
             }).then(results => {

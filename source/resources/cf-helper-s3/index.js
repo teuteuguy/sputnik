@@ -33,28 +33,7 @@ exports.handler = (event, context, callback) => {
         sendResponse(event, callback, context.logStreamName, 'SUCCESS');
     }
 
-    if (event.RequestType === 'Update') {
-        if (event.ResourceProperties.customAction === 'putFile') {
-            let _s3Helper = new S3Helper();
-            console.log(event.ResourceProperties.file);
-            _s3Helper.putFile(event.ResourceProperties.file, event.ResourceProperties.destS3Bucket, event.ResourceProperties.destS3Key).then((data) => {
-                responseStatus = 'SUCCESS';
-                responseData = data;
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            }).catch((err) => {
-                responseData = {
-                    Error: `Saving file to ${event.ResourceProperties.destS3Bucket}/${event.ResourceProperties.destS3key} failed`
-                };
-                console.log([responseData.Error, ':\n', err].join(''));
-                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-            });
-
-        } else {
-            sendResponse(event, callback, context.logStreamName, 'SUCCESS');
-        }
-    }
-
-    if (event.RequestType === 'Create') {
+    if (event.RequestType === 'Create' || event.RequestType === 'Update') {
 
         if (event.ResourceProperties.customAction === 'putFile') {
             let _s3Helper = new S3Helper();

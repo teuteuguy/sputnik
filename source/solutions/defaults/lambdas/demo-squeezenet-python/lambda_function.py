@@ -19,7 +19,8 @@ def get_parameter(name, default):
     return default
 
 THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
-PATH_TO_CAMERA = get_parameter('PATH_TO_CAMERA', '/dev/null')
+CAMERA_TYPE = get_parameter("CAMERA_TYPE", "")
+PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
 PREFIX = 'mtm'
 TOPIC_CAMERA = 'mtm/{}/camera'.format(THING_NAME)
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
@@ -52,12 +53,13 @@ try:
     OUTPUT.update(frame)
 
     GGIOT.info('Getting last camera frame')
-    CAMERA = VideoStream(PATH_TO_CAMERA, resolution[0], resolution[1])
-    # CAMERA.start()
-    ret, frame = CAMERA.read()
-    ret, frame = CAMERA.read()
-    # ret, frame = awscam.getLastFrame()
-    # ret, frame = awscam.getLastFrame()
+
+    CAMERA = VideoStream(camera_type=CAMERA_TYPE, path_to_camera=PATH_TO_CAMERA,
+                         width=resolution[0], height=resolution[1])
+    print("CAMERA: Starting the camera with 2 reads...")
+    print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+    print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+    CAMERA.start()
 
     GGIOT.info('Loading model at ' + ML_MODEL_PATH)
     MODEL = load_model.ImagenetModel(

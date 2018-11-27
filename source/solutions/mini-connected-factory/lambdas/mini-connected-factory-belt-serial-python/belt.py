@@ -87,11 +87,11 @@ class Belt:
 
             if "chassis" in beltData and (self.SENSORS["chassis"]["x"] != beltData["chassis"]["x"] or self.SENSORS["chassis"]["y"] != beltData["chassis"]["y"] or self.SENSORS["chassis"]["z"] != beltData["chassis"]["z"]):
                 self.SENSORS["chassis"] = beltData["chassis"]
-                GGIOT.publish(topic="{}/chassis".format(TOPIC_FOR_SENSORS), payload=beltData["chassis"])
+                GGIOT.publish(topic="{}/chassis".format(TOPIC_FOR_SENSORS), payload=self.SENSORS["chassis"])
 
             if "speed" in beltData and self.SENSORS["speed"]["rpm"] != beltData["speed"]["rpm"]:
                 self.SENSORS["speed"]["rpm"] = beltData["speed"]["rpm"]
-                GGIOT.publish(topic="{}/speed".format(TOPIC_FOR_SENSORS), payload=beltData["speed"])
+                GGIOT.publish(topic="{}/speed".format(TOPIC_FOR_SENSORS), payload=self.SENSORS["speed"])
 
         elif SHADOW_STRING + "{" in data:
             beltData = json.loads(data.split(SHADOW_STRING)[1])

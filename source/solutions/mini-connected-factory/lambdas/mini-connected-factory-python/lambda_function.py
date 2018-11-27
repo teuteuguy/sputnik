@@ -75,8 +75,17 @@ def lambda_handler(event, context):
                 turnBeltOn()
 
     if topic == INPUT_TOPIC_CAMERA_INFERENCE and "results" in event:
-        print("lambda_handler: {}: Need to start the belt.".format(topic))
-        if event["results"]["hat"] > 65:
+
+        print("lambda_handler: {}: Inference received {}.".format(topic, json.dumps(event)))
+
+        inferenceDecision = GGIOT.getThingShadow(thingName=THING_NAME_CAMERA)
+
+        category = inferenceDecision["state"]["desired"]["inferenceDecision"]["category"]
+        threshold = inferenceDecision["state"]["desired"]["inferenceDecision"]["threshold"]
+
+        print("lambda_handler: {}: inferenceDecision: {}, {}. Result at: {}".format(topic, category, threshold, event["results"][category]))
+
+        if event["results"][category] > threshold:
             turnBeltOn()
 
     return

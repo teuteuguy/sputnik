@@ -87,6 +87,16 @@
                         <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
                             <div class="chart-text">
                                 <h6 class="m-b-0" style="color: white">
+                                    <small>Connected</small>
+                                </h6>
+                                <h4 class="m-t-0 text-success-alt">{{deviceStats.connected}} connected</h4>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
+                            <div class="chart-text">
+                                <h6 class="m-b-0" style="color: white">
                                     <small>Solutions</small>
                                 </h6>
                                 <h4 class="m-t-0 text-warning">{{solutionStats.total}} total</h4>
@@ -100,16 +110,6 @@
                                     <small>Devices</small>
                                 </h6>
                                 <h4 class="m-t-0 text-success">{{deviceStats.total}} total</h4>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
-                            <div class="chart-text">
-                                <h6 class="m-b-0" style="color: white">
-                                    <small>Connected</small>
-                                </h6>
-                                <h4 class="m-t-0 text-success-alt">{{deviceStats.connected}} connected</h4>
                             </div>
                         </div>
                     </li>
@@ -176,12 +176,12 @@
                             <span class="hide-menu">Home </span>
                         </a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a class="waves-effect waves-dark" data-caption="Maps" routerLink="maps">
                             <i class="mdi mdi-google-maps"></i>
                             <span class="hide-menu">Maps </span>
                         </a>
-                    </li>
+                    </li> -->
                     <li class="nav-small-cap">MENU</li>
                     <li>
                         <a class="waves-effect waves-dark" routerLink="solutions">

@@ -16,7 +16,15 @@ import { IOTService } from 'src/app/services/iot.service';
 export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
-    public sensors: any = {};
+    public sensors: any = {
+        speed: {
+            rpm: 0
+        },
+        proximity: {
+            sensor1: 0,
+            sensor2: 0
+        }
+    };
 
     public buttons = [
         {
@@ -51,35 +59,39 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
     }
 
     ngOnInit() {
+
+        function defaultErrorCallback(err) {
+            console.error('Error:', err);
+        }
+
         this.subscribe([
             {
                 topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
                 onMessage: data => {
-                    console.log('Shadow', data);
                     this.updateIncomingShadow(data.value);
                 },
-                onError: err => {
-                    console.error('Error:', err);
-                }
+                onError: defaultErrorCallback
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/sensors',
+                topic: 'mtm/' + this.device.thingName + '/sensors/speed',
                 onMessage: data => {
-                    if (data.value.hasOwnProperty('speed')) {
-                        this.sensors.speed = data.value.speed;
-                    }
-                    if (data.value.hasOwnProperty('chassis')) {
-                        this.sensors.chassis = data.value.chassis;
-                    }
-                    if (data.value.hasOwnProperty('proximity')) {
-                        this.sensors.proximity = data.value.proximity;
-                    }
-                    // this.sensors = data.value;
-                    console.log('Sensors:', this.sensors);
+                    this.sensors.speed = data.value;
                 },
-                onError: err => {
-                    console.error('Error:', err);
-                }
+                onError: defaultErrorCallback
+            },
+            {
+                topic: 'mtm/' + this.device.thingName + '/sensors/chassis',
+                onMessage: data => {
+                    this.sensors.chassis = data.value;
+                },
+                onError: defaultErrorCallback
+            },
+            {
+                topic: 'mtm/' + this.device.thingName + '/sensors/proximity',
+                onMessage: data => {
+                    this.sensors.proximity = data.value;
+                },
+                onError: defaultErrorCallback
             }
         ]);
 

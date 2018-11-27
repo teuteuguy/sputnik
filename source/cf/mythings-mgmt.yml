@@ -198,6 +198,8 @@ Resources:
             sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
             destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             customAction: 'copyS3assets'
+            deploymentUUID: '%%DEPLOYMENT_UUID%%'
+
 
     websiteConfig:
         Type: 'Custom::LoadLambda'
@@ -210,13 +212,13 @@ Resources:
                 USER_POOL_ID: !GetAtt CFStackForCognito.Outputs.userPoolId
                 USER_POOL_CLIENT_ID: !GetAtt CFStackForCognito.Outputs.websiteCognitoClientId
                 IDENTITY_POOL_ID: !GetAtt CFStackForCognito.Outputs.identityPool
-                # APIG_ENDPOINT: !Join ['', ['https://', !Ref api, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com/prod']]
                 REGION: !Ref 'AWS::Region'
                 IOT_COGNITO_POLICY: !GetAtt CFStackForCognito.Outputs.websiteCognitoIoTPolicy
                 S3_DATA_BUCKET: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
                 IOT_ENDPOINT: !GetAtt iotEndpoint.endpointAddress
             customAction: 'putFile'
+            deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
     # Initialization - Init of Thing Groups and Things
     initThingGroups:

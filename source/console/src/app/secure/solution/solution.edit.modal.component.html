@@ -26,16 +26,16 @@
                             #description="ngModel" [(ngModel)]="element.description" ngModel>
                     </div>
                     <div *ngFor="let dev of solutionBlueprint.spec.devices; let i = index" class="form-group">
-                            <label for="type" class="form-control-label">Device blueprint
-                                ({{ dev.deviceBlueprintId | deviceBlueprintNameFromId }})</label>
-                            <select class="custom-select col-12" name="device{{i}}" id="device{{i}}" #type="ngModel"
-                                [(ngModel)]="element.deviceIds[i]" required ngModel>
-                                <option *ngFor="let device of deviceBlueprintPossibleDevices[i].list; let j = index" value="{{device.thingId}}"
-                                    ng-selected="device.thingId === devicePossibility.device.thingId">{{device.name}}</option>
-                            </select>
-                            <div class="form-control-feedback">
-                                <small>Device for the blueprint.</small>
-                            </div>
+                        <label for="type" class="form-control-label">Device blueprint
+                            (<span *ngFor="let dbid of dev.deviceBlueprintId">{{ dbid | deviceBlueprintNameFromId }}, </span>)</label>
+                        <select class="custom-select col-12" name="device{{i}}" id="device{{i}}" #type="ngModel"
+                            [(ngModel)]="element.deviceIds[i]" required ngModel>
+                            <option *ngFor="let device of deviceBlueprintPossibleDevices[i].list; let j = index" value="{{device.thingId}}"
+                                ng-selected="device.thingId === devicePossibility.device.thingId">{{device.name}}</option>
+                        </select>
+                        <div class="form-control-feedback">
+                            <small>Device for the blueprint.</small>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" (click)="refreshSpecs()">Refresh specs</button>

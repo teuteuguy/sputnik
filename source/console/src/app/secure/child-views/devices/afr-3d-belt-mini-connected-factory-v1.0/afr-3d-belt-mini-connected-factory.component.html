@@ -15,13 +15,26 @@
                                         'border': (reported.mode != desired.mode || reported.speed != desired.speed ) && reported.mode == button.mode && reported.speed == button.speed ? '5px' : '0px',
                                         'border-color': 'orange', 'border-style': 'solid'
                                     }"
-                                    (click)="desiredStateChange(button)"
-                                    >{{button.value > 0 ? '+' : ''}}{{button.value != 0 ? button.value : 'STOP'}}</button>
+                                    (click)="desiredStateChange(button)">{{button.value > 0 ? '+' : ''}}{{button.value
+                                    != 0 ? button.value : 'STOP'}}</button>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-left">
+                            <span class="badge badge-pill" [class.badge-light]="sensors.proximity.sensor1 == 0"
+                                [class.badge-success]="sensors.proximity.sensor1 == 1">Sensor
+                                1</span>
+                        </div>
+                        <div class="col-6 text-right">
+                            <span class="badge badge-pill" [class.badge-light]="sensors.proximity.sensor2 == 0"
+                                [class.badge-success]="sensors.proximity.sensor2 == 1">Sensor
+                                2</span>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-12 text-center">
-                            <app-gauge *ngIf="sensors.hasOwnProperty('speed') && sensors.speed.hasOwnProperty('rpm')"
-                                id="speed" minValue="0" maxValue="80" [value]="sensors.speed.rpm" animationSpeed="45"></app-gauge>
+                            <app-gauge id="speed" minValue="0" maxValue="30" [value]="sensors.speed.rpm" animationSpeed="45"></app-gauge>
                         </div>
                     </div>
                 </div>

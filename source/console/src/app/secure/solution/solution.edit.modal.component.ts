@@ -78,14 +78,13 @@ export class SolutionEditModalComponent implements OnInit {
             .then((solutionBlueprint: SolutionBlueprint) => {
                 _solutionBlueprint = solutionBlueprint;
                 return Promise.all(solutionBlueprint.spec.devices.map((specDevice, index) => {
-                        return this.deviceService
-                            .listRecursive(
-                                'listDevicesWithDeviceBlueprint',
-                                specDevice.deviceBlueprintId,
-                                10,
-                                null
-                            )
-                            .then((devices: Device[]) => {
+                        return Promise.all(specDevice.deviceBlueprintId.map(
+                                deviceBlueprintId => {
+                                    return this.deviceService.listRecursive('listDevicesWithDeviceBlueprint', deviceBlueprintId, 10, null);
+                                }
+                            ))
+                            .then((results: any) => {
+                                const devices: Device[] = results.flat();
                                 if (this.element.deviceIds[index]) {
                                     return this.deviceService
                                         .getDevice(this.element.deviceIds[index])

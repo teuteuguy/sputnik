@@ -18,11 +18,25 @@
             "intel-up2-webcam-v0.1": "rw"
         }
     }, {
-        "substitute": "PATH_TO_CAMERA",
+        "substitute": "CAMERA_TYPE",
         "value": {
             "deeplens-no-lambda-v1.0": "awscam",
             "deeplens-v1.0": "awscam",
+            "intel-up2-webcam-v0.1": "video0"
+        }
+    }, {
+        "substitute": "PATH_TO_CAMERA",
+        "value": {
+            "deeplens-no-lambda-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
+            "deeplens-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
             "intel-up2-webcam-v0.1": "/dev/video0"
+        }
+    }, {
+        "substitute": "ML_MODEL_TYPE",
+        "value": {
+            "deeplens-no-lambda-v1.0": "optimized",
+            "deeplens-v1.0": "optimized",
+            "intel-up2-webcam-v0.1": "non_optimized"
         }
     }, {
         "substitute": "GPU",
@@ -58,7 +72,9 @@
                             }
                         ],
                         "Variables": {
+                            "ML_MODEL_TYPE": "[ML_MODEL_TYPE]",
                             "ML_MODEL_PATH": "/greengrass-machine-learning/mxnet/squeezenet/",
+                            "CAMERA_TYPE": "[CAMERA_TYPE]",
                             "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
                         }
                     },

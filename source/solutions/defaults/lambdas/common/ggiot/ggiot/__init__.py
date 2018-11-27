@@ -22,8 +22,8 @@ class GGIoT:
             def prepUpdateShadow(thing=self.thing, payload={}):
                 GGC.update_thing_shadow(thingName=thing, payload=json.dumps(payload))
 
-            def prepGetShadow():
-                response = GGC.get_thing_shadow(thingName=self.thing)
+            def prepGetShadow(thingName=self.thing):
+                response = GGC.get_thing_shadow(thingName=thingName)
                 payloadDict = json.loads(response['payload'])
                 # stateDict = payloadDict['state']
                 return payloadDict

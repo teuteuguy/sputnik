@@ -9,9 +9,6 @@ function handler(event, context, callback) {
         case 'getSolutionStats':
             promise = libs.getSolutionStats(event, context);
             break;
-        case 'addSolution':
-            promise = libs.addSolution(event, context);
-            break;
         case 'deleteSolution':
             promise = libs.deleteSolution(event, context);
             break;

@@ -12,8 +12,6 @@ import { MiniConnectedFactoryV10Module } from './mini-connected-factory-v1.0/min
     template: `
         <app-mini-connected-factory-v1
             *ngIf="
-                solution.solutionBlueprintId === 'mini-connected-factory-v1.1' ||
-                solution.solutionBlueprintId === 'mini-connected-factory-v1.2' ||
                 solution.solutionBlueprintId === 'mini-connected-factory-v1.3'
             "
             [solution]="solution"

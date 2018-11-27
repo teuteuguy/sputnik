@@ -83,32 +83,6 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
 
-    AMCF1CameraLambda:
-        Type: 'AWS::Lambda::Function'
-        Properties:
-            FunctionName: 'mini-connected-factory-camera-python'
-            Description: 'My Things Management AWS Mini Connected Factory Camera Lambda Code'
-            Code:
-                S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'mini-connected-factory-camera-python.zip']]
-            Handler: lambda_function.lambda_handler
-            Runtime: python2.7
-            Role: !GetAtt AMCF1LambdaRole.Arn
-            Timeout: 3
-            MemorySize: 128
-    AMCF1CameraLambdaVersion:
-        Type: 'AWS::Lambda::Version'
-        Properties:
-            FunctionName:
-                Ref: 'AMCF1CameraLambda'
-            Description: 'A first version of mini-connected-factory-camera-python'
-    AMCF1CameraLambdaAlias:
-        Type: 'AWS::Lambda::Alias'
-        Properties:
-            FunctionName: !Ref AMCF1CameraLambda
-            FunctionVersion: !GetAtt AMCF1CameraLambdaVersion.Version
-            Name: 'MTM'
-
     AMCF1BeltLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
@@ -133,32 +107,6 @@ Resources:
         Properties:
             FunctionName: !Ref AMCF1BeltLambda
             FunctionVersion: !GetAtt AMCF1BeltLambdaVersion.Version
-            Name: 'MTM'
-
-    AMCF1BeltNodeLambda:
-        Type: 'AWS::Lambda::Function'
-        Properties:
-            FunctionName: 'mini-connected-factory-belt-serial-node'
-            Description: 'My Things Management AWS Mini Connected Factory Belt Lambda Code'
-            Code:
-                S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'mini-connected-factory-belt-serial-node.zip']]
-            Handler: index.handler
-            Runtime: 'nodejs6.10'
-            Role: !GetAtt AMCF1LambdaRole.Arn
-            Timeout: 3
-            MemorySize: 128
-    AMCF1BeltNodeLambdaVersion:
-        Type: 'AWS::Lambda::Version'
-        Properties:
-            FunctionName:
-                Ref: 'AMCF1BeltNodeLambda'
-            Description: 'A first version of mini-connected-factory-belt-serial-node'
-    AMCF1BeltNodeLambdaAlias:
-        Type: 'AWS::Lambda::Alias'
-        Properties:
-            FunctionName: !Ref AMCF1BeltNodeLambda
-            FunctionVersion: !GetAtt AMCF1BeltNodeLambdaVersion.Version
             Name: 'MTM'
 
 
@@ -188,31 +136,6 @@ Resources:
             FunctionVersion: !GetAtt AMCF1FactoryPythonLambdaVersion.Version
             Name: 'MTM'
 
-    AMCF1FactoryNodeLambda:
-        Type: 'AWS::Lambda::Function'
-        Properties:
-            FunctionName: 'mini-connected-factory-node'
-            Description: 'My Things Management AWS Mini Connected Factory Lambda Code'
-            Code:
-                S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'mini-connected-factory-node.zip']]
-            Handler: index.handler
-            Runtime: 'nodejs6.10'
-            Role: !GetAtt AMCF1LambdaRole.Arn
-            Timeout: 3
-            MemorySize: 128
-    AMCF1FactoryNodeLambdaVersion:
-        Type: 'AWS::Lambda::Version'
-        Properties:
-            FunctionName:
-                Ref: 'AMCF1FactoryNodeLambda'
-            Description: 'A first version of mini-connected-factory-python'
-    AMCF1FactoryNodeLambdaAlias:
-        Type: 'AWS::Lambda::Alias'
-        Properties:
-            FunctionName: !Ref AMCF1FactoryNodeLambda
-            FunctionVersion: !GetAtt AMCF1FactoryNodeLambdaVersion.Version
-            Name: 'MTM'
 
 
     AMCF1GreengrassGroupPolicy:
@@ -246,5 +169,17 @@ Resources:
             destS3Bucket: !Ref dataS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'legomodel-v1.1.8-224-3cat.tar.gz']]
             destS3Key: !Join ['/', ['mini-connected-factory', 'models', 'legomodel-v1.1.8-224-3cat.tar.gz']]
+            uuid: !Ref deploymentUUID
+            customAction: 'copyFileFromS3ToS3'
+
+    AMCF1BoxesModel:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            destS3Bucket: !Ref dataS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'boxes-v1.0.0-480-3cat.tar.gz']]
+            destS3Key: !Join ['/', ['mini-connected-factory', 'models', 'boxes-v1.0.0-480-3cat.tar.gz']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'

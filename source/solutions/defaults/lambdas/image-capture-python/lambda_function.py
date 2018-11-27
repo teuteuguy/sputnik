@@ -19,10 +19,11 @@ def get_parameter(name, default):
         return os.environ[name]
     return default
 
-THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
-PATH_TO_CAMERA = get_parameter('PATH_TO_CAMERA', '/dev/null')
-PREFIX = 'mtm'
-TOPIC_CAMERA = '{}/{}/camera'.format(PREFIX, THING_NAME)
+THING_NAME = get_parameter("AWS_IOT_THING_NAME", "Unknown")
+CAMERA_TYPE = get_parameter("CAMERA_TYPE", "")
+PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
+PREFIX = "mtm"
+TOPIC_CAMERA = "{}/{}/camera".format(PREFIX, THING_NAME)
 CAMERA = None
 
 SIMPLE_CAMERA = {
@@ -43,47 +44,47 @@ def parseIncomingShadow(shadow):
 
     global SIMPLE_CAMERA
 
-    if 'state' in shadow:
-        state = shadow['state']
+    if "state" in shadow:
+        state = shadow["state"]
 
-        if 'desired' in state:
-            desired = state['desired']
+        if "desired" in state:
+            desired = state["desired"]
 
-            if 'simpleCamera' in desired:
+            if "simpleCamera" in desired:
 
-                simpleCamera = desired['simpleCamera']
+                simpleCamera = desired["simpleCamera"]
 
-                if 'capture' in simpleCamera and SIMPLE_CAMERA['capture'] != simpleCamera['capture']:
-                    SIMPLE_CAMERA['capture'] = simpleCamera['capture']
-                    print("parseIncomingShadow: updating capture to {}".format(SIMPLE_CAMERA['capture']))
-                if 'sleepInSecsAsStr' in simpleCamera and SIMPLE_CAMERA['sleepInSecsAsStr'] != simpleCamera['sleepInSecsAsStr']:
-                    SIMPLE_CAMERA['sleepInSecsAsStr'] = simpleCamera['sleepInSecsAsStr']
+                if "capture" in simpleCamera and SIMPLE_CAMERA["capture"] != simpleCamera["capture"]:
+                    SIMPLE_CAMERA["capture"] = simpleCamera["capture"]
+                    print("parseIncomingShadow: updating capture to {}".format(SIMPLE_CAMERA["capture"]))
+                if "sleepInSecsAsStr" in simpleCamera and SIMPLE_CAMERA["sleepInSecsAsStr"] != simpleCamera["sleepInSecsAsStr"]:
+                    SIMPLE_CAMERA["sleepInSecsAsStr"] = simpleCamera["sleepInSecsAsStr"]
                     print("parseIncomingShadow: updating sleepInSecsAsStr to {}".format(
-                        SIMPLE_CAMERA['sleepInSecsAsStr']))
-                if 's3UploadSleepInSecsAsStr' in simpleCamera and SIMPLE_CAMERA['s3UploadSleepInSecsAsStr'] != simpleCamera['s3UploadSleepInSecsAsStr']:
-                    SIMPLE_CAMERA['s3UploadSleepInSecsAsStr'] = simpleCamera['s3UploadSleepInSecsAsStr']
+                        SIMPLE_CAMERA["sleepInSecsAsStr"]))
+                if "s3UploadSleepInSecsAsStr" in simpleCamera and SIMPLE_CAMERA["s3UploadSleepInSecsAsStr"] != simpleCamera["s3UploadSleepInSecsAsStr"]:
+                    SIMPLE_CAMERA["s3UploadSleepInSecsAsStr"] = simpleCamera["s3UploadSleepInSecsAsStr"]
                     print("parseIncomingShadow: updating s3UploadSleepInSecsAsStr to {}".format(
-                        SIMPLE_CAMERA['s3UploadSleepInSecsAsStr']))
-                if 's3Upload' in simpleCamera and SIMPLE_CAMERA['s3Upload'] != simpleCamera['s3Upload']:
-                    SIMPLE_CAMERA['s3Upload'] = simpleCamera['s3Upload']
-                    print("parseIncomingShadow: updating s3Upload to {}".format(SIMPLE_CAMERA['s3Upload']))
-                if 's3Bucket' in simpleCamera and SIMPLE_CAMERA['s3Bucket'] != simpleCamera['s3Bucket']:
-                    SIMPLE_CAMERA['s3Bucket'] = simpleCamera['s3Bucket']
-                    print("parseIncomingShadow: updating s3Bucket to {}".format(SIMPLE_CAMERA['s3Bucket']))
-                if 's3KeyPrefix' in simpleCamera and SIMPLE_CAMERA['s3KeyPrefix'] != simpleCamera['s3KeyPrefix']:
-                    SIMPLE_CAMERA['s3KeyPrefix'] = simpleCamera['s3KeyPrefix']
-                    print("parseIncomingShadow: updating s3KeyPrefix to {}".format(SIMPLE_CAMERA['s3KeyPrefix']))
-                if 'resolution' in simpleCamera and SIMPLE_CAMERA['resolution'] != simpleCamera['resolution']:
-                    SIMPLE_CAMERA['resolution'] = simpleCamera['resolution']
-                    print("parseIncomingShadow: updating resolution to {}".format(SIMPLE_CAMERA['resolution']))
-                if 'crop' in simpleCamera and SIMPLE_CAMERA['crop'] != simpleCamera['crop']:
-                    SIMPLE_CAMERA['crop'] = simpleCamera['crop']
-                    print("parseIncomingShadow: updating crop to {}".format(SIMPLE_CAMERA['crop']))
+                        SIMPLE_CAMERA["s3UploadSleepInSecsAsStr"]))
+                if "s3Upload" in simpleCamera and SIMPLE_CAMERA["s3Upload"] != simpleCamera["s3Upload"]:
+                    SIMPLE_CAMERA["s3Upload"] = simpleCamera["s3Upload"]
+                    print("parseIncomingShadow: updating s3Upload to {}".format(SIMPLE_CAMERA["s3Upload"]))
+                if "s3Bucket" in simpleCamera and SIMPLE_CAMERA["s3Bucket"] != simpleCamera["s3Bucket"]:
+                    SIMPLE_CAMERA["s3Bucket"] = simpleCamera["s3Bucket"]
+                    print("parseIncomingShadow: updating s3Bucket to {}".format(SIMPLE_CAMERA["s3Bucket"]))
+                if "s3KeyPrefix" in simpleCamera and SIMPLE_CAMERA["s3KeyPrefix"] != simpleCamera["s3KeyPrefix"]:
+                    SIMPLE_CAMERA["s3KeyPrefix"] = simpleCamera["s3KeyPrefix"]
+                    print("parseIncomingShadow: updating s3KeyPrefix to {}".format(SIMPLE_CAMERA["s3KeyPrefix"]))
+                if "resolution" in simpleCamera and SIMPLE_CAMERA["resolution"] != simpleCamera["resolution"]:
+                    SIMPLE_CAMERA["resolution"] = simpleCamera["resolution"]
+                    print("parseIncomingShadow: updating resolution to {}".format(SIMPLE_CAMERA["resolution"]))
+                if "crop" in simpleCamera and SIMPLE_CAMERA["crop"] != simpleCamera["crop"]:
+                    SIMPLE_CAMERA["crop"] = simpleCamera["crop"]
+                    print("parseIncomingShadow: updating crop to {}".format(SIMPLE_CAMERA["crop"]))
 
-                GGIOT.updateThingShadow(payload={'state': {'reported': {'simpleCamera': SIMPLE_CAMERA}}})
+                GGIOT.updateThingShadow(payload={"state": {"reported": {"simpleCamera": SIMPLE_CAMERA}}})
 
 def parseResolution(strResolution):
-    resolution = strResolution.split('x')
+    resolution = strResolution.split("x")
     resolution[0] = int(resolution[0])
     resolution[1] = int(resolution[1])
     return (resolution[0], resolution[1])
@@ -92,18 +93,21 @@ try:
     GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
     GGIOT.info("Start of lambda function")
-    GGIOT.info('OpenCV '+cv2.__version__)
+    GGIOT.info("OpenCV "+cv2.__version__)
 
     parseIncomingShadow(GGIOT.getThingShadow())
 
-    resolution = parseResolution(SIMPLE_CAMERA['resolution'])
+    resolution = parseResolution(SIMPLE_CAMERA["resolution"])
     frame = 255*np.ones([resolution[0], resolution[1], 3])
-    OUTPUT = FileOutput('/tmp/results.mjpeg', frame, GGIOT)
+    OUTPUT = FileOutput("/tmp/results.mjpeg", frame, GGIOT)
     OUTPUT.start()
 
-    CAMERA = VideoStream(PATH_TO_CAMERA, resolution[0], resolution[1])
-    ret, frame = CAMERA.read()
-    ret, frame = CAMERA.read()
+    CAMERA = VideoStream(camera_type=CAMERA_TYPE, path_to_camera=PATH_TO_CAMERA,
+                         width=resolution[0], height=resolution[1])
+    print("CAMERA: Starting the camera with 2 reads...")
+    print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+    print("CAMERA.read(): {}".format(CAMERA.read()[0]))
+    CAMERA.start()
 
     print("Starting")
 
@@ -114,15 +118,15 @@ except Exception as err:
     time.sleep(1)
 
 def getTimestamp():
-    return '{}'.format(int(round(time.time() * 1000)))
+    return "{}".format(int(round(time.time() * 1000)))
 
 def saveFrameToFile(filename, frame):
-    fullPath = '/tmp/' + filename
+    fullPath = "/tmp/" + filename
     print("saveFrameToFile: Saving frame to {}".format(fullPath))
 
     localWriteReturn = cv2.imwrite(fullPath, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
     if not localWriteReturn:
-        raise Exception('Failed to save frame to file')
+        raise Exception("Failed to save frame to file")
 
     return fullPath
 
@@ -134,23 +138,19 @@ def sendFileToS3(fullPath, filename):
 
     try:
         session = Session()
-        s3 = session.create_client('s3')
+        s3 = session.create_client("s3")
 
-        with open(fullPath, 'rb') as f:
+        with open(fullPath, "rb") as f:
             data = f.read()
 
-        s3Key = SIMPLE_CAMERA['s3KeyPrefix'] + '/' + filename
-        s3.put_object(Bucket=SIMPLE_CAMERA['s3Bucket'], Key=s3Key, Body=data)
+        s3Key = SIMPLE_CAMERA["s3KeyPrefix"] + "/" + filename
+        s3.put_object(Bucket=SIMPLE_CAMERA["s3Bucket"], Key=s3Key, Body=data)
 
         return True, s3Key
 
     except Exception as ex:
         print("Failed to upload to s3: {}".format(ex))
         return False, False
-
-last_update = timeInMillis()
-nbFramesProcessed = 0
-fps = 0
 
 class S3Thread(Thread):
 
@@ -175,46 +175,60 @@ class S3Thread(Thread):
             else:
                 message = "Upload to S3 failed for: {}".format(self.filename)
                 print("S3Thread: {}".format(message))
-                GGIOT.exception('Upload to S3 failed for: {}'.format(self.filename))
+                GGIOT.exception("Upload to S3 failed for: {}".format(self.filename))
         except Exception as err:
             GGIOT.exception(str(err))
             time.sleep(1)
 
+
+FPS = 0
+LAST_UPDATE = timeInMillis()
+NB_FRAMES_PROCESSED = 0
+
 def camera_handler():
 
-    global last_update
-    global fps
-    global nbFramesProcessed
+    global LAST_UPDATE
+    global FPS
+    global NB_FRAMES_PROCESSED
     global SIMPLE_CAMERA
 
-    print('Frame: reading')
+    print("Frame: reading")
     ret, frame = CAMERA.read()
-    print('Frame: read')
     if ret == False:
-        print('Something is wrong, cant read frame')
+        print("Something is wrong, cant read frame")
+        print(frame)
         time.sleep(5)
         return
 
-    frame = cv2.resize(frame, parseResolution(SIMPLE_CAMERA['resolution']))
+    size = parseResolution(SIMPLE_CAMERA["resolution"])
+    crop = parseResolution(SIMPLE_CAMERA["crop"])
+
+    frame = cv2.resize(frame, size)
     font = cv2.FONT_HERSHEY_SIMPLEX
 
-    nbFramesProcessed += 1
+    topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
+    bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
 
-    timeBetweenFrames = timeInMillis() - last_update
-    if timeBetweenFrames > 1000:
-        fps = math.floor(100 * (fps + (1000 * nbFramesProcessed / timeBetweenFrames)) / 2 ) / 100
-        nbFramesProcessed = 0
-        last_update = timeInMillis()
+    cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
 
-    cv2.putText(frame, 'FPS: {}'.format(str(fps)), (5, parseResolution(
-        SIMPLE_CAMERA['resolution'])[1] - 5), font, 0.4, (0, 0, 255), 1)
+    NB_FRAMES_PROCESSED += 1
 
-    if SIMPLE_CAMERA['capture'] == 'On':
+    now = timeInMillis()
+    if now - LAST_UPDATE >= 1000:
+        FPS = 1000 * NB_FRAMES_PROCESSED / (now - LAST_UPDATE)
+        FPS = math.floor(FPS * 10000) / 10000
+        LAST_UPDATE = timeInMillis()
+        NB_FRAMES_PROCESSED = 0
+
+    cv2.rectangle(frame, (0, size[1] - 20), (size[0], size[1]), (0, 0, 0), -1)
+    cv2.putText(frame, "FPS: {}".format(str(FPS)), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
+
+    if SIMPLE_CAMERA["capture"] == "On":
 
         # Create a filename for the given frame to be used through this loop
         timestamp = getTimestamp()
 
-        filename = timestamp + '.jpg'
+        filename = timestamp + ".jpg"
 
         # Save frame to disk
         fullPath = saveFrameToFile(
@@ -223,7 +237,7 @@ def camera_handler():
         )
 
         GGIOT.publish(TOPIC_CAMERA, {
-            "fps": str(fps),
+            "fps": str(FPS),
             "frame": {
                 "size": frame.size,
                 "shape": frame.shape
@@ -231,21 +245,13 @@ def camera_handler():
             "filename": filename
         })
 
-        if SIMPLE_CAMERA['s3Bucket'] != 'Off' and SIMPLE_CAMERA['s3Upload'] == 'On':
+        if SIMPLE_CAMERA["s3Bucket"] != "Off" and SIMPLE_CAMERA["s3Upload"] == "On":
             s3Thread = S3Thread(fullPath, filename)
             s3Thread.start()
-            time.sleep(float(SIMPLE_CAMERA['s3UploadSleepInSecsAsStr']))
+            time.sleep(float(SIMPLE_CAMERA["s3UploadSleepInSecsAsStr"]))
 
-        if SIMPLE_CAMERA['s3Upload'] == 'Off':
-            time.sleep(float(SIMPLE_CAMERA['sleepInSecsAsStr']))
-
-    size = parseResolution(SIMPLE_CAMERA['resolution'])
-    crop = parseResolution(SIMPLE_CAMERA['crop'])
-
-    topleft = ((size[0] - crop[0]) / 2, (size[1] - crop[1]) / 2)
-    bottomright = ((size[0] + crop[0]) / 2, (size[1] + crop[1]) / 2)
-
-    cv2.rectangle(frame, topleft, bottomright, (0, 0, 255), 3)
+        if SIMPLE_CAMERA["s3Upload"] == "Off":
+            time.sleep(float(SIMPLE_CAMERA["sleepInSecsAsStr"]))
 
     OUTPUT.update(frame)
 
@@ -279,101 +285,3 @@ def lambda_handler(event, context):
     parseIncomingShadow(event)
     return
 
-
-
-
-
-
-
-
-
-
-# def main_loop():
-#     try:
-#         last_update = time.time()
-#         results = []
-#         fps = 0
-#         while 42 :
-#             # # in case the belt is stuck in a position with an unsafe lego figure in view,
-#             # # create the file RESUME_COMMAND_FILE_PATH to force resume the belt
-#             # if os.path.exists(RESUME_COMMAND_FILE_PATH):
-#             #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
-
-#             ret, frame = awscam.getLastFrame()
-
-#             inference_size_x = 224
-#             inference_size_y = 224
-
-#             w = inference_size_x * 2
-#             h = inference_size_y * 2
-#             x = 1920 / 2 - w / 2
-#             y = 1080 / 2 - h / 2
-
-#             frame = frame[y:y+h, x:x+w]
-
-#             print(frame)
-
-#             PUB.info('Frame loaded {}, {}'.format(frame.size, frame.shape))
-
-#             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-#             frame = cv2.resize(frame, (inference_size_x, inference_size_y)) # resize
-
-#             PUB.info('Frame resized')
-
-#             try:
-#                 category, probability = model.do(frame)
-#                 results.append(category)
-#                 font = cv2.FONT_HERSHEY_DUPLEX
-#                 title = str(fps) + " - " + category + " - " + str(probability)
-
-#                 PUB.publish(IOT_TOPIC_INFERENCE, {
-#                     "type":  "inference",
-#                     "payload": {
-#                         "probability": str(probability),
-#                         "title": title
-#                     }
-#                 })
-
-#                 if probability > 0.6:
-#                     prob_no_hat = probability
-#                     if category == 'hat':
-#                         prob_no_hat = 1.0 - probability
-#                     elif category == 'nohat':
-#                         probability =  1.0 - probability
-#                     cv2.rectangle(frame, (0, 0), (int(frame.shape[1] * 0.2 * prob_no_hat), 80),
-#                                 (0, 0, 255), -1)
-#                     cv2.rectangle(frame, (0, 90), (int(frame.shape[1] * 0.2 * probability), 170), (0, 255, 0), -1)
-#                     font = cv2.FONT_HERSHEY_SIMPLEX
-#                     cv2.putText(frame, 'Not Safe', (10, 70), font, 1, (225, 225, 225), 8)
-#                     cv2.putText(frame, 'Safe', (10, 160), font, 1, (225, 225, 225), 8)
-
-#                     # if prob_no_hat > 0.8: # definitely not safe
-#                     #     PUB.info('')
-#                     # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_STOP, "speed": BELT_DEFAULT_SPEED } } })
-#                     # elif probability > 0.8: # definitely safe
-#                     #     PUB.info('Frame resized')
-#                     # #     PUB.publish(BELT_IOT_TOPIC_SHADOW_UPDATE, { "state": { "desired": { "mode": BELT_MODE_FORWARD, "speed": BELT_DEFAULT_SPEED } } })
-
-#             except Exception as err:
-#                 PUB.exception(str(err))
-#                 raise err
-
-#             now = time.time()
-#             if now - last_update >= 1:
-#                 last_update = time.time()
-#                 PUB.events(results)
-#                 fps = len(results)
-#                 results = []
-
-#             OUTPUT.update(frame)
-
-#     except Exception as err:
-#         PUB.exception(str(err))
-#         time.sleep(1)
-
-#     Timer(0, main_loop).start()
-
-# OUTPUT.stop()
-# VS.stop()
-
-# main_loop()

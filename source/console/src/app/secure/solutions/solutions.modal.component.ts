@@ -45,7 +45,7 @@ export class SolutionsModalComponent {
                     this.element.solutionBlueprintId
                 )
                 .then(solution => {
-                    console.log(solution);
+                    // console.log(solution);
                     this.submitSubject.next({ data: solution, error: null });
                 })
                 .catch(err => {
