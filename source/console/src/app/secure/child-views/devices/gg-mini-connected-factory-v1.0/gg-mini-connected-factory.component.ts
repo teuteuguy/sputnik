@@ -42,8 +42,8 @@ export class GGMiniConnectedFactoryV10Component extends IoTPubSuberComponent imp
                 onMessage: data => {
                     console.log('Inference:', data.value);
                     // console.log(data.value.payload.fps);
-                    data.value.payload.probability = data.value.payload.probability;
-                    this.latestInference = data.value.payload;
+                    data.value.probability = data.value.probability;
+                    this.latestInference = data.value;
                 },
                 onError: err => {
                     console.error('Error:', err);
