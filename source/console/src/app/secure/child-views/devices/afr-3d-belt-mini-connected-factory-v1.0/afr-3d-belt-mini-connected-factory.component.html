@@ -12,8 +12,8 @@
                                     [class.btn-success]="desired.mode == button.mode && desired.speed == button.speed"
                                     [class.btn-light]="desired.mode != button.mode || desired.speed != button.speed"
                                     [ngStyle]="{
-                                        'border': (reported.mode != desired.mode || reported.speed != desired.speed ) && reported.mode == button.mode && reported.speed == button.speed ? '5px' : '0px',
-                                        'border-color': 'orange', 'border-style': 'solid'
+                                        'border': beltValueFor(reported.mode, reported.speed) == button.value &&
+                                        beltValueFor(reported.mode, reported.speed) != beltValueFor(desired.mode, desired.speed) ? '5px solid orange' : '0px'
                                     }"
                                     (click)="desiredStateChange(button)">{{button.value > 0 ? '+' : ''}}{{button.value
                                     != 0 ? button.value : 'STOP'}}</button>

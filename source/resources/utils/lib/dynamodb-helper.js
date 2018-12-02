@@ -65,6 +65,10 @@ class dynamodbHelper {
         return _listAllFiles([], null).then(files => {
             console.log('Found:', JSON.stringify(files));
 
+            files = files.filter(file => {
+                return file.indexOf('.json') > 0;
+            });
+
             return Promise.all(files.map(file => {
 
                 console.log('Getting:', file);
@@ -82,13 +86,13 @@ class dynamodbHelper {
                         .utc()
                         .format();
 
-                    console.log(file, object);
-
                     const params = {
                         TableName: table,
                         Item: object,
                         ReturnValues: 'ALL_OLD'
                     };
+
+                    console.log(file, object, params);
 
                     return documentClient.put(params).promise();
 
@@ -97,6 +101,9 @@ class dynamodbHelper {
                     return {
                         file: file
                     };
+                }).catch(err => {
+                    console.error('ERROR: failed to write to DB', JSON.stringify(err));
+                    throw err;
                 });
             }));
 

@@ -37,7 +37,7 @@ Parameters:
 
 Resources:
 
-    DEFAULTSGreengrassGroupPolicy:
+    DefaultSGreengrassGroupPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'Policy for the My Things Management Greengrass Role.'
@@ -90,7 +90,7 @@ Resources:
                 -
                     !Ref solutionsGreengrassGroupRole
 
-    DEFAULTSDeviceBlueprints:
+    DefaultSDeviceBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -101,7 +101,7 @@ Resources:
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    DEFAULTSDeviceTypes:
+    DefaultSDeviceTypes:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -112,7 +112,7 @@ Resources:
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    # DEFAULTSSolutionBlueprints:
+    # DefaultSSolutionBlueprints:
     #     Type: 'Custom::LoadLambda'
     #     Properties:
     #         ServiceToken: !Ref customResourceUtilsHelperArn
@@ -215,6 +215,33 @@ Resources:
             FunctionName: !Ref DefaultInferenceCameraLambda
             FunctionVersion: !GetAtt DefaultInferenceCameraLambdaVersion.Version
             Name: 'MTM'
+
+    DefaultModelTrainerLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'model-trainer-python'
+            Description: 'My Things Management Model Trainer for models Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'model-trainer-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt DefaultLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    DefaultModelTrainerLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'DefaultModelTrainerLambda'
+            Description: 'A first version of model-trainer-python'
+    DefaultModelTrainerLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref DefaultModelTrainerLambda
+            FunctionVersion: !GetAtt DefaultModelTrainerLambdaVersion.Version
+            Name: 'MTM'
+
 
     DefaultSqueezenetModel:
         Type: 'Custom::LoadLambda'

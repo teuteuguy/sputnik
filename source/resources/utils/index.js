@@ -131,6 +131,9 @@ exports.handler = (event, context, callback) => {
             case 'iotdata.updateThingShadow':
                 iotHelper.iotdata(event.cmd, event.params).then(result => callback(null, result)).catch(err => callback(err, null));
                 break;
+            case 's3.listObjectsV2':
+                s3Helper.listObjectsV2(event.params).then(result => callback(null, result)).catch(err => callback(err, null));
+                break;
             default:
                 callback('Unknown cmd, unable to resolve for arguments: ' + event, null);
                 break;

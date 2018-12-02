@@ -55,7 +55,7 @@
                     "s3Upload": "Off",
                     "s3Bucket": "[DATA_BUCKET]",
                     "resolution": "858x480",
-                    "crop": "480x480",
+                    "crop": "224x224",
                     "s3KeyPrefix": "gg-ml-boxes-v1.0/[CORE]/default",
                     "categories": ["goodbox", "badbox", "nobox"]
                 }
@@ -107,7 +107,7 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/boxes-v1.0.0-480-3cat.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/boxes-v1.0.0-224-3cat.tar.gz"
                     }
                 }
             }]

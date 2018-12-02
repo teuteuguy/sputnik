@@ -60,6 +60,15 @@ class s3Helper {
         });
     }
 
+    listObjectsV2(params) {
+        const s3 = new AWS.S3({ region: 'us-east-1'});
+
+        console.log('listObjectsV2:', params);
+        return s3.listObjectsV2(params).promise().then(data => {
+            return data;
+        });
+    }
+
 }
 
 module.exports = s3Helper;

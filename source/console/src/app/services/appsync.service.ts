@@ -33,6 +33,7 @@ import listDeviceBlueprints from '../graphql/queries/device-blueprints.list';
 import listDeviceTypes from '../graphql/queries/device-types.list';
 import listSolutions from '../graphql/queries/solutions.list';
 import listSolutionBlueprints from '../graphql/queries/solution-blueprints.list';
+import s3ListObjectsV2 from '../graphql/queries/s3.list-objects-v2';
 // Mutations
 import addDeployment from '../graphql/mutations/deployment.add';
 import addDevice from '../graphql/mutations/device.add';
@@ -584,5 +585,12 @@ export class AppSyncService {
                 );
             }
         });
+    }
+
+    // Utils
+    public s3ListObjectsV2(params) {
+        return this.query(s3ListObjectsV2, {
+            params: JSON.stringify(params)
+        }).then(r => r.data.s3ListObjectsV2);
     }
 }

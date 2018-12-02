@@ -20,6 +20,10 @@ Amplify.configure({
         aws_appsync_graphqlEndpoint: appVariables.APP_SYNC_GRAPHQL_ENDPOINT,
         aws_appsync_region: appVariables.REGION,
         aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS'
+    },
+    Storage: {
+        bucket: appVariables.S3_DATA_BUCKET,
+        region: appVariables.REGION
     }
     // API: {
     //     graphql_endpoint: appVariables.APP_SYNC_GRAPHQL_ENDPOINT,

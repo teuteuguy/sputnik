@@ -179,7 +179,7 @@ Resources:
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
             destS3Bucket: !Ref dataS3Bucket
-            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'boxes-v1.0.0-480-3cat.tar.gz']]
-            destS3Key: !Join ['/', ['mini-connected-factory', 'models', 'boxes-v1.0.0-480-3cat.tar.gz']]
+            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'boxes-v1.0.0-224-3cat.tar.gz']]
+            destS3Key: !Join ['/', ['mini-connected-factory', 'models', 'boxes-v1.0.0-224-3cat.tar.gz']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'

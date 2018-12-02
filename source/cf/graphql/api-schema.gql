@@ -113,6 +113,16 @@ type ThingShadowResponse {
     payload: String
 }
 
+type S3Keys {
+    Key: String
+}
+type S3ListObjectsResponse {
+    Contents: [S3Keys]
+    KeyCount: Int
+    NextContinuationToken: String
+    IsTruncated: Boolean
+}
+
 type Query {
     listDevices(limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
     listDevicesOfDeviceType(deviceTypeId: String!, limit: Int, nextToken: String): PaginatedDevices @aws_auth(cognito_groups: ["Administrators", "Members"])
@@ -141,6 +151,8 @@ type Query {
 
     describeEndpoint(endpointType: String): String @aws_auth(cognito_groups: ["Administrators", "Members"])
     getThingShadow(params: AWSJSON!): ThingShadowResponse @aws_auth(cognito_groups: ["Administrators", "Members"])
+
+    s3ListObjectsV2(params: AWSJSON!): S3ListObjectsResponse @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
     addDevice(thingName: String!, spec: AWSJSON, generateCert: Boolean!, deviceTypeId: String!, deviceBlueprintId: String!): Device! @aws_auth(cognito_groups: ["Administrators"])

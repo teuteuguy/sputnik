@@ -59,7 +59,6 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
     }
 
     ngOnInit() {
-
         function defaultErrorCallback(err) {
             console.error('Error:', err);
         }
@@ -68,7 +67,10 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             {
                 topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
                 onMessage: data => {
-                    this.updateIncomingShadow(data.value);
+                    this.ngZone.run(() => {
+                        console.log(data.value.state.reported);
+                        this.updateIncomingShadow(data.value);
+                    });
                 },
                 onError: defaultErrorCallback
             },
@@ -90,13 +92,14 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
                 topic: 'mtm/' + this.device.thingName + '/sensors/proximity',
                 onMessage: data => {
                     this.sensors.proximity = data.value;
+                    console.log(this.sensors.proximity);
                 },
                 onError: defaultErrorCallback
             }
         ]);
 
         this.getLastState(this.device.thingName).then(data => {
-            console.log('getLastState:', data);
+            // console.log('getLastState:', data);
         });
     }
 
@@ -117,9 +120,9 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             })
             .then(result => {
                 this.getLastState(this.device.thingName).then(data => {
-                    this.ngZone.run(() => {
-                        console.log('getLastState here:', data);
-                    });
+                    // this.ngZone.run(() => {
+                    //     // console.log('getLastState here:', data);
+                    // });
                 });
                 // this.getLastState();
                 // console.log('updateThingShadow:', result);
@@ -137,5 +140,19 @@ export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberCompon
             .catch(err => {
                 console.error(err);
             });
+    }
+
+    beltValueFor(mode, speed) {
+        if (mode === 1 && speed === 2) {
+            return -2;
+        } else if (mode === 1 && speed === 1) {
+            return -1;
+        } else if (mode === 2) {
+            return 0;
+        } else if (mode === 3 && speed === 1) {
+            return 1;
+        } else if (mode === 3 && speed === 2) {
+            return 2;
+        }
     }
 }

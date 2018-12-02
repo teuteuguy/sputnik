@@ -68,8 +68,9 @@ class Infer:
 
     def do(self, original):
 
+        frame_resize = cv2.resize(original, (self.height, self.width))
+
         if self.model_type == "optimized":
-            frame_resize = cv2.resize(original, (self.height, self.width))
             inference_results = self.model.doInference(frame_resize)
             parsed_inference_results = self.model.parseResult("classification", inference_results)
             # print("parsed_inference_results: {}".format(parsed_inference_results))
@@ -84,7 +85,13 @@ class Infer:
             return cloud_output
 
         if self.model_type == "non_optimized":
-            self.mod.forward(self.Batch([original]))
+            # frame_resize = cv2.cvtColor(frame_resize, cv2.COLOR_BGR2RGB)
+            frame_resize = np.swapaxes(frame_resize, 0, 2)
+            frame_resize = np.swapaxes(frame_resize, 1, 2)
+            frame_resize = frame_resize[np.newaxis, :]
+            # print(frame_resize)
+            self.mod.forward(self.Batch([mx.nd.array(frame_resize)]))
+            # self.mod.forward(self.Batch([original]))
             prob = self.mod.get_outputs()[0].asnumpy()
             prob = np.squeeze(prob)
             cloud_output = {}

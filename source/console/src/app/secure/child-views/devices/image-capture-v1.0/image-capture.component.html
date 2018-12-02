@@ -7,17 +7,17 @@
                     <span class="float-right" *ngIf="latestData">{{ latestData.fps }}fps</span>
                 </h6>
                 <div class="card-text">
-                    <div class="form-check" *ngIf="desired">
-                        <div>
+                    <div class="row" *ngIf="desired">
+                        <div class="col-6">
                             <input type="checkbox" id="capture" style="padding-left: 18px;" [checked]="desired.capture == 'On'"
-                                (change)="desiredStateChange($event.target.id)">
+                                (click)="desiredStateChange($event)">
                             <label class="form-check-label" for="capture" style="padding-left: 25px;">Capture images ?
                                 <small>(reported: {{ reported.capture }})</small></label>
                         </div>
-                        <div>
+                        <div class="col-6">
                             <input type="checkbox" id="s3Upload" style="padding-left: 18px;" [checked]="desired.s3Upload == 'On'"
-                                (change)="desiredStateChange($event.target.id)">
-                            <label class="form-check-label" for="capture" style="padding-left: 25px;">Upload Images to
+                                (click)="desiredStateChange($event)">
+                            <label class="form-check-label" for="s3Upload" style="padding-left: 25px;">Upload Images to
                                 S3 ?
                                 <small>(reported: {{ reported.s3Upload }})</small></label>
                         </div>

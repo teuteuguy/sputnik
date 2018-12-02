@@ -70,6 +70,7 @@ class MainThread(Thread):
 
             except Exception as ex:
                 print("ERROR: {}".format(str(ex)))
+                time.sleep(1)
 
     def join(self):
         self.stop_request.set()
@@ -82,7 +83,10 @@ mainThread.start()
 
 
 ''' Init '''
-BELT.parseIncomingShadow(GGIOT.getThingShadow())
+try:
+    BELT.parseIncomingShadow(GGIOT.getThingShadow())
+except Exception as ex:
+    print("ERROR: {}".format(str(ex)))
 
 ''' Function Handler '''
 def lambda_handler(event, context):

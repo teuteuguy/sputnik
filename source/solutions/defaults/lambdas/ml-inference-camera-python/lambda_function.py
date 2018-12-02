@@ -1,10 +1,11 @@
-import os
+import os, sys
 import numpy as np  # pylint: disable=import-error
 import cv2  # pylint: disable=import-error
 import mxnet as mx  # pylint: disable=import-error
 import time
 from threading import Event, Thread, Timer, Lock
 import math
+import json
 
 # import awscam
 from file_output import FileOutput
@@ -184,7 +185,7 @@ def camera_handler():
     try:
 
         result = MODEL.do(inference_frame)
-        print("Inference result: {}".format(result))
+        print("Inference result: {}".format(json.dumps(result)))
 
         NB_FRAMES_PROCESSED += 1
 
@@ -208,7 +209,7 @@ def camera_handler():
         })
 
         cv2.rectangle(frame, (0, size[1] - 20), (size[0], size[1]), (0, 0, 0), -1)
-        cv2.putText(frame, "FPS: {} {}".format(str(FPS), result), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
+        cv2.putText(frame, "FPS: {} {}".format(str(FPS), json.dumps(result)), (5, size[1] - 5), font, 0.4, (0, 255, 0), 1)
 
         if INFERENCE_CAMERA["capture"] == "On":
             filename = SAVE_FRAMES.getTimestampFilename()
@@ -218,6 +219,9 @@ def camera_handler():
             )
 
     except Exception as err:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
         GGIOT.exception(str(err))
         raise err
 
@@ -264,10 +268,10 @@ def lambda_handler(event, context):
         topic = context.client_context.custom["subject"]
         print("Topic: {}".format(topic))
         if topic == TOPIC_SHADOW_ACCEPTED:
-            print("Shadow topic")
+            print("lambda_handler: {}: Shadow topic".format(topic))
             parseIncomingShadow(event)
         else:
-            print("Some other topic")
+            print("lambda_handler: {}: Some other topic".format(topic))
             camera_handler()
     except Exception as err:
         print("ERROR in the context: {}".format(str(err)))

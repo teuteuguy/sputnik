@@ -58,8 +58,6 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         private solutionBlueprintService: SolutionBlueprintService
     ) {
         const _self = this;
-
-        _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
         _self.isAdminUser = false;
         _self.loadedProfile = false;
     }
@@ -67,16 +65,7 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     ngOnInit() {
         const _self = this;
 
-        const _deviceStats = { total: 0, connected: 0, disconnected: 0 };
-        _self.localStorage.setItem('deviceStats', _deviceStats).subscribe(() => { });
-
-        _self.statService.statObservable$.subscribe((message: Stats) => {
-            _self.deviceStats = message.deviceStats;
-            _self.solutionStats = message.solutionStats;
-            _self._ngZone.run(() => { });
-        });
-        _self.statService.refresh();
-
+        _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             if (profile) {
                 _self.logger.info('SecureHomeComponent.constructor: profile exists, issuing no request profile');
@@ -84,10 +73,18 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
                 _self.isAdminUser = _self.profile.isAdmin();
                 _self.userService.isAuthenticated(_self, false);
                 _self.iotService.connect();
+
+                _self.localStorage.setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 }).subscribe(() => { });
+                _self.statService.statObservable$.subscribe((message: Stats) => {
+                    _self.deviceStats = message.deviceStats;
+                    _self.solutionStats = message.solutionStats;
+                    _self._ngZone.run(() => {});
+                });
+                _self.statService.refresh();
             } else {
                 _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
-                _self.loadedProfile = true;
-                _self.userService.isAuthenticated(_self, true);
+            //     _self.loadedProfile = true;
+            //     _self.userService.isAuthenticated(_self, true);
             }
         });
 
@@ -98,8 +95,7 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
             _self._ngZone.run(() => { });
         });
 
-        _self.prepUI();
-        // this.iotService.connect();
+        // _self.prepUI();
     }
 
     prepUI() {
@@ -201,6 +197,7 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     }
 
     isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
+        console.log('isLoggedIn', message, isLoggedIn, profile);
         if (!isLoggedIn) {
             this.router.navigate(['/home/login']);
         } else {

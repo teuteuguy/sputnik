@@ -75,6 +75,7 @@ Resources:
                             # TODO BE MORE RESTRICTIVE
                             - "s3:*"
                         Resource:
+                            - !Ref dataBucketArn
                             - !Join ["/", [!Ref dataBucketArn, "*"]]
             Roles:
                 - !Ref identityPoolAuthRole

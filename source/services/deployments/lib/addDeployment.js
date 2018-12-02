@@ -106,8 +106,8 @@ module.exports = function (event, context) {
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
 
-        console.log('Deal with actions');
-        _newSpec.afterActions = [...(_device.spec.afterActions || []), ...(_deviceType.spec.afterActions || []), ...(_deviceBlueprint.spec.afterActions || [])];
+        // console.log('Deal with actions');
+        // _newSpec.afterActions = [...(_device.spec.afterActions || []), ...(_deviceType.spec.afterActions || []), ...(_deviceBlueprint.spec.afterActions || [])];
 
         console.log('Going to substitute in the spec');
         // Construct the spec:
@@ -332,12 +332,16 @@ module.exports = function (event, context) {
                 const iotdata = new AWS.IotData({
                     endpoint: endpoint.endpointAddress
                 });
-                return iotdata.updateThingShadow({
-                    thingName: _device.thingName,
-                    payload: JSON.stringify({
-                        state: _newShadow
-                    })
-                }).promise();
+                return iotdata.deleteThingShadow({
+                    thingName: _device.thingName
+                }).promise().then(result => {
+                    return iotdata.updateThingShadow({
+                        thingName: _device.thingName,
+                        payload: JSON.stringify({
+                            state: _newShadow
+                        })
+                    }).promise();
+                });
             }).then(result => {
                 console.log('Updated shadow per spec:', _newShadow);
                 return _savedDeployment;

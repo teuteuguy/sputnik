@@ -1,0 +1,99 @@
+{
+    "id": "model-trainer-v1.0",
+    "name": "Model Trainer v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["deeplens-v1.0", "deeplens-no-lambda-v1.0", "intel-up2-webcam-v0.1"],
+    "deviceTypeMappings": [{
+        "substitute": "CAM_STREAM_ID",
+        "value": {
+            "deeplens-no-lambda-v1.0": "stream",
+            "deeplens-v1.0": "stream",
+            "intel-up2-webcam-v0.1": "video0"
+        }
+    }, {
+        "substitute": "CAM_STREAM_PERMISSIONS",
+        "value": {
+            "deeplens-no-lambda-v1.0": "ro",
+            "deeplens-v1.0": "ro",
+            "intel-up2-webcam-v0.1": "rw"
+        }
+    }, {
+        "substitute": "CAMERA_TYPE",
+        "value": {
+            "deeplens-no-lambda-v1.0": "awscam",
+            "deeplens-v1.0": "awscam",
+            "intel-up2-webcam-v0.1": "video0"
+        }
+    }, {
+        "substitute": "PATH_TO_CAMERA",
+        "value": {
+            "deeplens-no-lambda-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
+            "deeplens-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
+            "intel-up2-webcam-v0.1": "/dev/video0"
+        }
+    }, {
+        "substitute": "GPU",
+        "value": {
+            "deeplens-no-lambda-v1.0": "gpu",
+            "deeplens-v1.0": "gpu",
+            "intel-up2-webcam-v0.1": "gpu"
+        }
+    }],
+    "spec": {
+        "Shadow": {
+            "desired": {
+                "modelTrainer": {
+                    "capture": "Off",
+                    "categories": ["cat1", "cat2"],
+                    "s3Upload": "Off",
+                    "s3Bucket": "[DATA_BUCKET]",
+                    "resolution": "858x480",
+                    "crop": "224x224",
+                    "s3KeyPrefix": "model-trainer-v1.0/[CORE]/rawdata"
+                }
+            }
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:model-trainer-python:MTM",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": false,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "tmp"
+                            },
+                            {
+                                "Permission": "[CAM_STREAM_PERMISSIONS]",
+                                "ResourceId": "[CAM_STREAM_ID]"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "[GPU]"
+                            }
+                        ],
+                        "Variables": {
+                            "CAMERA_TYPE": "[CAMERA_TYPE]",
+                            "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
+                        }
+                    },
+                    "MemorySize": 2097152,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:model-trainer-python:MTM",
+                "Target": "cloud",
+                "Subject": "mtm/[CORE]/+"
+            }, {
+                "Source": "GGShadowService",
+                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:model-trainer-python:MTM",
+                "Subject": "$aws/things/[CORE]/shadow/update/accepted"
+            }]
+        }
+    }
+}

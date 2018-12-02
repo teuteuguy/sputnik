@@ -67,9 +67,10 @@ Resources:
                         Effect: 'Allow'
                         Action:
                             - 's3:GetObject'
-                            - 's3:ListObjectsV2'
+                            - 's3:ListBucket'
                         Resource:
                             - 'arn:aws:s3:::*'
+                            - 'arn:aws:s3:::*/*'
                     -
                         Effect: 'Allow'
                         Action:

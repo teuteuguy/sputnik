@@ -36,6 +36,13 @@ cd $1/solutions/defaults/lambdas/ml-inference-camera-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
+echo
+echo "[Build] Solution - defaults - model-trainer-python"
+echo
+cd $1/solutions/defaults/lambdas/model-trainer-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
 # echo
 # echo "[Build] Solution - mini-connected-factory - mini-connected-factory-camera-python"
 # echo

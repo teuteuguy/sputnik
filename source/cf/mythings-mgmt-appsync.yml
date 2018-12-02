@@ -811,6 +811,16 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-iotdata-get-thing-shadow.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverQueryS3ListObjectsV2:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: s3ListObjectsV2
+            DataSourceName: !GetAtt appSyncDataSourceUtilsLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'utils', 'utils-request-mapping-template-s3-list-objects-v2.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
 
 
     # RESOLVERS - MUTATIONS - Utils

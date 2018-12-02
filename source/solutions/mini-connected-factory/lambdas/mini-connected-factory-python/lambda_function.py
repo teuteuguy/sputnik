@@ -11,6 +11,7 @@ THING_NAME_BELT = "{}".format(os.environ["THING_NAME_BELT"])
 
 INPUT_TOPIC_BELT_PROXIMITY = "{}/{}/sensors/proximity".format(PREFIX, THING_NAME_BELT)
 INPUT_TOPIC_CAMERA_INFERENCE = "{}/{}/inference".format(PREFIX, THING_NAME_CAMERA)
+INPUT_TOPIC_CAMERA_SHADOW = "$aws/things/{}/shadow/update/accepted".format(THING_NAME_BELT)
 
 OUTPUT_TOPIC_BELT_SHADOW = "{}/{}/shadow/update".format(PREFIX, THING_NAME_BELT)
 OUTPUT_TOPIC_CAMERA_TRIGGER = "make/inference"
@@ -87,5 +88,8 @@ def lambda_handler(event, context):
 
         if event["results"][category] > threshold:
             turnBeltOn()
+
+    # if topic == INPUT_TOPIC_CAMERA_SHADOW and "state" in event and "desired" in event["state"] and "inferenceDecision" in event["state"]["desired"]:
+
 
     return
