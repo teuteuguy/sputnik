@@ -66,32 +66,10 @@ import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/s
 
 // Pipes
 import { AppPipesModule } from './pipes/pipes.module';
-// import { FromNowPipe, MomentPipe } from './pipes/moment.pipe';
-// import { StringifyPipe } from './pipes/stringify.pipe';
-// import { DeviceBlueprintNameFromIdPipe } from './pipes/device-blueprint-name-from-id.pipe';
-// import { DeviceTypeNameFromIdPipe } from './pipes/device-type-name-from-id.pipe';
-// import { SolutionBlueprintFromSolutionBlueprintIdPipe } from './pipes/solution-blueprint-from-solution-blueprint-id.pipe';
 
 // Services
+import { AppServicesModule } from './services/services.module';
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
-import { BreadCrumbService } from './services/bread-crumb.service';
-import { AppSyncService } from './services/appsync.service';
-import { IOTService } from './services/iot.service';
-import { UserLoginService } from './services/user-login.service';
-import { UserRegistrationService } from './services/user-registration.service';
-import { SettingService } from './services/setting.service';
-import { FactoryResetService } from './services/factoryreset.service';
-import { DeviceService } from './services/device.service';
-import { DeviceTypeService } from './services/device-type.service';
-import { StatService } from './services/stat.service';
-import { DeviceBlueprintService } from './services/device-blueprint.service';
-import { DeploymentService } from './services/deployment.service';
-import { SolutionService } from './services/solution.service';
-import { SolutionBlueprintService } from './services/solution-blueprint.service';
-// import { AdminService } from './services/admin.service';
-// import { StatsService } from './services/stats.service';
-// import { MQTTService } from './services/mqtt.service';
-// import { DeviceSubViewComponentService } from './services/device-sub-view-component.service';
 
 // Common Modules
 import { GaugeModule } from './common/modules/gauge/gauge.module';
@@ -140,7 +118,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         SolutionBlueprintsComponent,
         MapsComponent,
 
-
         // Sub Components
         DeviceBlueprintsModalComponent,
         DeviceTypesModalComponent,
@@ -148,15 +125,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent
 
-        // Directives
-
-        // Pipes
-        // MomentPipe,
-        // FromNowPipe,
-        // StringifyPipe,
-        // DeviceBlueprintNameFromIdPipe,
-        // DeviceTypeNameFromIdPipe,
-        // SolutionBlueprintFromSolutionBlueprintIdPipe
     ],
     imports: [
         BrowserModule,
@@ -170,7 +138,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         ChildViewsModule,
         GaugeModule,
 
-        AmplifyAngularModule,
         BlockUIModule.forRoot(),
         SweetAlert2Module
             .forRoot
@@ -182,31 +149,15 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
             // }
             (),
 
-        // // Pipes
-        AppPipesModule
+        // Pipes
+        AppPipesModule,
+
+        // Services
+        AppServicesModule
+
         // .forRoot()
     ],
     providers: [
-        AmplifyService,
-
-        BreadCrumbService,
-
-        UserRegistrationService,
-        UserLoginService,
-
-        AppSyncService,
-        IOTService,
-
-        SettingService,
-        FactoryResetService,
-        StatService,
-        DeviceService,
-        DeviceTypeService,
-        DeviceBlueprintService,
-        DeploymentService,
-        SolutionService,
-        SolutionBlueprintService,
-
         { provide: LoggerService, useClass: ConsoleLoggerService }
     ],
     bootstrap: [AppComponent],

@@ -29,7 +29,6 @@ import { _ } from 'underscore';
     templateUrl: './secure-home-common.component.html'
 })
 export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
-
     public profile: ProfileInfo = null;
     public isAdminUser = false;
     private loadedProfile = false;
@@ -45,12 +44,12 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     constructor(
         public router: Router,
         public route: ActivatedRoute,
-        public userService: UserLoginService,
-        private statService: StatService,
-        private _ngZone: NgZone,
-        protected localStorage: LocalStorage,
         private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
+        protected localStorage: LocalStorage,
+        public userService: UserLoginService,
+        private statService: StatService,
+        private ngZone: NgZone,
         private iotService: IOTService,
         // Here we load cached services for rest of app
         private deviceTypeService: DeviceTypeService,
@@ -65,37 +64,31 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     ngOnInit() {
         const _self = this;
 
-        _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
-            if (profile) {
-                _self.logger.info('SecureHomeComponent.constructor: profile exists, issuing no request profile');
-                _self.profile = new ProfileInfo(profile);
-                _self.isAdminUser = _self.profile.isAdmin();
-                _self.userService.isAuthenticated(_self, false);
-                _self.iotService.connect();
-
-                _self.localStorage.setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 }).subscribe(() => { });
-                _self.statService.statObservable$.subscribe((message: Stats) => {
-                    _self.deviceStats = message.deviceStats;
-                    _self.solutionStats = message.solutionStats;
-                    _self._ngZone.run(() => {});
-                });
-                _self.statService.refresh();
-            } else {
-                _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
-            //     _self.loadedProfile = true;
-            //     _self.userService.isAuthenticated(_self, true);
-            }
-        });
-
         _self.breadCrumbService.pageTitleObservable$.subscribe(title => (_self.title = title));
         _self.breadCrumbService.crumbObservable$.subscribe(crumbs => {
             _self.crumbs.splice(0, _self.crumbs.length);
             _self.crumbs.push(...crumbs);
-            _self._ngZone.run(() => { });
+            _self.ngZone.run(() => { });
         });
 
-        // _self.prepUI();
+        _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            if (profile) {
+                _self.logger.info('SecureHomeComponent.constructor: profile:', profile);
+                _self.logger.info(
+                    'SecureHomeComponent.constructor: profile exists, no need to request it. Check if authenticated though.'
+                );
+                _self.profile = new ProfileInfo(profile);
+                _self.isAdminUser = _self.profile.isAdmin();
+                _self.userService.isAuthenticated(_self, false);
+            } else {
+                _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
+                _self.loadedProfile = true;
+                _self.userService.isAuthenticated(_self, true);
+            }
+        });
+
+        _self.prepUI();
     }
 
     prepUI() {
@@ -197,15 +190,30 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
     }
 
     isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
-        console.log('isLoggedIn', message, isLoggedIn, profile);
+        const _self = this;
+        _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn, profile);
+
         if (!isLoggedIn) {
-            this.router.navigate(['/home/login']);
+            _self.router.navigate(['/home/login']);
         } else {
-            if (this.loadedProfile) {
-                this.localStorage.setItem('profile', profile).subscribe(() => {});
-                this.profile = profile;
-                this.isAdminUser = this.profile.isAdmin();
+            if (_self.loadedProfile) {
+                _self.localStorage.setItem('profile', profile).subscribe(() => {});
+                _self.profile = profile;
+                _self.isAdminUser = _self.profile.isAdmin();
+
+                _self.iotService.connect();
+
+                _self.localStorage
+                    .setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 })
+                    .subscribe(() => {});
+                _self.statService.statObservable$.subscribe((msg: Stats) => {
+                    _self.deviceStats = msg.deviceStats;
+                    _self.solutionStats = msg.solutionStats;
+                    _self.ngZone.run(() => {});
+                });
+                _self.statService.refresh();
             }
         }
     }
+
 }

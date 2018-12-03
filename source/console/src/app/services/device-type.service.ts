@@ -83,28 +83,31 @@ export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, De
     }
 
     onAddedDeviceType(deviceType: DeviceType) {
-        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+        const _self = this;
+        const index = _.findIndex(_self.deviceTypes, (d: DeviceType) => {
             return d.id === deviceType.id;
         });
         if (index === -1) {
-            this.deviceTypes.push(deviceType);
-            this.observable.next(this.deviceTypes);
+            _self.deviceTypes.push(deviceType);
+            _self.observable.next(_self.deviceTypes);
         } else {
-            this.onUpdatedDeviceType(deviceType);
+            _self.onUpdatedDeviceType(deviceType);
         }
     }
     onUpdatedDeviceType(deviceType: DeviceType) {
-        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+        const _self = this;
+        const index = _.findIndex(_self.deviceTypes, (d: DeviceType) => {
             return d.id === deviceType.id;
         });
-        this.deviceTypes[index] = deviceType;
-        this.observable.next(this.deviceTypes);
+        _self.deviceTypes[index] = deviceType;
+        _self.observable.next(_self.deviceTypes);
     }
     onDeletedDeviceType(deviceType: DeviceType) {
-        const index = _.findIndex(this.deviceTypes, (d: DeviceType) => {
+        const _self = this;
+        const index = _.findIndex(_self.deviceTypes, (d: DeviceType) => {
             return d.id === deviceType.id;
         });
-        this.deviceTypes.splice(index, 1);
-        this.observable.next(this.deviceTypes);
+        _self.deviceTypes.splice(index, 1);
+        _self.observable.next(_self.deviceTypes);
     }
 }

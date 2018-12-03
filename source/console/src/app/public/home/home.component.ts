@@ -11,11 +11,11 @@ export class HomeComponent implements OnInit {
     @BlockUI() blockUI: NgBlockUI;
 
     constructor(private logger: LoggerService) {
-        this.logger.info('HomeComponent.constructor');
+        // this.logger.info('HomeComponent.constructor');
     }
 
     ngOnInit() {
-        this.logger.info('HomeComponent.ngOnInit');
+        // this.logger.info('HomeComponent.ngOnInit');
         this.blockUI.stop();
     }
 }

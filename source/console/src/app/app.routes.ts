@@ -74,39 +74,25 @@ const secureHomeRoutes: Routes = [
         path: 'securehome',
         component: SecureHomeCommonComponent,
         children: [
+            { path: '', component: SecureHomeComponent },
             { path: 'logout', component: LogoutComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'settings', component: SettingsComponent },
             { path: 'device-types', component: DeviceTypesComponent },
-            // { path: 'device-types/:deviceTypeId', component: DeviceTypeComponent },
             { path: 'device-blueprints', component: DeviceBlueprintsComponent },
-            // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
             { path: 'deployments', component: DeploymentsComponent },
             { path: 'solutions', component: SolutionsComponent },
             { path: 'solutions/:solutionId', component: SolutionComponent },
             { path: 'solution-blueprints', component: SolutionBlueprintsComponent },
-            { path: 'maps', component: MapsComponent },
+            { path: 'maps', component: MapsComponent }
+            // { path: 'device-types/:deviceTypeId', component: DeviceTypeComponent },
+            // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
             // { path: 'solution-blueprints/:solutionBlueprintId', component: SolutionBlueprintsComponent },
-            { path: '', component: SecureHomeComponent }
         ]
     }
 ];
-
-// const routes: Routes = [
-//     {
-//         path: '',
-//         children: [
-//             ...homeRoutes,
-//             ...secureHomeRoutes,
-//             {
-//                 path: '',
-//                 component: HomeComponent
-//             }
-//         ]
-//     }
-// ];
 
 const routes: Routes = [
     ...homeRoutes,
@@ -119,4 +105,3 @@ const routes: Routes = [
     exports: [ RouterModule ]
 })
 export class AppRoutingModule {}
-// export const Router: ModuleWithProviders = RouterModule.forRoot(routes);

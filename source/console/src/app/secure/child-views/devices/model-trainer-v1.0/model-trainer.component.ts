@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, NgZone } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 // AWS
 import { AmplifyService } from 'aws-amplify-angular';
@@ -14,7 +14,11 @@ import { Device } from 'src/app/models/device.model';
 // Services
 import { AppSyncService } from 'src/app/services/appsync.service';
 import { IOTService } from 'src/app/services/iot.service';
-import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
+import { LoggerService } from 'src/app/services/logger.service';
+import { S3Service } from 'src/app/services/s3/s3.service';
+// import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
+
+const NAME = 'model-trainer-v1.0';
 
 @Component({
     selector: 'app-model-trainer-v1-0',
@@ -24,29 +28,31 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
     @Input()
     device: Device = new Device();
 
+    private s3 = null;
     private shadowField = 'modelTrainer';
 
-    latestData: any = null;
-
     public imgUrl = '';
-    private s3 = null;
+    public latestData: any = null;
     public list: any = [];
 
     constructor(
-        private iotService: IOTService,
         private amplifyService: AmplifyService,
-        private ngZone: NgZone,
-        private appSyncService: AppSyncService
+        private appSyncService: AppSyncService,
+        private iotService: IOTService,
+        private logger: LoggerService,
+        private s3Service: S3Service
     ) {
         super(iotService);
     }
 
     ngOnInit() {
-        this.amplifyService
+        const _self = this;
+
+        _self.amplifyService
             .auth()
             .currentCredentials()
             .then(creds => {
-                this.s3 = new AWS.S3({
+                _self.s3 = new AWS.S3({
                     accessKeyId: creds.accessKeyId,
                     secretAccessKey: creds.secretAccessKey,
                     sessionToken: creds.sessionToken,
@@ -54,158 +60,136 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
                 });
             })
             .catch(err => {
-                console.error(err);
+                _self.logger.error(err);
             });
 
-        // const s3Key = 'model-trainer-v1.0/AMCF1_bESA7A-Ywh/rawdata/nolego/1543434194624.jpg';
-        // this.amplifyService
-        //     .auth()
-        //     .currentCredentials()
-        //     .then(creds => {
-        //         // const config = new AWS.Config(creds.data.Credentials);
-        //         const s3 = new AWS.S3({
-        //             accessKeyId: creds.accessKeyId,
-        //             secretAccessKey: creds.secretAccessKey,
-        //             sessionToken: creds.sessionToken,
-        //             region: appVariables.REGION
-        //         });
-        //         const params = { Bucket: appVariables.S3_DATA_BUCKET, Key: s3Key };
-        //         console.log(params);
-        //         const signedURL = s3.getSignedUrl('getObject', params);
-        //         this.imgUrl = signedURL;
-        //     // //     console.log(signedURL);
-        //     // //     return s3.getObject(params).promise();
-        //     // // })
-        //     // // .then(result => {
-        //     //     console.log(result);
-        //     })
-        //     .catch(err => {
-        //         console.error(err);
-        //     });
-        this.subscribe([
+        _self.subscribe([
             {
-                topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
+                topic: '$aws/things/' + _self.device.thingName + '/shadow/update/accepted',
                 onMessage: data => {
-                    this.updateIncomingShadow(data.value, this.shadowField);
+                    _self.updateIncomingShadow(data.value, _self.shadowField);
                 },
                 onError: err => {
-                    console.error('Error:', err);
+                    _self.logger.error(err);
                 }
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/camera',
+                topic: 'mtm/' + _self.device.thingName + '/camera',
                 onMessage: data => {
-                    this.latestData = data.value;
-                    // if (this.latestData.hasOwnProperty('s3Key')) {
-                    //     this.imgUrl = t
-                    // }
+                    _self.latestData = data.value;
                 },
                 onError: err => {
-                    console.error('Error:', err);
+                    _self.logger.error(err);
                 }
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/logger',
+                topic: 'mtm/' + _self.device.thingName + '/logger',
                 onMessage: data => {
-                    // console.log('Logger:', data.value);
                     if (data.value.hasOwnProperty('type') && data.value.type === 'info') {
-                        console.log('INFO:', data.value.payload);
+                        _self.logger.info('INFO:', data.value.payload);
                     }
                     if (data.value.hasOwnProperty('type') && data.value.type === 'exception') {
-                        console.error('EXCEPTION:', data.value.payload);
+                        _self.logger.warn('EXCEPTION:', data.value.payload);
                     }
                 },
                 onError: err => {
-                    console.error('Error:', err);
+                    _self.logger.error(err);
                 }
             }
         ]);
 
-        this.getLastState(this.device.thingName, this.shadowField);
+        _self.getLastState(_self.device.thingName, _self.shadowField);
     }
 
-    desiredStateChange(field) {
-        if (field === 's3Upload') {
-            this.update({ s3Upload: this.desired.s3Upload === 'On' ? 'Off' : 'On' });
-        }
-    }
-
-    private update(desired) {
-        const payload = {
-            state: {
-                desired: {}
-            }
-        };
-        payload.state.desired[this.shadowField] = desired;
-        // console.log(payload);
-        this.iotService
-            .updateThingShadow({ thingName: this.device.thingName, payload: JSON.stringify(payload) })
+    private updateDesiredModelTrainer(desired) {
+        const state = {};
+        state[this.shadowField] = desired;
+        this.updateDesiredShadow(this.device.thingName, state)
             .then(result => {
-                // console.log(result);
-                return result;
+                this.logger.info('updateDesiredModelTrainer:', result);
             })
             .catch(err => {
-                console.error(err);
+                this.logger.error('ERROR: updateDesiredModelTrainer:', err);
             });
     }
 
-    remove(category) {
-        const categories = this.desired.categories.slice();
-        categories.splice(categories.indexOf(category), 1);
-        this.update({ categories: categories });
-    }
-
-    capture(category) {
-        const capture = this.desired.capture === 'Off' ? category : 'Off';
-        this.update({ capture: capture });
-    }
-
-    addCategory(category) {
-        if (category !== '' && this.desired.categories.indexOf(category) === -1) {
+    public modifyState(cmd, param = null) {
+        if (cmd === 's3Upload') {
+            this.updateDesiredModelTrainer({
+                s3Upload: this.desired.s3Upload === 'On' ? 'Off' : 'On'
+            });
+        }
+        if (cmd === 'categories.remove' && param) {
+            const categories = this.desired.categories.slice();
+            categories.slice().splice(categories.indexOf(param), 1);
+            this.updateDesiredModelTrainer({
+                categories: categories
+            });
+        }
+        if (cmd === 'capture' && param) {
+            this.updateDesiredModelTrainer({
+                capture: this.desired.capture === 'Off' ? param : 'Off'
+            });
+        }
+        if (cmd === 'categories.add' && param && param !== '' && this.desired.categories.indexOf(param) === -1) {
             const newCategories = this.desired.categories.slice();
-            newCategories.push(category);
-            // console.log(newCategories);
-            this.update({ categories: newCategories });
+            newCategories.push(param);
+            this.updateDesiredModelTrainer({
+                categories: newCategories
+            });
         }
     }
 
-    // private pagedListCategory(category, page)
+    listImagesForCategory(category, page, nextToken = null) {
+        const _self = this;
 
-    listCategory(category, page, nextToken = null) {
-        const params = {
-            Bucket: appVariables.S3_DATA_BUCKET,
-            Prefix: 'model-trainer-v1.0/' + this.device.thingName + '/rawdata/' + category,
-            MaxKeys: 100,
-            ContinuationToken: nextToken
-        };
-        this.appSyncService
-            .s3ListObjectsV2(params)
-            .then(results => {
-                this.list = results.Contents.map(i => i.Key);
-                // console.log(results);
+        _self.iotService
+            .getThingShadow({
+                thingName: _self.device.thingName
             })
-            .catch(err => {
-                console.error(err);
+            .then(shadow => {
+                if (
+                    shadow &&
+                    shadow.hasOwnProperty('state') &&
+                    shadow.state.hasOwnProperty('desired') &&
+                    shadow.state.desired.hasOwnProperty(_self.shadowField) &&
+                    shadow.state.desired[_self.shadowField].hasOwnProperty('s3KeyPrefix')
+                ) {
+                    let prefix = shadow.state.desired[_self.shadowField].s3KeyPrefix;
+                    if (!prefix.endsWith('/')) {
+                        prefix += '/';
+                    }
+
+                    const params = {
+                        Bucket: appVariables.S3_DATA_BUCKET,
+                        Prefix: prefix + category,
+                        MaxKeys: 100,
+                        ContinuationToken: nextToken
+                    };
+                    _self.appSyncService
+                        .s3ListObjectsV2(params)
+                        .then(results => {
+                            _self.list = results.Contents.map(i => i.Key);
+                        })
+                        .catch(err => {
+                            _self.logger.error(err);
+                        });
+                } else {
+                    throw new Error('the shadow has incorrect arguments. Missing: s3KeyPrefix');
+                }
             });
     }
 
-    getImageUrlForKey(key) {
-        const params = { Bucket: appVariables.S3_DATA_BUCKET, Key: key };
-        return this.s3.getSignedUrl('getObject', params);
-    }
+    deleteImage(key) {
+        const _self = this;
 
-    deleteImage(i, key) {
-        this.s3
-            .deleteObject({
-                Bucket: appVariables.S3_DATA_BUCKET,
-                Key: key
-            })
-            .promise()
-            .then(result => {
-                this.list.splice(i, 1);
+        _self.s3Service
+            .deleteKey(key)
+            .then(() => {
+                _self.list.splice(_self.list.indexOf(key), 1);
             })
             .catch(err => {
-                console.error(err);
+                _self.logger.error(err);
             });
     }
 }

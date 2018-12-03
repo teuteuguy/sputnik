@@ -11,15 +11,15 @@
                         <div class="col-6">
                             <div class="row p-b-5" *ngFor="let category of desired.categories">
                                 <div class="col-4 text-right"><strong data-toggle="modal" data-target="#listModal"
-                                        (click)="listCategory(category, 0)">{{category}}</strong></div>
+                                        (click)="listImagesForCategory(category, 0)">{{category}}</strong></div>
                                 <div class="col-8">
                                     <div>
                                         <button *ngIf="desired.capture == 'Off' || desired.capture == category" type="button"
-                                            class="btn btn-success btn-sm m-r-5" (click)="capture(category)">
+                                            class="btn btn-success btn-sm m-r-5" (click)="modifyState('capture', category)">
                                             <i class="mdi mdi-camera"></i> {{desired.capture == category ?
                                             'stop' : 'capture'}}</button>
                                         <button *ngIf="desired.capture == 'Off'" type="button" class="btn btn-danger btn-sm"
-                                            (click)="remove(category)">
+                                            (click)="modifyState('categories.remove', category)">
                                             <i class="mdi mdi-delete"></i> remove</button>
                                     </div>
                                 </div>
@@ -30,7 +30,7 @@
                                         name="newcat" id="newcat" #newcat>
                                 </div>
                                 <div class="col-8">
-                                    <button type="button" class="btn btn-success" (click)="addCategory(newcat.value)">
+                                    <button type="button" class="btn btn-success" (click)="modifyState('categories.add', newcat.value)">
                                         <i class="mdi mdi-plus"></i> add</button>
                                 </div>
                             </div>
@@ -38,14 +38,15 @@
                         <div class="col-6">
                             <div>
                                 <input type="checkbox" id="s3Upload" style="padding-left: 18px;" [checked]="desired.s3Upload == 'On'"
-                                    (click)="desiredStateChange('s3Upload')">
+                                    (click)="modifyState('s3Upload')">
                                 <label class="form-check-label" for="s3Upload" style="padding-left: 25px;">Upload
                                     Images to
                                     S3 ?
                                     <small>(reported: {{ reported.s3Upload }})</small></label>
                             </div>
                             <div *ngIf="latestData">
-                                <img [src]="getImageUrlForKey(latestData.s3Key)" width="100%">
+                                <app-s3-image s3Key="latestData.s3Key"></app-s3-image>
+                                <!-- <img [src]="getImageUrlForKey(latestData.s3Key)" width="100%"> -->
                                 <small>{{ latestData.s3Key }}</small>
                             </div>
                         </div>
@@ -77,7 +78,7 @@
                     <div class="row" [style.position]="'relative'">
                         <div class="col-12"><img [src]="getImageUrlForKey(key)" width="100%">
                             <button [style.position]="'absolute'" [style.left]="'20px'" [style.top]="'5px'" type="button"
-                                class="btn btn-sm btn-danger" aria-label="Delete" (click)="deleteImage(i, key)">
+                                class="btn btn-sm btn-danger" aria-label="Delete" (click)="deleteImage(key)">
                                 <i class="mdi mdi-delete"></i>
                             </button>
                         </div>

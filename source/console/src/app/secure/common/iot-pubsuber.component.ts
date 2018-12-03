@@ -70,7 +70,7 @@ export class IoTPubSuberComponent implements OnDestroy {
         }
     }
 
-    getLastState(thingName, shadowField = null) {
+    protected getLastState(thingName, shadowField = null) {
         return this._iotService
             .getThingShadow({
                 thingName: thingName
@@ -83,5 +83,16 @@ export class IoTPubSuberComponent implements OnDestroy {
                 console.error(err);
                 throw err;
             });
+    }
+
+    protected updateDesiredShadow(thingName, desiredState) {
+        return this._iotService.updateThingShadow({
+            thingName: thingName,
+            payload: JSON.stringify({
+                state: {
+                    desired: desiredState
+                }
+            })
+        });
     }
 }
