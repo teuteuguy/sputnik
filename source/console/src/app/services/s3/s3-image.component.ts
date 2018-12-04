@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 // Services
-import { LoggerService } from 'src/app/services/logger.service';
-import { S3Service } from 'src/app/services/s3/s3.service';
+import { LoggerService } from '@services/logger.service';
+import { S3Service } from '@services/s3/s3.service';
 
 declare var appVariables: any;
 

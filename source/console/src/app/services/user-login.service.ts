@@ -8,10 +8,10 @@ import { AmplifyService } from 'aws-amplify-angular';
 // import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 
 // Models
-import { ProfileInfo } from '../models/profile-info.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { LoggerService } from './logger.service';
+import { LoggerService } from '@services/logger.service';
 
 export interface CognitoCallback {
     cognitoCallback(message: string, result: any): void;

@@ -15,13 +15,13 @@ import {
 import { SolutionBlueprintsModalComponent } from './solution-blueprints.modal.component';
 
 // Models
-import { SolutionBlueprint } from '../../models/solution-blueprint.model';
-import { ProfileInfo } from '../../models/profile-info.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 import { _ } from 'underscore';
 

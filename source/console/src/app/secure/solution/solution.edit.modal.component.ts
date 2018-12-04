@@ -3,15 +3,15 @@ import { Subject } from 'rxjs';
 import swal from 'sweetalert2';
 
 // Models
-import { Device } from '../../models/device.model';
-import { Solution } from '../../models/solution.model';
-import { SolutionBlueprint } from '../../models/solution-blueprint.model';
+import { Device } from '@models/device.model';
+import { Solution } from '@models/solution.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
 
 // Services
-import { DeviceService } from '../../services/device.service';
-import { DeviceBlueprintService } from '../../services/device-blueprint.service';
-import { SolutionService } from '../../services/solution.service';
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+import { DeviceService } from '@services/device.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { SolutionService } from '@services/solution.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 import { _ } from 'underscore';
 

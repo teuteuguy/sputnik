@@ -2,7 +2,7 @@ import { Component, Input, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // Models
-import { Solution } from '../../../models/solution.model';
+import { Solution } from '@models/solution.model';
 
 // Solutions
 import { MiniConnectedFactoryV10Module } from './mini-connected-factory-v1.0/mini-connected-factory.module';

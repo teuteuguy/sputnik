@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { SolutionBlueprint } from '../models/solution-blueprint.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
 
 // Services
 import { LoggerService } from './logger.service';

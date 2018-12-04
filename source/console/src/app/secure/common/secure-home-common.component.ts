@@ -4,20 +4,20 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { DeviceStats, SolutionStats } from '../../models/stats.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { DeviceStats, SolutionStats } from '@models/stats.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { UserLoginService, LoggedInCallback } from '../../services/user-login.service';
-import { LoggerService } from '../../services/logger.service';
-import { StatService, Stats } from '../../services/stat.service';
-import { IOTService } from '../../services/iot.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { UserLoginService, LoggedInCallback } from '@services/user-login.service';
+import { LoggerService } from '@services/logger.service';
+import { StatService, Stats } from '@services/stat.service';
+import { IOTService } from '@services/iot.service';
 
 // Services that cache
-import { DeviceTypeService } from '../../services/device-type.service';
-import { DeviceBlueprintService } from '../../services/device-blueprint.service';
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+import { DeviceTypeService } from '@services/device-type.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 // Helpers
 declare let jquery: any;
@@ -29,14 +29,14 @@ import { _ } from 'underscore';
     templateUrl: './secure-home-common.component.html'
 })
 export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
-    public profile: ProfileInfo = null;
-    public isAdminUser = false;
     private loadedProfile = false;
 
-    public title: '';
     public crumbs: Crumb[] = [];
     public deviceStats: DeviceStats = new DeviceStats();
+    public isAdminUser = false;
+    public profile: ProfileInfo = null;
     public solutionStats: SolutionStats = new SolutionStats();
+    public title: '';
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -59,6 +59,7 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         const _self = this;
         _self.isAdminUser = false;
         _self.loadedProfile = false;
+        _self.localStorage.setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 }).subscribe(() => {});
     }
 
     ngOnInit() {
@@ -68,13 +69,12 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
         _self.breadCrumbService.crumbObservable$.subscribe(crumbs => {
             _self.crumbs.splice(0, _self.crumbs.length);
             _self.crumbs.push(...crumbs);
-            _self.ngZone.run(() => { });
+            _self.ngZone.run(() => {});
         });
 
         _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             if (profile) {
-                _self.logger.info('SecureHomeComponent.constructor: profile:', profile);
                 _self.logger.info(
                     'SecureHomeComponent.constructor: profile exists, no need to request it. Check if authenticated though.'
                 );
@@ -191,29 +191,25 @@ export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
 
     isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
         const _self = this;
-        _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn, profile);
 
         if (!isLoggedIn) {
+            _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn);
             _self.router.navigate(['/home/login']);
         } else {
+            _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn, _self.loadedProfile);
             if (_self.loadedProfile) {
                 _self.localStorage.setItem('profile', profile).subscribe(() => {});
                 _self.profile = profile;
                 _self.isAdminUser = _self.profile.isAdmin();
-
-                _self.iotService.connect();
-
-                _self.localStorage
-                    .setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 })
-                    .subscribe(() => {});
-                _self.statService.statObservable$.subscribe((msg: Stats) => {
-                    _self.deviceStats = msg.deviceStats;
-                    _self.solutionStats = msg.solutionStats;
-                    _self.ngZone.run(() => {});
-                });
-                _self.statService.refresh();
             }
+            _self.iotService.connect();
+
+            _self.statService.statObservable$.subscribe((msg: Stats) => {
+                _self.deviceStats = msg.deviceStats;
+                _self.solutionStats = msg.solutionStats;
+                _self.ngZone.run(() => { });
+            });
+            _self.statService.refresh();
         }
     }
-
 }

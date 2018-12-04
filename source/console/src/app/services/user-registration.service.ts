@@ -4,12 +4,12 @@ import { Inject, Injectable } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 
 // Models
-import { RegistrationUser } from '../models/registration-user.model';
-import { NewPasswordUser } from '../models/new-password-user.model';
+import { RegistrationUser } from '@models/registration-user.model';
+import { NewPasswordUser } from '@models/new-password-user.model';
 
 // Services
-import { LoggerService } from './logger.service';
-import { CognitoCallback } from './user-login.service';
+import { LoggerService } from '@services/logger.service';
+import { CognitoCallback } from '@services/user-login.service';
 
 // TODO: test this whole flow cause not sure any of this works.
 

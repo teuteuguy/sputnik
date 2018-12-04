@@ -6,13 +6,13 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { Deployment } from '../../models/deployment.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { Deployment } from '@models/deployment.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { DeploymentService } from '../../services/deployment.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { DeploymentService } from '@services/deployment.service';
 
 // Helpers
 import * as moment from 'moment';

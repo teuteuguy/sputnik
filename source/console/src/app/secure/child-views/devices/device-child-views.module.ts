@@ -2,7 +2,7 @@ import { Component, Input, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // Models
-import { Device } from '../../../models/device.model';
+import { Device } from '@models/device.model';
 
 // Pipes
 // import { AppPipesModule } from '../../../pipes/pipes.module';

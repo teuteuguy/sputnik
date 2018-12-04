@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { Solution } from '../models/solution.model';
+import { Solution } from '@models/solution.model';
 
 // Services
 import { LoggerService } from './logger.service';

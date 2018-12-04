@@ -32,22 +32,22 @@ import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
 // Components - Secure
-import { SecureHomeComponent } from './secure/home/secure-home.component';
-import { ProfileComponent } from './secure/profile/profile.component';
-import { SettingsComponent } from './secure/settings/settings.component';
-import { DeviceTypesComponent } from './secure/device-types/device-types.component';
-// import { DeviceTypeComponent } from './secure/device-type/device-type.component';
-import { DevicesComponent } from './secure/devices/devices.component';
-import { DeviceComponent } from './secure/device/device.component';
-import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-// import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
+import { DeviceComponent } from './secure/device/device.component';
+import { DevicesComponent } from './secure/devices/devices.component';
+// import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
+import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
+// import { DeviceTypeComponent } from './secure/device-type/device-type.component';
+import { DeviceTypesComponent } from './secure/device-types/device-types.component';
+import { MapsComponent } from './secure/maps/maps.component';
+import { ProfileComponent } from './secure/profile/profile.component';
+import { SecureHomeComponent } from './secure/home/secure-home.component';
+import { SettingsComponent } from './secure/settings/settings.component';
 import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
-import { MapsComponent } from './secure/maps/maps.component';
+import { UsersComponent } from './secure/users/users.component';
 
-// import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
 // import { GroupsComponent } from './secure/admin/groups/groups.component';
 // import { DeviceTypeComponent } from './secure/devices/device-type.component';
@@ -75,7 +75,7 @@ import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 import { GaugeModule } from './common/modules/gauge/gauge.module';
 
 // Solution Modules
-import { ChildViewsModule } from './secure/child-views/child-views.module';
+import { ChildViewsModule } from '@solutions/child-views.module';
 
 
 
@@ -101,22 +101,24 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         GenericTableComponent,
         IoTPubSuberComponent,
         PrettifierComponent,
+
         // Components - Secure
+        DeploymentsComponent,
+        DeviceComponent,
+        DevicesComponent,
+        // DeviceBlueprintComponent,
+        DeviceBlueprintsComponent,
+        // DeviceTypeComponent,
+        DeviceTypesComponent,
+        MapsComponent,
+        ProfileComponent,
         SecureHomeCommonComponent,
         SecureHomeComponent,
         SettingsComponent,
-        ProfileComponent,
-        DeviceTypesComponent,
-        // DeviceTypeComponent,
-        DevicesComponent,
-        DeviceComponent,
-        DeviceBlueprintsComponent,
-        // DeviceBlueprintComponent,
-        DeploymentsComponent,
         SolutionComponent,
         SolutionsComponent,
         SolutionBlueprintsComponent,
-        MapsComponent,
+        UsersComponent,
 
         // Sub Components
         DeviceBlueprintsModalComponent,
@@ -124,7 +126,6 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
         SolutionEditModalComponent,
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent
-
     ],
     imports: [
         BrowserModule,
@@ -157,9 +158,7 @@ import { ChildViewsModule } from './secure/child-views/child-views.module';
 
         // .forRoot()
     ],
-    providers: [
-        { provide: LoggerService, useClass: ConsoleLoggerService }
-    ],
+    providers: [{ provide: LoggerService, useClass: ConsoleLoggerService }],
     bootstrap: [AppComponent],
     entryComponents: [
         DeviceBlueprintsModalComponent,

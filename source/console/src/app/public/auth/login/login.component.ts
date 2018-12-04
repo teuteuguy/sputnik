@@ -1,14 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 
 // Models
-import { ProfileInfo } from '../../../models/profile-info.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { LoggerService } from '../../../services/logger.service';
-import { UserLoginService, CognitoCallback, LoggedInCallback } from '../../../services/user-login.service';
+import { LoggerService } from '@services/logger.service';
+import { UserLoginService, CognitoCallback, LoggedInCallback } from '@services/user-login.service';
 
 declare var jquery: any;
 declare var $: any;
@@ -53,7 +53,6 @@ export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback
     }
 
     cognitoCallback(message: string, result: any) {
-        console.log('cognitoCallback');
         if (message != null) {
             // error
             this.errorMessage = message;

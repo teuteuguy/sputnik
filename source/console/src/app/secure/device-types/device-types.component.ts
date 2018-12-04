@@ -1,11 +1,8 @@
 import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
-import swal from 'sweetalert2';
-
-// User stuff
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import { ProfileInfo } from '../../models/profile-info.model';
+import swal from 'sweetalert2';
 
 // Parent
 import {
@@ -17,12 +14,13 @@ import {
 import { DeviceTypesModalComponent } from './device-types.modal.component';
 
 // Models
-import { DeviceType } from '../../models/device-type.model';
+import { DeviceType } from '@models/device-type.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeviceTypeService } from '../../services/device-type.service';
-import { LoggerService } from '../../services/logger.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { DeviceTypeService } from '@services/device-type.service';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-root-device-types',

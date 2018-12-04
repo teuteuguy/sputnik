@@ -9,21 +9,21 @@ import {
     GenericTableComponent,
     GenericTableParams,
     GenericTableElementParams
-} from '../common/generic-table.component';
+} from '@common-secure/generic-table.component';
 
 // Childs
 import { SolutionsModalComponent } from './solutions.modal.component';
 import { SolutionEditModalComponent } from '../solution/solution.edit.modal.component';
 
 // Models
-import { Solution } from '../../models/solution.model';
-import { ProfileInfo } from '../../models/profile-info.model';
+import { Solution } from '@models/solution.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { SolutionService } from '../../services/solution.service';
-import { StatService, Stats } from '../../services/stat.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { SolutionService } from '@services/solution.service';
+import { StatService, Stats } from '@services/stat.service';
 
 // Helpers
 import * as moment from 'moment';

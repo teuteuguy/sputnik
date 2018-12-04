@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 // Models
-import { Setting } from '../models/setting.model';
+import { Setting } from '@models/setting.model';
 
 // Services
 import { AppSyncService } from './appsync.service';

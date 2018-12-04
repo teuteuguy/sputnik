@@ -6,7 +6,7 @@ import * as AWS from 'aws-sdk';
 import { AmplifyService } from 'aws-amplify-angular';
 
 // Services
-import { Logger } from '../logger.service';
+import { Logger } from '@services/logger.service';
 
 declare var appVariables: any;
 

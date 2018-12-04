@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 // Services
-import { IOTService } from 'src/app/services/iot.service';
+import { IOTService } from '@services/iot.service';
 
 import { _ } from 'underscore';
 

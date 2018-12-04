@@ -1,8 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { DeviceBlueprint } from '../models/device-blueprint.model';
+import { DeviceBlueprint } from '@models/device-blueprint.model';
 
-import { DeviceBlueprintService } from '../services/device-blueprint.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
 
 @Pipe({ name: 'deviceBlueprintNameFromId', pure: true })
 export class DeviceBlueprintNameFromIdPipe implements PipeTransform {

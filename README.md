@@ -8,6 +8,9 @@ Blablabla
 * Create a location picker for the solutions
 
 * Put back the admin to manage the users, and the profile ?
+* Add current version to the appVariables
+* Change home page to be more descriptive
+* Add SQS functino for anonymous logging
 * Attach cert function from UI
 * Initialize the shadow when provisioning
 * Attach policies

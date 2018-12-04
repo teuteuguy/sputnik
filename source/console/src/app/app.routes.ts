@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-// import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // Public Routes
@@ -17,19 +16,19 @@ import { NewPasswordComponent } from './public/auth/newpassword/new-password.com
 // Secure Routes
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
 import { SecureHomeComponent } from './secure/home/secure-home.component';
+
+import { DeploymentsComponent } from './secure/deployments/deployments.component';
+import { DeviceComponent } from './secure/device/device.component';
+import { DevicesComponent } from './secure/devices/devices.component';
+import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
+import { DeviceTypesComponent } from './secure/device-types/device-types.component';
+import { MapsComponent } from './secure/maps/maps.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
-import { DeviceTypesComponent } from './secure/device-types/device-types.component';
-// import { DeviceTypeComponent } from './secure/device-type/device-type.component';
-import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-// import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
-import { DevicesComponent } from './secure/devices/devices.component';
-import { DeviceComponent } from './secure/device/device.component';
-import { DeploymentsComponent } from './secure/deployments/deployments.component';
+import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
-import { SolutionComponent } from './secure/solution/solution.component';
-import { MapsComponent } from './secure/maps/maps.component';
+import { UsersComponent } from './secure/users/users.component';
 
 // import { UsersComponent } from './secure/admin/users/users.component';
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -75,21 +74,22 @@ const secureHomeRoutes: Routes = [
         component: SecureHomeCommonComponent,
         children: [
             { path: '', component: SecureHomeComponent },
-            { path: 'logout', component: LogoutComponent },
-            { path: 'profile', component: ProfileComponent },
-            { path: 'settings', component: SettingsComponent },
-            { path: 'device-types', component: DeviceTypesComponent },
-            { path: 'device-blueprints', component: DeviceBlueprintsComponent },
+            { path: 'deployments', component: DeploymentsComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
-            { path: 'deployments', component: DeploymentsComponent },
+            { path: 'device-blueprints', component: DeviceBlueprintsComponent },
+            // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
+            { path: 'device-types', component: DeviceTypesComponent },
+            // { path: 'device-types/:deviceTypeId', component: DeviceTypesComponent },
+            { path: 'logout', component: LogoutComponent },
+            { path: 'maps', component: MapsComponent },
+            { path: 'profile', component: ProfileComponent },
+            { path: 'settings', component: SettingsComponent },
             { path: 'solutions', component: SolutionsComponent },
             { path: 'solutions/:solutionId', component: SolutionComponent },
             { path: 'solution-blueprints', component: SolutionBlueprintsComponent },
-            { path: 'maps', component: MapsComponent }
-            // { path: 'device-types/:deviceTypeId', component: DeviceTypeComponent },
-            // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
             // { path: 'solution-blueprints/:solutionBlueprintId', component: SolutionBlueprintsComponent },
+            { path: 'users', component: UsersComponent }
         ]
     }
 ];

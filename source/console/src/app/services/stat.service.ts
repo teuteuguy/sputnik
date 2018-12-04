@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { environment } from '../../environments/environment';
+
+import { environment } from '@env/environment';
 
 // Models
-import { DeviceStats, SolutionStats } from '../models/stats.model';
+import { DeviceStats, SolutionStats } from '@models/stats.model';
 
 // Services
 import { LoggerService } from './logger.service';
@@ -34,7 +35,6 @@ export class StatService {
         const _self = this;
         _self.logger.info('StatService.constructor:');
         _self.pollerInterval = setInterval(function() {
-            _self.logger.info('StatService.constructor: pollerInterval');
             _self.refresh();
         }, environment.refreshInterval);
         _self.refresh();

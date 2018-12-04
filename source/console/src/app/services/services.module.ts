@@ -8,6 +8,7 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 import { S3Module } from './s3/s3.module';
 
 // Services
+import { AdminService } from './admin.service';
 import { AppSyncService } from './appsync.service';
 import { BreadCrumbService } from './bread-crumb.service';
 import { DeploymentService } from './deployment.service';
@@ -34,6 +35,7 @@ import { UserRegistrationService } from './user-registration.service';
         S3Module
     ],
     providers: [
+        AdminService,
         AmplifyService,
         AppSyncService,
         BreadCrumbService,

@@ -2,11 +2,11 @@ import { Component, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { Solution } from '../../models/solution.model';
+import { Solution } from '@models/solution.model';
 
 // Services
-import { SolutionService } from '../../services/solution.service';
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+import { SolutionService } from '@services/solution.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 @Component({
     selector: 'app-root-solutions-modal',

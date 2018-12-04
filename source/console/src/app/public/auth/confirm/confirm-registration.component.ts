@@ -1,9 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserRegistrationService } from '../../../services/user-registration.service';
-import { UserLoginService } from '../../../services/user-login.service';
-import { ProfileInfo } from '../../../models/profile-info.model';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+
+// Models
+import { ProfileInfo } from '@models/profile-info.model';
+
+// Services
+import { UserLoginService } from '@services/user-login.service';
+import { UserRegistrationService } from '@services/user-registration.service';
+
 declare var jquery: any;
 declare var $: any;
 

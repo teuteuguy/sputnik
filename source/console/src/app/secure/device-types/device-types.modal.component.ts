@@ -2,10 +2,10 @@ import { Component, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { DeviceType } from '../../models/device-type.model';
+import { DeviceType } from '@models/device-type.model';
 
 // Services
-import { DeviceTypeService } from '../../services/device-type.service';
+import { DeviceTypeService } from '@services/device-type.service';
 
 @Component({
     selector: 'app-root-device-types-modal',

@@ -4,13 +4,13 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { Setting } from '../../models/setting.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { Setting } from '@models/setting.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { SettingService } from '../../services/setting.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { SettingService } from '@services/setting.service';
 
 declare var mapboxgl: any;
 declare let $: any;

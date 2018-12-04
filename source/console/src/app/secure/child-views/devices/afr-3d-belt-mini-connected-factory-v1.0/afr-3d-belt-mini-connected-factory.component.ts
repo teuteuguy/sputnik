@@ -4,10 +4,10 @@ import { Component, Input, OnInit, NgZone } from '@angular/core';
 import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
 
 // Models
-import { Device } from 'src/app/models/device.model';
+import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from 'src/app/services/iot.service';
+import { IOTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-afr-3d-belt-mini-connected-factory-v1-0',

@@ -2,10 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { SolutionBlueprint } from '../../models/solution-blueprint.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
 
 // Services
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 @Component({
     selector: 'app-root-solution-blueprints-modal',

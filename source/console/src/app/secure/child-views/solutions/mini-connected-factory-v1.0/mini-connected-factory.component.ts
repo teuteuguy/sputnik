@@ -1,14 +1,14 @@
 import { Component, Input, OnInit, OnChanges} from '@angular/core';
 
 // Models
-import { Device } from 'src/app/models/device.model';
-import { Solution } from 'src/app/models/solution.model';
-import { SolutionBlueprint } from 'src/app/models/solution-blueprint.model';
+import { Device } from '@models/device.model';
+import { Solution } from '@models/solution.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
 
 // Services
-import { DeviceService } from 'src/app/services/device.service';
-import { SolutionBlueprintService } from 'src/app/services/solution-blueprint.service';
-import { IOTService } from 'src/app/services/iot.service';
+import { DeviceService } from '@services/device.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
+import { IOTService } from '@services/iot.service';
 
 
 @Component({

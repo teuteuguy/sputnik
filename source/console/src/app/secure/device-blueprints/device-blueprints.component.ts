@@ -1,12 +1,9 @@
 import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import swal from 'sweetalert2';
 import { _ } from 'underscore';
-
-// User stuff
-import { LocalStorage } from '@ngx-pwa/local-storage';
-import { ProfileInfo } from '../../models/profile-info.model';
 
 // Parent
 import {
@@ -18,12 +15,13 @@ import {
 import { DeviceBlueprintsModalComponent } from './device-blueprints.modal.component';
 
 // Models
-import { DeviceBlueprint } from '../../models/device-blueprint.model';
+import { DeviceBlueprint } from '@models/device-blueprint.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeviceBlueprintService } from '../../services/device-blueprint.service';
-import { LoggerService } from '../../services/logger.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { LoggerService } from '@services/logger.service';
 
 // // Helpers
 // import * as moment from 'moment';

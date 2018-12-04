@@ -21,15 +21,15 @@ import { SolutionEditModalComponent } from './solution.edit.modal.component';
 // import { MiniConnectedFactoryV10Component } from './types/mini-connected-factory-v1.0.component';
 
 // Models
-import { Device } from '../../models/device.model';
-import { Solution } from '../../models/solution.model';
+import { Device } from '@models/device.model';
+import { Solution } from '@models/solution.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeploymentService } from '../../services/deployment.service';
-import { DeviceService } from '../../services/device.service';
-import { SolutionService } from '../../services/solution.service';
-import { LoggerService } from '../../services/logger.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { DeploymentService } from '@services/deployment.service';
+import { DeviceService } from '@services/device.service';
+import { SolutionService } from '@services/solution.service';
+import { LoggerService } from '@services/logger.service';
 
 declare var $: any;
 

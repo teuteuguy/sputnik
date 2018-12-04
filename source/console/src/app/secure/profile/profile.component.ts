@@ -7,11 +7,11 @@ import { _ } from 'underscore';
 import * as moment from 'moment';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { UserLoginService } from '../../services/user-login.service';
-import { LoggerService } from '../../services/logger.service';
+import { UserLoginService } from '@services/user-login.service';
+import { LoggerService } from '@services/logger.service';
 
 // Helpers
 declare var jquery: any;

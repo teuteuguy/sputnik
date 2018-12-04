@@ -6,16 +6,16 @@ import * as AWS from 'aws-sdk';
 declare var appVariables: any;
 
 // Components
-import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
+import { IoTPubSuberComponent } from '@common-secure/iot-pubsuber.component';
 
 // Models
-import { Device } from 'src/app/models/device.model';
+import { Device } from '@models/device.model';
 
 // Services
-import { AppSyncService } from 'src/app/services/appsync.service';
-import { IOTService } from 'src/app/services/iot.service';
-import { LoggerService } from 'src/app/services/logger.service';
-import { S3Service } from 'src/app/services/s3/s3.service';
+import { AppSyncService } from '@services/appsync.service';
+import { IOTService } from '@services/iot.service';
+import { LoggerService } from '@services/logger.service';
+import { S3Service } from '@services/s3/s3.service';
 // import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
 
 const NAME = 'model-trainer-v1.0';

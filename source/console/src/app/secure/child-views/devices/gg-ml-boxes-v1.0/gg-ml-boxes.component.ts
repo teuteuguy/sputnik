@@ -1,13 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 // Components
-import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
+import { IoTPubSuberComponent } from '@common-secure/iot-pubsuber.component';
 
 // Models
-import { Device } from 'src/app/models/device.model';
+import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from 'src/app/services/iot.service';
+import { IOTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-gg-ml-boxes-v1-0',

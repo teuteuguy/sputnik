@@ -1,8 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { SolutionBlueprint } from '../models/solution-blueprint.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
 
-import { SolutionBlueprintService } from '../services/solution-blueprint.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
 @Pipe({ name: 'solutionBlueprintFromSolutionBlueprintId', pure: true })
 export class SolutionBlueprintFromSolutionBlueprintIdPipe implements PipeTransform {

@@ -5,22 +5,22 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Models
-import { Device } from '../../models/device.model';
-import { DeviceType } from '../../models/device-type.model';
-import { DeviceBlueprint } from '../../models/device-blueprint.model';
-import { ProfileInfo } from '../../models/profile-info.model';
+import { Device } from '@models/device.model';
+import { DeviceType } from '@models/device-type.model';
+import { DeviceBlueprint } from '@models/device-blueprint.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeploymentService } from '../../services/deployment.service';
-import { DeviceService } from '../../services/device.service';
-import { DeviceTypeService } from '../../services/device-type.service';
-import { DeviceBlueprintService } from '../../services/device-blueprint.service';
-import { LoggerService } from '../../services/logger.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { DeploymentService } from '@services/deployment.service';
+import { DeviceService } from '@services/device.service';
+import { DeviceTypeService } from '@services/device-type.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { LoggerService } from '@services/logger.service';
 
 declare var jquery: any;
 declare var $: any;
-import * as _ from 'underscore';
+import { _ } from 'underscore';
 
 class PossibleDeviceBlueprintsForDevice {
     // device: Device;
@@ -105,8 +105,6 @@ export class DeviceComponent implements OnInit, OnDestroy {
         _self.deviceService
             .getDevice(_self.thingId)
             .then((device: Device) => {
-                _self.logger.info('device:', device);
-                // _self.logger.info('device stringified:', JSON.stringify(device, null, 2));
                 _self.device = device;
                 _self.deviceTypes = _self.deviceTypeService.deviceTypes;
                 _self.deviceBlueprints = _self.deviceBlueprintService.deviceBlueprints;
