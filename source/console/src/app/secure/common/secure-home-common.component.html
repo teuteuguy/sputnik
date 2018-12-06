@@ -128,26 +128,26 @@
                                         <div class="u-img" style="text-align:center;font-size:50px;">
                                             <i class="fa fa-user-circle"></i>
                                         </div>
-                                        <div class="u-text">
+                                        <div class="u-text" routerLink="profile">
                                             <h4>{{profile.name}}</h4>
                                             <p class="text-muted">{{profile.email}}</p>
-                                            <a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm">View
-                                                Profile</a>
+                                            <!-- <a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm">View
+                                                Profile</a> -->
                                         </div>
                                     </div>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="securehome/profile">
+                                    <a routerLink="profile">
                                         <i class="ti-user"></i> My Profile</a>
                                 </li>
                                 <li>
-                                    <a href="securehome/devices">
+                                    <a routerLink="devices">
                                         <i class="ti-wallet"></i> Devices</a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a [routerLink]="['/securehome/logout']">
+                                    <a routerLink="logout">
                                         <i class="fa fa-power-off"></i> Logout</a>
                                 </li>
                             </ul>
@@ -176,12 +176,12 @@
                             <span class="hide-menu">Home </span>
                         </a>
                     </li>
-                    <!-- <li>
+                    <li>
                         <a class="waves-effect waves-dark" data-caption="Maps" routerLink="maps">
                             <i class="mdi mdi-google-maps"></i>
                             <span class="hide-menu">Maps </span>
                         </a>
-                    </li> -->
+                    </li>
                     <li class="nav-small-cap">MENU</li>
                     <li>
                         <a class="waves-effect waves-dark" routerLink="solutions">
@@ -201,12 +201,6 @@
                             <span class="hide-menu">Deployments </span>
                         </a>
                     </li>
-                    <!-- <li>
-                        <a class="waves-effect waves-dark" href="securehome/profile">
-                            <i class="mdi mdi-account-card-details"></i>
-                            <span class="hide-menu">My Profile </span>
-                        </a>
-                    </li> -->
                     <li class="nav-small-cap">MODULES</li>
                     <li *ngIf="isAdminUser">
                         <a class="waves-effect waves-dark" routerLink="solution-blueprints">
@@ -227,6 +221,12 @@
                         </a>
                     </li>
                     <li class="nav-small-cap" *ngIf="isAdminUser">ADMINISTRATION</li>
+                    <li>
+                        <a class="waves-effect waves-dark" routerLink="profile">
+                            <i class="mdi mdi-account-card-details"></i>
+                            <span class="hide-menu">My Profile </span>
+                        </a>
+                    </li>
                     <li *ngIf="isAdminUser">
                         <a class="waves-effect waves-dark" routerLink="users">
                             <i class="mdi mdi-account-multiple"></i>

@@ -45,7 +45,7 @@
                                     <small>(reported: {{ reported.s3Upload }})</small></label>
                             </div>
                             <div *ngIf="latestData">
-                                <app-s3-image s3Key="latestData.s3Key"></app-s3-image>
+                                <app-s3-image s3Key="{{latestData.s3Key}}"></app-s3-image>
                                 <!-- <img [src]="getImageUrlForKey(latestData.s3Key)" width="100%"> -->
                                 <small>{{ latestData.s3Key }}</small>
                             </div>

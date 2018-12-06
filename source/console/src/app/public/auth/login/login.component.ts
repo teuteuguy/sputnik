@@ -10,6 +10,8 @@ import { ProfileInfo } from '@models/profile-info.model';
 import { LoggerService } from '@services/logger.service';
 import { UserLoginService, CognitoCallback, LoggedInCallback } from '@services/user-login.service';
 
+declare var appVariables: any;
+
 declare var jquery: any;
 declare var $: any;
 
@@ -20,7 +22,7 @@ declare var $: any;
 })
 export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback {
     appName: string = environment.appName;
-    version: string = environment.appVersion;
+    version: string = appVariables.VERSION;
     email: string = null;
     password: string = null;
     errorMessage: string;

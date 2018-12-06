@@ -28,6 +28,9 @@ Parameters:
     solutionsTable:
         Type: String
         Description: DynamoDB Table for storing the solutions
+    lambdaServiceAdminArn:
+        Type: String
+        Description: Admin Micro Service ARN
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
@@ -109,10 +112,11 @@ Resources:
                         Action:
                             - 'lambda:InvokeFunction'
                         Resource:
+                            - !Ref lambdaServiceAdminArn
+                            - !Ref lambdaServiceDeploymentsArn
+                            - !Ref lambdaServiceDevicesArn
                             - !Ref lambdaServiceFactoryResetArn
                             - !Ref lambdaServiceSettingsArn
-                            - !Ref lambdaServiceDevicesArn
-                            - !Ref lambdaServiceDeploymentsArn
                             - !Ref lambdaServiceSolutionsArn
                             - !Ref lambdaServiceUtilsArn
 
@@ -218,6 +222,16 @@ Resources:
                 TableName: !Ref solutionBlueprintsTable
 
     # DATA SOURCES - Lambda
+    appSyncDataSourceAdminLambda:
+        Type: AWS::AppSync::DataSource
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            Name: appSyncDataSourceAdminLambda
+            Description: The Admin Lambda App Sync Data Source
+            Type: AWS_LAMBDA
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
+            LambdaConfig:
+                LambdaFunctionArn: !Ref lambdaServiceAdminArn
     appSyncDataSourceFactoryResetLambda:
         Type: AWS::AppSync::DataSource
         Properties:
@@ -278,6 +292,38 @@ Resources:
             ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
             LambdaConfig:
                 LambdaFunctionArn: !Ref lambdaServiceUtilsArn
+
+    # ####################################################################################################
+    # ####################################################################################################
+    #
+    # RESOLVERS - Admin
+    #
+    # ####################################################################################################
+    # ####################################################################################################
+
+    # RESOLVERS - QUERIES - Admin - List Users
+    appSyncResolverQueryListUsers:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: listUsers
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'users-request-mapping-template-list.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'users-response-mapping-template-list.gql']]
+
+    # RESOLVERS - MUTATIONS - Admin - Invite User
+    appSyncResolverMutationInviteUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: inviteUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-invite.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
     # ####################################################################################################
     # ####################################################################################################

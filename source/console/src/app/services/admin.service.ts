@@ -21,15 +21,16 @@ import { LoggerService } from '@services/logger.service';
 
 @Injectable()
 export class AdminService {
-    constructor(
-        private appSyncService: AppSyncService,
-        private logger: LoggerService
-    ) {}
+    constructor(private appSyncService: AppSyncService, private logger: LoggerService) {}
 
     public get(username: String) {}
 
-    public list(limit: number, nextToken: string) {
-        // return this.appSyncService.listUsers(limit, nextToken);
+    public list(limit: number = 0, paginationToken: string = null) {
+        return this.appSyncService.listUsers(limit, paginationToken);
+    }
+
+    public inviteUser(invite: Invitation) {
+        return this.appSyncService.inviteUser(invite.name, invite.email, invite.groups);
     }
 
     // public getAllUsers() {

@@ -34,6 +34,7 @@ import listDeviceTypes from '@graphql/queries/device-types.list';
 import listSolutions from '@graphql/queries/solutions.list';
 import listSolutionBlueprints from '@graphql/queries/solution-blueprints.list';
 import s3ListObjectsV2 from '@graphql/queries/s3.list-objects-v2';
+import listUsers from '@graphql/queries/users.list';
 // Mutations
 import addDeployment from '@graphql/mutations/deployment.add';
 import addDevice from '@graphql/mutations/device.add';
@@ -46,6 +47,7 @@ import deleteDeviceBlueprint from '@graphql/mutations/device-blueprint.delete';
 import deleteDeviceType from '@graphql/mutations/device-type.delete';
 import deleteSolution from '@graphql/mutations/solution.delete';
 import deleteSolutionBlueprint from '@graphql/mutations/solution-blueprint.delete';
+import inviteUser from '@graphql/mutations/user.invite';
 import refreshSolution from '@graphql/mutations/solution.refresh';
 import setThingAutoRegistrationState from '@graphql/mutations/thing-auto-registration-state.set';
 import updateDevice from '@graphql/mutations/device.update';
@@ -135,6 +137,21 @@ export class AppSyncService {
         const _self = this;
         const obs: any = _self.amplifyService.api().graphql({ query: subscription.loc.source.body, variables: params });
         return obs;
+    }
+
+    // Admin
+    public inviteUser(name: string, email: string, groups: string[]) {
+        return this.mutation(inviteUser, {
+            name: name,
+            email: email,
+            groups: groups
+        }).then(r => r.data.inviteUser);
+    }
+    public listUsers(limit: number, paginationToken: string) {
+        return this.query(listUsers, {
+            limit: limit,
+            paginationToken: paginationToken
+        }).then(r => r.data.listUsers);
     }
 
     // Device Types
@@ -429,7 +446,11 @@ export class AppSyncService {
         });
     }
     public updateSetting(setting: Setting) {
-        return this.query(updateSetting, { id: setting.id, type: setting.type, setting: JSON.stringify(setting.setting) }).then(result => {
+        return this.query(updateSetting, {
+            id: setting.id,
+            type: setting.type,
+            setting: JSON.stringify(setting.setting)
+        }).then(result => {
             if (result.data.updateSetting !== null) {
                 result.data.updateSetting.setting = JSON.parse(result.data.updateSetting.setting);
             }

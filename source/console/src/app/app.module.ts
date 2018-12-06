@@ -46,6 +46,7 @@ import { SettingsComponent } from './secure/settings/settings.component';
 import { SolutionComponent } from './secure/solution/solution.component';
 import { SolutionsComponent } from './secure/solutions/solutions.component';
 import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
+import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
 
 // import { UserComponent } from './secure/admin/users/user.component';
@@ -118,6 +119,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         SolutionComponent,
         SolutionsComponent,
         SolutionBlueprintsComponent,
+        UserComponent,
         UsersComponent,
 
         // Sub Components

@@ -89,6 +89,7 @@ Resources:
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
                 solutionsGreengrassGroupRoleArn: !GetAtt SolutionsGreengrassGroupRole.Arn
                 solutionsGreengrassIoTPolicy: !Ref SolutionsGreengrassIoTPolicy
+                userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
 
     # ##########################################################################
     #
@@ -110,6 +111,7 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                lambdaServiceAdminArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceAdminArn
                 lambdaServiceDevicesArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSettingsArn
                 lambdaServiceFactoryResetArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceFactoryResetArn
@@ -209,6 +211,7 @@ Resources:
             destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             destS3Key: 'assets/appVariables.js'
             file:
+                VERSION: '%%VERSION%%'
                 USER_POOL_ID: !GetAtt CFStackForCognito.Outputs.userPoolId
                 USER_POOL_CLIENT_ID: !GetAtt CFStackForCognito.Outputs.websiteCognitoClientId
                 IDENTITY_POOL_ID: !GetAtt CFStackForCognito.Outputs.identityPool

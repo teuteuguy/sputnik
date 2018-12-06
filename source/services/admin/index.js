@@ -6,20 +6,11 @@ function handler(event, context, callback) {
     let promise = null;
 
     switch (event.cmd) {
-        case 'getDeviceStats':
-            promise = libs.getDeviceStats;
+        case 'inviteUser':
+            promise = libs.inviteUser;
             break;
-        case 'addDevice':
-            promise = libs.addDevice;
-            break;
-        case 'deleteDevice':
-            promise = libs.deleteDevice;
-            break;
-        case 'updateDevice':
-            promise = libs.updateDevice;
-            break;
-        case 'test':
-            promise = libs.test;
+        case 'listUsers':
+            promise = libs.listUsers;
             break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + event, null);

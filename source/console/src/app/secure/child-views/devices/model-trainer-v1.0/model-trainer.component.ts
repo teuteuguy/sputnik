@@ -121,7 +121,8 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
         }
         if (cmd === 'categories.remove' && param) {
             const categories = this.desired.categories.slice();
-            categories.slice().splice(categories.indexOf(param), 1);
+            categories.splice(categories.indexOf(param), 1);
+            console.log(categories, param, categories.indexOf(param));
             this.updateDesiredModelTrainer({
                 categories: categories
             });

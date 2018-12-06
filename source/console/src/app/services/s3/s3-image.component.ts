@@ -23,7 +23,9 @@ export class S3ImageComponent implements OnChanges {
     }
 
     ngOnChanges() {
+        this.logger.info('ngOnChanges.s3Key:', this.s3Key);
         this.s3Service.getSignedUrlFor(this.s3Key).then((url: string) => {
+            this.logger.info('ngOnChanges.signedUrl:', this.signedUrl);
             this.signedUrl = url;
         }).catch(err => {
             this.logger.error(err);

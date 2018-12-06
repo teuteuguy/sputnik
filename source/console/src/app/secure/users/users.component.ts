@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import swal from 'sweetalert2';
 
 // Models
 import { ProfileInfo } from '@models/profile-info.model';
@@ -18,7 +19,6 @@ import { UserLoginService } from '@services/user-login.service';
 
 declare var jquery: any;
 declare var $: any;
-declare var swal: any;
 
 @Component({
     selector: 'app-root-users',
@@ -27,7 +27,6 @@ declare var swal: any;
 export class UsersComponent implements OnInit {
     // implements LoggedInCallback {
 
-    //     private users: User[] = [];
     //     public deviceStats: any = {};
 
     private invite: Invitation;
@@ -35,6 +34,13 @@ export class UsersComponent implements OnInit {
 
     public isAdminUser = false;
     public pageTitle = 'Users';
+    public pages: any = {
+        current: 1,
+        total: 0,
+        pageSize: 20
+    };
+    public users: User[] = [];
+
     //     private name: string;
 
     @BlockUI() blockUI: NgBlockUI;
@@ -92,17 +98,19 @@ export class UsersComponent implements OnInit {
     }
 
     loadUsers() {
-        //         this.adminService.getAllUsers().then((data: User[]) => {
-        //             this.blockUI.stop();
-        //             this.users = data;
-        //         }).catch((err) => {
-        //             this.blockUI.stop();
-        //             swal(
-        //                 'Oops...',
-        //                 'Something went wrong! Unable to retrieve the users.',
-        //                 'error');
-        //             this.logger.error('error occurred calling api, show message');
-        //         });
+        this.adminService
+            .list(this.pages.pageSize) // TODO: add pagination properly with the token etc ...
+            .then((data: any) => {
+                this.blockUI.stop();
+                this.users = data.Users;
+                console.log(data);
+            })
+            .catch(err => {
+                this.blockUI.stop();
+                swal('Oops...', 'Something went wrong! Unable to retrieve the users.', 'error');
+                this.logger.error('error occurred calling api, show message');
+                this.logger.error(err);
+            });
     }
 
     refreshData() {
@@ -110,40 +118,50 @@ export class UsersComponent implements OnInit {
         this.loadUsers();
     }
 
-    //     openUser(username: string) {
-    //         this.router.navigate([['/securehome/admin/users', username].join('/')]);
-    //     }
-
     //     cancelInvite(form: NgForm) {
     //         form.reset();
     //         $('#inviteModal').modal('hide');
     //     }
 
-    //     inviteUser(form: NgForm) {
-    //         if (form.valid) {
-    //             const _self = this;
-    //             const _invite: Invitation = {
-    //                 name: form.value.name,
-    //                 email: form.value.email,
-    //                 groups: [{
-    //                     name: 'Members',
-    //                     _state: 'new'
-    //                 }]
-    //             };
+    inviteUser(form: NgForm) {
+        const _self = this;
 
-    //             this.blockUI.start('Inviting user...');
-    //             $('#inviteModal').modal('hide');
-    //             this.adminService.inviteUser(_invite).then((result) => {
-    //                 _self.loadUsers();
-    //             }).catch((err) => {
-    //                 this.blockUI.stop();
-    //                 swal(
-    //                     'Oops...',
-    //                     'Something went wrong! Unable to invite the user.',
-    //                     'error');
-    //                 this.logger.error('[error] Error occurred calling updateUser API.');
-    //             });
-    //         }
+        if (form.valid) {
+            const _invite: Invitation = {
+                name: form.value.name,
+                email: form.value.email,
+                groups: [
+                    {
+                        name: 'Members',
+                        _state: 'new'
+                    }
+                ]
+            };
 
-    //     }
+            this.blockUI.start('Inviting user...');
+            $('#inviteModal').modal('hide');
+            this.adminService
+                .inviteUser(_invite)
+                .then(result => {
+                    _self.loadUsers();
+                })
+                .catch(err => {
+                    this.blockUI.stop();
+                    swal('Oops...', 'Something went wrong! Unable to invite the user.', 'error');
+                    this.logger.error('[error] Error occurred calling updateUser API.');
+                });
+        }
+    }
+
+    nextPage() {
+        this.pages.current++;
+        this.blockUI.start('Loading users...');
+        this.loadUsers();
+    }
+
+    previousPage() {
+        this.pages.current--;
+        this.blockUI.start('Loading users...');
+        this.loadUsers();
+    }
 }

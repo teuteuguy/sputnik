@@ -8,6 +8,7 @@
     "dependencies": {
         "moment": "*",
         "mythings-mgmt-custom-resource-helper-utils": "../../resources/utils/",
+        "password-generator": "*",
         "underscore": "*"
     },
     "devDependencies": {},

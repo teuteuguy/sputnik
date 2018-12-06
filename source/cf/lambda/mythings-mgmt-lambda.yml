@@ -44,6 +44,9 @@ Parameters:
     solutionsGreengrassIoTPolicy:
         Type: String
         Description: My Things Management Greengrass IoT Policy
+    userPoolId:
+        Type: String
+        Description: Cognito User Pool Id
 
 Resources:
 
@@ -83,6 +86,16 @@ Resources:
                 deviceTypesTable: !Ref deviceTypesTable
                 solutionsTable: !Ref solutionsTable
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
+
+    # Nested stack - MicroService - Admin
+    CFStackForAdminService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'mythings-mgmt/%%VERSION%%/cf/lambda/mythings-mgmt-lambda-service-admin.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                userPoolId: !Ref userPoolId
 
     # Nested stack - MicroService - Deployments
     CFStackForDeploymentsService:
@@ -176,6 +189,9 @@ Outputs:
     lambdaServiceDeploymentsArn:
         Description: 'Deployments Service ARN'
         Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
+    lambdaServiceAdminArn:
+        Description: 'Admin Service ARN'
+        Value: !GetAtt CFStackForAdminService.Outputs.lambdaServiceAdminArn
     lambdaServiceDevicesArn:
         Description: 'Devices Service ARN'
         Value: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn

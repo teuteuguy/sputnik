@@ -6,13 +6,13 @@ import * as AWS from 'aws-sdk';
 import { AmplifyService } from 'aws-amplify-angular';
 
 // Services
-import { Logger } from '@services/logger.service';
+import { LoggerService } from '@services/logger.service';
 
 declare var appVariables: any;
 
 @Injectable()
 export class S3Service {
-    constructor(private amplifyService: AmplifyService, private logger: Logger) {}
+    constructor(private amplifyService: AmplifyService, private logger: LoggerService) {}
 
     public getSignedUrlFor(key) {
         const _self = this;
@@ -47,14 +47,16 @@ export class S3Service {
                     sessionToken: creds.sessionToken,
                     region: appVariables.REGION
                 });
-                return s3.deleteObject({
-                    Bucket: appVariables.S3_DATA_BUCKET,
-                    Key: key
-                }).promise();
-            }).then(result => {
+                return s3
+                    .deleteObject({
+                        Bucket: appVariables.S3_DATA_BUCKET,
+                        Key: key
+                    })
+                    .promise();
+            })
+            .then(result => {
                 _self.logger.info('key:', key, 'deleted');
                 return;
             });
-
     }
 }
