@@ -99,11 +99,10 @@ export class UsersComponent implements OnInit {
 
     loadUsers() {
         this.adminService
-            .list(this.pages.pageSize) // TODO: add pagination properly with the token etc ...
+            .listUsers(this.pages.pageSize) // TODO: add pagination properly with the token etc ...
             .then((data: any) => {
                 this.blockUI.stop();
                 this.users = data.Users;
-                console.log(data);
             })
             .catch(err => {
                 this.blockUI.stop();
@@ -148,7 +147,8 @@ export class UsersComponent implements OnInit {
                 .catch(err => {
                     this.blockUI.stop();
                     swal('Oops...', 'Something went wrong! Unable to invite the user.', 'error');
-                    this.logger.error('[error] Error occurred calling updateUser API.');
+                    this.logger.error('[error] Error occurred calling inviteUser API.');
+                    this.logger.error(err);
                 });
         }
     }

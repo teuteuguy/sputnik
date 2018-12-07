@@ -8,7 +8,10 @@ export default gql`
                 name
                 email
                 enabled
-                groups
+                groups {
+                    name
+                    _state
+                }
                 status
                 created_at
                 updated_at

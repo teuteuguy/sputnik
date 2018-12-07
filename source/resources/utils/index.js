@@ -41,18 +41,16 @@ exports.handler = (event, context, callback) => {
         sendResponse(event, callback, context.logStreamName, 'SUCCESS');
     }
 
-    if (event.RequestType === 'Create') {
-        if (event.ResourceProperties.customAction === 'createUUID') {
-            responseStatus = 'SUCCESS';
-            responseData = {
-                UUID: UUID.v4()
-            };
-            console.log(responseData);
-            sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-        }
+    if (event.RequestType === 'Create' && event.ResourceProperties.customAction === 'createUUID') {
+        responseStatus = 'SUCCESS';
+        responseData = {
+            UUID: UUID.v4()
+        };
+        console.log(responseData);
+        sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
     }
 
-    if (event.RequestType === 'Create' || event.RequestType === 'Update') {
+    if ((event.RequestType === 'Create' && event.ResourceProperties.customAction !== 'createUUID') || event.RequestType === 'Update') {
         if (event.ResourceProperties.customAction === 'dynamodbPutObjectsFromS3Folder') {
             ddbHelper.dynamodbPutObjectsFromS3Folder(event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3Key, event.ResourceProperties.table).then(data => {
                 responseStatus = 'SUCCESS';

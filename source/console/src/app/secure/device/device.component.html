@@ -51,10 +51,12 @@
                                 <div class="form-group row">
                                     <label class="col-md-4 control-label text-right ">Device Type:</label>
                                     <div class="col-md-8">
-                                        <p class="form-control-static">
+                                        <p class="form-control-static" *ngIf="deviceType.name !== 'UNKNOWN'">
                                             <a routerLink="../../device-types/{{device.deviceTypeId}}">{{deviceType.name}}
                                                 <i class="mdi mdi-link-variant"></i>
                                             </a>
+                                        </p>
+                                        <p class="form-control-static" *ngIf="deviceType.name === 'UNKNOWN'">{{deviceType.name}}
                                         </p>
                                     </div>
                                 </div>
@@ -75,9 +77,12 @@
                                 <div class="row">
                                     <label class="col-md-4 control-label text-right ">Device Blueprint:</label>
                                     <div class="col-md-8">
-                                        <a routerLink="../../device-blueprints/{{device.deviceBlueprintId}}">{{deviceBlueprint.name}}
-                                            <i class="mdi mdi-link-variant"></i>
-                                        </a>
+                                        <p *ngIf="deviceBlueprint.name !== 'UNKNOWN'" class="form-control-static">
+                                            <a routerLink="../../device-blueprints/{{device.deviceBlueprintId}}">{{deviceBlueprint.name}}
+                                                <i class="mdi mdi-link-variant"></i>
+                                            </a>
+                                        </p>
+                                        <p class="form-control-static" *ngIf="deviceBlueprint.name === 'UNKNOWN'">{{deviceBlueprint.name}}
                                     </div>
                                 </div>
                             </div>

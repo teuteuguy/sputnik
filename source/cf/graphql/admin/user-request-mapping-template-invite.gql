@@ -5,6 +5,6 @@
         "cmd": "inviteUser",
         "name": "${context.arguments.name}",
         "email": "${context.arguments.email}",
-        "groups": ${context.arguments.groups}
+        "groups": $util.toJson($context.arguments.groups)
     }
 }

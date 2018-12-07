@@ -16,6 +16,13 @@ mkdir -p $2/greengrass
 
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
 echo
+echo "[Build] Solution - defaults - rpi-sense-hat-display-ip-python"
+echo
+cd $1/solutions/defaults/lambdas/rpi-sense-hat-display-ip-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
 echo "[Build] Solution - defaults - image-capture-python"
 echo
 cd $1/solutions/defaults/lambdas/image-capture-python

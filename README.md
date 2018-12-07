@@ -13,6 +13,7 @@ Blablabla
 * Add SQS functino for anonymous logging
 * Attach cert function from UI
 * Initialize the shadow when provisioning
+* Move the common lambda stuff to Lambda layers !
 * Attach policies
 * Attach IAM
 * Add things to group

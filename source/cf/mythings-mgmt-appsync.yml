@@ -301,6 +301,28 @@ Resources:
     # ####################################################################################################
     # ####################################################################################################
 
+    # RESOLVERS - QUERIES - Admin - Get User
+    appSyncResolverQueryGetUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-get.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    # RESOLVERS - QUERIES - Admin - List Groups
+    appSyncResolverQueryListGroups:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: listGroups
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'groups-request-mapping-template-list.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'groups-response-mapping-template-list.gql']]
     # RESOLVERS - QUERIES - Admin - List Users
     appSyncResolverQueryListUsers:
         Type: 'AWS::AppSync::Resolver'
@@ -313,6 +335,39 @@ Resources:
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'users-request-mapping-template-list.gql']]
             ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'users-response-mapping-template-list.gql']]
 
+    # RESOLVERS - MUTATIONS - Admin - Delete User
+    appSyncResolverMutationDeleteUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: deleteUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-delete.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    # RESOLVERS - MUTATIONS - Admin - Disable User
+    appSyncResolverMutationDisableUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: disableUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-disable.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    # RESOLVERS - MUTATIONS - Admin - Enable User
+    appSyncResolverMutationEnableUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: enableUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-enable.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
     # RESOLVERS - MUTATIONS - Admin - Invite User
     appSyncResolverMutationInviteUser:
         Type: 'AWS::AppSync::Resolver'
@@ -323,6 +378,17 @@ Resources:
             FieldName: inviteUser
             DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-invite.gql']]
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+    # RESOLVERS - MUTATIONS - Admin - Update User
+    appSyncResolverMutationUpdateUser:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: updateUser
+            DataSourceName: !GetAtt appSyncDataSourceAdminLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'admin', 'user-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
     # ####################################################################################################

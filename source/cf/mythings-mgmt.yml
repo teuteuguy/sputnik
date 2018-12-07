@@ -224,19 +224,20 @@ Resources:
             deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
     # Initialization - Init of Thing Groups and Things
-    initThingGroups:
-        Type: 'Custom::LoadLambda'
-        Properties:
-            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceThingGroupsHelperArn
-            Region: !Ref 'AWS::Region'
-            sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
-            sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
-            destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
-            customAction: 'init'
+    # initThingGroups:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceThingGroupsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
+    #         sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
+    #         destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
+    #         customAction: 'init'
 
     # Initialization - Init Settings
     initSettings:
         Type: 'Custom::LoadLambda'
+        DependsOn: initAppUUID
         Properties:
             ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
@@ -247,7 +248,6 @@ Resources:
                 setting:
                     uuid: !GetAtt initAppUUID.UUID
                     mapboxToken: "NA"
-                    # iotEndpoint: !GetAtt iotEndpoint.endpointAddress
                     # anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
             customAction: 'dynamodbSaveItem'
 

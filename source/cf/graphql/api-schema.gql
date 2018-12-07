@@ -128,17 +128,33 @@ type UserAttributes {
     Value: String
 }
 
+type Group {
+    GroupName: String
+    UserPoolId: String
+    Description: String
+    RoleArn: String
+    Precedence: Int
+    LastModifiedDate: AWSDateTime
+    CreationDate: AWSDateTime
+}
+type PaginatedGroups {
+    Groups: [Group]
+    NextToken: String
+}
+type UserGroup {
+    name: String
+    _state: String
+}
 type User {
     user_id: String
     name: String
     email: String
     enabled: Boolean
-    groups: [String]
+    groups: [UserGroup]
     created_at: AWSDateTime
     updated_at: AWSDateTime
     status: String
 }
-
 type PaginatedUsers {
     Users: [User]
     PaginationToken: String
@@ -192,6 +208,10 @@ type Query {
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     ## Users
+    getUser(username: String!): User
+        @aws_auth(cognito_groups: ["Administrators"])
+    listGroups(limit: Int, nextToken: String): PaginatedGroups
+        @aws_auth(cognito_groups: ["Administrators"])
     listUsers(limit: Int, paginationToken: String): PaginatedUsers
         @aws_auth(cognito_groups: ["Administrators"])
 
@@ -259,7 +279,15 @@ type Mutation {
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Users
-    inviteUser(name: String!, email: String!, groups: [String]!): Boolean
+    deleteUser(username: String!): User
+        @aws_auth(cognito_groups: ["Administrators"])
+    disableUser(username: String!): User
+        @aws_auth(cognito_groups: ["Administrators"])
+    enableUser(username: String!): User
+        @aws_auth(cognito_groups: ["Administrators"])
+    inviteUser(name: String!, email: String!, groups: AWSJSON!): Boolean
+        @aws_auth(cognito_groups: ["Administrators"])
+    updateUser(username: String!, groups: AWSJSON!): User
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Other
@@ -271,25 +299,60 @@ type Mutation {
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Subscription {
-    addedDeviceType: DeviceType @aws_subscribe(mutations: ["addDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedDeviceType: DeviceType @aws_subscribe(mutations: ["updateDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedDeviceType: DeviceType @aws_subscribe(mutations: ["deleteDeviceType"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## Devices
+    addedDevice: Device
+        @aws_subscribe(mutations: ["addDevice"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDevice: Device
+        @aws_subscribe(mutations: ["updateDevice"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDevice: Device
+        @aws_subscribe(mutations: ["deleteDevice"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    addedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["addDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["updateDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedDeviceBlueprint: DeviceBlueprint @aws_subscribe(mutations: ["deleteDeviceBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## Device Blueprints
+    addedDeviceBlueprint: DeviceBlueprint
+        @aws_subscribe(mutations: ["addDeviceBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDeviceBlueprint: DeviceBlueprint
+        @aws_subscribe(mutations: ["updateDeviceBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDeviceBlueprint: DeviceBlueprint
+        @aws_subscribe(mutations: ["deleteDeviceBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    addedDevice: Device @aws_subscribe(mutations: ["addDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedDevice: Device @aws_subscribe(mutations: ["updateDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedDevice: Device @aws_subscribe(mutations: ["deleteDevice"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## Device Types
+    addedDeviceType: DeviceType
+        @aws_subscribe(mutations: ["addDeviceType"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedDeviceType: DeviceType
+        @aws_subscribe(mutations: ["updateDeviceType"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedDeviceType: DeviceType
+        @aws_subscribe(mutations: ["deleteDeviceType"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    addedSolution: [Solution] @aws_subscribe(mutations: ["addSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedSolution: [Solution] @aws_subscribe(mutations: ["updateSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedSolution: [Solution] @aws_subscribe(mutations: ["deleteSolution"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## Solutions
+    addedSolution: [Solution]
+        @aws_subscribe(mutations: ["addSolution"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedSolution: [Solution]
+        @aws_subscribe(mutations: ["updateSolution"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedSolution: [Solution]
+        @aws_subscribe(mutations: ["deleteSolution"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    addedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["addSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["updateSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedSolutionBlueprint: [SolutionBlueprint] @aws_subscribe(mutations: ["deleteSolutionBlueprint"]) @aws_auth(cognito_groups: ["Administrators", "Members"])
+    ## Solution Blueprints
+    addedSolutionBlueprint: [SolutionBlueprint]
+        @aws_subscribe(mutations: ["addSolutionBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    updatedSolutionBlueprint: [SolutionBlueprint]
+        @aws_subscribe(mutations: ["updateSolutionBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+    deletedSolutionBlueprint: [SolutionBlueprint]
+        @aws_subscribe(mutations: ["deleteSolutionBlueprint"])
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 schema {
     query: Query

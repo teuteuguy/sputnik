@@ -74,8 +74,9 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
         return this.appSyncService.addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert);
     }
 
-    onAddedDevice(result: Device) {
+    onAddedDevice(device: Device) {
         // TODO: Improve this.
+        this.observable.next(device);
     }
     onUpdatedDevice(result: Device) {
         // TODO: Improve this.

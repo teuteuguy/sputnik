@@ -23,14 +23,31 @@ import { LoggerService } from '@services/logger.service';
 export class AdminService {
     constructor(private appSyncService: AppSyncService, private logger: LoggerService) {}
 
-    public get(username: String) {}
+    public getUser(username: string) {
+        return this.appSyncService.getUser(username);
+    }
 
-    public list(limit: number = 0, paginationToken: string = null) {
+    public listGroups(limit: number = 0, nextToken: string = null) {
+        return this.appSyncService.listGroups(limit, nextToken);
+    }
+    public listUsers(limit: number = 0, paginationToken: string = null) {
         return this.appSyncService.listUsers(limit, paginationToken);
     }
 
+    public deleteUser(username: string) {
+        return this.appSyncService.deleteUser(username);
+    }
+    public disableUser(username: string) {
+        return this.appSyncService.disableUser(username);
+    }
+    public enableUser(username: string) {
+        return this.appSyncService.enableUser(username);
+    }
     public inviteUser(invite: Invitation) {
         return this.appSyncService.inviteUser(invite.name, invite.email, invite.groups);
+    }
+    public updateUser(username: string, groups: any) {
+        return this.appSyncService.updateUser(username, groups);
     }
 
     // public getAllUsers() {

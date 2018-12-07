@@ -75,6 +75,12 @@ export class DevicesComponent implements OnInit {
                     _self.updatePaging();
                 });
             });
+
+            _self.deviceService.devicesObservable$.subscribe(device => {
+                _self.ngZone.run(() => {
+                    _self.loadDevices();
+                });
+            });
         });
 
         // _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {

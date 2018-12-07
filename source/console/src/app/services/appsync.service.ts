@@ -25,16 +25,18 @@ import getSolution from '@graphql/queries/solution.get';
 import getSolutionStats from '@graphql/queries/solution.getStats';
 import getSolutionBlueprint from '@graphql/queries/solution-blueprint.get';
 import getThingAutoRegistrationState from '@graphql/queries/thing-auto-registration-state.get';
+import getUser from '@graphql/queries/user.get';
 import listDeployments from '@graphql/queries/deployments.list';
 import listDevices from '@graphql/queries/devices.list';
 import listDevicesOfDeviceType from '@graphql/queries/devices-of-device-type.list';
 import listDevicesWithDeviceBlueprint from '@graphql/queries/devices-with-device-blueprint.list';
 import listDeviceBlueprints from '@graphql/queries/device-blueprints.list';
 import listDeviceTypes from '@graphql/queries/device-types.list';
+import listGroups from '@graphql/queries/groups.list';
 import listSolutions from '@graphql/queries/solutions.list';
+import listUsers from '@graphql/queries/users.list';
 import listSolutionBlueprints from '@graphql/queries/solution-blueprints.list';
 import s3ListObjectsV2 from '@graphql/queries/s3.list-objects-v2';
-import listUsers from '@graphql/queries/users.list';
 // Mutations
 import addDeployment from '@graphql/mutations/deployment.add';
 import addDevice from '@graphql/mutations/device.add';
@@ -47,6 +49,9 @@ import deleteDeviceBlueprint from '@graphql/mutations/device-blueprint.delete';
 import deleteDeviceType from '@graphql/mutations/device-type.delete';
 import deleteSolution from '@graphql/mutations/solution.delete';
 import deleteSolutionBlueprint from '@graphql/mutations/solution-blueprint.delete';
+import deleteUser from '@graphql/mutations/user.delete';
+import disableUser from '@graphql/mutations/user.disable';
+import enableUser from '@graphql/mutations/user.enable';
 import inviteUser from '@graphql/mutations/user.invite';
 import refreshSolution from '@graphql/mutations/solution.refresh';
 import setThingAutoRegistrationState from '@graphql/mutations/thing-auto-registration-state.set';
@@ -56,6 +61,7 @@ import updateDeviceType from '@graphql/mutations/device-type.update';
 import updateSetting from '@graphql/mutations/setting.update';
 import updateSolution from '@graphql/mutations/solution.update';
 import updateSolutionBlueprint from '@graphql/mutations/solution-blueprint.update';
+import updateUser from '@graphql/mutations/user.update';
 // Subscriptions
 import addedDevice from '@graphql/subscriptions/device.added';
 import addedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.added';
@@ -140,12 +146,34 @@ export class AppSyncService {
     }
 
     // Admin
-    public inviteUser(name: string, email: string, groups: string[]) {
+    public getUser(username: string) {
+        return this.query(getUser, { username: username }).then(r => r.data.getUser);
+    }
+
+    public deleteUser(username: string) {
+        return this.mutation(deleteUser, { username: username }).then(r => r.data.deleteUser);
+    }
+    public disableUser(username: string) {
+        return this.mutation(disableUser, { username: username }).then(r => r.data.disableUser);
+    }
+    public enableUser(username: string) {
+        return this.mutation(enableUser, { username: username }).then(r => r.data.enableUser);
+    }
+    public inviteUser(name: string, email: string, groups: any) {
         return this.mutation(inviteUser, {
             name: name,
             email: email,
-            groups: groups
+            groups: JSON.stringify(groups)
         }).then(r => r.data.inviteUser);
+    }
+    public updateUser(username: string, groups: any) {
+        return this.mutation(updateUser, {
+            username: username,
+            groups: JSON.stringify(groups)
+        }).then(r => r.data.updateUser);
+    }
+    public listGroups(limit: number, nextToken: string) {
+        return this.query(listGroups, { limit: limit, nextToken: nextToken }).then(r => r.data.listGroups);
     }
     public listUsers(limit: number, paginationToken: string) {
         return this.query(listUsers, {

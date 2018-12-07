@@ -1,4 +1,3 @@
-*.egg-info
 camera
 ggiot
 file_output
@@ -8,4 +7,3 @@ greengrass_ipc_python_sdk
 greengrasssdk
 serial
 bin
-pyserial-3.4.dist-info

@@ -1,0 +1,6 @@
+{
+    "Groups": $util.toJson($ctx.result.Groups),
+    #if( ${ctx.result.NextToken} )
+        "NextToken": "${ctx.result.NextToken}",
+    #end
+}
