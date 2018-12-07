@@ -1,8 +1,9 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { BlockUIModule } from 'ng-block-ui';
 import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
 
@@ -135,6 +136,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         HttpModule,
         HttpClientModule,
         ReactiveFormsModule,
+        RouterModule,
 
         AppRoutingModule,
 
