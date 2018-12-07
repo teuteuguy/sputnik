@@ -67,18 +67,6 @@
                     }
                 },
                 {
-                    "Id": "tmp",
-                    "Name": "tmp_resource",
-                    "ResourceDataContainer": {
-                        "LocalVolumeResourceData": {
-                            "DestinationPath": "/tmp",
-                            "GroupOwnerSetting": {
-                                "AutoAddGroupOwner": true
-                            },
-                            "SourcePath": "/tmp"
-                        }
-                    }
-                }, {
                     "Id": "video0",
                     "Name": "dev_video0_resource",
                     "ResourceDataContainer": {

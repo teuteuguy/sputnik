@@ -1,6 +1,6 @@
 {
-    "id": "raspberry-pi-3-v1.0",
-    "name": "Raspberry Pi 3 v1.0",
+    "id": "intel-up2-v1.0",
+    "name": "Intel UP2 v1.0",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {
@@ -50,6 +50,21 @@
                     "Level": "INFO",
                     "Space": 300000,
                     "Type": "FileSystem"
+                }
+            ]
+        },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                    "Id": "gpu",
+                    "Name": "gpu_resource",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/dri/renderD128"
+                        }
+                    }
                 }
             ]
         }

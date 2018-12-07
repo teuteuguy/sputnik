@@ -7,12 +7,8 @@ Blablabla
 * When creating a device, deal with the certificates ?
 * Create a location picker for the solutions
 
-* Put back the admin to manage the users, and the profile ?
-* Add current version to the appVariables
-* Change home page to be more descriptive
 * Add SQS functino for anonymous logging
 * Attach cert function from UI
-* Initialize the shadow when provisioning
 * Move the common lambda stuff to Lambda layers !
 * Attach policies
 * Attach IAM
@@ -24,7 +20,7 @@ Blablabla
 * For a given thing, check which solution they are part of.
 * have the factory reset refer to the cf scripts.
 * Simplify cloudformation script, databucket vs databucketarn
-* see if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ?
+* see if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ? => lambda layers is the solution here
 
 ## Notes
 

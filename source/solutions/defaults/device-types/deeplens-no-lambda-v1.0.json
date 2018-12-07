@@ -114,19 +114,6 @@
                             "SourcePath": "/opt/awscam/out"
                         }
                     }
-                },
-                {
-                    "Id": "tmp",
-                    "Name": "tmp_resource",
-                    "ResourceDataContainer": {
-                        "LocalVolumeResourceData": {
-                            "DestinationPath": "/tmp",
-                            "GroupOwnerSetting": {
-                                "AutoAddGroupOwner": true
-                            },
-                            "SourcePath": "/tmp"
-                        }
-                    }
                 }
             ]
         }

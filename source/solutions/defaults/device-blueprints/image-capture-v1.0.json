@@ -85,6 +85,21 @@
                 }
             }]
         },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                "Id": "tmp",
+                "Name": "tmp_resource",
+                "ResourceDataContainer": {
+                    "LocalVolumeResourceData": {
+                        "DestinationPath": "/tmp",
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/tmp"
+                    }
+                }
+            }]
+        },
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
                     "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:image-capture-python:MTM",

@@ -55,39 +55,40 @@
         },
         "ResourceDefinitionVersion": {
             "Resources": [{
-                "Id": "sense-hat-led",
-                "Name": "sense-hat-led",
-                "ResourceDataContainer": {
-                    "LocalDeviceResourceData": {
-                        "GroupOwnerSetting": {
-                            "AutoAddGroupOwner": true
-                        },
-                        "SourcePath": "/dev/fb1"
+                    "Id": "sense-hat-led",
+                    "Name": "sense-hat-led",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/fb1"
+                        }
+                    }
+                }, {
+                    "Id": "sense-hat-i2c",
+                    "Name": "sense-hat-i2c",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/i2c-1"
+                        }
+                    }
+                }, {
+                    "Id": "sense-hat-event0",
+                    "Name": "sense-hat-event0",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/input/event0"
+                        }
                     }
                 }
-            }, {
-                "Id": "sense-hat-i2c",
-                "Name": "sense-hat-i2c",
-                "ResourceDataContainer": {
-                    "LocalDeviceResourceData": {
-                        "GroupOwnerSetting": {
-                            "AutoAddGroupOwner": true
-                        },
-                        "SourcePath": "/dev/i2c-1"
-                    }
-                }
-            }, {
-                "Id": "sense-hat-event0",
-                "Name": "sense-hat-event0",
-                "ResourceDataContainer": {
-                    "LocalDeviceResourceData": {
-                        "GroupOwnerSetting": {
-                            "AutoAddGroupOwner": true
-                        },
-                        "SourcePath": "/dev/input/event0"
-                    }
-                }
-            }]
+            ]
         }
     }
 }

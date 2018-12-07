@@ -110,6 +110,19 @@
                         "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/boxes-v1.0.0-224-3cat.tar.gz"
                     }
                 }
+            },
+            {
+                "Id": "tmp",
+                "Name": "tmp_resource",
+                "ResourceDataContainer": {
+                    "LocalVolumeResourceData": {
+                        "DestinationPath": "/tmp",
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/tmp"
+                    }
+                }
             }]
         },
         "SubscriptionDefinitionVersion": {
