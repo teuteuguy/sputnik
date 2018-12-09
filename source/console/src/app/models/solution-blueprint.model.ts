@@ -1,6 +1,6 @@
 export class SolutionBlueprint {
     id: string;
-    name: 'UNKNOWN';
+    name = 'new';
     description = 'UNKNOWN';
     prefix = 'MTM_';
     spec: any = {};

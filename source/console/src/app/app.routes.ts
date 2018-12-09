@@ -18,32 +18,13 @@ import { SecureHomeCommonComponent } from './secure/common/secure-home-common.co
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
-import { DeviceComponent } from './secure/device/device.component';
+import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
-import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-// import { DeviceTypeComponent } from './secure/device-types/device-type.component';
-// import { DeviceTypesComponent } from './secure/device-types/device-types.component';
-// import { DeviceTypesModule } from './secure/device-types/device-types.module';
 import { MapsComponent } from './secure/maps/maps.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
-import { SolutionComponent } from './secure/solution/solution.component';
-import { SolutionsComponent } from './secure/solutions/solutions.component';
-import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
-
-// import { UsersComponent } from './secure/admin/users/users.component';
-// import { UserComponent } from './secure/admin/users/user.component';
-// import { GroupsComponent } from './secure/admin/groups/groups.component';
-// import { DeviceComponent } from './secure/devices/device.component';
-// import { DashboardComponent } from './secure/dashboard/dashboard.component';
-// import { GetStartedComponent } from './secure/landing/getstarted.component';
-// import { WidgetsComponent } from './secure/devices/widgets.component';
-// import { WidgetComponent } from './secure/devices/widget.component';
-// import { FleetComponent } from './secure/automotive/fleet.component';
-// import { VehicleComponent } from './secure/automotive/vehicle.component';
-// import { CustomizeAutomotiveComponent } from './secure/automotive/customize.component';
 
 const homeRoutes: Routes = [
     {
@@ -80,21 +61,18 @@ const secureHomeRoutes: Routes = [
             { path: 'deployments', component: DeploymentsComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
-            { path: 'device-blueprints', component: DeviceBlueprintsComponent },
-            // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
-            // { path: 'device-types', component: DeviceTypesModule   DeviceTypesComponent },
-            // { path: 'device-types/:id', component: DeviceTypeComponent },
-            { path: 'device-types', redirectTo: '/securehome/device-types', pathMatch: 'full' },
             { path: 'logout', component: LogoutComponent },
             { path: 'maps', component: MapsComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'settings', component: SettingsComponent },
-            { path: 'solutions', component: SolutionsComponent },
-            { path: 'solutions/:solutionId', component: SolutionComponent },
-            { path: 'solution-blueprints', component: SolutionBlueprintsComponent },
-            // { path: 'solution-blueprints/:solutionBlueprintId', component: SolutionBlueprintsComponent },
             { path: 'users', component: UsersComponent },
-            { path: 'users/:username', component: UserComponent }
+            { path: 'users/:username', component: UserComponent },
+
+            // Sub moduled paths :)
+            { path: 'device-blueprints', redirectTo: '/securehome/device-blueprints', pathMatch: 'full' },
+            { path: 'device-types', redirectTo: '/securehome/device-types', pathMatch: 'full' },
+            { path: 'solutions', redirectTo: '/securehome/solutions', pathMatch: 'full' },
+            { path: 'solution-blueprints', redirectTo: '/securehome/solution-blueprints', pathMatch: 'full' }
         ]
     }
 ];

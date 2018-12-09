@@ -79,28 +79,7 @@ export class PrettyJsonComponent implements ControlValueAccessor {
             _self.parseError = true;
         }
 
-
-
         // update the form
         _self.propagateChange(this.data);
     }
-
-    // editJsonOnKey(event: any, width: number, obj: any, attribute: string) {
-    //     const _self = this;
-    //     _self.prettifying = '';
-    //     clearTimeout(_self.keyUpTimeOut1);
-    //     clearTimeout(_self.keyUpTimeOut2);
-    //     _self.keyUpTimeOut1 = setTimeout(function() {
-    //         _self.prettifying = '(formating json...)';
-    //         _self.keyUpTimeOut1 = setTimeout(function() {
-    //             try {
-    //                 obj[attribute] = JSON.stringify(JSON.parse(event.target.value), null, width);
-    //                 event.target.value = obj[attribute];
-    //                 _self.prettifying = '';
-    //             } catch (ex) {
-    //                 _self.prettifying = '(ERROR: JSON is incorrect!)';
-    //             }
-    //         }, 100);
-    //     }, 500);
-    // }
 }

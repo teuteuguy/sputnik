@@ -4,15 +4,6 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import swal from 'sweetalert2';
 
-// Parent
-import {
-    GenericTableComponent,
-    GenericTableParams,
-    GenericTableElementParams
-} from '../common/generic-table.component';
-// Childs
-import { DeviceTypesModalComponent } from './device-types.modal.component';
-
 // Models
 import { DeviceType } from '@models/device-type.model';
 import { ProfileInfo } from '@models/profile-info.model';
@@ -28,7 +19,6 @@ import { LoggerService } from '@services/logger.service';
     // templateUrl: '../common/generic-table.component.html'
 })
 export class DeviceTypesComponent implements OnInit {
-    // extends GenericTableComponent implements OnInit {
 
     private profile: ProfileInfo;
 

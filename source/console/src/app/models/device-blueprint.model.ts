@@ -1,6 +1,6 @@
 export class DeviceBlueprint {
     id: string;
-    name = 'UNKNOWN';
+    name = 'new';
     type = 'UNKNOWN';
     compatibility: string[] = [];
     deviceTypeMappings: any = [];

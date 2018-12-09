@@ -12,16 +12,15 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import swal from 'sweetalert2';
 
 // SubComponents
 import { SolutionEditModalComponent } from './solution.edit.modal.component';
-// import { FactoryResetDeeplensV10Component } from './types/factory-reset-deeplens-v1.0.component';
-// import { MyDeeplensWebCameraV10Component } from './types/my-deeplens-web-camera-v1.0.component';
-// import { MiniConnectedFactoryV10Component } from './types/mini-connected-factory-v1.0.component';
 
 // Models
 import { Device } from '@models/device.model';
+import { ProfileInfo } from '@models/profile-info.model';
 import { Solution } from '@models/solution.model';
 
 // Services
@@ -38,11 +37,14 @@ declare var $: any;
     templateUrl: './solution.component.html'
 })
 export class SolutionComponent implements OnInit {
-    public title = 'Solution';
+    private profile: ProfileInfo;
+
+    public isAdminUser: boolean;
+    public pageTitle = 'Solution';
     public id: string;
 
-    public solution: Solution = new Solution();
-    public devices: Device[] = [];
+    public solution: Solution;
+    public devices: Device[];
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -50,83 +52,68 @@ export class SolutionComponent implements OnInit {
     editModalTemplate: ViewContainerRef;
 
     constructor(
-        public router: Router,
-        public route: ActivatedRoute,
-        private ngZone: NgZone,
-        private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
-        private resolver: ComponentFactoryResolver,
         private deploymentService: DeploymentService,
         private deviceService: DeviceService,
-        private solutionService: SolutionService
-    ) {}
+        private localStorage: LocalStorage,
+        private logger: LoggerService,
+        private resolver: ComponentFactoryResolver,
+        public route: ActivatedRoute,
+        public router: Router,
+        private solutionService: SolutionService,
+        private ngZone: NgZone
+    ) {
+        this.solution = new Solution();
+        this.devices = [];
+    }
 
     ngOnInit() {
-        const _self = this;
+        const self = this;
 
-        _self.route.params.subscribe(params => {
-            _self.solution = new Solution({ id: params['solutionId'] });
+        self.blockUI.start('Loading solution...');
 
-            _self.breadCrumbService.setup(_self.title, [
-                new Crumb({
-                    title: _self.title,
-                    link: _self.title.toLowerCase()
-                }),
-                new Crumb({
-                    title: _self.solution.id,
-                    active: true
-                })
-            ]);
+        self.route.params.subscribe(params => {
+            self.solution = new Solution({ id: params['id'] });
 
-            _self.blockUI.start('Loading solution...');
+            self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+                self.profile = new ProfileInfo(profile);
+                self.isAdminUser = self.profile.isAdmin();
 
-            _self.loadSolution();
+                self.breadCrumbService.setup(self.pageTitle, [
+                    new Crumb({
+                        title: self.pageTitle + 's',
+                        link: 'solutions'
+                    }),
+                    new Crumb({
+                        title: self.solution.id,
+                        active: true
+                    })
+                ]);
 
-            // _self.solutionBlueprintService.solutionBlueprints$.subscribe(message => {
-            //     _self.cleanup();
-            //     _self.blockUI.stop();
-            //     _self.ngZone.run(() => {});
-            // });
+                self.loadSolution();
+            });
         });
     }
 
-    loadSolution() {
-        const _self = this;
+    private loadSolution() {
+        const self = this;
 
-        _self.solutionService
-            .get(_self.solution.id)
-            .then(solution => {
-                _self.logger.info('solution:', solution);
-                _self.solution = new Solution(solution);
-                _self.blockUI.stop();
-                _self.devices = [];
-                // return _self.getTheExtraResources();
+        self.solutionService
+            .get(self.solution.id)
+            .then((solution: Solution) => {
+                self.solution = solution;
+                self.logger.info('Loaded solution:', this.solution);
+                self.devices = [];
+                self.blockUI.stop();
             })
-            // .then(result => {})
             .catch(err => {
-                _self.blockUI.stop();
+                self.blockUI.stop();
                 swal('Oops...', 'Something went wrong! Unable to retrieve the solution.', 'error');
-                _self.logger.error('error occurred calling getSolution api, show message');
-                _self.logger.error(err);
-                _self.router.navigate(['/securehome/solutions']);
+                self.logger.error('error occurred calling getSolution api, show message');
+                self.logger.error(err);
+                self.router.navigate(['/securehome/solutions']);
             });
     }
-
-    // getTheExtraResources() {
-    //     const _self = this;
-    //     _self.solution.deviceIds.forEach((thingId: string) => {
-    //         _self.deviceService
-    //             .getDevice(thingId)
-    //             .then((device: Device) => {
-    //                 _self.devices.push(device);
-    //                 // this.edit();
-    //             })
-    //             .catch(err => {
-    //                 _self.logger.error('Something went wrong trying to get thingId', thingId);
-    //                 _self.logger.error(err);
-    //             });
-    //     });
-    // }
 
     public refresh() {
         this.blockUI.start('Loading solution...');
@@ -158,23 +145,39 @@ export class SolutionComponent implements OnInit {
                     title: 'Success',
                     type: 'success',
                     showConfirmButton: false
-                }).then();
+                }).then(() => {
+                    this.solutionService.refreshSolution(this.solution.id);
+                });
             }
             this.handleCancelEdit();
             this.loadSolution();
         });
 
+        const deleteSubject: Subject<any> = new Subject<any>();
+        deleteSubject.subscribe(result => {
+            if (result.error) {
+                swal('Oops...', 'Something went wrong! Unable to delete the solution.', 'error');
+                this.logger.error('error occurred calling deleteSolution api, show message');
+                this.logger.error(result.error);
+            } else {
+                this.handleCancelEdit();
+                this.router.navigate(['securehome/solutions']);
+            }
+        });
+
         componentRefInstance.cancelSubject = cancelSubject;
         componentRefInstance.submitSubject = submitSubject;
+        componentRefInstance.deleteSubject = deleteSubject;
         componentRefInstance.element = this.solution;
         $('#editSolutionModal').modal('show');
     }
-    handleCancelEdit() {
+
+    private handleCancelEdit() {
         $('#editSolutionModal').modal('hide');
         this.editModalTemplate.clear();
     }
 
-    deploy() {
+    public deploy() {
         console.log('Deploy', this.solution.deviceIds);
         swal({
             title: 'Are you sure you want to deploy this solution?',
@@ -220,7 +223,7 @@ export class SolutionComponent implements OnInit {
         });
     }
 
-    gotoDevice(device: Device) {
+    public gotoDevice(device: Device) {
         this.router.navigate([['/securehome/devices', device.thingId].join('/')]);
     }
 }

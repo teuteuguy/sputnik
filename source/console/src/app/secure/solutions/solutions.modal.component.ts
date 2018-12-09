@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { Solution } from '@models/solution.model';
 
 // Services
+import { LoggerService } from '@services/logger.service';
 import { SolutionService } from '@services/solution.service';
 import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
@@ -24,13 +25,17 @@ export class SolutionsModalComponent {
 
     public createResources;
 
-    constructor(private solutionService: SolutionService, public solutionBlueprintService: SolutionBlueprintService) {
+    constructor(
+        private logger: LoggerService,
+        private solutionService: SolutionService,
+        public solutionBlueprintService: SolutionBlueprintService
+    ) {
+        this.modalType = 'create';
         this.element = new Solution({
             id: 'new',
             name: 'new',
             description: 'New Solution'
         });
-
         this.createResources = false;
     }
 
@@ -45,7 +50,6 @@ export class SolutionsModalComponent {
                     this.element.solutionBlueprintId
                 )
                 .then(solution => {
-                    // console.log(solution);
                     this.submitSubject.next({ data: solution, error: null });
                 })
                 .catch(err => {

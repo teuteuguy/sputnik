@@ -7,28 +7,28 @@ import { RouterModule, Routes } from '@angular/router';
 import { SecureHomeCommonComponent } from '@common-secure/secure-home-common.component';
 import { TableModule } from '@common-modules/table/table.module';
 
-import { DeviceTypeComponent } from './device-type.component';
-import { DeviceTypesComponent } from './device-types.component';
+import { SolutionBlueprintComponent } from './solution-blueprint.component';
+import { SolutionBlueprintsComponent } from './solution-blueprints.component';
 
 // Pipes
 import { PipesModule } from '@pipes/pipes.module';
 import { PrettyJsonModule } from '@common-modules/pretty-json/pretty-json.module';
 
-const deviceTypesRoutes: Routes = [
+const solutionBlueprintsRoutes: Routes = [
     {
-        path: 'securehome/device-types',
+        path: 'securehome/solution-blueprints',
         component: SecureHomeCommonComponent,
-        children: [{ path: ':id', component: DeviceTypeComponent }, { path: '', component: DeviceTypesComponent }]
+        children: [{ path: ':id', component: SolutionBlueprintComponent }, { path: '', component: SolutionBlueprintsComponent }]
     }
 ];
 
 @NgModule({
-    declarations: [DeviceTypeComponent, DeviceTypesComponent],
-    exports: [RouterModule, DeviceTypeComponent, DeviceTypesComponent],
+    declarations: [SolutionBlueprintComponent, SolutionBlueprintsComponent],
+    exports: [RouterModule, SolutionBlueprintComponent, SolutionBlueprintsComponent],
     imports: [
         CommonModule,
         FormsModule,
-        RouterModule.forChild(deviceTypesRoutes),
+        RouterModule.forChild(solutionBlueprintsRoutes),
 
         // Modules
         PrettyJsonModule,
@@ -38,4 +38,4 @@ const deviceTypesRoutes: Routes = [
         PipesModule
     ]
 })
-export class DeviceTypesModule {}
+export class SolutionBlueprintsModule {}

@@ -1,133 +1,89 @@
-import { Component, OnInit, ComponentFactoryResolver, NgZone } from '@angular/core';
-import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Component, OnInit, NgZone, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { Subject } from 'rxjs';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import swal from 'sweetalert2';
 
-// Parent
-import {
-    GenericTableComponent,
-    GenericTableParams,
-    GenericTableElementParams
-} from '@common-secure/generic-table.component';
-
-// Childs
+// SubComponents
 import { SolutionsModalComponent } from './solutions.modal.component';
-import { SolutionEditModalComponent } from '../solution/solution.edit.modal.component';
 
 // Models
-import { Solution } from '@models/solution.model';
 import { ProfileInfo } from '@models/profile-info.model';
+import { Solution } from '@models/solution.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
-import { LoggerService } from '@services/logger.service';
 import { SolutionService } from '@services/solution.service';
 import { StatService, Stats } from '@services/stat.service';
+import { LoggerService } from '@services/logger.service';
 
-// Helpers
-import * as moment from 'moment';
+declare var $: any;
 
 @Component({
     selector: 'app-root-solutions',
-    templateUrl: '../common/generic-table.component.html'
+    templateUrl: './solutions.component.html'
 })
-export class SolutionsComponent extends GenericTableComponent implements OnInit {
-    private isAdminUser: boolean;
+export class SolutionsComponent implements OnInit {
     private profile: ProfileInfo;
+
+    public isAdminUser: boolean;
+    public tableData: Solution[];
+    public tableHeaders = [
+        { attr: 'name', name: 'Name' },
+        { attr: 'createdAt', name: 'Created At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' },
+        { attr: 'updatedAt', name: 'Last Updated At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' }
+    ];
+    public totalSolutions: number;
+    public pages: any = {
+        current: 1,
+        total: 0,
+        pageSize: 20
+    };
+    public pageTitle = 'Solutions';
 
     @BlockUI()
     blockUI: NgBlockUI;
+    @ViewChild('createModalTemplate', { read: ViewContainerRef })
+    createModalTemplate: ViewContainerRef;
 
     constructor(
         public router: Router,
         private breadCrumbService: BreadCrumbService,
-        private logger: LoggerService,
         private solutionService: SolutionService,
-        private localStorage: LocalStorage,
         private statService: StatService,
-        private resolver: ComponentFactoryResolver,
-        private ngZone: NgZone
+        private localStorage: LocalStorage,
+        private logger: LoggerService,
+        private ngZone: NgZone,
+        private resolver: ComponentFactoryResolver
     ) {
-        super(logger, resolver);
-
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
-            this.profile = new ProfileInfo(profile);
-            this.isAdminUser = this.profile.isAdmin();
-
-            this.params = <GenericTableParams>{
-                path: '/securehome/solutions',
-                pageTitle: 'Solutions',
-                createElement: <GenericTableElementParams>{
-                    text: 'Create NEW Solution',
-                    modal: SolutionsModalComponent,
-                    modalName: 'defaultSolutionModal',
-                    link: false
-                },
-                editElement: <GenericTableElementParams>{
-                    text: 'Edit',
-                    modal: SolutionEditModalComponent,
-                    modalName: 'editSolutionModal',
-                    link: false
-                },
-                viewElement: <GenericTableElementParams>{ text: 'View', modal: null, link: true },
-                fieldLink: 'name',
-                deleteElement: this.isAdminUser,
-                fields: [
-                    // { attr: 'type', text: 'type' },
-                    { attr: 'name', text: 'Name' },
-                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
-                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
-                ],
-                cachedMode: false
-            };
-        });
-
-        statService.statObservable$.subscribe((message: Stats) => {
-            this.dataStats = message.solutionStats;
-            this.ngZone.run(() => {});
-        });
-
-        statService.refresh();
+        this.totalSolutions = 0;
+        this.tableData = [];
     }
 
     ngOnInit() {
-        const _self = this;
-        _self.blockUI.start('Loading solutions...');
+        const self = this;
 
-        _self.breadCrumbService.setup(_self.params.pageTitle, [
-            new Crumb({ title: _self.params.pageTitle, active: true, link: 'solutions' })
-        ]);
+        self.blockUI.start(`Loading ${self.pageTitle}...`);
 
-        _self.handleDelete.subscribe((element: Solution) => {
-            swal({
-                title: 'Are you sure you want to delete this solution?',
-                text: `You won't be able to revert this!`,
-                type: 'question',
-                showCancelButton: true,
-                cancelButtonColor: '#3085d6',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then(result => {
-                if (result.value) {
-                    _self.blockUI.start('Deleting device...');
-                    _self.solutionService
-                        .delete(element.id)
-                        .then((resp: any) => {
-                            console.log(resp);
-                            _self.blockUI.stop();
-                        })
-                        .catch(err => {
-                            _self.blockUI.stop();
-                            swal('Oops...', 'Something went wrong! Unable to delete the solution.', 'error');
-                            _self.logger.error('error occurred calling deleteSolution api, show message');
-                            _self.logger.error(err);
-                        });
-                }
+        self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            self.profile = new ProfileInfo(profile);
+            self.isAdminUser = self.profile.isAdmin();
+
+            self.breadCrumbService.setup(self.pageTitle, [
+                new Crumb({ title: self.pageTitle, active: true, link: 'solutions' })
+            ]);
+
+            self.statService.statObservable$.subscribe((message: Stats) => {
+                this.ngZone.run(() => {
+                    this.totalSolutions = message.solutionStats.total;
+                });
             });
-        });
 
-        _self.load();
+            self.statService.refresh();
+
+            self.load();
+        });
     }
 
     private getSolutions(ofPage: number, nextToken: string) {
@@ -144,86 +100,66 @@ export class SolutionsComponent extends GenericTableComponent implements OnInit 
         });
     }
 
-    load() {
-        const _self = this;
+    private load() {
+        const self = this;
 
-        return _self
-            .getSolutions(_self.pages.current - 1, null)
+        return self
+            .getSolutions(self.pages.current - 1, null)
             .then(results => {
-                console.log(results);
-                _self.data = results.solutions;
-                _self.updatePaging();
-                _self.blockUI.stop();
+                self.tableData = results.solutions;
+                self.updatePaging();
+                self.blockUI.stop();
             })
             .catch(err => {
                 swal('Oops...', 'Something went wrong! Unable to retrieve the solutions.', 'error');
-                _self.logger.error('error occurred calling listSolutions api');
-                _self.logger.error(err);
-                _self.router.navigate(['/securehome/solutions']);
+                self.logger.error('error occurred calling listSolutions api');
+                self.logger.error(err);
+                self.router.navigate(['/securehome/solutions']);
             });
     }
 
-    open(elem: Solution) {
-        this.router.navigate([['/securehome/solutions', elem.id].join('/')]);
+    private updatePaging() {
+        this.pages.total = Math.ceil(this.totalSolutions / this.pages.pageSize);
     }
 
-    refreshData() {
-        this.blockUI.start('Loading solutions...');
+    public refreshData() {
+        this.blockUI.start(`Loading ${this.pageTitle}...`);
         this.pages.current = 1;
         this.load();
     }
 
-    // openSolution(id: string) {
-    //     this.router.navigate([['/securehome/solutions', id].join('/')]);
-    // }
+    public handleCreate() {
+        const self = this;
+        self.createModalTemplate.clear();
 
-    // formatDate(dt: string) {
-    //     if (dt) {
-    //         return moment(dt).format('MMM Do YYYY');
-    //     } else {
-    //         return '';
-    //     }
-    // }
+        const componentRef = this.createModalTemplate.createComponent(this.resolver.resolveComponentFactory(SolutionsModalComponent));
+        const componentRefInstance = <any>componentRef.instance;
 
-    // nextPage() {
-    //     this.pages.current++;
-    //     this.blockUI.start('Loading device types...');
-    //     this.load();
-    // }
+        const cancelSubject: Subject<void> = new Subject<void>();
+        cancelSubject.subscribe(() => {
+            self.handleCancelCreate();
+        });
+        const submitSubject: Subject<any> = new Subject<any>();
+        submitSubject.subscribe(result => {
+            if (result.error) {
+                swal('Oops...', 'Something went wrong!', 'error');
+                self.logger.error('error occurred calling api, show message');
+                self.logger.error(result.error);
+            } else {
+                swal({ timer: 1000, title: 'Success', type: 'success', showConfirmButton: false }).then();
+            }
+            self.handleCancelCreate();
+            self.refreshData();
+        });
 
-    // previousPage() {
-    //     this.pages.current--;
-    //     this.blockUI.start('Loading device types...');
-    //     this.load();
-    // }
+        componentRefInstance.cancelSubject = cancelSubject;
+        componentRefInstance.submitSubject = submitSubject;
+        $('#createModalTemplate').modal('show');
+    }
 
-    // showCreateForm() {
-    //     this.newDevice = new Device();
-    //     $('#createModal').modal('show');
-    // }
-    // cancelCreateForm(form: NgForm) {
-    //     form.reset();
-    //     $('#createModal').modal('hide');
-    // }
-    // submitCreateDevice(value: any) {
-    //     const _self = this;
+    private handleCancelCreate() {
+        $('#createModalTemplate').modal('hide');
+        this.createModalTemplate.clear();
+    }
 
-    //     _self.blockUI.start('Creating device...');
-
-    //     _self.deviceService
-    //         .addDevice(_self.newDevice.thingName, false)
-    //         .then((device: Device) => {
-    //             _self.loadDevices();
-    //             // TODO: goto the /devices/thingId in the router
-    //             $('#createModal').modal('hide');
-    //         })
-    //         .catch(err => {
-    //             _self.blockUI.stop();
-    //             swal('Oops...', 'Something went wrong! Unable to update the device.', 'error');
-    //             _self.logger.error('error occurred calling updateDevice api, show message');
-    //             _self.logger.error(err);
-    //             _self.loadDevices();
-    //         });
-
-    // }
 }

@@ -30,36 +30,19 @@ import { ForgotPasswordStep1Component, ForgotPassword2Component } from './public
 import { RegisterComponent } from './public/auth/register/registration.component';
 import { NewPasswordComponent } from './public/auth/newpassword/new-password.component';
 // Components - Secure - Common
-import { GenericTableComponent } from './secure/common/generic-table.component';
 import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
 import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
 // Components - Secure
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
-import { DeviceComponent } from './secure/device/device.component';
+import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
-// import { DeviceBlueprintComponent } from './secure/device-blueprint/device-blueprint.component';
-import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-// import { DeviceTypeComponent } from './secure/device-type/device-type.component';
-import { DeviceTypesComponent } from './secure/device-types/device-types.component';
 import { MapsComponent } from './secure/maps/maps.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 import { SettingsComponent } from './secure/settings/settings.component';
-import { SolutionComponent } from './secure/solution/solution.component';
-import { SolutionsComponent } from './secure/solutions/solutions.component';
-import { SolutionBlueprintsComponent } from './secure/solution-blueprints/solution-blueprints.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
-
-// Sub Components // TODO: this needs to change because of mis-understanding of how angular works
-import { DeviceBlueprintsModalComponent } from './secure/device-blueprints/device-blueprints.modal.component';
-// import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
-import { SolutionEditModalComponent } from './secure/solution/solution.edit.modal.component';
-import { SolutionsModalComponent } from './secure/solutions/solutions.modal.component';
-import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/solution-blueprints.modal.component';
-
-// Directives
 
 // Pipes
 import { PipesModule } from './pipes/pipes.module';
@@ -70,22 +53,21 @@ import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 
 // Common Modules
 import { GaugeModule } from './common/modules/gauge/gauge.module';
+import { PrettyJsonModule } from './common/modules/pretty-json/pretty-json.module';
 import { TableModule } from './common/modules/table/table.module';
 
 // Secure Modules
+import { DeviceBlueprintsModule } from './secure/device-blueprints/device-blueprints.module';
 import { DeviceTypesModule } from './secure/device-types/device-types.module';
+import { SolutionsModule } from './secure/solutions/solutions.module';
+import { SolutionBlueprintsModule } from './secure/solution-blueprints/solution-blueprints.module';
 
 // Solution Modules
 import { ChildViewsModule } from '@solutions/child-views.module';
 
-
-
 @NgModule({
     declarations: [
         AppComponent,
-
-        // Components - Common
-        // PrettyJsonComponent,
 
         // Components - Public
         LoginComponent,
@@ -99,7 +81,6 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         HomeComponent,
 
         // Components - Secure - Common
-        GenericTableComponent,
         IoTPubSuberComponent,
         PrettifierComponent,
 
@@ -107,27 +88,13 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         DeploymentsComponent,
         DeviceComponent,
         DevicesComponent,
-        // DeviceBlueprintComponent,
-        DeviceBlueprintsComponent,
-        // DeviceTypeComponent,
-        // DeviceTypesComponent,
         MapsComponent,
         ProfileComponent,
         SecureHomeCommonComponent,
         SecureHomeComponent,
         SettingsComponent,
-        SolutionComponent,
-        SolutionsComponent,
-        SolutionBlueprintsComponent,
         UserComponent,
-        UsersComponent,
-
-        // Sub Components
-        DeviceBlueprintsModalComponent,
-        // DeviceTypesModalComponent,
-        SolutionEditModalComponent,
-        SolutionsModalComponent,
-        SolutionBlueprintsModalComponent
+        UsersComponent
     ],
     imports: [
         BrowserModule,
@@ -142,10 +109,14 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         // Common
         ChildViewsModule,
         GaugeModule,
+        PrettyJsonModule,
         TableModule,
 
         // Secure
+        DeviceBlueprintsModule,
         DeviceTypesModule,
+        SolutionsModule,
+        SolutionBlueprintsModule,
 
         BlockUIModule.forRoot(),
         SweetAlert2Module
@@ -167,13 +138,6 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         // .forRoot()
     ],
     providers: [{ provide: LoggerService, useClass: ConsoleLoggerService }],
-    bootstrap: [AppComponent],
-    entryComponents: [
-        DeviceBlueprintsModalComponent,
-        // DeviceTypesModalComponent,
-        SolutionEditModalComponent,
-        SolutionsModalComponent,
-        SolutionBlueprintsModalComponent
-    ]
+    bootstrap: [AppComponent]
 })
 export class AppModule {}

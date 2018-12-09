@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import swal from 'sweetalert2';
 
@@ -10,6 +11,7 @@ import { SolutionBlueprint } from '@models/solution-blueprint.model';
 // Services
 import { DeviceService } from '@services/device.service';
 import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { LoggerService } from '@services/logger.service';
 import { SolutionService } from '@services/solution.service';
 import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 
@@ -34,6 +36,8 @@ export class SolutionEditModalComponent implements OnInit {
     @Input()
     modalType: string;
     @Input()
+    deleteSubject: Subject<any>;
+    @Input()
     cancelSubject: Subject<void>;
     @Input()
     submitSubject: Subject<any>;
@@ -42,10 +46,12 @@ export class SolutionEditModalComponent implements OnInit {
     public solutionBlueprint: SolutionBlueprint = new SolutionBlueprint();
 
     constructor(
-        private solutionService: SolutionService,
-        private solutionBlueprintService: SolutionBlueprintService,
         private deviceService: DeviceService,
-        private deviceBlueprintService: DeviceBlueprintService
+        private deviceBlueprintService: DeviceBlueprintService,
+        private logger: LoggerService,
+        private router: Router,
+        private solutionService: SolutionService,
+        private solutionBlueprintService: SolutionBlueprintService
     ) {
         this.element = new Solution({
             id: 'new',
@@ -54,60 +60,46 @@ export class SolutionEditModalComponent implements OnInit {
     }
 
     ngOnInit() {
-        // this.deviceBlueprintService.blueprintsObservable$.subscribe(message => {
-        // Promise.all(
-        //     this.element.deviceIds.map(deviceId => {
-        //         return this.deviceService.getDevice(deviceId).then(device => {
-        //             // console.log('Found device:', device);
-        //             return this.deviceService
-        //                 .listRecursive('listDevicesWithDeviceBlueprint', device.deviceBlueprintId, 10, null)
-        //                 .then(devices => {
-        //                     // console.log(this.element.id, this.element.name, this.element.description, this.element.deviceIds);
-        //                     return new DeviceBlueprintPossibleDevices({
-        //                         thingId: deviceId,
-        //                         device: device,
-        //                         list: devices
-        //                     });
-        //                 });
-        //         });
-        //     })
-        // )
         let _solutionBlueprint;
         this.solutionBlueprintService
             .get(this.element.solutionBlueprintId)
             .then((solutionBlueprint: SolutionBlueprint) => {
                 _solutionBlueprint = solutionBlueprint;
-                return Promise.all(solutionBlueprint.spec.devices.map((specDevice, index) => {
-                        return Promise.all(specDevice.deviceBlueprintId.map(
-                                deviceBlueprintId => {
-                                    return this.deviceService.listRecursive('listDevicesWithDeviceBlueprint', deviceBlueprintId, 10, null);
-                                }
-                            ))
-                            .then((results: any) => {
-                                const devices: Device[] = results.flat();
-                                if (this.element.deviceIds[index]) {
-                                    return this.deviceService
-                                        .getDevice(this.element.deviceIds[index])
-                                        .then((device: Device) => {
-                                            return new DeviceBlueprintPossibleDevices({
-                                                deviceBlueprintId: specDevice.deviceBlueprintId,
-                                                device: device,
-                                                list: devices
-                                            });
+                return Promise.all(
+                    solutionBlueprint.spec.devices.map((specDevice, index) => {
+                        return Promise.all(
+                            specDevice.deviceBlueprintId.map(deviceBlueprintId => {
+                                return this.deviceService.listRecursive(
+                                    'listDevicesWithDeviceBlueprint',
+                                    deviceBlueprintId,
+                                    10,
+                                    null
+                                );
+                            })
+                        ).then((results: any) => {
+                            const devices: Device[] = results.flat();
+                            if (this.element.deviceIds[index]) {
+                                return this.deviceService
+                                    .getDevice(this.element.deviceIds[index])
+                                    .then((device: Device) => {
+                                        return new DeviceBlueprintPossibleDevices({
+                                            deviceBlueprintId: specDevice.deviceBlueprintId,
+                                            device: device,
+                                            list: devices
                                         });
-                                } else {
-                                    return new DeviceBlueprintPossibleDevices({
-                                        deviceBlueprintId: specDevice.deviceBlueprintId,
-                                        device: null,
-                                        list: devices
                                     });
-                                }
-                            });
+                            } else {
+                                return new DeviceBlueprintPossibleDevices({
+                                    deviceBlueprintId: specDevice.deviceBlueprintId,
+                                    device: null,
+                                    list: devices
+                                });
+                            }
+                        });
                     })
                 );
             })
             .then((results: DeviceBlueprintPossibleDevices[]) => {
-                console.log(results);
                 this.deviceBlueprintPossibleDevices = results;
                 this.solutionBlueprint = new SolutionBlueprint(_solutionBlueprint);
             })
@@ -115,24 +107,18 @@ export class SolutionEditModalComponent implements OnInit {
     }
 
     submit() {
-        // console.log(this.element, this.deviceBlueprintPossibleDevices, this.solutionBlueprint);
         this.solutionService
             .update(
                 this.element.id,
                 this.element.name,
                 this.element.description,
                 this.element.deviceIds
-                // this.deviceBlueprintPossibleDevices.map(d => d.device.thingId)
             )
             .then((solution: Solution) => {
-                console.log(solution);
                 this.submitSubject.next({ data: solution, error: null });
-                this.solutionService.refreshSolution(this.element.id);
-            }).then((result) => {
-                console.log(result);
             })
             .catch(err => {
-                console.error(err);
+                // console.error(err);
                 this.submitSubject.next({ data: this.element, error: err });
             });
     }
@@ -165,5 +151,28 @@ export class SolutionEditModalComponent implements OnInit {
                 console.error(err);
                 swal('Oops...', 'Something went wrong!', 'error');
             });
+    }
+
+    delete() {
+        swal({
+            title: 'Are you sure you want to delete this solution?',
+            text: `You won't be able to revert this!`,
+            type: 'question',
+            showCancelButton: true,
+            cancelButtonColor: '#3085d6',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(result => {
+            if (result.value) {
+                this.solutionService
+                    .delete(this.element.id)
+                    .then((resp: any) => {
+                        this.deleteSubject.next({ data: resp, error: null });
+                    })
+                    .catch(err => {
+                        this.deleteSubject.next({ data: this.element, error: err });
+                    });
+            }
+        });
     }
 }

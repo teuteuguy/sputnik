@@ -1,6 +1,6 @@
 export class Solution {
     id: string;
-    name = 'UNKNOWN';
+    name = 'new';
     description = 'UNKNOWN';
     deviceIds: string[] = [];
     solutionBlueprintId: string; // = 'UNKNOWN';

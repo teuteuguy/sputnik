@@ -21,7 +21,7 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
     private limit = 50;
     private observable: any = new Subject<any>();
     public deviceBlueprints: DeviceBlueprint[] = [];
-    public blueprintsObservable$ = this.observable.asObservable();
+    public deviceBlueprintsObservable$ = this.observable.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
         const _self = this;

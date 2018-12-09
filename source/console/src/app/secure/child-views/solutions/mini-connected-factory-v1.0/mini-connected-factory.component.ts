@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges} from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 // Models
 import { Device } from '@models/device.model';
@@ -9,7 +9,6 @@ import { SolutionBlueprint } from '@models/solution-blueprint.model';
 import { DeviceService } from '@services/device.service';
 import { SolutionBlueprintService } from '@services/solution-blueprint.service';
 import { IOTService } from '@services/iot.service';
-
 
 @Component({
     selector: 'app-mini-connected-factory-v1',
@@ -36,17 +35,19 @@ export class MiniConnectedFactoryV10Component implements OnInit, OnChanges {
         )
             .then(results => {
                 this.devices = results;
-                this.iotService
-                    .getThingShadow({
-                        thingName: this.devices[1].thingName
-                    })
-                    .then(shadow => {
-                        console.log(shadow.state.desired.inferenceDecision);
-                        this.inferenceDecision = shadow.state.desired.inferenceDecision;
-                    })
-                    .catch(err => {
-                        console.error(err);
-                    });
+                if (this.devices[1] && this.devices[1].thingName) {
+                    this.iotService
+                        .getThingShadow({
+                            thingName: this.devices[1].thingName
+                        })
+                        .then(shadow => {
+                            console.log(shadow.state.desired.inferenceDecision);
+                            this.inferenceDecision = shadow.state.desired.inferenceDecision;
+                        })
+                        .catch(err => {
+                            console.error(err);
+                        });
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -58,21 +59,24 @@ export class MiniConnectedFactoryV10Component implements OnInit, OnChanges {
     }
 
     setCategory(category) {
-        this.iotService.updateThingShadow({
-            thingName: this.devices[1].thingName,
-            payload: JSON.stringify({
-                state: {
-                    desired: {
-                        inferenceDecision: {
-                            category: category
+        this.iotService
+            .updateThingShadow({
+                thingName: this.devices[1].thingName,
+                payload: JSON.stringify({
+                    state: {
+                        desired: {
+                            inferenceDecision: {
+                                category: category
+                            }
                         }
                     }
-                }
+                })
             })
-        }).then(data => {
-            console.log(data);
-        }).catch(err => {
-            console.error(err);
-        });
+            .then(data => {
+                console.log(data);
+            })
+            .catch(err => {
+                console.error(err);
+            });
     }
 }
