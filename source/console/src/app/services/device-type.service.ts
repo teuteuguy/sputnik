@@ -28,13 +28,22 @@ export class DeviceTypeService implements AddedDeviceType, UpdatedDeviceType, De
         _self.loadAll();
     }
     public add(deviceType: DeviceType) {
-        return this.appSyncService.addDeviceType(deviceType);
+        return this.appSyncService.addDeviceType(deviceType).then(r => {
+            this.onAddedDeviceType(r);
+            return r;
+        });
     }
     public update(deviceType: DeviceType) {
-        return this.appSyncService.updateDeviceType(deviceType);
+        return this.appSyncService.updateDeviceType(deviceType).then(r => {
+            this.onUpdatedDeviceType(r);
+            return r;
+        });
     }
     public delete(id: string) {
-        return this.appSyncService.deleteDeviceType(id);
+        return this.appSyncService.deleteDeviceType(id).then(r => {
+            this.onDeletedDeviceType(r);
+            return r;
+        });
     }
 
     private loadAll() {

@@ -24,12 +24,29 @@ import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-root-device-types',
-    // templateUrl: './device-types.component.html'
-    templateUrl: '../common/generic-table.component.html'
+    templateUrl: './device-types.component.html'
+    // templateUrl: '../common/generic-table.component.html'
 })
-export class DeviceTypesComponent extends GenericTableComponent implements OnInit {
-    private isAdminUser: boolean;
+export class DeviceTypesComponent implements OnInit {
+    // extends GenericTableComponent implements OnInit {
+
     private profile: ProfileInfo;
+
+    public isAdminUser: boolean;
+    public tableData: DeviceType[];
+    public tableHeaders = [
+        { attr: 'type', name: 'type' },
+        { attr: 'name', name: 'Name' },
+        { attr: 'createdAt', name: 'Created At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' },
+        { attr: 'updatedAt', name: 'Last Updated At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' }
+    ];
+    public totalDeviceTypes: number;
+    public pages: any = {
+        current: 1,
+        total: 0,
+        pageSize: 20
+    };
+    public pageTitle = 'Device Types';
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -43,114 +60,50 @@ export class DeviceTypesComponent extends GenericTableComponent implements OnIni
         private ngZone: NgZone,
         private resolver: ComponentFactoryResolver
     ) {
-        super(logger, resolver);
-
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
-            this.profile = new ProfileInfo(profile);
-            this.isAdminUser = this.profile.isAdmin();
-
-            this.params = <GenericTableParams>{
-                path: '/securehome/device-types',
-                pageTitle: 'Device Types',
-                createElement: <GenericTableElementParams>{
-                    text: 'Create NEW Device Type',
-                    modal: DeviceTypesModalComponent,
-                    modalName: 'defaultDeviceTypesModal',
-                    link: false
-                },
-                editElement: <GenericTableElementParams>{
-                    text: 'Edit',
-                    modal: DeviceTypesModalComponent,
-                    modalName: 'defaultDeviceTypesModal',
-                    link: false
-                },
-                viewElement: <GenericTableElementParams>{
-                    text: 'View',
-                    modal: DeviceTypesModalComponent,
-                    modalName: 'defaultDeviceTypesModal',
-                    link: false
-                },
-                deleteElement: this.isAdminUser,
-                fields: [
-                    { attr: 'type', text: 'type' },
-                    { attr: 'name', text: 'Name' },
-                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
-                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
-                ],
-                cachedMode: true
-            };
-
-            this.handleDelete.subscribe((element: DeviceType) => {
-                const _self = this;
-                swal({
-                    title: 'Are you sure you want to delete this device type?',
-                    text: `You won't be able to revert this!`,
-                    type: 'question',
-                    showCancelButton: true,
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then(result => {
-                    if (result.value) {
-                        _self.blockUI.start('Deleting device...');
-                        _self.deviceTypeService
-                            .delete(element.id)
-                            .then((resp: any) => {
-                                console.log(resp);
-                                _self.blockUI.stop();
-                            })
-                            .catch(err => {
-                                _self.blockUI.stop();
-                                swal('Oops...', 'Something went wrong! Unable to delete the device type.', 'error');
-                                _self.logger.error('error occurred calling deleteDeviceType api, show message');
-                                _self.logger.error(err);
-                            });
-                    }
-                });
-            });
-
-            this.data = deviceTypeService.deviceTypes;
-        });
+        this.totalDeviceTypes = 0;
+        this.tableData = deviceTypeService.deviceTypes;
     }
 
     ngOnInit() {
-        const _self = this;
-        _self.blockUI.start('Loading device types...');
+        const self = this;
 
-        _self.breadCrumbService.setup(_self.params.pageTitle, [
-            new Crumb({ title: _self.params.pageTitle, active: true, link: 'device-types' })
-        ]);
+        self.blockUI.start(`Loading ${self.pageTitle}...`);
 
-        _self.deviceTypeService.deviceTypesObservable$.subscribe(deviceTypes => {
-            _self.cleanup();
-            _self.blockUI.stop();
-            _self.ngZone.run(() => {});
+        self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            self.profile = new ProfileInfo(profile);
+            self.isAdminUser = self.profile.isAdmin();
+
+            self.breadCrumbService.setup(self.pageTitle, [
+                new Crumb({ title: self.pageTitle, active: true, link: 'device-types' })
+            ]);
+
+            self.deviceTypeService.deviceTypesObservable$.subscribe(deviceTypes => {
+                self.ngZone.run(() => {
+                    self.load();
+                });
+            });
+
+            self.load();
         });
-
-        _self.load();
     }
 
-    cleanup() {
-        this.dataStats.total = this.deviceTypeService.deviceTypes.length;
+    private load() {
+        this.blockUI.stop();
         this.updatePaging();
     }
 
-    load() {
-        // this.data = this.deviceTypeService.deviceTypes;
-        this.blockUI.stop();
-        this.cleanup();
+    private updatePaging() {
+        this.totalDeviceTypes = this.deviceTypeService.deviceTypes.length;
+        this.pages.total = Math.ceil(this.totalDeviceTypes / this.pages.pageSize);
     }
 
     refreshData() {
-        this.blockUI.start('Loading device types...');
+        this.blockUI.start(`Loading ${this.pageTitle}...`);
         this.deviceTypeService.refresh();
         this.pages.current = 1;
     }
 
-    open(elem: DeviceType) {
-        console.log(elem);
-        // const queryParams: NavigationExtras = { queryParams: { edit: edit } };
-        // this.router.navigate([['/securehome/device-types', elem.id].join('/')], queryParams);
-        this.router.navigate([['/securehome/device-types', elem.id].join('/')]);
+    handleCreate() {
+        this.router.navigate(['securehome/device-types/new']);
     }
 }

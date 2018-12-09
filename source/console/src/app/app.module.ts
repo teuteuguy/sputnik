@@ -14,8 +14,10 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 
 // Components
 import { AppComponent } from './app.component';
+
 // Components - Common
-import { PrettyJsonComponent } from './common/components/pretty-json/pretty-json.component';
+// import { PrettyJsonComponent } from './common/components/pretty-json/pretty-json.component';
+
 // Components - Public
 import { HomeComponent } from './public/home/home.component';
 import { LoginComponent } from './public/auth/login/login.component';
@@ -50,24 +52,17 @@ import { SolutionBlueprintsComponent } from './secure/solution-blueprints/soluti
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
 
-// import { UserComponent } from './secure/admin/users/user.component';
-// import { GroupsComponent } from './secure/admin/groups/groups.component';
-// import { DeviceTypeComponent } from './secure/devices/device-type.component';
-// import { MyDevicesComponent } from './secure/devices/mydevices.component';
-
-// Sub Components
+// Sub Components // TODO: this needs to change because of mis-understanding of how angular works
 import { DeviceBlueprintsModalComponent } from './secure/device-blueprints/device-blueprints.modal.component';
-import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
+// import { DeviceTypesModalComponent } from './secure/device-types/device-types.modal.component';
 import { SolutionEditModalComponent } from './secure/solution/solution.edit.modal.component';
 import { SolutionsModalComponent } from './secure/solutions/solutions.modal.component';
 import { SolutionBlueprintsModalComponent } from './secure/solution-blueprints/solution-blueprints.modal.component';
-// import { MyDeeplensWebCameraV10Component } from './secure/devices/types/my-deeplens-web-camera-v1.0.component';
-// import { MiniConnectedFactoryV10Component } from './secure/devices/types/mini-connected-factory-v1.0.component';
 
 // Directives
 
 // Pipes
-import { AppPipesModule } from './pipes/pipes.module';
+import { PipesModule } from './pipes/pipes.module';
 
 // Services
 import { AppServicesModule } from './services/services.module';
@@ -75,6 +70,10 @@ import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 
 // Common Modules
 import { GaugeModule } from './common/modules/gauge/gauge.module';
+import { TableModule } from './common/modules/table/table.module';
+
+// Secure Modules
+import { DeviceTypesModule } from './secure/device-types/device-types.module';
 
 // Solution Modules
 import { ChildViewsModule } from '@solutions/child-views.module';
@@ -86,7 +85,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         AppComponent,
 
         // Components - Common
-        PrettyJsonComponent,
+        // PrettyJsonComponent,
 
         // Components - Public
         LoginComponent,
@@ -111,7 +110,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         // DeviceBlueprintComponent,
         DeviceBlueprintsComponent,
         // DeviceTypeComponent,
-        DeviceTypesComponent,
+        // DeviceTypesComponent,
         MapsComponent,
         ProfileComponent,
         SecureHomeCommonComponent,
@@ -125,7 +124,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
 
         // Sub Components
         DeviceBlueprintsModalComponent,
-        DeviceTypesModalComponent,
+        // DeviceTypesModalComponent,
         SolutionEditModalComponent,
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent
@@ -140,8 +139,13 @@ import { ChildViewsModule } from '@solutions/child-views.module';
 
         AppRoutingModule,
 
+        // Common
         ChildViewsModule,
         GaugeModule,
+        TableModule,
+
+        // Secure
+        DeviceTypesModule,
 
         BlockUIModule.forRoot(),
         SweetAlert2Module
@@ -155,7 +159,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
             (),
 
         // Pipes
-        AppPipesModule,
+        PipesModule,
 
         // Services
         AppServicesModule
@@ -166,7 +170,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
     bootstrap: [AppComponent],
     entryComponents: [
         DeviceBlueprintsModalComponent,
-        DeviceTypesModalComponent,
+        // DeviceTypesModalComponent,
         SolutionEditModalComponent,
         SolutionsModalComponent,
         SolutionBlueprintsModalComponent

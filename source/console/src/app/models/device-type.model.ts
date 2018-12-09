@@ -1,6 +1,6 @@
 export class DeviceType {
     id: string;
-    name = 'UNKNOWN';
+    name = 'new';
     type = 'UNKNOWN';
     spec: any = {};
     createdAt: string;

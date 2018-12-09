@@ -171,33 +171,33 @@
             <nav class="sidebar-nav">
                 <!-- <nav class="sidebar-nav"> -->
                 <ul id="sidebarnav">
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink=".">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/">
                         <a class="waves-effect waves-dark" data-caption="Home">
                             <i class="mdi mdi-home"></i>
                             <span class="hide-menu">Home </span>
                         </a>
                     </li>
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="maps">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/maps">
                         <a class="waves-effect waves-dark" data-caption="Maps">
                             <i class="mdi mdi-google-maps"></i>
                             <span class="hide-menu">Maps </span>
                         </a>
                     </li>
                     <li class="nav-small-cap">MENU</li>
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="solutions">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/solutions">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-car"></i>
                             <span class="hide-menu">Solutions </span>
                         </a>
                     </li>
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="devices">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/devices">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-view-module"></i>
                             <span class="hide-menu">Devices </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="deployments">
+                        routerLink="/securehome/deployments">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-move-resize-variant"></i>
                             <span class="hide-menu">Deployments </span>
@@ -205,49 +205,49 @@
                     </li>
                     <li class="nav-small-cap">MODULES</li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="solution-blueprints">
+                        routerLink="/securehome/solution-blueprints">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-sitemap"></i>
                             <span class="hide-menu">Solution Blueprints </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="device-blueprints">
+                        routerLink="/securehome/device-blueprints">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-lock-pattern"></i>
                             <span class="hide-menu">Device Blueprints </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="device-types">
+                        routerLink="/securehome/device-types">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-chip"></i>
                             <span class="hide-menu">Device Types </span>
                         </a>
                     </li>
                     <li class="nav-small-cap" *ngIf="isAdminUser">ADMINISTRATION</li>
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="profile">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/profile">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-account-card-details"></i>
                             <span class="hide-menu">My Profile </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="users">
+                        routerLink="/securehome/users">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-account-multiple"></i>
                             <span class="hide-menu">Users </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="user-groups">
+                        routerLink="/securehome/user-groups">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-account-network"></i>
                             <span class="hide-menu">Groups </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-                        routerLink="settings">
+                        routerLink="/securehome/settings">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-settings"></i>
                             <span class="hide-menu">Settings </span>

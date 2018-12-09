@@ -34,13 +34,22 @@ export class SolutionBlueprintService
         _self.loadAll();
     }
     public add(solutionBlueprint: SolutionBlueprint) {
-        return this.appSyncService.addSolutionBlueprint(solutionBlueprint);
+        return this.appSyncService.addSolutionBlueprint(solutionBlueprint).then(r => {
+            this.onAddedSolutionBlueprint(r);
+            return r;
+        });
     }
     public update(solutionBlueprint: SolutionBlueprint) {
-        return this.appSyncService.updateSolutionBlueprint(solutionBlueprint);
+        return this.appSyncService.updateSolutionBlueprint(solutionBlueprint).then(r => {
+            this.onUpdatedSolutionBlueprint(r);
+            return r;
+        });
     }
     public delete(id: string) {
-        return this.appSyncService.deleteSolutionBlueprint(id);
+        return this.appSyncService.deleteSolutionBlueprint(id).then(r => {
+            this.onDeletedSolutionBlueprint(r);
+            return r;
+        });
     }
 
     private loadAll() {

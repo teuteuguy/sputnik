@@ -17,11 +17,14 @@
             "dom"
         ],
         "paths": {
+            "@common-components/*": ["common/components/*"],
+            "@common-modules/*": ["common/modules/*"],
             "@common-secure/*": ["secure/common/*"],
             "@env/*": ["../environments/*"],
             "@graphql/*": ["graphql/*"],
             "@models/*": ["models/*"],
             "@pipes/*": ["pipes/*"],
+            "@secure/*": ["secure/*"],
             "@services/*": ["services/*"],
             "@solutions/*": ["secure/child-views/*"]
         }

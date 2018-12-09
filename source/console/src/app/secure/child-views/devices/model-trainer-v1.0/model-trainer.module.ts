@@ -8,12 +8,12 @@ import { ModelTrainerV10Component } from './model-trainer.component';
 import { S3Module } from '@services/s3/s3.module';
 
 // Pipes
-import { AppPipesModule } from '@pipes/pipes.module';
+import { PipesModule } from '@pipes/pipes.module';
 
 @NgModule({
     declarations: [ModelTrainerV10Component],
     exports: [ModelTrainerV10Component],
-    imports: [AppPipesModule, CommonModule, S3Module],
+    imports: [PipesModule, CommonModule, S3Module],
     providers: []
 })
 export class ModelTrainerV10Module {}

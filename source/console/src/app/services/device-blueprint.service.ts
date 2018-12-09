@@ -33,13 +33,22 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
         _self.loadAll();
     }
     public add(deviceBlueprint: DeviceBlueprint) {
-        return this.appSyncService.addDeviceBlueprint(deviceBlueprint);
+        return this.appSyncService.addDeviceBlueprint(deviceBlueprint).then(r => {
+            this.onAddedDeviceBlueprint(r);
+            return r;
+        });
     }
     public update(deviceBlueprint: DeviceBlueprint) {
-        return this.appSyncService.updateDeviceBlueprint(deviceBlueprint);
+        return this.appSyncService.updateDeviceBlueprint(deviceBlueprint).then(r => {
+            this.onUpdatedDeviceBlueprint(r);
+            return r;
+        });
     }
     public delete(id: string) {
-        return this.appSyncService.deleteDeviceBlueprint(id);
+        return this.appSyncService.deleteDeviceBlueprint(id).then(r => {
+            this.onDeletedDeviceBlueprint(r);
+            return r;
+        });
     }
 
     private loadAll() {

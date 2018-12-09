@@ -21,7 +21,9 @@ import { DeploymentsComponent } from './secure/deployments/deployments.component
 import { DeviceComponent } from './secure/device/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
 import { DeviceBlueprintsComponent } from './secure/device-blueprints/device-blueprints.component';
-import { DeviceTypesComponent } from './secure/device-types/device-types.component';
+// import { DeviceTypeComponent } from './secure/device-types/device-type.component';
+// import { DeviceTypesComponent } from './secure/device-types/device-types.component';
+// import { DeviceTypesModule } from './secure/device-types/device-types.module';
 import { MapsComponent } from './secure/maps/maps.component';
 import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
@@ -80,8 +82,9 @@ const secureHomeRoutes: Routes = [
             { path: 'devices/:thingId', component: DeviceComponent },
             { path: 'device-blueprints', component: DeviceBlueprintsComponent },
             // { path: 'device-blueprints/:deviceBlueprintId', component: DeviceBlueprintComponent },
-            { path: 'device-types', component: DeviceTypesComponent },
-            // { path: 'device-types/:deviceTypeId', component: DeviceTypesComponent },
+            // { path: 'device-types', component: DeviceTypesModule   DeviceTypesComponent },
+            // { path: 'device-types/:id', component: DeviceTypeComponent },
+            { path: 'device-types', redirectTo: '/securehome/device-types', pathMatch: 'full' },
             { path: 'logout', component: LogoutComponent },
             { path: 'maps', component: MapsComponent },
             { path: 'profile', component: ProfileComponent },

@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Device } from '@models/device.model';
 
 // Pipes
-// import { AppPipesModule } from '../../../pipes/pipes.module';
+// import { PipesModule } from '../../../pipes/pipes.module';
 // import { DeviceBlueprintNameFromIdPipe } from '../../../pipes/device-blueprint-name-from-id.pipe';
 
 // Devices
@@ -60,7 +60,7 @@ export class DeviceChildViewComponent {
     exports: [DeviceChildViewComponent],
     imports: [
         CommonModule,
-        // AppPipesModule,
+        // PipesModule,
         AFR3DBeltMiniConnectedFactoryV10Module,
         GGMLLegoHatsV10Module,
         GGMLBoxesV10Module,

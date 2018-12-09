@@ -5,12 +5,12 @@ import { CommonModule } from '@angular/common';
 import { ImageCaptureV10Component } from './image-capture.component';
 
 // Pipes
-import { AppPipesModule } from '../../../../pipes/pipes.module';
+import { PipesModule } from '../../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [ImageCaptureV10Component],
     exports: [ImageCaptureV10Component],
-    imports: [AppPipesModule, CommonModule],
+    imports: [PipesModule, CommonModule],
     providers: []
 })
 export class ImageCaptureV10Module {}

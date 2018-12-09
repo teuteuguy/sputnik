@@ -26,4 +26,4 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         StringifyPipe
     ]
 })
-export class AppPipesModule {}
+export class PipesModule {}

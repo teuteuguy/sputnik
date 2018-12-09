@@ -59,10 +59,16 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
         return this.appSyncService.getDevice(thingId);
     }
     public updateDevice(device: Device) {
-        return this.appSyncService.updateDevice(device);
+        return this.appSyncService.updateDevice(device).then(r => {
+            this.onUpdatedDevice(r);
+            return r;
+        });
     }
     public deleteDevice(thingId: string) {
-        return this.appSyncService.deleteDevice(thingId);
+        return this.appSyncService.deleteDevice(thingId).then(r => {
+            this.onDeletedDevice(r);
+            return r;
+        });
     }
     public addDevice(
         thingName: string,
@@ -71,7 +77,12 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
         spec: any = {},
         generateCert: boolean = true
     ) {
-        return this.appSyncService.addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert);
+        return this.appSyncService
+            .addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert)
+            .then(r => {
+                this.onAddedDevice(r);
+                return r;
+            });
     }
 
     onAddedDevice(device: Device) {

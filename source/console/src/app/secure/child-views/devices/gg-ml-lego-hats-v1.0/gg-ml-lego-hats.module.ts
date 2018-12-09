@@ -5,12 +5,12 @@ import { CommonModule } from '@angular/common';
 import { GGMLLegoHatsV10Component } from './gg-ml-lego-hats.component';
 
 // Pipes
-import { AppPipesModule } from '../../../../pipes/pipes.module';
+import { PipesModule } from '../../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [GGMLLegoHatsV10Component],
     exports: [GGMLLegoHatsV10Component],
-    imports: [AppPipesModule, CommonModule],
+    imports: [PipesModule, CommonModule],
     providers: []
 })
 export class GGMLLegoHatsV10Module {}

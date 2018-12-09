@@ -6,12 +6,12 @@ import { AFR3DBeltMiniConnectedFactoryV10Component } from './afr-3d-belt-mini-co
 import { GaugeModule } from '../../../../common/modules/gauge/gauge.module';
 
 // Pipes
-import { AppPipesModule } from '../../../../pipes/pipes.module';
+import { PipesModule } from '../../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [AFR3DBeltMiniConnectedFactoryV10Component],
     exports: [AFR3DBeltMiniConnectedFactoryV10Component],
-    imports: [AppPipesModule, CommonModule, GaugeModule],
+    imports: [PipesModule, CommonModule, GaugeModule],
     providers: []
 })
 export class AFR3DBeltMiniConnectedFactoryV10Module {}

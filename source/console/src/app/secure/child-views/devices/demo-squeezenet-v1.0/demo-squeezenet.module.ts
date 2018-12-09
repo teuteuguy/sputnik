@@ -5,12 +5,12 @@ import { CommonModule } from '@angular/common';
 import { DemoSqueezenetV10Component } from './demo-squeezenet.component';
 
 // Pipes
-import { AppPipesModule } from '../../../../pipes/pipes.module';
+import { PipesModule } from '../../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [DemoSqueezenetV10Component],
     exports: [DemoSqueezenetV10Component],
-    imports: [AppPipesModule, CommonModule],
+    imports: [PipesModule, CommonModule],
     providers: []
 })
 export class DemoSqueezenetV10Module {}
