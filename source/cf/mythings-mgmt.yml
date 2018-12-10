@@ -10,6 +10,9 @@ Parameters:
         AllowedPattern: "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
 
 Mappings:
+    Send:
+        AnonymousUsage:
+            Data: "Yes"
     SourceCode:
         App:
             ShortName: 'mythings-mgmt'
@@ -248,7 +251,7 @@ Resources:
                 setting:
                     uuid: !GetAtt initAppUUID.UUID
                     mapboxToken: "NA"
-                    # anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+                    anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
             customAction: 'dynamodbSaveItem'
 
     # Initialization - UUID
@@ -258,6 +261,16 @@ Resources:
             ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             customAction: "createUUID"
+
+    initAnonymousMetric:
+        Type: "Custom::LoadLambda"
+        Properties:
+            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            UUID: !GetAtt initAppUUID.UUID
+            version: '%%VERSION%%'
+            anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+            customAction: "sendMetric"
 
 Outputs:
     # UUID
