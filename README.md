@@ -7,7 +7,6 @@ Blablabla
 * When creating a device, deal with the certificates ?
 * Create a location picker for the solutions
 
-* Add SQS functino for anonymous logging
 * Attach cert function from UI
 * Move the common lambda stuff to Lambda layers !
 * Attach policies
@@ -18,8 +17,6 @@ Blablabla
 * disable devices update ?
 * utils: find rogue stuff
 * For a given thing, check which solution they are part of.
-* have the factory reset refer to the cf scripts.
-* Simplify cloudformation script, databucket vs databucketarn
 * see if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ? => lambda layers is the solution here
 
 ## Notes
