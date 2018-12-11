@@ -22,15 +22,6 @@ declare var jquery: any;
 declare var $: any;
 import { _ } from 'underscore';
 
-class PossibleDeviceBlueprintsForDevice {
-    // device: Device;
-    // deviceBlueprintId: string;
-    // list: Device[];
-    constructor(values: Object = {}) {
-        Object.assign(this, values);
-    }
-}
-
 @Component({
     selector: 'app-root-device',
     templateUrl: './device.component.html'
@@ -41,13 +32,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
     private profile: ProfileInfo = null;
 
     public device: Device = new Device();
-    public deviceType: DeviceType = new DeviceType();
-    public deviceTypes: DeviceType[] = [];
-    public deviceBlueprints: DeviceBlueprint[] = [];
-    public deviceBlueprint: DeviceBlueprint = new DeviceBlueprint();
 
     public deviceForEdit: Device = new Device();
-    public possibleDeviceBlueprintsForDevice: PossibleDeviceBlueprintsForDevice[] = [];
+    public deviceBlueprintsForEdit: DeviceBlueprint[] = [];
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -61,8 +48,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
         private breadCrumbService: BreadCrumbService,
         private deploymentService: DeploymentService,
         private deviceService: DeviceService,
-        private deviceBlueprintService: DeviceBlueprintService,
-        private deviceTypeService: DeviceTypeService
+        public deviceBlueprintService: DeviceBlueprintService,
+        public deviceTypeService: DeviceTypeService
     ) {}
 
     ngOnInit() {
@@ -106,9 +93,6 @@ export class DeviceComponent implements OnInit, OnDestroy {
             .getDevice(_self.thingId)
             .then((device: Device) => {
                 _self.device = device;
-                _self.deviceTypes = _self.deviceTypeService.deviceTypes;
-                _self.deviceBlueprints = _self.deviceBlueprintService.deviceBlueprints;
-                _self.getTheExtraResources();
                 _self.blockUI.stop();
             })
             .catch(err => {
@@ -118,96 +102,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
                 _self.logger.error(err);
                 _self.router.navigate(['/securehome/devices']);
             });
-
-        //         _self.loadCustomComponentForDeviceType(_self.device.typeId, _self.device.ggBlueprintId);
-
-        //         return _self.deviceService.getDeviceType(_self.device.typeId);
-        //     })
-        //     .then((deviceType: DeviceType) => {
-        //         _self.deviceType = deviceType;
-        //         // this.logger.info('deviceType:', deviceType);
-        //         if (_self.device.greengrass && _self.device.ggBlueprintId) {
-        //             return _self.ggBlueprintService.getGGBlueprint(_self.device.ggBlueprintId);
-        //         }
-        //         return null;
-        //     })
-        //     .then((ggBlueprint: GGBlueprint) => {
-        //         // this.logger.info('ggBlueprint:', ggBlueprint);
-        //         _self.ggBlueprint = ggBlueprint;
-        //         _self.blockUI.stop();
-        //         return _self.ggBlueprintService.getDeploymentStatus(_self.device);
-        //     })
-        //     .then((ggDeploymentStatus: GGDeploymentStatus) => {
-        //         // _self.logger.info('deploymentStatus:', ggDeploymentStatus);
-        //         _self.ggDeploymentStatus = ggDeploymentStatus;
-        //         return;
-        //     })
-    }
-
-    private getTheExtraResources() {
-        const _self = this;
-        _self.deviceType = new DeviceType(
-            _self.deviceTypes.find(dt => {
-                return dt.id === _self.device.deviceTypeId;
-            })
-        );
-        _self.deviceBlueprint = new DeviceBlueprint(
-            _self.deviceBlueprints.find(b => {
-                return b.id === _self.device.deviceBlueprintId;
-            })
-        );
     }
 
     public refreshData() {
         this.blockUI.start('Loading device...');
         this.loadDevice();
     }
-
-    // loadEditData() {
-    //     // const _self = this;
-    //     // Promise.all([
-    //     //     _self.deviceService.getAllDeviceTypes().then(deviceTypes => (_self.deviceTypes = deviceTypes)),
-    //     //     _self.ggBlueprintService.getAllGGBlueprints().then(ggBlueprints => (_self.ggBlueprints = ggBlueprints))
-    //     // ])
-    //     //     .then(results => results)
-    //     //     .catch(err => {
-    //     //         swal(
-    //     //             'Oops...',
-    //     //             'Something went wrong! Unable to retrieve the device types and/or gg blueprints.',
-    //     //             'error'
-    //     //         );
-    //     //         this.logger.error('error occurred calling getDeviceTypes or getGGBlueprints api, show message');
-    //     //         this.logger.error(err);
-    //     //     });
-    // }
-
-    // loadCustomComponentForDeviceType(typeId: string, ggBlueprintId: string) {
-    //     // const _self = this;
-    //     // if (_self._myCustomComponent === null) {
-    //     //     // _self.logger.info('loadCustomComponentForDeviceType: is null', _self._myCustomComponent, typeId, ggBlueprintId);
-    //     //     _self._myCustomComponent = _self.deviceSubViewComponentService.getRegistryComponent(typeId, ggBlueprintId);
-    //     //     // if (
-    //     //     //     ggBlueprintId &&
-    //     //     //     TYPE_COMPONENT_REGISTRY.hasOwnProperty(typeId) &&
-    //     //     //     TYPE_COMPONENT_REGISTRY[typeId].hasOwnProperty(ggBlueprintId)
-    //     //     // ) {
-    //     //     //     _self._myCustomComponent = TYPE_COMPONENT_REGISTRY[typeId][ggBlueprintId];
-    //     //     // } else if (!ggBlueprintId && TYPE_COMPONENT_REGISTRY.hasOwnProperty(typeId)) {
-    //     //     //     _self._myCustomComponent = null; //TYPE_COMPONENT_REGISTRY[typeId];
-    //     //     // }
-    //     //     if (_self._myCustomComponent) {
-    //     //         _self.entry.clear();
-    //     //         const factory = _self.resolver.resolveComponentFactory(_self._myCustomComponent);
-    //     //         const componentRef = _self.entry.createComponent(factory);
-    //     //         (<any>componentRef.instance).device = _self.device;
-    //     //         (<any>componentRef.instance).deviceType = _self.deviceType;
-    //     //         (<any>componentRef.instance).ggBlueprint = _self.ggBlueprint;
-    //     //         (<any>componentRef.instance).ggDeploymentStatus = _self.ggDeploymentStatus;
-    //     //     }
-    //     //     // } else {
-    //     //     //     _self.logger.info('loadCustomComponentForDeviceType: already set', _self._myCustomComponent, typeId, ggBlueprintId);
-    //     // }
-    // }
 
     submitEditDevice(value: any) {
         const _self = this;
@@ -219,7 +119,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
                 $('#editModal').modal('hide');
                 console.log('Updated device:', resp);
                 _self.device = new Device(resp);
-                _self.getTheExtraResources();
+                // _self.getTheExtraResources();
                 _self.blockUI.stop();
             })
             .catch(err => {
@@ -262,15 +162,14 @@ export class DeviceComponent implements OnInit, OnDestroy {
         });
     }
 
-    showEditForm() {
+    public showEditForm() {
         this.deviceForEdit = new Device(this.device);
+        this.deviceBlueprintsForEdit = this.filterDeviceBlueprintsForDeviceTypeId(this.deviceForEdit.deviceTypeId);
+
         $('#editModal').modal('show');
-        // $('#editModal').on('hide.bs.modal', function(e) {
-        //     console.log('ype');
-        // });
     }
 
-    deploy() {
+    public deploy() {
         console.log('Deploy', this.device.thingId);
         swal({
             title: 'Are you sure you want to deploy this device?',
@@ -303,5 +202,20 @@ export class DeviceComponent implements OnInit, OnDestroy {
                     });
             }
         });
+    }
+
+    filterDeviceBlueprintsForDeviceTypeId(deviceTypeId) {
+        if (deviceTypeId === 'UNKNOWN') {
+            return this.deviceBlueprintService.deviceBlueprints;
+        } else {
+            return _.filter(this.deviceBlueprintService.deviceBlueprints, (deviceBlueprint: DeviceBlueprint) => {
+                return _.contains(deviceBlueprint.compatibility, deviceTypeId);
+            });
+        }
+    }
+
+    public deviceTypeChanged() {
+        console.log('Changed device Type!', this.deviceForEdit.deviceTypeId);
+        this.deviceBlueprintsForEdit = this.filterDeviceBlueprintsForDeviceTypeId(this.deviceForEdit.deviceTypeId);
     }
 }

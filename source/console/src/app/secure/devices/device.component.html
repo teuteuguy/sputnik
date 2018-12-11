@@ -51,12 +51,13 @@
                                 <div class="form-group row">
                                     <label class="col-md-4 control-label text-right ">Device Type:</label>
                                     <div class="col-md-8">
-                                        <p class="form-control-static" *ngIf="deviceType.name !== 'UNKNOWN'">
-                                            <a routerLink="../../device-types/{{device.deviceTypeId}}">{{deviceType.name}}
+                                        <p class="form-control-static" *ngIf="device.deviceTypeId !== 'UNKNOWN'">
+                                            <a routerLink="../../device-types/{{device.deviceTypeId}}">{{device.deviceTypeId
+                                                | deviceTypeNameFromId}}
                                                 <i class="mdi mdi-link-variant"></i>
                                             </a>
                                         </p>
-                                        <p class="form-control-static" *ngIf="deviceType.name === 'UNKNOWN'">{{deviceType.name}}
+                                        <p class="form-control-static" *ngIf="device.deviceTypeId === 'UNKNOWN'">{{device.deviceTypeId}}
                                         </p>
                                     </div>
                                 </div>
@@ -77,12 +78,13 @@
                                 <div class="row">
                                     <label class="col-md-4 control-label text-right ">Device Blueprint:</label>
                                     <div class="col-md-8">
-                                        <p *ngIf="deviceBlueprint.name !== 'UNKNOWN'" class="form-control-static">
-                                            <a routerLink="../../device-blueprints/{{device.deviceBlueprintId}}">{{deviceBlueprint.name}}
+                                        <p *ngIf="device.deviceBlueprintId !== 'UNKNOWN'" class="form-control-static">
+                                            <a routerLink="../../device-blueprints/{{device.deviceBlueprintId}}">{{device.deviceBlueprintId
+                                                | deviceBlueprintNameFromId}}
                                                 <i class="mdi mdi-link-variant"></i>
                                             </a>
                                         </p>
-                                        <p class="form-control-static" *ngIf="deviceBlueprint.name === 'UNKNOWN'">{{deviceBlueprint.name}}
+                                        <p class="form-control-static" *ngIf="device.deviceBlueprintId === 'UNKNOWN'">{{device.deviceBlueprintId}}
                                     </div>
                                 </div>
                             </div>
@@ -131,9 +133,10 @@
                     <div class="form-group" style="overflow: inherit;">
                         <label for="type" class="form-control-label">Device type:</label>
                         <select class="custom-select col-12" name="deviceTypeId" id="deviceTypeId" #type="ngModel"
-                            [(ngModel)]="deviceForEdit.deviceTypeId" required ngModel>
+                            [(ngModel)]="deviceForEdit.deviceTypeId" required ngModel (change)="deviceTypeChanged($event.target.value)">
                             <option value="UNKNOWN" ng-selected="deviceForEdit.deviceTypeId === 'UNKNOWN'">UNKNOWN</option>
-                            <option *ngFor="let item of deviceTypes; let i = index" value="{{item.id}}" ng-selected="deviceForEdit.deviceTypeId === item.id">{{item.name}}</option>
+                            <option *ngFor="let item of deviceTypeService.deviceTypes; let i = index" value="{{item.id}}"
+                                ng-selected="deviceForEdit.deviceTypeId === item.id">{{item.name}}</option>
                         </select>
                         <div class="form-control-feedback">
                             <small>Device type for the device.</small>
@@ -142,7 +145,7 @@
                         <select class="custom-select col-12" name="deviceBlueprintId" id="deviceBlueprintId" #type="ngModel"
                             [(ngModel)]="deviceForEdit.deviceBlueprintId" required ngModel>
                             <option value="UNKNOWN" ng-selected="deviceForEdit.deviceBlueprintId === 'UNKNOWN'">UNKNOWN</option>
-                            <option *ngFor="let item of deviceBlueprints; let i = index" value="{{item.id}}"
+                            <option *ngFor="let item of deviceBlueprintsForEdit; let i = index" value="{{item.id}}"
                                 ng-selected="deviceForEdit.deviceBlueprintId === item.id">{{item.name}}</option>
                         </select>
                         <div class="form-control-feedback">

@@ -15,6 +15,7 @@ import { GGMLBoxesV10Module } from './gg-ml-boxes-v1.0/gg-ml-boxes.module';
 import { ImageCaptureV10Module } from './image-capture-v1.0/image-capture.module';
 import { DemoSqueezenetV10Module } from './demo-squeezenet-v1.0/demo-squeezenet.module';
 import { ModelTrainerV10Module } from './model-trainer-v1.0/model-trainer.module';
+import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense-hat-demo-v1-0.module';
 
 @Component({
     selector: 'app-device-child-view',
@@ -45,9 +46,15 @@ import { ModelTrainerV10Module } from './model-trainer-v1.0/model-trainer.module
         >
         </app-demo-squeezenet-v1-0>
         <app-model-trainer-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId == 'model-trainer-v1.0'" [device]="device"
+            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId == 'model-trainer-v1.0'"
+            [device]="device"
         >
         </app-model-trainer-v1-0>
+        <app-rpi3-sense-hat-demo-v1-0
+            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId == 'rpi3-sense-hat-demo-v1.0'"
+            [device]="device"
+        >
+        </app-rpi3-sense-hat-demo-v1-0>
     `
 })
 export class DeviceChildViewComponent {
@@ -66,7 +73,8 @@ export class DeviceChildViewComponent {
         GGMLBoxesV10Module,
         ImageCaptureV10Module,
         DemoSqueezenetV10Module,
-        ModelTrainerV10Module
+        ModelTrainerV10Module,
+        RPI3SenseHatDemoV10Module
     ]
 })
 export class DeviceChildViewsModule {}

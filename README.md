@@ -48,8 +48,14 @@ _Note 2:_ Specify a version for your build, example: "v1.0"
 * Deploy the distributable to an Amazon S3 bucket in your account. _Note:_ you must have the AWS Command Line Interface installed.
 
 ```
-aws s3 sync --delete ./dist/ s3://[S3 BUCKET NAME]/mythings-mgmt/[VERSION]/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name
+aws s3 cp ./dist/ s3://[S3 BUCKET NAME]/mythings-mgmt/[VERSION]/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name
 ```
+
+_Note 3:_ Dependencies:
+The deployment scripts require:
+* jq
+* yarn
+* uuidgen
 
 # Known issues
 

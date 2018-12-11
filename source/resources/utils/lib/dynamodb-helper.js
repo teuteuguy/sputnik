@@ -69,43 +69,84 @@ class dynamodbHelper {
                 return file.indexOf('.json') > 0;
             });
 
-            return Promise.all(files.map(file => {
+            return files.reduce((previousValue, currentValue, index, array) => {
+                return previousValue.then(chainResults => {
 
-                console.log('Getting:', file);
+                    console.log('Getting:', currentValue);
 
-                return s3.getObject({
-                    Bucket: sourceS3Bucket,
-                    Key: sourceS3Prefix + '/' + file
-                }).promise().then(data => {
-                    let object = JSON.parse(data.Body.toString('ascii'));
+                    return s3.getObject({
+                        Bucket: sourceS3Bucket,
+                        Key: sourceS3Prefix + '/' + currentValue
+                    }).promise().then(data => {
 
-                    object.createdAt = moment()
-                        .utc()
-                        .format();
-                    object.updatedAt = moment()
-                        .utc()
-                        .format();
+                        const params = {
+                            TableName: table,
+                            Item: JSON.parse(data.Body.toString('ascii'))
+                        };
 
-                    const params = {
-                        TableName: table,
-                        Item: object,
-                        ReturnValues: 'ALL_OLD'
-                    };
+                        params.Item.createdAt = moment()
+                            .utc()
+                            .format();
+                        params.Item.updatedAt = moment()
+                            .utc()
+                            .format();
 
-                    console.log(file, object, params);
+                        console.log('Putting:', currentValue, params);
 
-                    return documentClient.put(params).promise();
+                        return documentClient.put(params).promise();
 
-                }).then(result => {
-                    console.log('Put file', file, 'in db', result);
-                    return {
-                        file: file
-                    };
-                }).catch(err => {
-                    console.error('ERROR: failed to write to DB', JSON.stringify(err));
-                    throw err;
+                    }).then(result => {
+
+                        console.log('Put file', currentValue, 'in db');
+
+                        return [...chainResults, {
+                            file: currentValue
+                        }];
+
+                    }).catch(err => {
+                        console.error('ERROR: failed to write', currentValue, 'to DB', JSON.stringify(err));
+                        throw err;
+                    });
                 });
-            }));
+            }, Promise.resolve([]).then(arrayOfResults => arrayOfResults));
+
+
+            // return Promise.all(files.map(file => {
+
+            //     console.log('Getting:', file);
+
+            //     return s3.getObject({
+            //         Bucket: sourceS3Bucket,
+            //         Key: sourceS3Prefix + '/' + file
+            //     }).promise().then(data => {
+
+            //         const params = {
+            //             TableName: table,
+            //             Item: JSON.parse(data.Body.toString('ascii')),
+            //             ReturnValues: 'ALL_OLD'
+            //         };
+
+            //         params.Item.createdAt = moment()
+            //             .utc()
+            //             .format();
+            //         params.Item.updatedAt = moment()
+            //             .utc()
+            //             .format();
+
+            //         console.log(file, params);
+
+            //         return documentClient.put(params).promise();
+
+            //     }).then(result => {
+            //         console.log('Put file', file, 'in db', result);
+            //         return {
+            //             file: file
+            //         };
+            //     }).catch(err => {
+            //         console.error('ERROR: failed to write', file, 'to DB', JSON.stringify(err));
+            //         throw err;
+            //     });
+            // }));
 
         }).then(results => {
             return {

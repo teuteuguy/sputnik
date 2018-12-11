@@ -38,7 +38,6 @@ function handler(event, context, callback) {
         .then(cert => {
             console.log('Found certificate:', _cert);
             console.log('Second, find all the things attached to the given cert.');
-
             return listPrincipalThingsDetailed(_cert.certificateDescription.certificateArn).then(results => _things = results);
         }).then(things => {
             if (_things === false) {
@@ -121,7 +120,7 @@ function handler(event, context, callback) {
             callback(null, null);
         })
         .catch(err => {
-            console.log(err, err.stack); // an error occurred
+            console.log('ERROR', err, err.stack); // an error occurred
             callback(null, null);
         });
 

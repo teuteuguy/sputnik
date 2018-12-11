@@ -23,6 +23,13 @@ pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
+echo "[Build] Solution - defaults - rpi-sense-hat-demo-python"
+echo
+cd $1/solutions/defaults/lambdas/rpi-sense-hat-demo-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
 echo "[Build] Solution - defaults - image-capture-python"
 echo
 cd $1/solutions/defaults/lambdas/image-capture-python
@@ -49,13 +56,6 @@ echo
 cd $1/solutions/defaults/lambdas/model-trainer-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
-
-# echo
-# echo "[Build] Solution - mini-connected-factory - mini-connected-factory-camera-python"
-# echo
-# cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-camera-python
-# pip install -r requirements.txt -t . --upgrade
-# zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
 echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
