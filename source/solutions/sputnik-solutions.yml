@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - Solutions - Version %%VERSION%%'
+
+Parameters:
+    sourceS3Bucket:
+        Type: String
+        Description: sputnik S3 bucket.
+    sourceKeyPrefix:
+        Type: String
+        Description: sputnik Source key prefix.
+    greengrassSourceKeyPrefix:
+        Type: String
+        Description: sputnik source key prefix for the greengrass lambda function code
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    deploymentUUID:
+        Type: String
+        Description: Used to force update / create of inits
+    dataS3Bucket:
+        Type: String
+        Description: sputnik Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: sputnik Data S3 Bucket ARN
+    solutionsGreengrassGroupRole:
+        Type: String
+        Description: sputnik Greengrass Group Role
+
+
+Mappings:
+    Solutions:
+        MCF:
+            Name: 'reinvent-2018-mcf'
+            Template: 'reinvent-2018-mcf.yml'
+        DEFAULTS:
+            Name: 'defaults'
+            Template: 'defaults.yml'
+
+Resources:
+
+    CFStackForSolutionsAMCF1:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Ref sourceS3Bucket, !Ref sourceKeyPrefix, !FindInMap ['Solutions', 'MCF', 'Name'], !FindInMap ['Solutions', 'MCF', 'Template']]]
+            Parameters:
+                sourceS3Bucket: !Ref sourceS3Bucket
+                sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'MCF', 'Name']]]
+                greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
+                deploymentUUID: !Ref deploymentUUID
+                dataS3Bucket: !Ref dataS3Bucket
+                dataS3BucketArn: !Ref dataS3BucketArn
+                solutionsGreengrassGroupRole: !Ref solutionsGreengrassGroupRole
+
+    CFStackForSolutionsDEFAULTS:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Ref sourceS3Bucket, !Ref sourceKeyPrefix, !FindInMap ['Solutions', 'DEFAULTS', 'Name'], !FindInMap ['Solutions', 'DEFAULTS', 'Template']]]
+            Parameters:
+                sourceS3Bucket: !Ref sourceS3Bucket
+                sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'DEFAULTS', 'Name']]]
+                greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
+                deploymentUUID: !Ref deploymentUUID
+                dataS3Bucket: !Ref dataS3Bucket
+                dataS3BucketArn: !Ref dataS3BucketArn
+                solutionsGreengrassGroupRole: !Ref solutionsGreengrassGroupRole

@@ -6,17 +6,17 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { Device } from '../../models/device.model';
-import { DeviceType } from '../../models/device-type.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { Device } from '@models/device.model';
+import { DeviceType } from '@models/device-type.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { DeviceService } from '../../services/device.service';
-import { DeviceBlueprintService } from '../../services/device-blueprint.service';
-import { DeviceTypeService } from '../../services/device-type.service';
-import { LoggerService } from '../../services/logger.service';
-import { StatService } from '../../services/stat.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { DeviceService } from '@services/device.service';
+import { DeviceBlueprintService } from '@services/device-blueprint.service';
+import { DeviceTypeService } from '@services/device-type.service';
+import { LoggerService } from '@services/logger.service';
+import { StatService } from '@services/stat.service';
 
 // Helpers
 import * as moment from 'moment';
@@ -30,7 +30,7 @@ declare var $: any;
 export class DevicesComponent implements OnInit {
     public title = 'Devices';
     public deviceStats: any = {};
-    private profile: ProfileInfo;
+    private profile: ProfileInfo = null;
     public devices: Device[] = [];
     public newDevice: Device;
     // public deviceTypes: DeviceType[] = [];
@@ -45,14 +45,14 @@ export class DevicesComponent implements OnInit {
 
     constructor(
         public router: Router,
+        protected localStorage: LocalStorage,
+        private logger: LoggerService,
         private breadCrumbService: BreadCrumbService,
         private deviceService: DeviceService,
         public deviceBlueprintService: DeviceBlueprintService,
         public deviceTypeService: DeviceTypeService,
-        protected localStorage: LocalStorage,
-        private logger: LoggerService,
         private statService: StatService,
-        private _ngZone: NgZone
+        private ngZone: NgZone
     ) {}
 
     ngOnInit() {
@@ -60,7 +60,7 @@ export class DevicesComponent implements OnInit {
         _self.newDevice = new Device();
         _self.blockUI.start('Loading devices...');
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             _self.profile = new ProfileInfo(profile);
 
             _self.breadCrumbService.setup(_self.title, [
@@ -71,15 +71,21 @@ export class DevicesComponent implements OnInit {
 
             _self.statService.statObservable$.subscribe(message => {
                 _self.deviceStats = message.deviceStats;
-                _self._ngZone.run(() => {
+                _self.ngZone.run(() => {
                     _self.updatePaging();
+                });
+            });
+
+            _self.deviceService.devicesObservable$.subscribe(device => {
+                _self.ngZone.run(() => {
+                    _self.loadDevices();
                 });
             });
         });
 
         // _self.deviceTypeService.deviceTypesObservable$.subscribe(message => {
         //     _self.deviceTypes = message;
-        //     _self._ngZone.run(() => {});
+        //     _self.ngZone.run(() => {});
         // });
     }
 

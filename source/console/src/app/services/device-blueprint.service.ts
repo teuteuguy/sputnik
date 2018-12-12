@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 // Models
-import { DeviceBlueprint } from '../models/device-blueprint.model';
+import { DeviceBlueprint } from '@models/device-blueprint.model';
 
 // Services
-import { LoggerService } from './logger.service';
+import { LoggerService } from '@services/logger.service';
 import {
     AppSyncService,
     AddedDeviceBlueprint,
@@ -21,7 +21,7 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
     private limit = 50;
     private observable: any = new Subject<any>();
     public deviceBlueprints: DeviceBlueprint[] = [];
-    public blueprintsObservable$ = this.observable.asObservable();
+    public deviceBlueprintsObservable$ = this.observable.asObservable();
 
     constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
         const _self = this;
@@ -33,13 +33,22 @@ export class DeviceBlueprintService implements AddedDeviceBlueprint, UpdatedDevi
         _self.loadAll();
     }
     public add(deviceBlueprint: DeviceBlueprint) {
-        return this.appSyncService.addDeviceBlueprint(deviceBlueprint);
+        return this.appSyncService.addDeviceBlueprint(deviceBlueprint).then(r => {
+            this.onAddedDeviceBlueprint(r);
+            return r;
+        });
     }
     public update(deviceBlueprint: DeviceBlueprint) {
-        return this.appSyncService.updateDeviceBlueprint(deviceBlueprint);
+        return this.appSyncService.updateDeviceBlueprint(deviceBlueprint).then(r => {
+            this.onUpdatedDeviceBlueprint(r);
+            return r;
+        });
     }
     public delete(id: string) {
-        return this.appSyncService.deleteDeviceBlueprint(id);
+        return this.appSyncService.deleteDeviceBlueprint(id).then(r => {
+            this.onDeletedDeviceBlueprint(r);
+            return r;
+        });
     }
 
     private loadAll() {

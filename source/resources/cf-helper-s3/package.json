@@ -1,5 +1,5 @@
 {
-    "name": "mythings-mgmt-custom-resource-helper-s3",
+    "name": "sputnik-custom-resource-helper-s3",
     "description": "Cloudformation Custom Resource Helper for S3",
     "main": "index.js",
     "author": {

@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    appName: 'My Things Manager',
+    appName: 'sputnik',
     appVersion: '0.0.1',
     isDebugMode: true,
     refreshInterval: 30000

@@ -4,70 +4,80 @@ import { Injectable } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 
 // Models
-import { Deployment } from '../models/deployment.model';
-import { Device } from '../models/device.model';
-import { DeviceBlueprint } from '../models/device-blueprint.model';
-import { DeviceType } from '../models/device-type.model';
-import { Setting } from '../models/setting.model';
-import { Solution } from '../models/solution.model';
-import { SolutionBlueprint } from '../models/solution-blueprint.model';
-import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '../models/stats.model';
+import { Deployment } from '@models/deployment.model';
+import { Device } from '@models/device.model';
+import { DeviceBlueprint } from '@models/device-blueprint.model';
+import { DeviceType } from '@models/device-type.model';
+import { Setting } from '@models/setting.model';
+import { Solution } from '@models/solution.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
+import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '@models/stats.model';
 
 // Queries
-// import getAllDeviceTypes from '../graphql/queries/getAllDeviceTypes';
-import factoryReset from '../graphql/mutations/factoryReset';
-import getDevice from '../graphql/queries/device.get';
-import getDeviceBlueprint from '../graphql/queries/device-blueprint.get';
-import getDeviceStats from '../graphql/queries/device.getStats';
-import getDeviceType from '../graphql/queries/device-type.get';
-import getSetting from '../graphql/queries/setting.get';
-import getSolution from '../graphql/queries/solution.get';
-import getSolutionStats from '../graphql/queries/solution.getStats';
-import getSolutionBlueprint from '../graphql/queries/solution-blueprint.get';
-import getThingAutoRegistrationState from '../graphql/queries/thing-auto-registration-state.get';
-import listDeployments from '../graphql/queries/deployments.list';
-import listDevices from '../graphql/queries/devices.list';
-import listDevicesOfDeviceType from '../graphql/queries/devices-of-device-type.list';
-import listDevicesWithDeviceBlueprint from '../graphql/queries/devices-with-device-blueprint.list';
-import listDeviceBlueprints from '../graphql/queries/device-blueprints.list';
-import listDeviceTypes from '../graphql/queries/device-types.list';
-import listSolutions from '../graphql/queries/solutions.list';
-import listSolutionBlueprints from '../graphql/queries/solution-blueprints.list';
+// import getAllDeviceTypes from '@graphql/queries/getAllDeviceTypes';
+import factoryReset from '@graphql/mutations/factoryReset';
+import getDevice from '@graphql/queries/device.get';
+import getDeviceBlueprint from '@graphql/queries/device-blueprint.get';
+import getDeviceStats from '@graphql/queries/device.getStats';
+import getDeviceType from '@graphql/queries/device-type.get';
+import getSetting from '@graphql/queries/setting.get';
+import getSolution from '@graphql/queries/solution.get';
+import getSolutionStats from '@graphql/queries/solution.getStats';
+import getSolutionBlueprint from '@graphql/queries/solution-blueprint.get';
+import getThingAutoRegistrationState from '@graphql/queries/thing-auto-registration-state.get';
+import getUser from '@graphql/queries/user.get';
+import listDeployments from '@graphql/queries/deployments.list';
+import listDevices from '@graphql/queries/devices.list';
+import listDevicesOfDeviceType from '@graphql/queries/devices-of-device-type.list';
+import listDevicesWithDeviceBlueprint from '@graphql/queries/devices-with-device-blueprint.list';
+import listDeviceBlueprints from '@graphql/queries/device-blueprints.list';
+import listDeviceTypes from '@graphql/queries/device-types.list';
+import listGroups from '@graphql/queries/groups.list';
+import listSolutions from '@graphql/queries/solutions.list';
+import listUsers from '@graphql/queries/users.list';
+import listSolutionBlueprints from '@graphql/queries/solution-blueprints.list';
+import s3ListObjectsV2 from '@graphql/queries/s3.list-objects-v2';
 // Mutations
-import addDeployment from '../graphql/mutations/deployment.add';
-import addDevice from '../graphql/mutations/device.add';
-import addDeviceBlueprint from '../graphql/mutations/device-blueprint.add';
-import addDeviceType from '../graphql/mutations/device-type.add';
-import addSolution from '../graphql/mutations/solution.add';
-import addSolutionBlueprint from '../graphql/mutations/solution-blueprint.add';
-import deleteDevice from '../graphql/mutations/device.delete';
-import deleteDeviceBlueprint from '../graphql/mutations/device-blueprint.delete';
-import deleteDeviceType from '../graphql/mutations/device-type.delete';
-import deleteSolution from '../graphql/mutations/solution.delete';
-import deleteSolutionBlueprint from '../graphql/mutations/solution-blueprint.delete';
-import refreshSolution from '../graphql/mutations/solution.refresh';
-import setThingAutoRegistrationState from '../graphql/mutations/thing-auto-registration-state.set';
-import updateDevice from '../graphql/mutations/device.update';
-import updateDeviceBlueprint from '../graphql/mutations/device-blueprint.update';
-import updateDeviceType from '../graphql/mutations/device-type.update';
-import updateSolution from '../graphql/mutations/solution.update';
-import updateSolutionBlueprint from '../graphql/mutations/solution-blueprint.update';
+import addDeployment from '@graphql/mutations/deployment.add';
+import addDevice from '@graphql/mutations/device.add';
+import addDeviceBlueprint from '@graphql/mutations/device-blueprint.add';
+import addDeviceType from '@graphql/mutations/device-type.add';
+import addSolution from '@graphql/mutations/solution.add';
+import addSolutionBlueprint from '@graphql/mutations/solution-blueprint.add';
+import deleteDevice from '@graphql/mutations/device.delete';
+import deleteDeviceBlueprint from '@graphql/mutations/device-blueprint.delete';
+import deleteDeviceType from '@graphql/mutations/device-type.delete';
+import deleteSolution from '@graphql/mutations/solution.delete';
+import deleteSolutionBlueprint from '@graphql/mutations/solution-blueprint.delete';
+import deleteUser from '@graphql/mutations/user.delete';
+import disableUser from '@graphql/mutations/user.disable';
+import enableUser from '@graphql/mutations/user.enable';
+import inviteUser from '@graphql/mutations/user.invite';
+import refreshSolution from '@graphql/mutations/solution.refresh';
+import setThingAutoRegistrationState from '@graphql/mutations/thing-auto-registration-state.set';
+import updateDevice from '@graphql/mutations/device.update';
+import updateDeviceBlueprint from '@graphql/mutations/device-blueprint.update';
+import updateDeviceType from '@graphql/mutations/device-type.update';
+import updateSetting from '@graphql/mutations/setting.update';
+import updateSolution from '@graphql/mutations/solution.update';
+import updateSolutionBlueprint from '@graphql/mutations/solution-blueprint.update';
+import updateUser from '@graphql/mutations/user.update';
 // Subscriptions
-import addedDevice from '../graphql/subscriptions/device.added';
-import addedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.added';
-import addedDeviceType from '../graphql/subscriptions/device-type.added';
-import addedSolution from '../graphql/subscriptions/solution.added';
-import addedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.added';
-import deletedDevice from '../graphql/subscriptions/device.deleted';
-import deletedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.deleted';
-import deletedDeviceType from '../graphql/subscriptions/device-type.deleted';
-import deletedSolution from '../graphql/subscriptions/solution.deleted';
-import deletedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.deleted';
-import updatedDevice from '../graphql/subscriptions/device.updated';
-import updatedDeviceBlueprint from '../graphql/subscriptions/device-blueprint.updated';
-import updatedDeviceType from '../graphql/subscriptions/device-type.updated';
-import updatedSolution from '../graphql/subscriptions/solution.updated';
-import updatedSolutionBlueprint from '../graphql/subscriptions/solution-blueprint.updated';
+import addedDevice from '@graphql/subscriptions/device.added';
+import addedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.added';
+import addedDeviceType from '@graphql/subscriptions/device-type.added';
+import addedSolution from '@graphql/subscriptions/solution.added';
+import addedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.added';
+import deletedDevice from '@graphql/subscriptions/device.deleted';
+import deletedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.deleted';
+import deletedDeviceType from '@graphql/subscriptions/device-type.deleted';
+import deletedSolution from '@graphql/subscriptions/solution.deleted';
+import deletedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.deleted';
+import updatedDevice from '@graphql/subscriptions/device.updated';
+import updatedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.updated';
+import updatedDeviceType from '@graphql/subscriptions/device-type.updated';
+import updatedSolution from '@graphql/subscriptions/solution.updated';
+import updatedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.updated';
 
 export interface AddedDevice {
     onAddedDevice(result: Device): void;
@@ -133,6 +143,43 @@ export class AppSyncService {
         const _self = this;
         const obs: any = _self.amplifyService.api().graphql({ query: subscription.loc.source.body, variables: params });
         return obs;
+    }
+
+    // Admin
+    public getUser(username: string) {
+        return this.query(getUser, { username: username }).then(r => r.data.getUser);
+    }
+
+    public deleteUser(username: string) {
+        return this.mutation(deleteUser, { username: username }).then(r => r.data.deleteUser);
+    }
+    public disableUser(username: string) {
+        return this.mutation(disableUser, { username: username }).then(r => r.data.disableUser);
+    }
+    public enableUser(username: string) {
+        return this.mutation(enableUser, { username: username }).then(r => r.data.enableUser);
+    }
+    public inviteUser(name: string, email: string, groups: any) {
+        return this.mutation(inviteUser, {
+            name: name,
+            email: email,
+            groups: JSON.stringify(groups)
+        }).then(r => r.data.inviteUser);
+    }
+    public updateUser(username: string, groups: any) {
+        return this.mutation(updateUser, {
+            username: username,
+            groups: JSON.stringify(groups)
+        }).then(r => r.data.updateUser);
+    }
+    public listGroups(limit: number, nextToken: string) {
+        return this.query(listGroups, { limit: limit, nextToken: nextToken }).then(r => r.data.listGroups);
+    }
+    public listUsers(limit: number, paginationToken: string) {
+        return this.query(listUsers, {
+            limit: limit,
+            paginationToken: paginationToken
+        }).then(r => r.data.listUsers);
     }
 
     // Device Types
@@ -426,6 +473,18 @@ export class AppSyncService {
             return <Setting>result.data.getSetting;
         });
     }
+    public updateSetting(setting: Setting) {
+        return this.query(updateSetting, {
+            id: setting.id,
+            type: setting.type,
+            setting: JSON.stringify(setting.setting)
+        }).then(result => {
+            if (result.data.updateSetting !== null) {
+                result.data.updateSetting.setting = JSON.parse(result.data.updateSetting.setting);
+            }
+            return <Setting>result.data.updateSetting;
+        });
+    }
     public getThingAutoRegistrationState() {
         return this.query(getThingAutoRegistrationState, {}).then(result => {
             return result.data.getThingAutoRegistrationState;
@@ -575,5 +634,12 @@ export class AppSyncService {
                 );
             }
         });
+    }
+
+    // Utils
+    public s3ListObjectsV2(params) {
+        return this.query(s3ListObjectsV2, {
+            params: JSON.stringify(params)
+        }).then(r => r.data.s3ListObjectsV2);
     }
 }

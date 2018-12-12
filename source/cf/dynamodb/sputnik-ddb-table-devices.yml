@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - DynamoDB Table - DeviceTypes - Version %%VERSION%%'
+
+Resources:
+
+    devicesTable:
+        Type: 'AWS::DynamoDB::Table'
+        DeletionPolicy: 'Delete'
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: 'thingId'
+                    AttributeType: 'S'
+                -
+                    AttributeName: 'deviceTypeId'
+                    AttributeType: 'S'
+                -
+                    AttributeName: 'deviceBlueprintId'
+                    AttributeType: 'S'
+            KeySchema:
+                -
+                    AttributeName: 'thingId'
+                    KeyType: 'HASH'
+            GlobalSecondaryIndexes:
+                -
+                    IndexName: 'deviceTypeId'
+                    KeySchema:
+                        -
+                            AttributeName: 'deviceTypeId'
+                            KeyType: 'HASH'
+                    Projection:
+                        ProjectionType: 'ALL'
+                    ProvisionedThroughput:
+                        ReadCapacityUnits: 10
+                        WriteCapacityUnits: 10
+                -
+                    IndexName: 'deviceBlueprintId'
+                    KeySchema:
+                        -
+                            AttributeName: 'deviceBlueprintId'
+                            KeyType: 'HASH'
+                    Projection:
+                        ProjectionType: 'ALL'
+                    ProvisionedThroughput:
+                        ReadCapacityUnits: 10
+                        WriteCapacityUnits: 10
+            ProvisionedThroughput:
+                ReadCapacityUnits: 10
+                WriteCapacityUnits: 10
+            SSESpecification:
+                SSEEnabled: true
+            TableName: 'sputnik-devices'
+
+    # devicesDynamoDBScalingRole:
+    #     Type: 'AWS::IAM::Role'
+    #     Properties:
+    #         AssumeRolePolicyDocument:
+    #             Version: '2012-10-17'
+    #             Statement:
+    #                 -
+    #                     Effect: 'Allow'
+    #                     Principal:
+    #                         Service:
+    #                             - application-autoscaling.amazonaws.com
+    #                     Action:
+    #                         - 'sts:AssumeRole'
+    #         Path: '/'
+    #         Policies:
+    #             -
+    #                 PolicyName: 'root'
+    #                 PolicyDocument:
+    #                     Version: '2012-10-17'
+    #                     Statement:
+    #                         -
+    #                             Effect: 'Allow'
+    #                             Action:
+    #                                 - 'cloudwatch:PutMetricAlarm'
+    #                                 - 'cloudwatch:DescribeAlarms'
+    #                                 - 'cloudwatch:GetMetricStatistics'
+    #                                 - 'cloudwatch:SetAlarmState'
+    #                                 - 'cloudwatch:DeleteAlarms'
+    #                             Resource: '*'
+    #                         -
+    #                             Effect: 'Allow'
+    #                             Action:
+    #                                 - 'dynamodb:DescribeTable'
+    #                                 - 'dynamodb:UpdateTable'
+    #                                 - 'dynamodb:DescribeGlobalTable'
+    #                                 - 'dynamodb:UpdateGlobalTable'
+    #                             Resource:
+    #                                 - !GetAtt devicesTable.Arn
+    #                                 - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: devicesTable, '/index/deviceTypeId']]
+    #                                 - !Join ['', ['arn:aws:dynamodb:', Ref: 'AWS::Region', ':', Ref: 'AWS::AccountId', ':table/', Ref: devicesTable, '/index/deviceBlueprintId']]
+
+    # devicesWriteCapacityScalableTarget:
+    #     Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
+    #     Properties:
+    #         MaxCapacity: 100
+    #         MinCapacity: 10
+    #         ResourceId: !Join ['/', ['table',  !Ref 'devicesTable']]
+    #         RoleARN: !GetAtt devicesDynamoDBScalingRole.Arn
+    #         ScalableDimension: dynamodb:table:WriteCapacityUnits
+    #         ServiceNamespace: dynamodb
+
+    # devicesWriteScalingPolicy:
+    #     Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    #     Properties:
+    #         PolicyName: devicesWriteScalingPolicy
+    #         PolicyType: TargetTrackingScaling
+    #         ScalingTargetId: !Ref devicesWriteCapacityScalableTarget
+    #         TargetTrackingScalingPolicyConfiguration:
+    #             TargetValue: 70.0
+    #             ScaleInCooldown: 60
+    #             ScaleOutCooldown: 60
+    #             PredefinedMetricSpecification:
+    #                 PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    # devicesReadCapacityScalableTarget:
+    #     Type: 'AWS::ApplicationAutoScaling::ScalableTarget'
+    #     Properties:
+    #         MaxCapacity: 100
+    #         MinCapacity: 10
+    #         ResourceId: !Join ['/', ['table',  !Ref 'devicesTable']]
+    #         RoleARN: !GetAtt devicesDynamoDBScalingRole.Arn
+    #         ScalableDimension: dynamodb:table:ReadCapacityUnits
+    #         ServiceNamespace: dynamodb
+
+    # devicesReadScalingPolicy:
+    #     Type: 'AWS::ApplicationAutoScaling::ScalingPolicy'
+    #     Properties:
+    #         PolicyName: devicesReadScalingPolicy
+    #         PolicyType: TargetTrackingScaling
+    #         ScalingTargetId: !Ref devicesReadCapacityScalableTarget
+    #         TargetTrackingScalingPolicyConfiguration:
+    #             TargetValue: 70.0
+    #             ScaleInCooldown: 60
+    #             ScaleOutCooldown: 60
+    #             PredefinedMetricSpecification:
+    #                 PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+
+Outputs:
+    devicesTable:
+        Description: 'DynamoDB Devices Table'
+        Value: !Ref devicesTable

@@ -1,0 +1,15 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "Invoke",
+    "payload": {
+        "cmd": "listGroups"
+        #if( ${context.arguments.limit} )
+            ,
+            "limit": ${context.arguments.limit}
+        #end
+        #if( ${context.arguments.nextToken} )
+            ,
+            "nextToken": "${context.arguments.nextToken}"
+        #end
+    }
+}

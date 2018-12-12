@@ -9,18 +9,10 @@ const uuid = require('uuid');
 
 const createGreengrassXDefinitionVersion = require('./createGreengrassXDefinitionVersion');
 
-const createGreengrassCoreDefinitionVersion = require('./createGreengrassCoreDefinitionVersion');
-const createGreengrassFunctionDefinitionVersion = require('./createGreengrassFunctionDefinitionVersion');
-const createGreengrassLoggerDefinitionVersion = require('./createGreengrassLoggerDefinitionVersion');
-const createGreengrassResourceDefinitionVersion = require('./createGreengrassResourceDefinitionVersion');
-const createGreengrassSubscriptionDefinitionVersion = require('./createGreengrassSubscriptionDefinitionVersion');
-
 const mergeMTMSpecs = require('./merge-mtm-specs');
 const mergeMTMShadows = require('./merge-mtm-shadows');
 
 const lib = 'addDeployment';
-
-
 
 module.exports = function (event, context) {
 
@@ -41,6 +33,7 @@ module.exports = function (event, context) {
         CORE_CERTIFICATE_ARN: null,
         AWS_REGION: null,
         AWS_ACCOUNT: null,
+        DATA_BUCKET: null,
         DATA_BUCKET_S3_URL: null
     };
 
@@ -87,6 +80,7 @@ module.exports = function (event, context) {
         _substitutions.CORE = _device.thingName;
         _substitutions.CORE_ARN = _device.thingArn;
         _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
+        _substitutions.DATA_BUCKET = process.env.DATA_BUCKET;
         _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
 
         // Order is important
@@ -112,12 +106,13 @@ module.exports = function (event, context) {
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
 
-        console.log('Deal with actions');
-        _newSpec.afterActions = [...(_device.spec.afterActions || []), ...(_deviceType.spec.afterActions || []), ...(_deviceBlueprint.spec.afterActions || [])];
+        // console.log('Deal with actions');
+        // _newSpec.afterActions = [...(_device.spec.afterActions || []), ...(_deviceType.spec.afterActions || []), ...(_deviceBlueprint.spec.afterActions || [])];
 
         console.log('Going to substitute in the spec');
         // Construct the spec:
         let strSpec = JSON.stringify(_newSpec);
+        let strShadow = JSON.stringify(_newShadow);
         for (var key in _substitutions) {
             // skip loop if the property is from prototype
             if (!_substitutions.hasOwnProperty(key)) continue;
@@ -130,6 +125,7 @@ module.exports = function (event, context) {
                 // your code
                 let regExp = new RegExp('[' + key + ']', 'gi');
                 strSpec = strSpec.split('[' + key + ']').join(value);
+                strShadow = strShadow.split('[' + key + ']').join(value);
             }
         }
 
@@ -143,14 +139,15 @@ module.exports = function (event, context) {
 
         _newSpec = JSON.parse(strSpec);
 
+        _newShadow = JSON.parse(strShadow);
         _newSpec.Shadow = _newShadow;
 
-        // TODO: this eval thing could be a security risk. Need to potentially rethink this.
-        _newSpec.afterActions.forEach(a => {
-            console.log('Evaluating:', a);
-            eval(a);
-            _newSpec = afterAction(_newSpec);
-        });
+        // // TODO: this eval thing could be a security risk. Need to potentially rethink this.
+        // _newSpec.afterActions.forEach(a => {
+        //     console.log('Evaluating:', a);
+        //     eval(a);
+        //     _newSpec = afterAction(_newSpec);
+        // });
 
         console.log(`Spec out: ${JSON.stringify(_newSpec, null, 4)}`);
 
@@ -214,11 +211,6 @@ module.exports = function (event, context) {
                         }
                         return d;
                     })
-                    // createGreengrassCoreDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(c => _newGreengrassGroupVersion.CoreDefinitionVersionArn = c.Arn),
-                    // createGreengrassFunctionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(f => _newGreengrassGroupVersion.FunctionDefinitionVersionArn = f.Arn),
-                    // createGreengrassLoggerDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(l => _newGreengrassGroupVersion.LoggerDefinitionVersionArn = l.Arn),
-                    // createGreengrassResourceDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(r => _newGreengrassGroupVersion.ResourceDefinitionVersionArn = r.Arn),
-                    // createGreengrassSubscriptionDefinitionVersion(_newSpec, _device, groupDefinitionVersion).then(s => _newGreengrassGroupVersion.SubscriptionDefinitionVersionArn = s.Arn)
                 ]);
 
             }).then(results => {
@@ -340,12 +332,16 @@ module.exports = function (event, context) {
                 const iotdata = new AWS.IotData({
                     endpoint: endpoint.endpointAddress
                 });
-                return iotdata.updateThingShadow({
-                    thingName: _device.thingName,
-                    payload: JSON.stringify({
-                        state: _newShadow
-                    })
-                }).promise();
+                return iotdata.deleteThingShadow({
+                    thingName: _device.thingName
+                }).promise().then(result => {
+                    return iotdata.updateThingShadow({
+                        thingName: _device.thingName,
+                        payload: JSON.stringify({
+                            state: _newShadow
+                        })
+                    }).promise();
+                });
             }).then(result => {
                 console.log('Updated shadow per spec:', _newShadow);
                 return _savedDeployment;

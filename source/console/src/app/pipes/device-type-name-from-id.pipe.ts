@@ -1,8 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { DeviceType } from '../models/device-type.model';
+import { DeviceType } from '@models/device-type.model';
 
-import { DeviceTypeService } from '../services/device-type.service';
+import { DeviceTypeService } from '@services/device-type.service';
 
 @Pipe({ name: 'deviceTypeNameFromId', pure: true })
 // export class DeviceTypeNameFromIdPipe implements PipeTransform {

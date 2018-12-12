@@ -1,8 +1,0 @@
-{
-    "id": "aws-mtm-gg-factory-reset-v1.0",
-    "name": "AWS My Things Management Greengrass Factory Reset v1.0",
-    "type": "GREENGRASS",
-    "compatibility": ["all"],
-    "deviceTypeMappings": [],
-    "spec": {}
-}

@@ -9,35 +9,69 @@ fi
 
 set -e
 
+rm -rf $2/greengrass
 echo "mkdir -p $1/greengrass"
 mkdir -p $2/greengrass
 
 
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-camera-python"
-echo "--------------------------------------------------------------------------------------------------------"
-cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-camera-python
+echo
+echo "[Build] Solution - defaults - rpi-sense-hat-display-ip-python"
+echo
+cd $1/solutions/defaults/lambdas/rpi-sense-hat-display-ip-python
+pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
-echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-belt-serial-python"
-echo "--------------------------------------------------------------------------------------------------------"
-cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-belt-serial-python
+echo
+echo "[Build] Solution - defaults - rpi-sense-hat-demo-python"
+echo
+cd $1/solutions/defaults/lambdas/rpi-sense-hat-demo-python
+pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
-echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-belt-serial-node"
-echo "--------------------------------------------------------------------------------------------------------"
-cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-belt-serial-node
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/greengrass/`jq -cr '.name' package.json`.zip
-rm -r node_modules
-
-echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
-echo "[Build] Solution - aws-mini-connected-factory-v1.0 - aws-mini-connected-factory-python"
-echo "--------------------------------------------------------------------------------------------------------"
-cd $1/cf/solutions/aws-mini-connected-factory-v1.0/lambdas/aws-mini-connected-factory-python
+echo
+echo "[Build] Solution - defaults - image-capture-python"
+echo
+cd $1/solutions/defaults/lambdas/image-capture-python
+pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
+echo
+echo "[Build] Solution - defaults - gg-ml-demo-squeezenet-python"
+echo
+cd $1/solutions/defaults/lambdas/gg-ml-demo-squeezenet-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Solution - default - ml-inference-camera-python"
+echo
+cd $1/solutions/defaults/lambdas/ml-inference-camera-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Solution - defaults - model-trainer-python"
+echo
+cd $1/solutions/defaults/lambdas/model-trainer-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-belt-serial-python"
+echo
+cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-belt-serial-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-python"
+echo
+cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
+echo "--------------------------------------------------------------------------------------------------------"
 echo
 exit 0

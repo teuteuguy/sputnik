@@ -1,44 +1,47 @@
-import { Component, OnInit, ComponentFactoryResolver, NgZone } from '@angular/core';
-import { LocalStorage } from '@ngx-pwa/local-storage';
-import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
+import { Component, OnInit, NgZone, ComponentFactoryResolver } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import swal from 'sweetalert2';
 
-// Parent
-import {
-    GenericTableComponent,
-    GenericTableParams,
-    GenericTableElementParams
-} from '../../common/components/generic-table/generic-table.component';
-
-// Childs
-import { SolutionBlueprintsModalComponent } from './solution-blueprints.modal.component';
-
 // Models
-import { SolutionBlueprint } from '../../models/solution-blueprint.model';
-import { ProfileInfo } from '../../models/profile-info.model';
+import { SolutionBlueprint } from '@models/solution-blueprint.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { SolutionBlueprintService } from '../../services/solution-blueprint.service';
-
-import { _ } from 'underscore';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { SolutionBlueprintService } from '@services/solution-blueprint.service';
+import { LoggerService } from '@services/logger.service';
 
 @Component({
     selector: 'app-root-solution-blueprints',
-    templateUrl: '../../common/components/generic-table/generic-table.component.html'
+    templateUrl: './solution-blueprints.component.html'
+    // templateUrl: '../common/generic-table.component.html'
 })
-export class SolutionBlueprintsComponent extends GenericTableComponent implements OnInit {
-    private isAdminUser: boolean;
+export class SolutionBlueprintsComponent implements OnInit {
+
     private profile: ProfileInfo;
+
+    public isAdminUser: boolean;
+    public tableData: SolutionBlueprint[];
+    public tableHeaders = [
+        { attr: 'name', name: 'Name' },
+        { attr: 'createdAt', name: 'Created At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' },
+        { attr: 'updatedAt', name: 'Last Updated At', class: 'text-right', pipe: 'moment', pipeValue: 'MMM Do YYYY' }
+    ];
+    public totalSolutionBlueprints: number;
+    public pages: any = {
+        current: 1,
+        total: 0,
+        pageSize: 20
+    };
+    public pageTitle = 'Solution Blueprints';
 
     @BlockUI()
     blockUI: NgBlockUI;
 
     constructor(
         public router: Router,
-        public route: ActivatedRoute,
         private breadCrumbService: BreadCrumbService,
         private solutionBlueprintService: SolutionBlueprintService,
         private localStorage: LocalStorage,
@@ -46,126 +49,50 @@ export class SolutionBlueprintsComponent extends GenericTableComponent implement
         private ngZone: NgZone,
         private resolver: ComponentFactoryResolver
     ) {
-        super(logger, resolver);
-
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            this.profile = new ProfileInfo(profile);
-            this.isAdminUser = this.profile.isAdmin();
-
-            this.params = <GenericTableParams>{
-                path: '/securehome/solution-blueprints',
-                pageTitle: 'Solution Blueprints',
-                createElement: <GenericTableElementParams>{
-                    text: 'Create NEW Solution Blueprint',
-                    modal: SolutionBlueprintsModalComponent,
-                    modalName: 'defaultSolutionBlueprintsModal',
-                    link: false
-                },
-                editElement: <GenericTableElementParams>{
-                    text: 'Edit',
-                    modal: SolutionBlueprintsModalComponent,
-                    modalName: 'defaultSolutionBlueprintsModal',
-                    link: false
-                },
-                viewElement: <GenericTableElementParams>{
-                    text: 'View',
-                    modal: SolutionBlueprintsModalComponent,
-                    modalName: 'defaultSolutionBlueprintsModal',
-                    link: false
-                },
-                deleteElement: this.isAdminUser,
-                fields: [
-                    { attr: 'name', text: 'Name' },
-                    { attr: 'createdAt', text: 'Created At', class: 'text-right', format: 'date' },
-                    { attr: 'updatedAt', text: 'Last Updated At', class: 'text-right', format: 'date' }
-                ],
-                cachedMode: true
-            };
-
-            this.handleDelete.subscribe((element: SolutionBlueprint) => {
-                const _self = this;
-                swal({
-                    title: 'Are you sure you want to delete this solution blueprint?',
-                    text: `You won't be able to revert this!`,
-                    type: 'question',
-                    showCancelButton: true,
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then(result => {
-                    if (result.value) {
-                        _self.blockUI.start('Deleting solution blueprint...');
-                        _self.solutionBlueprintService
-                            .delete(element.id)
-                            .then((resp: any) => {
-                                console.log(resp);
-                                _self.blockUI.stop();
-                            })
-                            .catch(err => {
-                                _self.blockUI.stop();
-                                swal(
-                                    'Oops...',
-                                    'Something went wrong! Unable to delete the solution blueprint.',
-                                    'error'
-                                );
-                                _self.logger.error('error occurred calling deleteSolutionBlueprint api, show message');
-                                _self.logger.error(err);
-                            });
-                    }
-                });
-            });
-
-            this.data = solutionBlueprintService.solutionBlueprints;
-        });
+        this.totalSolutionBlueprints = 0;
+        this.tableData = solutionBlueprintService.solutionBlueprints;
     }
 
     ngOnInit() {
-        const _self = this;
-        _self.blockUI.start('Loading solution blueprints...');
+        const self = this;
 
-        _self.route.params.subscribe(params => {
-            // _self.solution = new Solution({ id: params['solutionId'] });
+        self.blockUI.start(`Loading ${self.pageTitle}...`);
 
-            _self.breadCrumbService.setup(_self.params.pageTitle, [
-                new Crumb({ title: _self.params.pageTitle, active: true, link: 'solution-blueprints' })
+        self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            self.profile = new ProfileInfo(profile);
+            self.isAdminUser = self.profile.isAdmin();
+
+            self.breadCrumbService.setup(self.pageTitle, [
+                new Crumb({ title: self.pageTitle, active: true, link: 'solution-blueprints' })
             ]);
 
-            _self.solutionBlueprintService.solutionBlueprintsObservable$.subscribe(solutionBlueprints => {
-                if (params['solutionBlueprintId']) {
-                    const index = _.findIndex(_self.data, e => {
-                        return e.id === params['solutionBlueprintId'];
-                    });
-                    if (index !== -1) {
-                        _self.handleView(_self.data[index]);
-                    }
-                }
-                _self.cleanup();
-                _self.blockUI.stop();
-                _self.ngZone.run(() => {});
+            self.solutionBlueprintService.solutionBlueprintsObservable$.subscribe(solutionBlueprints => {
+                self.ngZone.run(() => {
+                    self.load();
+                });
             });
 
-            _self.load();
+            self.load();
         });
     }
 
-    cleanup() {
-        this.dataStats.total = this.solutionBlueprintService.solutionBlueprints.length;
+    private load() {
+        this.blockUI.stop();
         this.updatePaging();
     }
 
-    load() {
-        this.blockUI.stop();
-        this.cleanup();
+    private updatePaging() {
+        this.totalSolutionBlueprints = this.solutionBlueprintService.solutionBlueprints.length;
+        this.pages.total = Math.ceil(this.totalSolutionBlueprints / this.pages.pageSize);
     }
 
     refreshData() {
-        this.blockUI.start('Loading solution blueprints...');
+        this.blockUI.start(`Loading ${this.pageTitle}...`);
         this.solutionBlueprintService.refresh();
         this.pages.current = 1;
     }
 
-    open(elem: SolutionBlueprint) {
-        console.log(elem);
-        this.router.navigate([['/securehome/solution-blueprints', elem.id].join('/')]);
+    handleCreate() {
+        this.router.navigate(['securehome/solution-blueprints/new']);
     }
 }

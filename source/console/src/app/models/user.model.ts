@@ -4,6 +4,7 @@ export class User {
     email: string;
     enabled: string;
     groups: any[];
+    status: string;
     created_at: string;
     updated_at: string;
 

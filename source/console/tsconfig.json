@@ -1,20 +1,32 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2017",
-      "dom"
-    ]
-  }
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./src/app/",
+        "outDir": "./dist/out-tsc",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es5",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "paths": {
+            "@common-components/*": ["common/components/*"],
+            "@common-modules/*": ["common/modules/*"],
+            "@common-secure/*": ["secure/common/*"],
+            "@env/*": ["../environments/*"],
+            "@graphql/*": ["graphql/*"],
+            "@models/*": ["models/*"],
+            "@pipes/*": ["pipes/*"],
+            "@secure/*": ["secure/*"],
+            "@services/*": ["services/*"],
+            "@solutions/*": ["secure/child-views/*"]
+        }
+    }
 }

@@ -25,9 +25,9 @@ set -e
 
 echo "------------------------------------------------------------------------------"
 echo "[Dependencies]"
+echo "jq version: `jq --version`"
+echo "yarn version: `yarn --version`"
 echo "------------------------------------------------------------------------------"
-jq --version
-yarn --version
 echo
 
 # Get reference for all important folders
@@ -41,24 +41,3 @@ $template_dir/scripts/02-cf-custom-resource-lambda.sh $source_dir $dist_dir
 $template_dir/scripts/03-website.sh $source_dir $dist_dir
 $template_dir/scripts/04-services-lambda.sh $source_dir $dist_dir
 $template_dir/scripts/05-greengrass-lambdas.sh $source_dir $dist_dir
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Greengrass services"
-# echo "------------------------------------------------------------------------------"
-# cd $template_dir
-# ./package-greengrass-lambdas.sh
-
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Services - Metrics"
-# echo "------------------------------------------------------------------------------"
-# cd $source_dir/services/metrics
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $dist_dir/`jq -cr '.name' package.json`.zip
-
-# echo "------------------------------------------------------------------------------"
-# echo "[Rebuild] Services - Profile"
-# echo "------------------------------------------------------------------------------"
-# cd $source_dir/services/profile
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $dist_dir/`jq -cr '.name' package.json`.zip

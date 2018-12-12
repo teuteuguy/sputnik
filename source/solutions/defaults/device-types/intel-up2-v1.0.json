@@ -1,0 +1,72 @@
+{
+    "id": "intel-up2-v1.0",
+    "name": "Intel UP2 v1.0",
+    "type": "GREENGRASS",
+    "spec": {
+        "CoreDefinitionVersion": {
+            "Cores": [{
+                "CertificateArn": "[CORE_CERTIFICATE_ARN]",
+                "SyncShadow": true,
+                "ThingArn": "[CORE_ARN]"
+            }]
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:::function:GGIPDetector:1",
+                "FunctionConfiguration": {
+                    "Environment": {
+                        "AccessSysfs": true,
+                        "Variables": {}
+                    },
+                    "MemorySize": 32768,
+                    "Pinned": true,
+                    "Timeout": 3
+                }
+            }]
+        },
+        "LoggerDefinitionVersion": {
+            "Loggers": [{
+                    "Component": "GreengrassSystem",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
+                },
+                {
+                    "Component": "Lambda",
+                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
+                    "Level": "INFO",
+                    "Type": "AWSCloudWatch"
+                },
+                {
+                    "Component": "GreengrassSystem",
+                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
+                },
+                {
+                    "Component": "Lambda",
+                    "Id": "deeplens-greengrass-FileSystem-Lambda",
+                    "Level": "INFO",
+                    "Space": 300000,
+                    "Type": "FileSystem"
+                }
+            ]
+        },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                    "Id": "gpu",
+                    "Name": "gpu_resource",
+                    "ResourceDataContainer": {
+                        "LocalDeviceResourceData": {
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/dev/dri/renderD128"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

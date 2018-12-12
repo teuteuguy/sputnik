@@ -4,10 +4,13 @@ const gg = new AWS.Greengrass();
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
+const UsageMetrics = require('usage-metrics');
 
 const lib = 'addDevice';
 
 module.exports = function (event, context) {
+
+    const usageMetrics = new UsageMetrics();
 
     const tag = `addDevice(${event.thingName}):`;
 
@@ -19,7 +22,6 @@ module.exports = function (event, context) {
     // event.spec
     // event.thingName
     // event.generateCert
-
 
     // TODO: deal with creating a greengrass group if required.
 
@@ -68,34 +70,42 @@ module.exports = function (event, context) {
                 throw 'Thing is already in the DB';
             } else {
 
-                // Lets prepare. Lets check what type of device we are trying to provision :)
+                return usageMetrics.checkAndSend({
+                    Data: {
+                        NewDevice: moment().utc().format()
+                    }
+                }).then(res => {
 
-                if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
-                    return documentClient.get({
-                        TableName: process.env.TABLE_DEVICE_TYPES,
-                        Key: {
-                            id: event.deviceTypeId
-                        }
-                    }).promise().then(deviceType => {
-                        if (!deviceType.Item) {
-                            event.deviceTypeId = 'UNKNOWN';
-                            return 'NOT_A_GREENGRASS_DEVICE';
-                        } else {
-                            if (deviceType.Item.type !== 'GREENGRASS') {
+                    // Lets prepare. Lets check what type of device we are trying to provision :)
+
+                    if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
+                        return documentClient.get({
+                            TableName: process.env.TABLE_DEVICE_TYPES,
+                            Key: {
+                                id: event.deviceTypeId
+                            }
+                        }).promise().then(deviceType => {
+                            if (!deviceType.Item) {
+                                event.deviceTypeId = 'UNKNOWN';
                                 return 'NOT_A_GREENGRASS_DEVICE';
                             } else {
-                                // Device is a Greengrass device => create the greengrass group!
-                                return gg.createGroup({
-                                    Name: event.thingName + '-gg-group'
-                                }).promise().then(group => {
-                                    return group.Id;
-                                });
+                                if (deviceType.Item.type !== 'GREENGRASS') {
+                                    return 'NOT_A_GREENGRASS_DEVICE';
+                                } else {
+                                    // Device is a Greengrass device => create the greengrass group!
+                                    return gg.createGroup({
+                                        Name: event.thingName + '-gg-group'
+                                    }).promise().then(group => {
+                                        return group.Id;
+                                    });
+                                }
                             }
-                        }
-                    });
-                } else {
-                    return 'NOT_A_GREENGRASS_DEVICE';
-                }
+                        });
+                    } else {
+                        return 'NOT_A_GREENGRASS_DEVICE';
+                    }
+
+                });
             }
         }).then(greengrassGroupId => {
 

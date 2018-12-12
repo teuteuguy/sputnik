@@ -24,3 +24,7 @@
 
 # Custom for ease of deployments
 deployment/deploy.sh
+
+# Python lambdas
+*.egg-info
+*.dist-info

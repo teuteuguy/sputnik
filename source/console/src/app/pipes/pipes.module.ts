@@ -25,11 +25,5 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         FromNowPipe,
         StringifyPipe
     ]
-    // ,
-    // imports: [CommonModule]
 })
-export class AppPipesModule {
-    // static forRoot() {
-    //     return { ngModule: AppPipesModule, providers: [] };
-    // }
-}
+export class PipesModule {}

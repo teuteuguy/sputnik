@@ -1,0 +1,74 @@
+{
+    "id": "rpi3-sense-hat-demo-v1.0",
+    "name": "Raspberry Pi 3 Sense Hat Demo v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["raspberry-pi-3-sense-hat-v1.0"],
+    "deviceTypeMappings": [],
+    "spec": {
+        "Shadow": {
+            "desired": {
+                "sense-hat": {
+                     "color": {
+                         "on": [255, 255, 255],
+                         "off": [0, 0, 0]
+                     },
+                     "led": [
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0,
+                         0, 0, 0, 0, 0, 0, 0, 0
+                     ],
+                     "mode": "text",
+                     "text": "Hello World!",
+                     "config": {
+                         "rotation": 0,
+                         "low_light": false,
+                         "freq": "1.0"
+                     }
+                }
+            }
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-demo-python:MTM",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": true,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "sense-hat-led"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "sense-hat-i2c"
+                            },
+                            {
+                                "Permission": "ro",
+                                "ResourceId": "sense-hat-event0"
+                            }
+                        ]
+                    },
+                    "MemorySize": 65536,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-demo-python:MTM",
+                "Target": "cloud",
+                "Subject": "mtm/[CORE]/+"
+            }, {
+                "Source": "GGShadowService",
+                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-demo-python:MTM",
+                "Subject": "$aws/things/[CORE]/shadow/update/accepted"
+            }]
+        }
+    }
+}

@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "sputnik - Micro Service Lambda - Factory Reset - Version %%VERSION%%"
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    settingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+
+Resources:
+
+    lambdaServiceFactoryResetRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "lambda.amazonaws.com"
+                        Action:
+                                - "sts:AssumeRole"
+            Path: "/"
+
+    lambdaServiceFactoryResetPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'sputnik policy for the stats microservice Lambda function.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - "logs:CreateLogGroup"
+                            - "logs:CreateLogStream"
+                            - "logs:PutLogEvents"
+                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref lambdaServiceFactoryReset, ":*"]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "dynamodb:DescribeTable"
+                            - 'dynamodb:BatchGetItem'
+                            - 'dynamodb:BatchWriteItem'
+                            - 'dynamodb:GetItem'
+                            - 'dynamodb:PutItem'
+                            - 'dynamodb:Query'
+                            - 'dynamodb:Scan'
+                        Resource:
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref settingsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceBlueprintsTable]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref solutionBlueprintsTable]]
+                    -
+                        Effect: "Allow"
+                        Action:
+                            # TODO: Be way more restrictive here
+                            - "iot:*"
+                        Resource:
+                            - "*"
+            Roles:
+                - !Ref 'lambdaServiceFactoryResetRole'
+
+    lambdaServiceFactoryReset:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            FunctionName: "sputnik-factoryreset-service"
+            Description: "sputnik administration microservice"
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ["/", [!Ref sourceKeyPrefix, "sputnik-factoryreset-service.zip"]]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt lambdaServiceFactoryResetRole.Arn
+            Timeout: 60
+            MemorySize: 256
+            Environment:
+                Variables:
+                    TABLE_DEVICE_TYPES: !Ref deviceTypesTable
+                    TABLE_SETTINGS: !Ref settingsTable
+                    TABLE_DEVICE_BLUEPRINTS: !Ref deviceBlueprintsTable
+                    TABLE_SOLUTION_BLUEPRINTS: !Ref solutionBlueprintsTable
+                    LOGGING_LEVEL: 2
+
+
+Outputs:
+    lambdaServiceFactoryResetArn:
+        Description: "Stats Service ARN"
+        Value: !GetAtt lambdaServiceFactoryReset.Arn

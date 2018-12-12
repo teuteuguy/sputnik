@@ -7,11 +7,11 @@ import { _ } from 'underscore';
 import * as moment from 'moment';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
+import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { UserLoginService } from '../../services/user-login.service';
-import { LoggerService } from '../../services/logger.service';
+import { UserLoginService } from '@services/user-login.service';
+import { LoggerService } from '@services/logger.service';
 
 // Helpers
 declare var jquery: any;
@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
     public cognitoId: string;
     public title = 'My Profile';
     public deviceStats: any = {};
-    public profile: ProfileInfo = new ProfileInfo();
+    public profile: ProfileInfo = null;
 
     @BlockUI() blockUI: NgBlockUI;
 
@@ -35,8 +35,7 @@ export class ProfileComponent implements OnInit {
         public route: ActivatedRoute,
         public userService: UserLoginService,
         protected localStorage: LocalStorage,
-        private logger: LoggerService) {
-    }
+        private logger: LoggerService) {}
 
     ngOnInit() {
 
@@ -47,7 +46,7 @@ export class ProfileComponent implements OnInit {
         //     _self.deviceStats = stats;
         // });
 
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile) => {
+        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             _self.profile = new ProfileInfo(profile);
             // refresh profile info
             _self.loadProfileData().then(() => {

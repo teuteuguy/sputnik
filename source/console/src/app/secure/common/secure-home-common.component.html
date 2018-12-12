@@ -87,6 +87,16 @@
                         <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
                             <div class="chart-text">
                                 <h6 class="m-b-0" style="color: white">
+                                    <small>Connected</small>
+                                </h6>
+                                <h4 class="m-t-0 text-success-alt">{{deviceStats.connected}} connected</h4>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
+                            <div class="chart-text">
+                                <h6 class="m-b-0" style="color: white">
                                     <small>Solutions</small>
                                 </h6>
                                 <h4 class="m-t-0 text-warning">{{solutionStats.total}} total</h4>
@@ -103,16 +113,6 @@
                             </div>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
-                            <div class="chart-text">
-                                <h6 class="m-b-0" style="color: white">
-                                    <small>Connected</small>
-                                </h6>
-                                <h4 class="m-t-0 text-success-alt">{{deviceStats.connected}} connected</h4>
-                            </div>
-                        </div>
-                    </li>
                     <!-- ============================================================== -->
                     <!-- Profile -->
                     <!-- ============================================================== -->
@@ -123,31 +123,31 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right scale-up">
                             <ul class="dropdown-user">
-                                <li>
+                                <li *ngIf="profile">
                                     <div class="dw-user-box">
                                         <div class="u-img" style="text-align:center;font-size:50px;">
                                             <i class="fa fa-user-circle"></i>
                                         </div>
-                                        <div class="u-text">
+                                        <div class="u-text" routerLink="profile">
                                             <h4>{{profile.name}}</h4>
                                             <p class="text-muted">{{profile.email}}</p>
-                                            <a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm">View
-                                                Profile</a>
+                                            <!-- <a href="securehome/profile" class="btn btn-rounded btn-danger btn-sm">View
+                                                Profile</a> -->
                                         </div>
                                     </div>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="securehome/profile">
+                                    <a routerLink="profile">
                                         <i class="ti-user"></i> My Profile</a>
                                 </li>
                                 <li>
-                                    <a href="securehome/devices">
+                                    <a routerLink="devices">
                                         <i class="ti-wallet"></i> Devices</a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a [routerLink]="['/securehome/logout']">
+                                    <a routerLink="logout">
                                         <i class="fa fa-power-off"></i> Logout</a>
                                 </li>
                             </ul>
@@ -167,80 +167,88 @@
         <!-- Sidebar scroll-->
         <div class="scroll-sidebar">
             <!-- Sidebar navigation-->
-            <nav class="sidebar-nav" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <!-- <nav class="sidebar-nav" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"> -->
+            <nav class="sidebar-nav">
                 <!-- <nav class="sidebar-nav"> -->
                 <ul id="sidebarnav">
-                    <li>
-                        <a class="waves-effect waves-dark" data-caption="Home" routerLink=".">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/">
+                        <a class="waves-effect waves-dark" data-caption="Home">
                             <i class="mdi mdi-home"></i>
                             <span class="hide-menu">Home </span>
                         </a>
                     </li>
-                    <li>
-                        <a class="waves-effect waves-dark" data-caption="Maps" routerLink="maps">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/maps">
+                        <a class="waves-effect waves-dark" data-caption="Maps">
                             <i class="mdi mdi-google-maps"></i>
                             <span class="hide-menu">Maps </span>
                         </a>
                     </li>
                     <li class="nav-small-cap">MENU</li>
-                    <li>
-                        <a class="waves-effect waves-dark" routerLink="solutions">
-                            <i class="mdi mdi-switch"></i>
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/solutions">
+                        <a class="waves-effect waves-dark">
+                            <i class="mdi mdi-car"></i>
                             <span class="hide-menu">Solutions </span>
                         </a>
                     </li>
-                    <li>
-                        <a class="waves-effect waves-dark" routerLink="devices">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/devices">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-view-module"></i>
                             <span class="hide-menu">Devices </span>
                         </a>
                     </li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" routerLink="deployments">
+                    <!-- <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/deployments">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-move-resize-variant"></i>
                             <span class="hide-menu">Deployments </span>
                         </a>
-                    </li>
-                    <!-- <li>
-                        <a class="waves-effect waves-dark" href="securehome/profile">
-                            <i class="mdi mdi-account-card-details"></i>
-                            <span class="hide-menu">My Profile </span>
-                        </a>
                     </li> -->
                     <li class="nav-small-cap">MODULES</li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" routerLink="solution-blueprints">
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/solution-blueprints">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-sitemap"></i>
                             <span class="hide-menu">Solution Blueprints </span>
                         </a>
                     </li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" routerLink="device-blueprints">
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/device-blueprints">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-lock-pattern"></i>
                             <span class="hide-menu">Device Blueprints </span>
                         </a>
                     </li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" routerLink="device-types">
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/device-types">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-chip"></i>
                             <span class="hide-menu">Device Types </span>
                         </a>
                     </li>
-                    <!-- <li class="nav-small-cap" *ngIf="isAdminUser">ADMINISTRATION</li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" href="securehome/admin/users">
+                    <li class="nav-small-cap" *ngIf="isAdminUser">ADMINISTRATION</li>
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="/securehome/profile">
+                        <a class="waves-effect waves-dark">
+                            <i class="mdi mdi-account-card-details"></i>
+                            <span class="hide-menu">My Profile </span>
+                        </a>
+                    </li>
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/users">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-account-multiple"></i>
                             <span class="hide-menu">Users </span>
                         </a>
                     </li>
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" href="securehome/admin/groups">
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/user-groups">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-account-network"></i>
                             <span class="hide-menu">Groups </span>
                         </a>
-                    </li> -->
-                    <li *ngIf="isAdminUser">
-                        <a class="waves-effect waves-dark" routerLink="settings">
+                    </li>
+                    <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        routerLink="/securehome/settings">
+                        <a class="waves-effect waves-dark">
                             <i class="mdi mdi-settings"></i>
                             <span class="hide-menu">Settings </span>
                         </a>
@@ -257,12 +265,11 @@
     <!-- ============================================================== -->
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
-    <div class="page-wrapper" style="padding-top: 30px;">
+    <div class="page-wrapper" [style.padding-top]="router.url == '/securehome/maps' ? '0px' : '30px'">
         <!-- ============================================================== -->
         <!-- Container fluid  -->
         <!-- ============================================================== -->
-        <div class="container-fluid">
-
+        <div class="container-fluid" [style.padding]="router.url == '/securehome/maps' ? '0px' : ''">
             <!-- ============================================================== -->
             <!-- Start Page Content -->
             <!-- ============================================================== -->

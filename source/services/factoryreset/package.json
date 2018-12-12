@@ -1,6 +1,6 @@
 {
-    "name": "mythings-mgmt-factoryreset-service",
-    "description": "The factory reset microservice for the My Things Management",
+    "name": "sputnik-factoryreset-service",
+    "description": "The factory reset microservice for the sputnik",
     "main": "index.js",
     "license": "Amazon Software License (ASL)",
     "version": "0.0.1",

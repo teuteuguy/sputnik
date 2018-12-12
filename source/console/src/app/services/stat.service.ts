@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { environment } from '../../environments/environment';
+
+import { environment } from '@env/environment';
 
 // Models
-import { DeviceStats, SolutionStats } from '../models/stats.model';
+import { DeviceStats, SolutionStats } from '@models/stats.model';
 
 // Services
 import { LoggerService } from './logger.service';
@@ -27,27 +28,27 @@ export class StatService {
     private observer: any = new Subject<Stats>();
     statObservable$ = this.observer.asObservable();
 
-    constructor(private logger: LoggerService, private appSyncService: AppSyncService) {
+    constructor(
+        private logger: LoggerService,
+        private appSyncService: AppSyncService
+    ) {
         const _self = this;
-        this.loadStats();
-        this.pollerInterval = setInterval(function() {
-            _self.loadStats();
+        _self.logger.info('StatService.constructor:');
+        _self.pollerInterval = setInterval(function() {
+            _self.refresh();
         }, environment.refreshInterval);
+        _self.refresh();
     }
 
     loadStats() {
-        Promise.all([this.appSyncService.getDeviceStats(), this.appSyncService.getSolutionStats()])
+        const _self = this;
+        Promise.all([_self.appSyncService.getDeviceStats(), _self.appSyncService.getSolutionStats()])
             .then(results => {
-                this.observer.next(
-                    new Stats({
-                        deviceStats: results[0],
-                        solutionStats: results[1]
-                    })
-                );
+                _self.observer.next(new Stats({ deviceStats: results[0], solutionStats: results[1] }));
             })
             .catch(err => {
-                this.logger.error('error occurred calling getDeviceStats api, show message');
-                this.logger.error(err);
+                _self.logger.warn('error occurred calling getDeviceStats api, show message');
+                _self.logger.warn(err);
             });
     }
 

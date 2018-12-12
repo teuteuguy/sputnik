@@ -36,7 +36,7 @@ class MTMThingGroups {
         const _self = this;
         console.log('init');
         return Promise.all([
-            _self.createThingGroup(ROOT, 'Thing Group for My Things Management Managed Devices', true)
+            _self.createThingGroup(ROOT, 'Thing Group for sputnik Managed Devices', true)
         ]).then(results => {
             // console.log('Thing Groups created');
             // return _self.resetALLThingsToThingGroup(GROUP_NAMES.NON_MANAGED);

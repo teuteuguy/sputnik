@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - DynamoDB Table - DeviceTypes - Version %%VERSION%%'
+
+Resources:
+
+    deviceTypesTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "id"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "sputnik-device-types"
+
+    # deviceTypesDynamoDBScalingRole:
+    #     Type: "AWS::IAM::Role"
+    #     Properties:
+    #         AssumeRolePolicyDocument:
+    #             Version: "2012-10-17"
+    #             Statement:
+    #                 -
+    #                     Effect: "Allow"
+    #                     Principal:
+    #                         Service:
+    #                             - application-autoscaling.amazonaws.com
+    #                     Action:
+    #                         - "sts:AssumeRole"
+    #         Path: "/"
+    #         Policies:
+    #             -
+    #                 PolicyName: "root"
+    #                 PolicyDocument:
+    #                     Version: "2012-10-17"
+    #                     Statement:
+    #                         -
+    #                             Effect: "Allow"
+    #                             Action:
+    #                                 - "cloudwatch:PutMetricAlarm"
+    #                                 - "cloudwatch:DescribeAlarms"
+    #                                 - "cloudwatch:GetMetricStatistics"
+    #                                 - "cloudwatch:SetAlarmState"
+    #                                 - "cloudwatch:DeleteAlarms"
+    #                             Resource: "*"
+    #                         -
+    #                             Effect: "Allow"
+    #                             Action:
+    #                                 - "dynamodb:DescribeTable"
+    #                                 - "dynamodb:UpdateTable"
+    #                                 - "dynamodb:DescribeGlobalTable"
+    #                                 - "dynamodb:UpdateGlobalTable"
+    #                             Resource:
+    #                                 - !GetAtt deviceTypesTable.Arn
+
+    # deviceTypesWriteCapacityScalableTarget:
+    #     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    #     Properties:
+    #         MaxCapacity: 100
+    #         MinCapacity: 5
+    #         ResourceId: !Join ["/", ["table",  !Ref "deviceTypesTable"]]
+    #         RoleARN: !GetAtt deviceTypesDynamoDBScalingRole.Arn
+    #         ScalableDimension: dynamodb:table:WriteCapacityUnits
+    #         ServiceNamespace: dynamodb
+
+    # deviceTypesWriteScalingPolicy:
+    #     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    #     Properties:
+    #         PolicyName: deviceTypesWriteScalingPolicy
+    #         PolicyType: TargetTrackingScaling
+    #         ScalingTargetId: !Ref deviceTypesWriteCapacityScalableTarget
+    #         TargetTrackingScalingPolicyConfiguration:
+    #             TargetValue: 70.0
+    #             ScaleInCooldown: 60
+    #             ScaleOutCooldown: 60
+    #             PredefinedMetricSpecification:
+    #                 PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+    # deviceTypesReadCapacityScalableTarget:
+    #     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    #     Properties:
+    #         MaxCapacity: 100
+    #         MinCapacity: 5
+    #         ResourceId: !Join ["/", ["table",  !Ref "deviceTypesTable"]]
+    #         RoleARN: !GetAtt deviceTypesDynamoDBScalingRole.Arn
+    #         ScalableDimension: dynamodb:table:ReadCapacityUnits
+    #         ServiceNamespace: dynamodb
+
+    # deviceTypesReadScalingPolicy:
+    #     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    #     Properties:
+    #         PolicyName: deviceTypesReadScalingPolicy
+    #         PolicyType: TargetTrackingScaling
+    #         ScalingTargetId: !Ref deviceTypesReadCapacityScalableTarget
+    #         TargetTrackingScalingPolicyConfiguration:
+    #             TargetValue: 70.0
+    #             ScaleInCooldown: 60
+    #             ScaleOutCooldown: 60
+    #             PredefinedMetricSpecification:
+    #                 PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+Outputs:
+    deviceTypesTable:
+        Description: "DynamoDB Device Types Table"
+        Value: !Ref deviceTypesTable

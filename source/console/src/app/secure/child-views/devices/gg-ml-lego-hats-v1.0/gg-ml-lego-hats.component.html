@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">GG ML Inference Lego Hats</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }} <small>({{device.thingName}})</small> <span
+                        class="float-right" *ngIf="latestInference">{{
+                        latestInference.fps }}fps</span></h6>
+                <div class="card-text text-center">
+                    <div *ngIf="latestInference" style="font-size: 4em;">
+                        <div class="row">
+                            <div class="col-4 text-center">
+                                <div>Hat</div>
+                                <h1><i class="mdi mdi-thumb-up"></i></h1>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div>No Hat</div>
+                                <h1><i class="mdi mdi-thumb-down"></i></h1>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div>No Lego</div>
+                                <h1><i class="mdi mdi-crop-square"></i></h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h1 class="col-4 text-center">{{latestInference.results.hat}}%</h1>
+                            <h1 class="col-4 text-center">{{latestInference.results.nohat}}%</h1>
+                            <h1 class="col-4 text-center">{{latestInference.results.nolego}}%</h1>
+                        </div>
+                        <!-- <i class="fa" [class.fa-thumbs-up]="maxProb(latestInference.results).category === 'hat'"
+                            [class.fa-thumbs-down]="maxProb(latestInference.results).category === 'nohat'">
+                        </i>
+                        <span>{{ maxProb(latestInference.results).probability }}%</span> -->
+                        <!-- <span *ngIf="latestInference.advice != 'inconclusive'">{{ latestInference.probability }}%</span>
+                        <span *ngIf="latestInference.advice == 'inconclusive'">Inconclusive</span> -->
+                    </div>
+                    <div class="row" *ngIf="desired">
+                        <div class="col-6">
+                            <input type="checkbox" id="capture" style="padding-left: 18px;" [checked]="desired.capture == 'On'"
+                                (click)="desiredStateChange($event)">
+                            <label class="form-check-label" for="capture" style="padding-left: 25px;">Capture images ?
+                                <small>(reported: {{ reported.capture }})</small></label>
+                        </div>
+                        <div class="col-6">
+                            <input type="checkbox" id="threaded" style="padding-left: 18px;" [checked]="desired.threaded == 'On'"
+                                (click)="desiredStateChange($event)">
+                            <label class="form-check-label" for="threaded" style="padding-left: 25px;">Threaded camera
+                                ?
+                                <small>(reported: {{ reported.threaded }})</small></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

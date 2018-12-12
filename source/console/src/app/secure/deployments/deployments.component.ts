@@ -6,13 +6,13 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import swal from 'sweetalert2';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { Deployment } from '../../models/deployment.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { Deployment } from '@models/deployment.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { DeploymentService } from '../../services/deployment.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { DeploymentService } from '@services/deployment.service';
 
 // Helpers
 import * as moment from 'moment';
@@ -24,8 +24,10 @@ declare var $: any;
     templateUrl: './deployments.component.html'
 })
 export class DeploymentsComponent implements OnInit {
+
+    private profile: ProfileInfo = null;
+
     public title = 'Deployments';
-    private profile: ProfileInfo;
 
     public pages: any = {
         current: 1,
@@ -58,10 +60,7 @@ export class DeploymentsComponent implements OnInit {
             new Crumb({ title: _self.title, active: true, link: 'deployments' })
         ]);
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
-            _self.profile = new ProfileInfo(profile);
-            _self.loadDeployments();
-        });
+        _self.loadDeployments();
     }
 
     updatePaging() {
@@ -117,5 +116,4 @@ export class DeploymentsComponent implements OnInit {
         this.blockUI.start('Loading device types...');
         this.loadDeployments();
     }
-
 }

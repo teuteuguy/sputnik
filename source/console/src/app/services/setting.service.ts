@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 // Models
-import { Setting } from '../models/setting.model';
+import { Setting } from '@models/setting.model';
 
 // Services
 import { AppSyncService } from './appsync.service';
@@ -15,6 +15,9 @@ export class SettingService {
 
     public getSetting(id: string) {
         return this.appSyncService.getSetting(id);
+    }
+    public updateSetting(setting: Setting) {
+        return this.appSyncService.updateSetting(setting);
     }
     public getThingAutoRegistrationState() {
         return this.appSyncService.getThingAutoRegistrationState();

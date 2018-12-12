@@ -1,6 +1,0 @@
-{
-    "id": "aws-esp32-3d-belt-v1.0",
-    "name": "3D Belt",
-    "type": "A:FreeRTOS",
-    "spec": {}
-}

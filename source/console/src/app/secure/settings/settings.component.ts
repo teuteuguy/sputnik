@@ -4,14 +4,13 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 // Models
-import { ProfileInfo } from '../../models/profile-info.model';
-import { Setting } from '../../models/setting.model';
+import { ProfileInfo } from '@models/profile-info.model';
+import { Setting } from '@models/setting.model';
 
 // Services
-import { BreadCrumbService, Crumb } from '../../services/bread-crumb.service';
-import { LoggerService } from '../../services/logger.service';
-import { SettingService } from '../../services/setting.service';
-import { FactoryResetService } from '../../services/factoryreset.service';
+import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
+import { LoggerService } from '@services/logger.service';
+import { SettingService } from '@services/setting.service';
 
 @Component({
     selector: 'app-root-settings',
@@ -20,6 +19,7 @@ import { FactoryResetService } from '../../services/factoryreset.service';
 export class SettingsComponent implements OnInit {
     public title = 'System Settings';
 
+    public profile: ProfileInfo = null;
     public isAdminUser = false;
 
     public appConfig: Setting = new Setting();
@@ -31,27 +31,6 @@ export class SettingsComponent implements OnInit {
     public thingAutoRegistrationConfigErrorMessage = '';
     public thingAutoRegistrationState = false;
 
-    private profile: ProfileInfo;
-
-    public factoryResetTables = [
-        {
-            table: 'Settings',
-            done: false
-        },
-        {
-            table: 'DeviceTypes',
-            done: false
-        },
-        {
-            table: 'DeviceBlueprints',
-            done: false
-        },
-        {
-            table: 'SolutionBlueprints',
-            done: false
-        }
-    ];
-
     @BlockUI()
     blockUI: NgBlockUI;
 
@@ -60,8 +39,7 @@ export class SettingsComponent implements OnInit {
         private breadCrumbService: BreadCrumbService,
         protected localStorage: LocalStorage,
         private logger: LoggerService,
-        private settingService: SettingService,
-        private factoryResetService: FactoryResetService
+        private settingService: SettingService
     ) {}
 
     ngOnInit() {
@@ -77,7 +55,7 @@ export class SettingsComponent implements OnInit {
 
         const _self = this;
 
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe(profile => {
+        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             _self.profile = new ProfileInfo(profile);
             _self.isAdminUser = _self.profile.isAdmin();
             _self.loadAllSettings();
@@ -108,23 +86,6 @@ export class SettingsComponent implements OnInit {
                     return err;
                 });
         }
-    }
-
-    factoryreset() {
-        const _self = this;
-
-        _self.factoryResetTables.forEach(t => {
-            t.done = false;
-            _self.factoryResetService
-                .factoryReset(t.table)
-                .then(result => {
-                    _self.logger.info(t.table, result);
-                    t.done = true;
-                })
-                .catch(err => {
-                    _self.logger.error(err);
-                });
-        });
     }
 
     loadGeneralSettings(): Promise<any> {
@@ -176,5 +137,14 @@ export class SettingsComponent implements OnInit {
             .catch(err => {
                 _self.logger.error('Toggle of Thing Group Auto Registration Service failed:', err);
             });
+    }
+
+    update(setting: Setting) {
+        console.log(setting);
+        this.settingService.updateSetting(setting).then(result => {
+            console.log(result);
+        }).catch(err => {
+            console.error(err);
+        });
     }
 }

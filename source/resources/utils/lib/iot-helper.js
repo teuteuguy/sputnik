@@ -31,9 +31,12 @@ class iotHelper {
         this.creds = new AWS.EnvironmentCredentials('AWS'); // Lambda provided credentials
     }
 
-    describeEndpoint() {
+    describeEndpoint(endpointType = 'iot:Data') {
         const iot = new AWS.Iot();
-        return iot.describeEndpoint().promise().then(data => {
+        console.log('describeEndpoint:', endpointType);
+        return iot.describeEndpoint({
+            endpointType: endpointType
+        }).promise().then(data => {
             console.log('Returned endpoint', data);
             return data;
         });
@@ -50,6 +53,19 @@ class iotHelper {
         }).catch(err => {
             console.error(err);
             return false;
+        });
+    }
+
+    iotdata(cmd, params) {
+        cmd = cmd.split('.')[1];
+        return this.describeEndpoint().then(endpoint => {
+            const iotdata = new AWS.IotData({
+                endpoint: endpoint.endpointAddress
+            });
+            return iotdata[cmd](params).promise();
+        }).then(result => {
+            console.log('Result:', result);
+            return result;
         });
     }
 }
