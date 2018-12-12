@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - DynamoDB Table - Solutions - Version %%VERSION%%'
+
+Resources:
+
+    solutionsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "id"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "sputnik-solutions"
+
+
+Outputs:
+    solutionsTable:
+        Description: "DynamoDB Solutions Table"
+        Value: !Ref solutionsTable

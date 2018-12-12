@@ -5,17 +5,15 @@ import { CommonModule } from '@angular/common';
 import { Solution } from '@models/solution.model';
 
 // Solutions
-import { MiniConnectedFactoryV10Module } from './mini-connected-factory-v1.0/mini-connected-factory.module';
+import { ReInvent2018MCFV10Module } from './reinvent-2018-mcf-v1.0/reinvent-2018-mcf-v1-0.module';
 
 @Component({
     selector: 'app-solution-child-view',
     template: `
-        <app-mini-connected-factory-v1
-            *ngIf="
-                solution.solutionBlueprintId === 'mini-connected-factory-v1.3'
-            "
+        <app-reinvent-2018-mcf-v1-0
+            *ngIf="solution.solutionBlueprintId === 'reinvent-2018-mcf-v1.0'"
             [solution]="solution"
-        ></app-mini-connected-factory-v1>
+        ></app-reinvent-2018-mcf-v1-0>
     `
 })
 export class SolutionChildViewComponent {
@@ -26,6 +24,6 @@ export class SolutionChildViewComponent {
 @NgModule({
     declarations: [SolutionChildViewComponent],
     exports: [SolutionChildViewComponent],
-    imports: [CommonModule, MiniConnectedFactoryV10Module]
+    imports: [CommonModule, ReInvent2018MCFV10Module]
 })
 export class SolutionChildViewsModule {}

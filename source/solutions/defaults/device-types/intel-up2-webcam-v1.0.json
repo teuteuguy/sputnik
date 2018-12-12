@@ -1,6 +1,6 @@
 {
     "id": "intel-up2-webcam-v0.1",
-    "name": "Intel UP2 (+Webcam) v0.1",
+    "name": "Intel UP2 with Webcam v0.1",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {

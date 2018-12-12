@@ -37,9 +37,9 @@ pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - defaults - demo-squeezenet-python"
+echo "[Build] Solution - defaults - gg-ml-demo-squeezenet-python"
 echo
-cd $1/solutions/defaults/lambdas/demo-squeezenet-python
+cd $1/solutions/defaults/lambdas/gg-ml-demo-squeezenet-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
@@ -58,16 +58,16 @@ pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - mini-connected-factory - mini-connected-factory-belt-serial-python"
+echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-belt-serial-python"
 echo
-cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-belt-serial-python
+cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-belt-serial-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - mini-connected-factory - mini-connected-factory-python"
+echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-python"
 echo
-cd $1/solutions/mini-connected-factory/lambdas/mini-connected-factory-python
+cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 

@@ -1,23 +1,16 @@
 {
-  "name": "mythings-mgmt-website",
+  "name": "sputnik-website",
   "version": "x.x.4",
-  "description": "Website for the My Things Management",
+  "description": "Website for sputnik",
   "main": "index.js",
   "scripts": {
     "build": "ng build --prod",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "ts-node ./tools/postinstall/patch-ngcli-webpack.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/teuteuguy/mythings-mgmt-website.git"
-  },
   "author": "teuteuguy",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/teuteuguy/mythings-mgmt-website/issues"
-  },
-  "homepage": "https://github.com/teuteuguy/mythings-mgmt-website#readme",
+  "homepage": "https://github.com/teuteuguy/sputnik#readme",
   "private": true,
   "dependencies": {
     "@angular/animations": "^6.x.x",

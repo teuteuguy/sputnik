@@ -5,7 +5,7 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
 
-const listGreengrassGroupIdsForThingArn = require('mythings-mgmt-custom-resource-helper-utils').listGreengrassGroupIdsForThingArn;
+const listGreengrassGroupIdsForThingArn = require('sputnik-custom-resource-helper-utils').listGreengrassGroupIdsForThingArn;
 
 module.exports = function (event, context) {
 

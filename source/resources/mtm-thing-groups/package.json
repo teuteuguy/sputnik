@@ -1,6 +1,6 @@
 {
-    "name": "mythings-mgmt-custom-resource-helper-thing-groups",
-    "description": "Cloudformation Custom Resource Helper for My Things Management Thing Groups AND common thing groups management for services",
+    "name": "sputnik-custom-resource-helper-thing-groups",
+    "description": "Cloudformation Custom Resource Helper for sputnik Thing Groups AND common thing groups management for services",
     "main": "mtm-thing-groups.js",
     "author": {
         "name": "teuteuguy"

@@ -1,5 +1,5 @@
 {
-    "name": "mythings-mgmt-custom-resource-helper-utils",
+    "name": "sputnik-custom-resource-helper-utils",
     "description": "Utils for the app",
     "main": "libs.js",
     "author": {

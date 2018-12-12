@@ -5,9 +5,9 @@ const gg = new AWS.Greengrass();
 const moment = require('moment');
 const _ = require('underscore');
 
-// const listGreengrassGroupIdsForThingArn = require('mythings-mgmt-custom-resource-helper-utils').listGreengrassGroupIdsForThingArn;
+// const listGreengrassGroupIdsForThingArn = require('sputnik-custom-resource-helper-utils').listGreengrassGroupIdsForThingArn;
 const listPrincipalThingsDetailed = require('./lib/list-principal-things-detailed');
-const addDevice = require('mythings-mgmt-devices-service').addDevice;
+const addDevice = require('sputnik-devices-service').addDevice;
 
 // TODO: Move the actual rule action to SQS so as to separate the calls and buffer via SQS.
 // TODO: The principal will refer to a cert. But this does not actually refer to the thing.

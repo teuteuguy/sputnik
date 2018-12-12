@@ -1,13 +1,13 @@
 {
-    "name": "mythings-mgmt-admin-service",
-    "description": "The admin microservice for the My Things Management",
+    "name": "sputnik-admin-service",
+    "description": "The admin microservice for the sputnik",
     "main": "libs.js",
     "license": "Amazon Software License (ASL)",
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "mythings-mgmt-custom-resource-helper-utils": "../../resources/utils/",
+        "sputnik-custom-resource-helper-utils": "../../resources/utils/",
         "password-generator": "*",
         "underscore": "*"
     },

@@ -3,7 +3,7 @@
 # Check to see if input has been provided:
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
     echo "Please provide the source dir, dist dir, bucket name, version"
-    echo "For example: ./00-prepare-cf.sh ../source ./dist mythings-mgmt.yml BUCKET v0.1"
+    echo "For example: ./00-prepare-cf.sh ../source ./dist sputnik.yml BUCKET v0.1"
     exit 1
 fi
 

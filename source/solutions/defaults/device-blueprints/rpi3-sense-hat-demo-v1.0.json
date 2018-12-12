@@ -1,6 +1,6 @@
 {
     "id": "rpi3-sense-hat-demo-v1.0",
-    "name": "Sense Hat Demo v1.0",
+    "name": "Raspberry Pi 3 Sense Hat Demo v1.0",
     "type": "GREENGRASS",
     "compatibility": ["raspberry-pi-3-sense-hat-v1.0"],
     "deviceTypeMappings": [],

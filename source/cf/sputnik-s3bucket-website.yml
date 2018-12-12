@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - Website Bucket - Version %%VERSION%%'
+
+Resources:
+    websiteBucket:
+        Type: AWS::S3::Bucket
+        DeletionPolicy: Retain
+        Properties:
+            WebsiteConfiguration:
+                IndexDocument: 'index.html'
+                ErrorDocument: 'index.html'
+
+    # Comment/Uncomment this to make bucket public
+    # websiteBucketPolicy:
+    #     Type: 'AWS::S3::BucketPolicy'
+    #     Properties:
+    #         Bucket:
+    #             !Ref 'websiteBucket'
+    #         PolicyDocument:
+    #             Statement:
+    #                 Action: 's3:GetObject'
+    #                 Effect: 'Allow'
+    #                 Resource: !Join ['', ['arn:aws:s3:::', !Ref websiteBucket, '/*']]
+    #                 Principal: '*'
+
+Outputs:
+    websiteBucket:
+        Description: 'sputnik Website Bucket'
+        Value: !Ref websiteBucket
+    websiteBucketArn:
+        Description: 'sputnik Website Bucket ARN'
+        Value: !GetAtt websiteBucket.Arn
+    websiteUrl:
+        Description: 'sputnik Website URL'
+        Value: !GetAtt websiteBucket.WebsiteURL

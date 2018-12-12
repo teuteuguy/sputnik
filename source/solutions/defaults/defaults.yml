@@ -1,15 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'AWS My Things Management Defaults v1.0'
+Description: 'AWS sputnik Defaults v1.0'
 Parameters:
     sourceS3Bucket:
         Type: String
-        Description: My Things Management S3 bucket.
+        Description: sputnik S3 bucket.
     sourceKeyPrefix:
         Type: String
-        Description: My Things management Source key prefix.
+        Description: sputnik Source key prefix.
     greengrassSourceKeyPrefix:
         Type: String
-        Description: My Things management source key prefix for the greengrass lambda function code
+        Description: sputnik source key prefix for the greengrass lambda function code
     deviceBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the device blueprints
@@ -27,10 +27,10 @@ Parameters:
         Description: Used to force update / create of inits
     dataS3Bucket:
         Type: String
-        Description: My Things Management Data S3 Bucket
+        Description: sputnik Data S3 Bucket
     dataS3BucketArn:
         Type: String
-        Description: My Things Management Data S3 Bucket ARN
+        Description: sputnik Data S3 Bucket ARN
     solutionsGreengrassGroupRole:
         Type: String
         Description: Greengrass Group Role
@@ -40,7 +40,7 @@ Resources:
     DefaultSGreengrassGroupPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
-            Description: 'Policy for the My Things Management Greengrass Role.'
+            Description: 'Policy for the sputnik Greengrass Role.'
             PolicyDocument:
                 Version: '2012-10-17'
                 Statement:
@@ -130,7 +130,7 @@ Resources:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'rpi-sense-hat-display-ip-python'
-            Description: 'My Things Management Raspberry Pi Sense Hat display IP Lambda Code'
+            Description: 'sputnik Raspberry Pi Sense Hat display IP Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'rpi-sense-hat-display-ip-python.zip']]
@@ -156,7 +156,7 @@ Resources:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'rpi-sense-hat-demo-python'
-            Description: 'My Things Management Raspberry Pi Sense Hat Demo Lambda Code'
+            Description: 'sputnik Raspberry Pi Sense Hat Demo Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'rpi-sense-hat-demo-python.zip']]
@@ -182,7 +182,7 @@ Resources:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'image-capture-python'
-            Description: 'My Things Management Image Capture Lambda Code'
+            Description: 'sputnik Image Capture Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'image-capture-python.zip']]
@@ -204,37 +204,37 @@ Resources:
             FunctionVersion: !GetAtt DefaultImageCaptureLambdaVersion.Version
             Name: 'MTM'
 
-    DefaultDemoSqueezenetLambda:
+    DefaultGGMLDemoSqueezenetLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
-            FunctionName: 'demo-squeezenet-python'
-            Description: 'AWS Squeezenet Demo Lambda Code'
+            FunctionName: 'gg-ml-demo-squeezenet-python'
+            Description: 'AWS GG ML Squeezenet Demo Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
-                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'demo-squeezenet-python.zip']]
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'gg-ml-demo-squeezenet-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
             Role: !GetAtt DefaultLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
-    DefaultDemoSqueezenetLambdaVersion:
+    DefaultGGMLDemoSqueezenetLambdaVersion:
         Type: 'AWS::Lambda::Version'
         Properties:
             FunctionName:
-                Ref: 'DefaultDemoSqueezenetLambda'
-            Description: 'A first version of demo-squeezenet-python'
-    DefaultDemoSqueezenetLambdaAlias:
+                Ref: 'DefaultGGMLDemoSqueezenetLambda'
+            Description: 'A first version of gg-ml-demo-squeezenet-python'
+    DefaultGGMLDemoSqueezenetLambdaAlias:
         Type: 'AWS::Lambda::Alias'
         Properties:
-            FunctionName: !Ref DefaultDemoSqueezenetLambda
-            FunctionVersion: !GetAtt DefaultDemoSqueezenetLambdaVersion.Version
+            FunctionName: !Ref DefaultGGMLDemoSqueezenetLambda
+            FunctionVersion: !GetAtt DefaultGGMLDemoSqueezenetLambdaVersion.Version
             Name: 'MTM'
 
     DefaultInferenceCameraLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'ml-inference-camera-python'
-            Description: 'My Things Management AWS ML Inference Camera Lambda Code'
+            Description: 'sputnik AWS ML Inference Camera Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'ml-inference-camera-python.zip']]
@@ -260,7 +260,7 @@ Resources:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'model-trainer-python'
-            Description: 'My Things Management Model Trainer for models Lambda Code'
+            Description: 'sputnik Model Trainer for models Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'model-trainer-python.zip']]

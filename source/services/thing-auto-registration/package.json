@@ -1,14 +1,14 @@
 {
-    "name": "mythings-mgmt-thing-auto-registration-service",
-    "description": "The Thing Group Auto Registration microservice for the My Things Management",
+    "name": "sputnik-thing-auto-registration-service",
+    "description": "The Thing Group Auto Registration microservice for the sputnik",
     "main": "index.js",
     "license": "Amazon Software License (ASL)",
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "mythings-mgmt-custom-resource-helper-utils": "../../resources/utils/",
-        "mythings-mgmt-devices-service": "../devices",
+        "sputnik-custom-resource-helper-utils": "../../resources/utils/",
+        "sputnik-devices-service": "../devices",
         "underscore": "*"
     },
     "devDependencies": {},
