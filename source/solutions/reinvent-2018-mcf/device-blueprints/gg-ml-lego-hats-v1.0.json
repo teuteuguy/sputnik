@@ -107,7 +107,7 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/helmets/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/legomodel-v1.1.8-224-3cat.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/reinvent-2018-mcf/models/legomodel-v1.1.8-224-3cat.tar.gz"
                     }
                 }
             },

@@ -49,7 +49,7 @@
     "spec": {
         "FunctionDefinitionVersion": {
             "Functions": [{
-                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:demo-squeezenet-python:MTM",
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:gg-ml-demo-squeezenet-python:MTM",
                 "FunctionConfiguration": {
                     "EncodingType": "json",
                     "Environment": {
@@ -91,7 +91,7 @@
                     "ResourceDataContainer": {
                         "S3MachineLearningModelResourceData": {
                             "DestinationPath": "/greengrass-machine-learning/mxnet/squeezenet/",
-                            "S3Uri": "[DATA_BUCKET_S3_URL]/demo-squeezenet-v1.0/models/squeezenet.zip"
+                            "S3Uri": "[DATA_BUCKET_S3_URL]/gg-ml-demo-squeezenet-v1.0/models/squeezenet.zip"
                         }
                     }
                 },
@@ -112,11 +112,11 @@
         },
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
-                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:demo-squeezenet-python:MTM",
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:gg-ml-demo-squeezenet-python:MTM",
                 "Subject": "mtm/[CORE]/logger",
                 "Target": "cloud"
             }, {
-                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:demo-squeezenet-python:MTM",
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:gg-ml-demo-squeezenet-python:MTM",
                 "Subject": "mtm/[CORE]/camera",
                 "Target": "cloud"
             }]

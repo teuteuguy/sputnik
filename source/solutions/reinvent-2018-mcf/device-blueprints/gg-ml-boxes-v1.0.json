@@ -107,7 +107,7 @@
                 "ResourceDataContainer": {
                     "S3MachineLearningModelResourceData": {
                         "DestinationPath": "/ml/",
-                        "S3Uri": "[DATA_BUCKET_S3_URL]/mini-connected-factory/models/boxes-v1.0.0-224-3cat.tar.gz"
+                        "S3Uri": "[DATA_BUCKET_S3_URL]/reinvent-2018-mcf/models/boxes-v1.0.0-224-3cat.tar.gz"
                     }
                 }
             },

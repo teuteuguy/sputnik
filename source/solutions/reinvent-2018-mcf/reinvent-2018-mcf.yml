@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'AWS re:Invent 2018 Mini Connected Factory Demo v1.0'
+Description: 'AWS Mini Connected Factory Demo v1.0'
 Parameters:
     sourceS3Bucket:
         Type: String
@@ -36,7 +36,7 @@ Parameters:
         Description: Greengrass Group Role
 
 Resources:
-    AMCF1DeviceBlueprints:
+    MCFDeviceBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -47,7 +47,7 @@ Resources:
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    AMCF1SolutionBlueprints:
+    MCFSolutionBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -58,7 +58,7 @@ Resources:
             table: !Ref solutionBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    AMCF1LambdaRole:
+    MCFLambdaRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -72,7 +72,7 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
 
-    AMCF1BeltLambda:
+    MCFBeltSerialLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'reinvent-2018-mcf-belt-serial-python'
@@ -82,52 +82,76 @@ Resources:
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'reinvent-2018-mcf-belt-serial-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
-            Role: !GetAtt AMCF1LambdaRole.Arn
+            Role: !GetAtt MCFLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
-    AMCF1BeltLambdaVersion:
+    MCFBeltSerialLambdaVersion:
         Type: 'AWS::Lambda::Version'
         Properties:
             FunctionName:
-                Ref: 'AMCF1BeltLambda'
+                Ref: 'MCFBeltSerialLambda'
             Description: 'A first version of reinvent-2018-mcf-belt-serial-python'
-    AMCF1BeltLambdaAlias:
+    MCFBeltSerialLambdaAlias:
         Type: 'AWS::Lambda::Alias'
         Properties:
-            FunctionName: !Ref AMCF1BeltLambda
-            FunctionVersion: !GetAtt AMCF1BeltLambdaVersion.Version
+            FunctionName: !Ref MCFBeltSerialLambda
+            FunctionVersion: !GetAtt MCFBeltSerialLambdaVersion.Version
             Name: 'MTM'
 
 
-    AMCF1FactoryPythonLambda:
+    MCFReInvent2018Lambda:
         Type: 'AWS::Lambda::Function'
         Properties:
             FunctionName: 'reinvent-2018-mcf-python'
-            Description: 'sputnik AWS Mini Connected Factory Lambda Code'
+            Description: 'sputnik AWS reInvent 2018 Mini Connected Factory Lambda Code'
             Code:
                 S3Bucket: !Ref sourceS3Bucket
                 S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'reinvent-2018-mcf-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
-            Role: !GetAtt AMCF1LambdaRole.Arn
+            Role: !GetAtt MCFLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
-    AMCF1FactoryPythonLambdaVersion:
+    MCFReInvent2018LambdaVersion:
         Type: 'AWS::Lambda::Version'
         Properties:
             FunctionName:
-                Ref: 'AMCF1FactoryPythonLambda'
+                Ref: 'MCFReInvent2018Lambda'
             Description: 'A first version of reinvent-2018-mcf-python'
-    AMCF1FactoryPythonLambdaAlias:
+    MCFReInvent2018LambdaAlias:
         Type: 'AWS::Lambda::Alias'
         Properties:
-            FunctionName: !Ref AMCF1FactoryPythonLambda
-            FunctionVersion: !GetAtt AMCF1FactoryPythonLambdaVersion.Version
+            FunctionName: !Ref MCFReInvent2018Lambda
+            FunctionVersion: !GetAtt MCFReInvent2018LambdaVersion.Version
             Name: 'MTM'
 
+    MCFEBC2018Lambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'ebc-mcf-2018-python'
+            Description: 'sputnik AWS EBC Mini Connected Factory Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref greengrassSourceKeyPrefix, 'ebc-mcf-2018-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt MCFLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    MCFEBC2018LambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'MCFEBC2018Lambda'
+            Description: 'A first version of ebc-mcf-2018-python'
+    MCFEBC2018LambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref MCFEBC2018Lambda
+            FunctionVersion: !GetAtt MCFEBC2018LambdaVersion.Version
+            Name: 'MTM'
 
-
-    AMCF1GreengrassGroupPolicy:
+    MCFGreengrassGroupPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
             Description: 'Policy for the sputnik Greengrass Role.'
@@ -149,7 +173,7 @@ Resources:
                     !Ref solutionsGreengrassGroupRole
 
 
-    AMCF1LegoModel:
+    MCFLegoModel:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -161,7 +185,7 @@ Resources:
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'
 
-    AMCF1BoxesModel:
+    MCFBoxesModel:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn

@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Device } from '@models/device.model';
 
 // Devices
-import { AFR3DBeltMiniConnectedFactoryV10Module } from './afr-3d-belt-mini-connected-factory-v1.0/afr-3d-belt-mini-connected-factory.module';
+import { AFR3DBeltSerialV10Module } from './3d-belt-serial-v1.0/3d-belt-serial-v1-0.module';
 import { GGMLLegoHatsV10Module } from './gg-ml-lego-hats-v1.0/gg-ml-lego-hats.module';
 import { GGMLBoxesV10Module } from './gg-ml-boxes-v1.0/gg-ml-boxes.module';
 import { ImageCaptureV10Module } from './image-capture-v1.0/image-capture.module';
@@ -16,11 +16,11 @@ import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense
 @Component({
     selector: 'app-device-child-view',
     template: `
-        <app-afr-3d-belt-mini-connected-factory-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'afr-3d-belt-v1.0'"
+        <app-3d-belt-serial-v1-0
+            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === '3d-belt-serial-v1.0'"
             [device]="device"
         >
-        </app-afr-3d-belt-mini-connected-factory-v1-0>
+        </app-3d-belt-serial-v1-0>
         <app-gg-ml-lego-hats-v1-0
             *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'gg-ml-lego-hats-v1.0'"
             [device]="device"
@@ -63,7 +63,7 @@ export class DeviceChildViewComponent {
     exports: [DeviceChildViewComponent],
     imports: [
         CommonModule,
-        AFR3DBeltMiniConnectedFactoryV10Module,
+        AFR3DBeltSerialV10Module,
         GGMLLegoHatsV10Module,
         GGMLBoxesV10Module,
         ImageCaptureV10Module,

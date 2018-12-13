@@ -39,39 +39,42 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit() {
 
-        this.blockUI.start('Loading profile...');
+        const self = this;
 
-        const _self = this;
+        self.blockUI.start('Loading profile...');
+
         // this.localStorage.getItem<any>('deviceStats').subscribe((stats) => {
-        //     _self.deviceStats = stats;
+        //     self.deviceStats = stats;
         // });
 
-        this.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
-            _self.profile = new ProfileInfo(profile);
+        self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+            self.profile = new ProfileInfo(profile);
             // refresh profile info
-            _self.loadProfileData().then(() => {
-                this.blockUI.stop();
-            }).catch((err) => {
-                this.blockUI.stop();
-                swal(
-                    'Oops...',
-                    'Something went wrong! Unable to retrieve the user\'s profile.',
-                    'error');
-            });
+            self.loadProfileData()
+                .then(() => {
+                    this.blockUI.stop();
+                })
+                .catch(err => {
+                    this.blockUI.stop();
+                    swal('Oops...', "Something went wrong! Unable to retrieve the user's profile.", 'error');
+                });
         });
     }
 
     loadProfileData() {
-        const _self = this;
+        const self = this;
         const promise = new Promise((resolve, reject) => {
-            this.userService.getUserInfo().then((data) => {
-                _self.profile = new ProfileInfo(data);
-                this.localStorage.setItem('profile', data).subscribe(() => { });
-                resolve();
-            }).catch((err) => {
-                this.logger.error('[error] Error occurred calling getUserInfo API.');
-                reject();
-            });
+            self.userService
+                .getUserInfo()
+                .then(data => {
+                    self.profile = new ProfileInfo(data);
+                    self.localStorage.setItem('profile', data).subscribe(() => {});
+                    resolve();
+                })
+                .catch(err => {
+                    self.logger.error('[error] Error occurred calling getUserInfo API.');
+                    reject();
+                });
         });
         return promise;
     }

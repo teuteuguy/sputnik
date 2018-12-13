@@ -332,15 +332,23 @@ module.exports = function (event, context) {
                 const iotdata = new AWS.IotData({
                     endpoint: endpoint.endpointAddress
                 });
-                return iotdata.deleteThingShadow({
-                    thingName: _device.thingName
+                return iotdata.updateThingShadow({
+                    thingName: _device.thingName,
+                    payload: JSON.stringify({
+                        state: {}
+                    })
                 }).promise().then(result => {
-                    return iotdata.updateThingShadow({
-                        thingName: _device.thingName,
-                        payload: JSON.stringify({
-                            state: _newShadow
-                        })
-                    }).promise();
+                    console.log('Updating with nothing, to create in case it doesnt exist');
+                    return iotdata.deleteThingShadow({
+                        thingName: _device.thingName
+                    }).promise().then(result => {
+                        return iotdata.updateThingShadow({
+                            thingName: _device.thingName,
+                            payload: JSON.stringify({
+                                state: _newShadow
+                            })
+                        }).promise();
+                    });
                 });
             }).then(result => {
                 console.log('Updated shadow per spec:', _newShadow);

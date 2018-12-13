@@ -11,7 +11,7 @@ import { ReInvent2018MCFV10Module } from './reinvent-2018-mcf-v1.0/reinvent-2018
     selector: 'app-solution-child-view',
     template: `
         <app-reinvent-2018-mcf-v1-0
-            *ngIf="solution.solutionBlueprintId === 'reinvent-2018-mcf-v1.0'"
+            *ngIf="solution.solutionBlueprintId === 'reinvent-2018-mcf-v1.0' || solution.solutionBlueprintId === 'ebc-mcf-2018-v1.0'"
             [solution]="solution"
         ></app-reinvent-2018-mcf-v1-0>
     `

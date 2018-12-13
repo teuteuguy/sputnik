@@ -7,7 +7,7 @@
                 <!-- <div *ngIf="user.user_id">
                     <button type="button" class="btn btn-outline-danger btn-rounded" *ngIf="user.enabled" (click)="disableUser()">Disable User</button>
                 </div> -->
-                <form class="form-material m-t-40">
+                <form class="form-material m-t-40" *ngIf="profile">
                     <div class="form-group">
                         <label><b>User Id</b></label>
                         <p>{{profile.user_id}}</p>

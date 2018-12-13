@@ -1,0 +1,129 @@
+{
+    "id": "ebc-mcf-2018-v1.0",
+    "name": "AWS Mini Connected Factory demo for EBC rooms v1.0",
+    "description": "AWS EBC Mini Connected Factory v1.0",
+    "prefix": "AMCF1_",
+    "spec": {
+        "devices": [{
+                "defaultDeviceTypeId": "esp32-devkitc-v1.0",
+                "deviceBlueprintId": ["3d-belt-serial-v1.0"],
+                "ref": "device_0"
+            },
+            {
+                "defaultDeviceTypeId": "deeplens-v1.0",
+                "deviceBlueprintId": ["gg-ml-boxes-v1.0", "gg-ml-lego-hats-v1.0"],
+                "ref": "device_1",
+                "spec": {
+                    "Shadow": {
+                        "desired": {
+                            "inferenceDecision": {
+                                "category": "goodbox",
+                                "threshold": 80
+                            }
+                        }
+                    },
+                    "DeviceDefinitionVersion": {
+                        "Devices": [{
+                            "CertificateArn": "!GetAtt[device_0.cert.certificateArn]",
+                            "SyncShadow": true,
+                            "ThingArn": "!GetAtt[device_0.thingArn]"
+                        }]
+                    },
+                    "FunctionDefinitionVersion": {
+                        "Functions": [{
+                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "FunctionConfiguration": {
+                                    "EncodingType": "json",
+                                    "Environment": {
+                                        "AccessSysfs": true,
+                                        "ResourceAccessPolicies": [{
+                                            "Permission": "rw",
+                                            "ResourceId": "serial-port"
+                                        }],
+                                        "Variables": {
+                                            "SERIALPORT_PORT": "/dev/ttyUSB0",
+                                            "SERIALPORT_SPEED": "115200",
+                                            "THING_NAME": "!GetAtt[device_0.thingName]"
+                                        }
+                                    },
+                                    "MemorySize": 262144,
+                                    "Pinned": true,
+                                    "Timeout": 3
+                                }
+                            },
+                            {
+                                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "FunctionConfiguration": {
+                                    "EncodingType": "json",
+                                    "Environment": {
+                                        "ResourceAccessPolicies": [],
+                                        "Variables": {
+                                            "THING_NAME_CAMERA": "[CORE]",
+                                            "THING_NAME_BELT": "!GetAtt[device_0.thingName]"
+                                        }
+                                    },
+                                    "MemorySize": 262144,
+                                    "Pinned": false,
+                                    "Timeout": 5
+                                }
+                            }
+                        ]
+                    },
+                    "ResourceDefinitionVersion": {
+                        "Resources": [{
+                            "Id": "serial-port",
+                            "Name": "serial-port",
+                            "ResourceDataContainer": {
+                                "LocalDeviceResourceData": {
+                                    "GroupOwnerSetting": {
+                                        "AutoAddGroupOwner": true
+                                    },
+                                    "SourcePath": "/dev/ttyUSB0"
+                                }
+                            }
+                        }]
+                    },
+                    "SubscriptionDefinitionVersion": {
+                        "Subscriptions": [{
+                                "Source": "GGShadowService",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update/accepted"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ml-inference-camera-python:MTM",
+                                "Subject": "make/inference"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "Subject": "mtm/!GetAtt[device_0.thingName]/sensors/proximity"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "Target": "cloud",
+                                "Subject": "mtm/!GetAtt[device_0.thingName]/sensors/+"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "Subject": "mtm/!GetAtt[device_0.thingName]/shadow/update"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ml-inference-camera-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "Subject": "mtm/[CORE]/inference"
+                            },
+                            {
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:ebc-mcf-2018-python:MTM",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:reinvent-2018-mcf-belt-serial-python:MTM",
+                                "Subject": "$aws/things/!GetAtt[device_0.thingName]/shadow/update"
+                            }
+                        ]
+                    }
+
+                }
+            }
+        ]
+    }
+}

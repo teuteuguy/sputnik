@@ -10,10 +10,10 @@ import { Device } from '@models/device.model';
 import { IOTService } from '@services/iot.service';
 
 @Component({
-    selector: 'app-afr-3d-belt-mini-connected-factory-v1-0',
-    templateUrl: './afr-3d-belt-mini-connected-factory.component.html'
+    selector: 'app-3d-belt-serial-v1-0',
+    templateUrl: './3d-belt-serial-v1-0.component.html'
 })
-export class AFR3DBeltMiniConnectedFactoryV10Component extends IoTPubSuberComponent implements OnInit {
+export class AFR3DBeltSerialV10Component extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
     public sensors: any = {

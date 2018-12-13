@@ -72,6 +72,13 @@ pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
+echo "[Build] Solution - ebc-mcf-2018 - ebc-mcf-2018-python"
+echo
+cd $1/solutions/reinvent-2018-mcf/lambdas/ebc-mcf-2018-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
+
+echo
 echo "--------------------------------------------------------------------------------------------------------"
 echo
 exit 0

@@ -291,6 +291,6 @@ Resources:
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'models', 'squeezenet.zip']]
             destS3Bucket: !Ref dataS3Bucket
-            destS3Key: !Join ['/', ['demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
+            destS3Key: !Join ['/', ['gg-ml-demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'
