@@ -69,18 +69,18 @@ class MainAppThread(Thread):
                 temperature2 = sense.get_temperature_from_pressure()
                 humidity = sense.get_humidity()
                 pressure = sense.get_pressure()
-                orientation = sense.get_orientation()
+                # orientation = sense.get_orientation()
                 north = sense.get_compass()
-                gyro = sense.get_gyroscope()
-                accel = sense.get_accelerometer()
+                # gyro = sense.get_gyroscope()
+                # accel = sense.get_accelerometer()
                 print("Temperature1: {}".format(temperature1))
                 print("Temperature2: {}".format(temperature2))
                 print("Humidity:     {}".format(humidity))
                 print("Pressure:     {}".format(pressure))
                 print("North:        {}".format(north))
-                print("Orientation:  p: {pitch}, r: {roll}, y: {yaw}".format(**orientation))
-                print("Gyro:         p: {pitch}, r: {roll}, y: {yaw}".format(**gyro))
-                print("Accel:        p: {pitch}, r: {roll}, y: {yaw}".format(**accel))
+                # print("Orientation:  p: {pitch}, r: {roll}, y: {yaw}".format(**orientation))
+                # print("Gyro:         p: {pitch}, r: {roll}, y: {yaw}".format(**gyro))
+                # print("Accel:        p: {pitch}, r: {roll}, y: {yaw}".format(**accel))
 
                 GGIOT.publish(TOPIC_SENSORS, {
                     "temperature": {
@@ -89,10 +89,11 @@ class MainAppThread(Thread):
                     },
                     "humidity": humidity,
                     "pressure": pressure,
-                    "north": north,
-                    "orientation": orientation,
-                    "gyro": gyro,
-                    "accel": accel
+                    "north": north
+                    # ,
+                    # "orientation": orientation,
+                    # "gyro": gyro,
+                    # "accel": accel
                 })
 
                 time.sleep(float(SHADOW_OBJECT["config"]["freq"]))

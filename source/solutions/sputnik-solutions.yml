@@ -45,6 +45,9 @@ Mappings:
         DEFAULTS:
             Name: 'defaults'
             Template: 'defaults.yml'
+        FleetTrackers:
+            Name: 'fleet-trackers'
+            Template: 'fleet-trackers.yml'
 
 Resources:
 
@@ -72,6 +75,23 @@ Resources:
             Parameters:
                 sourceS3Bucket: !Ref sourceS3Bucket
                 sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'reInvent2018MCF', 'Name']]]
+                greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                customResourceUtilsHelperArn: !Ref customResourceUtilsHelperArn
+                deploymentUUID: !Ref deploymentUUID
+                dataS3Bucket: !Ref dataS3Bucket
+                dataS3BucketArn: !Ref dataS3BucketArn
+                solutionsGreengrassGroupRole: !Ref solutionsGreengrassGroupRole
+
+    CFStackForSolutionsFleetTrackers:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Ref sourceS3Bucket, !Ref sourceKeyPrefix, !FindInMap ['Solutions', 'FleetTrackers', 'Name'], !FindInMap ['Solutions', 'FleetTrackers', 'Template']]]
+            Parameters:
+                sourceS3Bucket: !Ref sourceS3Bucket
+                sourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, !FindInMap ['Solutions', 'FleetTrackers', 'Name']]]
                 greengrassSourceKeyPrefix: !Ref greengrassSourceKeyPrefix
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deviceTypesTable: !Ref deviceTypesTable

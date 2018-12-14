@@ -71,7 +71,11 @@ export class SolutionsModalComponent {
     }
 
     cancel() {
-        console.log('Cancel');
+        // console.log('Cancel', this.createResources);
         this.cancelSubject.next();
+    }
+
+    toggleCreateResources() {
+        this.createResources = !this.createResources;
     }
 }

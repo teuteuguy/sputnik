@@ -22,7 +22,7 @@
                          0, 0, 0, 0, 0, 0, 0, 0,
                          0, 0, 0, 0, 0, 0, 0, 0
                      ],
-                     "mode": "text",
+                     "mode": "led",
                      "text": "Hello World!",
                      "config": {
                          "rotation": 0,

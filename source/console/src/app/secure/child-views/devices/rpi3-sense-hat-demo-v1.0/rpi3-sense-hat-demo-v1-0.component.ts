@@ -18,6 +18,42 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
 
     private shadowObject = 'sense-hat';
 
+    public sensors = {
+        humidity: 0,
+        north: 0,
+        pressure: 0,
+        temperature: {
+            temp: 0,
+            1: 0,
+            2: 0
+        }
+        // ,
+        // accel: {
+        //     yaw: 0,
+        //     roll: 0,
+        //     pitch: 0
+        // },
+        // orientation: {
+        //     yaw: 0,
+        //     roll: 0,
+        //     pitch: 0
+        // }
+    };
+
+    public northOpts = {
+        angle: -0.5,
+        lineWidth: 0.09,
+        radiusScale: 1.1,
+        pointer: { length: 0.64, strokeWidth: 0.049, color: '#000000' },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#009efb',
+        colorStop: '#009efb',
+        strokeColor: '#E0E0E0',
+        generateGradient: true,
+        highDpiSupport: true
+    };
+
     constructor(private iotService: IOTService, private ngZone: NgZone) {
         super(iotService);
     }
@@ -40,7 +76,12 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
             {
                 topic: 'mtm/' + this.device.thingName + '/sensors',
                 onMessage: data => {
-                    // this.sensors.speed = data.value;
+                    this.sensors = data.value;
+                    this.sensors.temperature.temp =
+                        Math.floor(((this.sensors.temperature['1'] + this.sensors.temperature['2']) * 10) / 2) / 10;
+                    this.sensors.humidity = Math.floor(this.sensors.humidity * 10) / 10;
+                    this.sensors.pressure = Math.floor(this.sensors.pressure * 10) / 10;
+                    console.log(this.sensors.north);
                 },
                 onError: defaultErrorCallback
             }
@@ -99,7 +140,6 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
     }
 
     public changeLed(i, j) {
-
         this.desired.led[i * 8 + j] = 1 - this.desired.led[i * 8 + j];
 
         const desired = {};

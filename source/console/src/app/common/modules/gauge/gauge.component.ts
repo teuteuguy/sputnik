@@ -3,7 +3,7 @@ declare var Gauge: any;
 
 @Component({
     selector: 'app-gauge',
-    template: '<canvas id="{{id}}-gauge" class="gaugejs"></canvas>'
+    template: '<canvas id="{{id}}-gauge" class="gaugejs" style="width: 100%"></canvas>'
 })
 export class GaugeComponent implements AfterViewInit {
     private gauge = null;
@@ -19,6 +19,7 @@ export class GaugeComponent implements AfterViewInit {
     constructor() {}
 
     ngAfterViewInit() {
+        console.log(this.opts);
         if (!this.opts) {
             this.opts = {
                 angle: 0,

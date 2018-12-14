@@ -41,6 +41,14 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <input type="checkbox" id="createResources" style="padding-left: 18px;" [checked]="createResources"
+                            (click)="toggleCreateResources()">
+                        <label class="form-check-label" for="createResources" style="padding-left: 25px;">Create
+                            resources
+                            ?</label>
+                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
                         <button *ngIf="modalType !== 'view' && !name.errors" type="submit" class="btn btn-success">Submit</button>

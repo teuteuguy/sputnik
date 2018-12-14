@@ -1,0 +1,9 @@
+{
+    "id": "car-v1.0",
+    "name": "Generic Car",
+    "description": "Generic Car",
+    "prefix": "Car_",
+    "spec": {
+        "devices": []
+    }
+}
