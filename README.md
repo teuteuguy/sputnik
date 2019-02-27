@@ -65,6 +65,8 @@ Help me find them. There's plenty !
 
 # Development TODO / WIP
 
+* certs are a massive mess, change it
+* check on the on-boarding just in time service
 * model trainer view has issues with the pictures
 * A:FreeRTOS. Need to add full management (deployment) of FreeRTOS devices via OTA. Taken into account in Blueprints etc ...
 * Device creation: need to think about how to provide Cert to end user.

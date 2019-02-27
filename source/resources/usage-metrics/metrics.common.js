@@ -1,4 +1,21 @@
-'use strict';
+/*********************************************************************************************************************
+ *  Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *                                                                                                                    *
+ *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  with the License. A copy of the License is located at                                                             *
+ *                                                                                                                    *
+ *      http://aws.amazon.com/asl/                                                                                    *
+ *                                                                                                                    *
+ *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
+ *  and limitations under the License.                                                                                *
+ *********************************************************************************************************************/
+
+/**
+ * @author tcruse@
+ */
+
+ 'use strict';
 
 const https = require('https');
 const AWS = require('aws-sdk');
@@ -9,7 +26,7 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 class Metrics {
 
     constructor() {
-        this.endpoint = 'f3z2h4v1ac.execute-api.us-east-1.amazonaws.com';
+        this.endpoint = 'metrics.awssolutionsbuilder.com';
     }
 
     sendAnonymousMetric(metric) {
@@ -19,7 +36,7 @@ class Metrics {
             let _options = {
                 hostname: this.endpoint,
                 port: 443,
-                path: '/prod/metric',
+                path: '/generic',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -43,7 +60,7 @@ class Metrics {
             });
 
             if (metric) {
-                metric.Solution = 'MTM'; // TODO: maybe this could be a parameter ?
+                metric.Solution = 'SO0053';
                 request.write(JSON.stringify(metric));
             }
 
@@ -57,19 +74,19 @@ class Metrics {
 
     }
 
-    checkAndSend(metric) {
+    sendAnonymousMetricIfCustomerEnabled(metric) {
         return documentClient.get({
             TableName: process.env.TABLE_SETTINGS,
             Key: {
                 id: 'app-config'
             }
         }).promise().then(result => {
-            console.log('checkAndSend.settings:', result);
+            console.log('sendAnonymousMetricIfCustomerEnabled.settings:', result);
             if (result.Item && result.Item.setting && result.Item.setting.anonymousData === 'Yes' && result.Item.setting.uuid) {
                 metric.UUID = result.Item.setting.uuid;
                 metric.TimeStamp = moment().utc().format('YYYY-MM-DD HH:mm:ss.S');
                 return this.sendAnonymousMetric(metric).then(data => {
-                    console.log('checkAndSend:', data);
+                    console.log('sendAnonymousMetricIfCustomerEnabled:', data);
                     return true;
                 }).catch(err => {
                     console.error('ERROR', err);

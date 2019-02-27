@@ -69,43 +69,35 @@ module.exports = function (event, context) {
                 // Thing already in our DB
                 throw 'Thing is already in the DB';
             } else {
+                // Lets prepare. Lets check what type of device we are trying to provision :)
 
-                return usageMetrics.checkAndSend({
-                    Data: {
-                        NewDevice: moment().utc().format()
-                    }
-                }).then(res => {
-
-                    // Lets prepare. Lets check what type of device we are trying to provision :)
-
-                    if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
-                        return documentClient.get({
-                            TableName: process.env.TABLE_DEVICE_TYPES,
-                            Key: {
-                                id: event.deviceTypeId
-                            }
-                        }).promise().then(deviceType => {
-                            if (!deviceType.Item) {
-                                event.deviceTypeId = 'UNKNOWN';
+                if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
+                    return documentClient.get({
+                        TableName: process.env.TABLE_DEVICE_TYPES,
+                        Key: {
+                            id: event.deviceTypeId
+                        }
+                    }).promise().then(deviceType => {
+                        if (!deviceType.Item) {
+                            event.deviceTypeId = 'UNKNOWN';
+                            return 'NOT_A_GREENGRASS_DEVICE';
+                        } else {
+                            if (deviceType.Item.type !== 'GREENGRASS') {
                                 return 'NOT_A_GREENGRASS_DEVICE';
                             } else {
-                                if (deviceType.Item.type !== 'GREENGRASS') {
-                                    return 'NOT_A_GREENGRASS_DEVICE';
-                                } else {
-                                    // Device is a Greengrass device => create the greengrass group!
-                                    return gg.createGroup({
-                                        Name: event.thingName + '-gg-group'
-                                    }).promise().then(group => {
-                                        return group.Id;
-                                    });
-                                }
+                                // Device is a Greengrass device => create the greengrass group!
+                                return gg.createGroup({
+                                    Name: event.thingName + '-gg-group'
+                                }).promise().then(group => {
+                                    return group.Id;
+                                });
                             }
-                        });
-                    } else {
-                        return 'NOT_A_GREENGRASS_DEVICE';
-                    }
+                        }
+                    });
+                } else {
+                    return 'NOT_A_GREENGRASS_DEVICE';
+                }
 
-                });
             }
         }).then(greengrassGroupId => {
 
@@ -179,6 +171,11 @@ module.exports = function (event, context) {
         })
         .then(results => {
             console.log('addDevice: results:', JSON.stringify(results, null, 4));
-            return results[0];
+            return usageMetrics.sendAnonymousMetricIfCustomerEnabled({
+                metric: "newDevice",
+                value: event.thing.thingId
+            }).then(res => {
+                return results[0];
+            });
         });
 };
