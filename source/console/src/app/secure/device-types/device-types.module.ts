@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 // Components
-import { SecureHomeCommonComponent } from '@common-secure/secure-home-common.component';
+import { SecureHomeLayoutComponent } from '@secure/secure-home-layout.component';
 import { TableModule } from '@common-modules/table/table.module';
 
 import { DeviceTypeComponent } from './device-type.component';
@@ -17,7 +17,7 @@ import { PrettyJsonModule } from '@common-modules/pretty-json/pretty-json.module
 const deviceTypesRoutes: Routes = [
     {
         path: 'securehome/device-types',
-        component: SecureHomeCommonComponent,
+        component: SecureHomeLayoutComponent,
         children: [{ path: ':id', component: DeviceTypeComponent }, { path: '', component: DeviceTypesComponent }]
     }
 ];

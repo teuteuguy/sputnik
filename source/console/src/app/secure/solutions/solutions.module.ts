@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 // Components
-import { SecureHomeCommonComponent } from '@common-secure/secure-home-common.component';
+import { SecureHomeLayoutComponent } from '@secure/secure-home-layout.component';
 
 import { SolutionComponent } from './solution.component';
 import { SolutionsComponent } from './solutions.component';
@@ -20,7 +20,7 @@ import { PrettyJsonModule } from '@common-modules/pretty-json/pretty-json.module
 const solutionsRoutes: Routes = [
     {
         path: 'securehome/solutions',
-        component: SecureHomeCommonComponent,
+        component: SecureHomeLayoutComponent,
         children: [{ path: ':id', component: SolutionComponent }, { path: '', component: SolutionsComponent }]
     }
 ];

@@ -14,7 +14,7 @@ import { ForgotPassword2Component, ForgotPasswordStep1Component } from './public
 import { NewPasswordComponent } from './public/auth/newpassword/new-password.component';
 
 // Secure Routes
-import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
+import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
@@ -55,7 +55,7 @@ const secureHomeRoutes: Routes = [
     },
     {
         path: 'securehome',
-        component: SecureHomeCommonComponent,
+        component: SecureHomeLayoutComponent,
         children: [
             { path: '', component: SecureHomeComponent },
             { path: 'deployments', component: DeploymentsComponent },

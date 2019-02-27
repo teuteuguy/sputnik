@@ -32,7 +32,7 @@ import { NewPasswordComponent } from './public/auth/newpassword/new-password.com
 // Components - Secure - Common
 import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
-import { SecureHomeCommonComponent } from './secure/common/secure-home-common.component';
+import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 // Components - Secure
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { DeviceComponent } from './secure/devices/device.component';
@@ -90,7 +90,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         DevicesComponent,
         MapsComponent,
         ProfileComponent,
-        SecureHomeCommonComponent,
+        SecureHomeLayoutComponent,
         SecureHomeComponent,
         SettingsComponent,
         UserComponent,

@@ -26,9 +26,9 @@ import { _ } from 'underscore';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './secure-home-common.component.html'
+    templateUrl: './secure-home-layout.component.html'
 })
-export class SecureHomeCommonComponent implements OnInit, LoggedInCallback {
+export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
     private loadedProfile = false;
 
     public crumbs: Crumb[] = [];
