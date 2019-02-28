@@ -4,6 +4,12 @@ type ConnectionState {
     certificateArn: String!
     certificateId: String!
 }
+type Cert {
+    certificateId: String!
+    certificateArn: String!
+    at: AWSDateTime
+    url: String
+}
 type Device {
     thingId: String!
     thingName: String!
@@ -12,6 +18,7 @@ type Device {
     deviceTypeId: String!
     deviceBlueprintId: String!
     connectionState: ConnectionState
+    cert: Cert
     greengrassGroupId: String!
     spec: AWSJSON
     lastDeploymentId: String

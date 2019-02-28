@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const iot = new AWS.Iot();
 const gg = new AWS.Greengrass();
+const s3 = new AWS.S3();
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
@@ -140,12 +141,28 @@ module.exports = function (event, context) {
                         state: 'created',
                         at: moment().utc().format()
                     };
-                    params.cert = cert;
 
-                    return iot.attachThingPrincipal({
-                        principal: cert.certificateArn,
-                        thingName: event.thingName
-                    }).promise();
+                    params.cert = {
+                        certificateId: cert.certificateId,
+                        certificateArn: cert.certificateArn,
+                        at: moment().utc().format()
+                    };
+
+                    return s3.putObject({
+                        Body: JSON.stringify(cert),
+                        Bucket: process.env.S3_CERT_BUCKET,
+                        Key: cert.certificateId
+                    }).promise().then(() => {
+                        params.cert.url = s3.getSignedUrl('getObject', {
+                            Bucket: process.env.S3_CERT_BUCKET,
+                            Key: cert.certificateId,
+                            Expires: 300
+                        });
+                        return iot.attachThingPrincipal({
+                            principal: cert.certificateArn,
+                            thingName: event.thingName
+                        }).promise();
+                    });
 
                 }).then(() => {
 

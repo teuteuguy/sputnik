@@ -40,6 +40,12 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-s3bucket-website.yml']]]]
 
+    # Nested stack - Certs bucket creation
+    CFStackForCertsBucket:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-s3bucket-certs.yml']]]]
+
     # ##########################################################################
     #
     # Cognito
@@ -94,6 +100,8 @@ Resources:
                 solutionsGreengrassGroupRoleArn: !GetAtt SolutionsGreengrassGroupRole.Arn
                 solutionsGreengrassIoTPolicy: !Ref SolutionsGreengrassIoTPolicy
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
+                certsBucket: !GetAtt CFStackForCertsBucket.Outputs.certsBucket
+                certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
 
     # ##########################################################################
     #
@@ -122,6 +130,20 @@ Resources:
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDeploymentsArn
                 lambdaServiceSolutionsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSolutionsArn
                 lambdaServiceUtilsArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+
+
+    # ##########################################################################
+    #
+    # CloudTrail
+    #
+    # ##########################################################################
+    CFStackForCloudTrail:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-cloudtrail.yml']]]]
+            Parameters:
+                certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
+
 
     # ##########################################################################
     #

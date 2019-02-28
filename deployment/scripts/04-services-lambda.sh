@@ -60,6 +60,13 @@ cd $1/services/solutions
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
+echo
+echo "[Build] Services - Cert Deletor"
+echo
+cd $1/services/cert-deletor
+yarn run build
+cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
+
 
 echo
 echo "------------------------------------------------------------------------------"

@@ -15,6 +15,10 @@ export default gql`
                 certificateId
                 certificateArn
             }
+            cert {
+                at
+                url
+            }
             spec
             greengrassGroupId
             lastDeploymentId

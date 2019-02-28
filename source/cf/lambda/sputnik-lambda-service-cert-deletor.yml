@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - Micro Service Lambda - Cert Deletor - Version %%VERSION%%'
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Lambda code.
+    certsBucket:
+        Type: String
+        Description: S3 Bucket for Certs
+
+Resources:
+
+    lambdaServiceCertDeletorRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Principal:
+                            Service:
+                                - 'lambda.amazonaws.com'
+                        Action:
+                                - 'sts:AssumeRole'
+            Path: '/'
+
+    lambdaServiceCertDeletorPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'sputnik policy for the Cert Deletor microservice Lambda function.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogGroup'
+                            - 'logs:CreateLogStream'
+                            - 'logs:PutLogEvents'
+                        Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref lambdaServiceCertDeletor, ':*']]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            # TODO: Too permissive for now.
+                            - 's3:*'
+                        Resource:
+                            - '*'
+            Roles:
+                - !Ref 'lambdaServiceCertDeletorRole'
+
+    lambdaServiceCertDeletor:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'sputnik-cert-deletor-service'
+            Description: 'sputnik Cert Deletor microservice'
+            Code:
+                S3Bucket: !Ref sourceBucket
+                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'sputnik-cert-deletor-service.zip']]
+            Handler: index.handler
+            Runtime: nodejs8.10
+            Role: !GetAtt lambdaServiceCertDeletorRole.Arn
+            Timeout: 600
+            MemorySize: 256
+            Environment:
+                Variables:
+                    S3_CERT_BUCKET: !Ref certsBucket
+                    DELETE_TIMEOUT: 300
+                    LOGGING_LEVEL: 2
+
+
+Outputs:
+    lambdaServiceCertDeletorArn:
+        Description: 'Cert Deletor Service ARN'
+        Value: !GetAtt lambdaServiceCertDeletor.Arn

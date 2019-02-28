@@ -41,6 +41,7 @@ function handler(event, context, callback) {
             return listPrincipalThingsDetailed(_cert.certificateDescription.certificateArn).then(results => _things = results);
         }).then(things => {
             if (_things === false) {
+                // TODO: this is actually the scenario where CERT is valid, but Thing isn't created yet. Good use case... Fix this !
                 return false;
             } else {
 
@@ -75,16 +76,16 @@ function handler(event, context, callback) {
                                     Key: {
                                         thingId: thing.thingId
                                     },
-                                    UpdateExpression: 'set #ua = :ua, #c = :c',
+                                    UpdateExpression: 'set #ua = :ua, #cS = :cS',
                                     ExpressionAttributeNames: {
                                         '#ua': 'updatedAt',
-                                        '#c': 'connectionState'
+                                        '#cS': 'connectionState'
                                     },
                                     ExpressionAttributeValues: {
                                         ':ua': moment()
                                             .utc()
                                             .format(),
-                                        ':c': {
+                                        ':cS': {
                                             certificateId: _cert.certificateDescription.certificateId,
                                             certificateArn: _cert.certificateDescription.certificateArn,
                                             state: event.eventType,
@@ -106,6 +107,14 @@ function handler(event, context, callback) {
                                         thingName: thing.thingName,
                                         generateCert: false
                                     }).then(device => {
+                                        updateParams.UpdateExpression += ', #c = :c';
+                                        updateParams.ExpressionAttributeNames['#c'] = 'cert';
+                                        updateParams.ExpressionAttributeValues[':c'] = {
+                                            certificateId: _cert.certificateDescription.certificateId,
+                                            certificateArn: _cert.certificateDescription.certificateArn,
+                                            url: '',
+                                            at: '2000-01-01T00:00:00Z'
+                                        };
                                         return documentClient.update(updateParams).promise();
                                     });
                                 }

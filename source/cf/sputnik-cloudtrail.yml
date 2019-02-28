@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - CloudTrail - Version %%VERSION%%'
+
+Parameters:
+    certsBucketArn:
+        Type: String
+        Description: sputnik S3 certs bucket Arn.
+
+Resources:
+
+    cloudtrailBucket:
+        DeletionPolicy: Retain
+        Type: AWS::S3::Bucket
+        Properties: {}
+
+    cloudtrailBucketPolicy:
+        Type: AWS::S3::BucketPolicy
+        Properties:
+            Bucket: !Ref cloudtrailBucket
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Sid: "AWSCloudTrailAclCheck"
+                        Effect: "Allow"
+                        Principal:
+                            Service: "cloudtrail.amazonaws.com"
+                        Action: "s3:GetBucketAcl"
+                        Resource: !Join ['', ['arn:aws:s3:::', !Ref cloudtrailBucket]]
+                    -
+                        Sid: "AWSCloudTrailWrite"
+                        Effect: "Allow"
+                        Principal:
+                            Service: "cloudtrail.amazonaws.com"
+                        Action: "s3:PutObject"
+                        Resource: !Join ['', ['arn:aws:s3:::', !Ref cloudtrailBucket, '/*']]
+                        Condition:
+                            StringEquals:
+                                s3:x-amz-acl: "bucket-owner-full-control"
+
+    cloudTrail:
+        DependsOn:
+            - cloudtrailBucketPolicy
+        Type: AWS::CloudTrail::Trail
+        Properties:
+            S3BucketName: !Ref cloudtrailBucket
+            EventSelectors:
+                -
+                    DataResources:
+                        -
+                            Type: AWS::S3::Object
+                            Values:
+                                -
+                                    !Join ['', [!Ref certsBucketArn, '/']]
+                    IncludeManagementEvents: true
+                    ReadWriteType: "WriteOnly"
+            IsLogging: true
+
+Outputs:
+    cloudtrailBucket:
+        Description: 'sputnik CloudTrail Bucket'
+        Value: !Ref cloudtrailBucket

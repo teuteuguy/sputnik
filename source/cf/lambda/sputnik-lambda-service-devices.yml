@@ -16,6 +16,13 @@ Parameters:
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
+    certsBucket:
+        Type: String
+        Description: S3 Bucket for Certs
+    certsBucketArn:
+        Type: String
+        Description: S3 Bucket Arn for Certs
+
 
 Resources:
 
@@ -48,6 +55,13 @@ Resources:
                             - 'logs:CreateLogStream'
                             - 'logs:PutLogEvents'
                         Resource: !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:/aws/lambda/', !Ref lambdaServiceDevices, ':*']]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:PutObject'
+                            - 's3:GetObject'
+                        Resource:
+                            - !Join ['/', [!Ref certsBucketArn, '*']]
                     -
                         Effect: 'Allow'
                         Action:
@@ -92,6 +106,7 @@ Resources:
                     TABLE_DEVICES: !Ref devicesTable
                     TABLE_DEVICE_TYPES: !Ref deviceTypesTable
                     TABLE_SETTINGS: !Ref settingsTable
+                    S3_CERT_BUCKET: !Ref certsBucket
                     LOGGING_LEVEL: 2
 
 

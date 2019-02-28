@@ -14,3 +14,17 @@ export class FromNowPipe implements PipeTransform {
         return moment(value).fromNow();
     }
 }
+
+@Pipe({ name: 'fromNowValue' })
+export class FromNowValuePipe implements PipeTransform {
+    transform(value: any): any {
+        return moment().diff(moment(value), 'seconds');
+    }
+}
+
+@Pipe({ name: 'momentTo' })
+export class MomentToPipe implements PipeTransform {
+    transform(value: any, offsetSeconds: number = 0): any {
+        return moment().to(moment(value).add(offsetSeconds, 'seconds'));
+    }
+}

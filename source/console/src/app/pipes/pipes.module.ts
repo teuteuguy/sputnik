@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 // Pipes
 import { DeviceBlueprintNameFromIdPipe } from '../pipes/device-blueprint-name-from-id.pipe';
 import { DeviceTypeNameFromIdPipe } from '../pipes/device-type-name-from-id.pipe';
-import { FromNowPipe, MomentPipe } from '../pipes/moment.pipe';
+import { FromNowPipe, FromNowValuePipe, MomentPipe, MomentToPipe } from '../pipes/moment.pipe';
 import { SolutionBlueprintFromSolutionBlueprintIdPipe } from '../pipes/solution-blueprint-from-solution-blueprint-id.pipe';
 import { StringifyPipe } from '../pipes/stringify.pipe';
 
@@ -15,6 +15,8 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         MomentPipe,
         SolutionBlueprintFromSolutionBlueprintIdPipe,
         FromNowPipe,
+        FromNowValuePipe,
+        MomentToPipe,
         StringifyPipe
     ],
     exports: [
@@ -23,6 +25,8 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         MomentPipe,
         SolutionBlueprintFromSolutionBlueprintIdPipe,
         FromNowPipe,
+        FromNowValuePipe,
+        MomentToPipe,
         StringifyPipe
     ]
 })

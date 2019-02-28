@@ -7,7 +7,11 @@ const moment = require('moment');
 
 const lib = 'deleteDevice';
 
+const UsageMetrics = require('usage-metrics');
+
 module.exports = function (event, context) {
+
+    const usageMetrics = new UsageMetrics();
 
     return documentClient
         .get({
@@ -125,6 +129,11 @@ module.exports = function (event, context) {
         })
         .then(results => {
             console.log('Deleted the device in the db');
-            return event.device;
+            return usageMetrics.sendAnonymousMetricIfCustomerEnabled({
+                metric: "deleteDevice",
+                value: event.thingId
+            }).then(res => {
+                return event.device;
+            });
         });
 };
