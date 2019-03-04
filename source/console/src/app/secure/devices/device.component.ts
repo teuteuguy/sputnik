@@ -209,7 +209,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             return this.deviceBlueprintService.deviceBlueprints;
         } else {
             return _.filter(this.deviceBlueprintService.deviceBlueprints, (deviceBlueprint: DeviceBlueprint) => {
-                return _.contains(deviceBlueprint.compatibility, deviceTypeId);
+                return _.contains(deviceBlueprint.compatibility, deviceTypeId) || _.contains(deviceBlueprint.compatibility, 'all');
             });
         }
     }
