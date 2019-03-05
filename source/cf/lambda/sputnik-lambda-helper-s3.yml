@@ -41,9 +41,11 @@ Resources:
                           - Effect: 'Allow'
                             Action:
                                 - 's3:GetObject'
-                                - 's3:ListObjectsV2'
+                                - 's3:ListBucket'
+                                # - 's3:ListObjectsV2'
                             Resource:
-                                - 'arn:aws:s3:::*'
+                                - !Join ['', ['arn:aws:s3:::', !Ref sourceBucket]]
+                                - !Join ['', ['arn:aws:s3:::', !Ref sourceBucket, '/*']]
                           - Effect: 'Allow'
                             Action:
                                 - 's3:PutObject'
