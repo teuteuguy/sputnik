@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-md-6">
+    <!-- <div class="col-12 col-md-6">
         <div class="row">
             <div class="col-4">
                 <div class="card card-outline-info">
@@ -33,35 +33,41 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="row">
-            <div class="col-4">
-                <div class="card card-outline-info">
-                    <div class="card-body">
-                        <h5 class="card-title text-center text-uppercase">North</h5>
-                        <div class="card-text text-center">
-                            <app-gauge id="north" minValue="0" maxValue="360" [value]="sensors.north" animationSpeed="45"
-                                [opts]="northOpts"></app-gauge>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-    </div>
+    </div> -->
     <div class="col-12 col-md-6">
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">RPi 3 Sense Hat</h5>
                 <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
-                <div class="card-text" *ngIf="reported.led">
-                    <div class="row" *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7]" style="margin-bottom: 2px;">
-                        <div class="col-2"></div>
-                        <div class="col-1" *ngFor="let value of reported.led.slice(i * 8, i * 8 + 8); let j = index"
-                            [ngStyle]="{'margin-left': '2px', 'border': '1px solid ' + (desired.led[i * 8 + j] === reported.led[i * 8 + j] ?
+                <div class="card-text">
+                    <div class="row">
+                        <div class="col-7" *ngIf="reported.led">
+                            <div class="row" *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7]" style="margin-bottom: 2px;">
+                                <div class="col-1"></div>
+                                <div class="col-1" *ngFor="let value of reported.led.slice(i * 8, i * 8 + 8); let j = index"
+                                    [ngStyle]="{'margin-left': '2px', 'border': '1px solid ' + (desired.led[i * 8 + j] === reported.led[i * 8 + j] ?
                                         'lightgray' : 'red'), 'height': '25px', 'background-color': getRGBString(value) }"
-                            (click)="changeLed(i, j)"></div>
-                        <div class="col-2"></div>
+                                    (click)="changeLed(i, j)"></div>
+                                <!-- <div class="col-2"></div> -->
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="row">
+                                <div class="col-6">Temp:</div>
+                                <div class="col-6 text-right">{{ sensors.temperature.temp }}°C</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">Humidity:</div>
+                                <div class="col-6 text-right">{{ sensors.humidity }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">Pressure:</div>
+                                <div class="col-6 text-right">{{ sensors.pressure }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

@@ -81,7 +81,7 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
                         Math.floor(((this.sensors.temperature['1'] + this.sensors.temperature['2']) * 10) / 2) / 10;
                     this.sensors.humidity = Math.floor(this.sensors.humidity * 10) / 10;
                     this.sensors.pressure = Math.floor(this.sensors.pressure * 10) / 10;
-                    console.log(this.sensors.north);
+                    // console.log(this.sensors.north);
                 },
                 onError: defaultErrorCallback
             }
