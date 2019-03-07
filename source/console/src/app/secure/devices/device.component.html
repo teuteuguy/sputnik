@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" *ngIf="device.cert.at && device.cert.url && (device.cert.at | fromNowValue) < 300">
+                        <div class="row" *ngIf="device.cert && device.cert.at && device.cert.url && (device.cert.at | fromNowValue) < 300">
                             <div class="col-md-6">
                                 <div class="row">
                                     <label class="col-md-4 control-label text-right ">Device Cert:</label>
