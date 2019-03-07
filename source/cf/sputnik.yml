@@ -246,6 +246,7 @@ Resources:
                 S3_DATA_BUCKET: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
                 IOT_ENDPOINT: !GetAtt iotEndpoint.endpointAddress
+                DEPLOYMENT_UUID: '%%DEPLOYMENT_UUID%%'
             customAction: 'putFile'
             deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
