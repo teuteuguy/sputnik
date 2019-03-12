@@ -8,6 +8,7 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 import { S3Module } from './s3/s3.module';
 
 // Services
+import { AddonService } from './addon.service';
 import { AdminService } from './admin.service';
 import { AppSyncService } from './appsync.service';
 import { BreadCrumbService } from './bread-crumb.service';
@@ -29,12 +30,9 @@ import { UserRegistrationService } from './user-registration.service';
 // import { DeviceSubViewComponentService } from './device-sub-view-component.service';
 
 @NgModule({
-    imports: [
-        AmplifyAngularModule,
-        CommonModule,
-        S3Module
-    ],
+    imports: [AmplifyAngularModule, CommonModule, S3Module],
     providers: [
+        AddonService,
         AdminService,
         AmplifyService,
         AppSyncService,
@@ -51,6 +49,6 @@ import { UserRegistrationService } from './user-registration.service';
         StatService,
         UserLoginService,
         UserRegistrationService
-    ],
+    ]
 })
 export class AppServicesModule {}
