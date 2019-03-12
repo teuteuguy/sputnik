@@ -1,4 +1,5 @@
-import { NgModule } from '@angular/core';
+import { COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule } from '@angular/core';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -34,6 +35,7 @@ import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
 import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 // Components - Secure
+import { AddOnsComponent } from './secure/addons/addons.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
@@ -43,6 +45,9 @@ import { SecureHomeComponent } from './secure/home/secure-home.component';
 import { SettingsComponent } from './secure/settings/settings.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
+
+import { TestsComponent } from './secure/tests/tests.component';
+
 
 // Pipes
 import { PipesModule } from './pipes/pipes.module';
@@ -65,6 +70,11 @@ import { SolutionBlueprintsModule } from './secure/solution-blueprints/solution-
 // Solution Modules
 import { ChildViewsModule } from '@solutions/child-views.module';
 
+// Addons compilation
+export function createCompiler(fn: CompilerFactory): Compiler {
+    return fn.createCompiler();
+}
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -85,6 +95,7 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         PrettifierComponent,
 
         // Components - Secure
+        AddOnsComponent,
         DeploymentsComponent,
         DeviceComponent,
         DevicesComponent,
@@ -94,7 +105,9 @@ import { ChildViewsModule } from '@solutions/child-views.module';
         SecureHomeComponent,
         SettingsComponent,
         UserComponent,
-        UsersComponent
+        UsersComponent,
+
+        TestsComponent
     ],
     imports: [
         BrowserModule,
@@ -137,7 +150,24 @@ import { ChildViewsModule } from '@solutions/child-views.module';
 
         // .forRoot()
     ],
-    providers: [{ provide: LoggerService, useClass: ConsoleLoggerService }],
+    providers: [
+        { provide: LoggerService, useClass: ConsoleLoggerService },
+        {
+            provide: COMPILER_OPTIONS,
+            useValue: {},
+            multi: true
+        },
+        {
+            provide: CompilerFactory,
+            useClass: JitCompilerFactory,
+            deps: [COMPILER_OPTIONS]
+        },
+        {
+            provide: Compiler,
+            useFactory: createCompiler,
+            deps: [CompilerFactory]
+        }
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

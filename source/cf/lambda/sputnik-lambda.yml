@@ -38,10 +38,10 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
-    solutionsGreengrassGroupRoleArn:
+    IAMRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
-    solutionsGreengrassIoTPolicy:
+    IoTPolicyForGreengrassCores:
         Type: String
         Description: sputnik Greengrass IoT Policy
     userPoolId:
@@ -53,6 +53,9 @@ Parameters:
     certsBucketArn:
         Type: String
         Description: sputnik Certs Bucket Arn
+    cfnStackId:
+        Type: String
+        Description: sputnik CFN stack id, used by addons
 
 Resources:
 
@@ -93,6 +96,17 @@ Resources:
                 solutionsTable: !Ref solutionsTable
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
 
+    # Nested stack - MicroService - Addons
+    CFStackForAddonsService:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-addons.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                sourceKeyPrefix: !Ref sourceKeyPrefix
+                userPoolId: !Ref userPoolId
+                cfnStackId: !Ref cfnStackId
+
     # Nested stack - MicroService - Admin
     CFStackForAdminService:
         Type: AWS::CloudFormation::Stack
@@ -117,8 +131,8 @@ Resources:
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deploymentsTable: !Ref deploymentsTable
                 dataBucket: !Ref dataBucket
-                solutionsGreengrassGroupRoleArn: !Ref solutionsGreengrassGroupRoleArn
-                solutionsGreengrassIoTPolicy: !Ref solutionsGreengrassIoTPolicy
+                IAMRoleArnForGreengrassGroups: !Ref IAMRoleArnForGreengrassGroups
+                IoTPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:
@@ -208,6 +222,9 @@ Outputs:
     lambdaServiceDeploymentsArn:
         Description: 'Deployments Service ARN'
         Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
+    lambdaServiceAddonsArn:
+        Description: 'Addons Service ARN'
+        Value: !GetAtt CFStackForAddonsService.Outputs.lambdaServiceAddonsArn
     lambdaServiceAdminArn:
         Description: 'Admin Service ARN'
         Value: !GetAtt CFStackForAdminService.Outputs.lambdaServiceAdminArn

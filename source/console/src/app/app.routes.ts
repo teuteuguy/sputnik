@@ -17,6 +17,7 @@ import { NewPasswordComponent } from './public/auth/newpassword/new-password.com
 import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 
+import { AddOnsComponent } from './secure/addons/addons.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
@@ -25,6 +26,8 @@ import { ProfileComponent } from './secure/profile/profile.component';
 import { SettingsComponent } from './secure/settings/settings.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
+
+import { TestsComponent } from './secure/tests/tests.component';
 
 const homeRoutes: Routes = [
     {
@@ -58,6 +61,7 @@ const secureHomeRoutes: Routes = [
         component: SecureHomeLayoutComponent,
         children: [
             { path: '', component: SecureHomeComponent },
+            { path: 'addons', component: AddOnsComponent },
             { path: 'deployments', component: DeploymentsComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },
@@ -67,6 +71,7 @@ const secureHomeRoutes: Routes = [
             { path: 'settings', component: SettingsComponent },
             { path: 'users', component: UsersComponent },
             { path: 'users/:username', component: UserComponent },
+            { path: 'tests', component: TestsComponent },
 
             // Sub moduled paths :)
             { path: 'device-blueprints', redirectTo: '/securehome/device-blueprints', pathMatch: 'full' },

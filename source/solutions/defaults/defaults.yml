@@ -31,7 +31,7 @@ Parameters:
     dataS3BucketArn:
         Type: String
         Description: sputnik Data S3 Bucket ARN
-    solutionsGreengrassGroupRole:
+    IAMRoleForGreengrassGroups:
         Type: String
         Description: Greengrass Group Role
 
@@ -88,7 +88,7 @@ Resources:
                             - !Join ['', [!Ref dataS3BucketArn, '*']]
             Roles:
                 -
-                    !Ref solutionsGreengrassGroupRole
+                    !Ref IAMRoleForGreengrassGroups
 
     DefaultSDeviceBlueprints:
         Type: 'Custom::LoadLambda'

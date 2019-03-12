@@ -19,6 +19,13 @@ yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo
+echo "[Build] Services - AddOns"
+echo
+cd $1/services/addons
+yarn run build
+cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
+
+echo
 echo "[Build] Services - Admin"
 echo
 cd $1/services/admin

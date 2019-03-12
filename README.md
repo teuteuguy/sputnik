@@ -65,12 +65,11 @@ Help me find them. There's plenty !
 
 # Development TODO / WIP
 
-* certs are a massive mess, change it
 * check on the on-boarding just in time service
 * remove references to mtm
+* remove the factory reset service. Does not seem like there's a need for this anymore.
 * model trainer view has issues with the pictures
 * A:FreeRTOS. Need to add full management (deployment) of FreeRTOS devices via OTA. Taken into account in Blueprints etc ...
-* Device creation: need to think about how to provide Cert to end user.
 * Maps: Create a location picker for solutions and devices
 * Regions: currently only us-east-1
 * Move the common lambda stuff to Lambda layers !
@@ -82,7 +81,7 @@ Help me find them. There's plenty !
 * disable devices update ?
 * utils: find rogue stuff
 * For a given thing, check which solution they are part of.
-* See if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ? => lambda layers is the solution here
+* See if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ? => lambda layers may be the solution here
 
 
 # Disclaimer

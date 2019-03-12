@@ -227,7 +227,7 @@ module.exports = function (event, context) {
                 console.log('Attach IAM role to group just in case');
 
                 return gg.associateRoleToGroup({
-                    RoleArn: process.env.IAM_GREENGRASS_GROUP_ARN,
+                    RoleArn: process.env.IAM_ROLE_ARN_FOR_GREENGRASS_GROUPS,
                     GroupId: _device.greengrassGroupId
                 }).promise();
 
@@ -238,7 +238,7 @@ module.exports = function (event, context) {
                 // TODO: this should ideally be in the specs!
 
                 return iot.attachPrincipalPolicy({
-                    policyName: process.env.IOT_GREENGRASS_POLICY,
+                    policyName: process.env.IOT_POLICY_GREENGRASS_CORE,
                     principal: _device.connectionState.certificateArn
                 }).promise();
 

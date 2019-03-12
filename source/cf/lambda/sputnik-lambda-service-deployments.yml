@@ -25,10 +25,10 @@ Parameters:
     dataBucket:
         Type: String
         Description: sputnik Data Bucket
-    solutionsGreengrassGroupRoleArn:
+    IAMRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass Group Role ARN
-    solutionsGreengrassIoTPolicy:
+    IoTPolicyForGreengrassCores:
         Type: String
         Description: sputnik Greengrass IoT Policy
 
@@ -86,7 +86,7 @@ Resources:
                         Action:
                             - 'iam:PassRole'
                         Resource:
-                            - !Ref solutionsGreengrassGroupRoleArn
+                            - !Ref IAMRoleArnForGreengrassGroups
                     -
                         Effect: 'Allow'
                         Action:
@@ -119,8 +119,8 @@ Resources:
                     TABLE_DEPLOYMENTS: !Ref deploymentsTable
                     TABLE_SETTINGS: !Ref settingsTable
                     AWS_ACCOUNT: !Ref 'AWS::AccountId'
-                    IAM_GREENGRASS_GROUP_ARN: !Ref solutionsGreengrassGroupRoleArn
-                    IOT_GREENGRASS_POLICY: !Ref solutionsGreengrassIoTPolicy
+                    IAM_ROLE_ARN_FOR_GREENGRASS_GROUPS: !Ref IAMRoleArnForGreengrassGroups
+                    IOT_POLICY_GREENGRASS_CORE: !Ref IoTPolicyForGreengrassCores
                     DATA_BUCKET: !Ref dataBucket
                     LOGGING_LEVEL: 2
 

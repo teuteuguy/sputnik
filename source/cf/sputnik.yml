@@ -97,11 +97,12 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
-                solutionsGreengrassGroupRoleArn: !GetAtt SolutionsGreengrassGroupRole.Arn
-                solutionsGreengrassIoTPolicy: !Ref SolutionsGreengrassIoTPolicy
+                IAMRoleArnForGreengrassGroups: !GetAtt IAMRoleForGreengrassGroups.Arn
+                IoTPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
                 certsBucket: !GetAtt CFStackForCertsBucket.Outputs.certsBucket
                 certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
+                cfnStackId: !Ref AWS::StackId
 
     # ##########################################################################
     #
@@ -123,6 +124,7 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
                 solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                lambdaServiceAddonsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceAddonsArn
                 lambdaServiceAdminArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceAdminArn
                 lambdaServiceDevicesArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSettingsArn
@@ -165,11 +167,11 @@ Resources:
                 deploymentUUID: '%%DEPLOYMENT_UUID%%'
                 dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
-                solutionsGreengrassGroupRole: !Ref SolutionsGreengrassGroupRole
+                IAMRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
 
     # Solutions Greengrass group role
     # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
-    SolutionsGreengrassGroupRole:
+    IAMRoleForGreengrassGroups:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -185,7 +187,7 @@ Resources:
 
     # Solutions IoT Policy for Greengrass devices
     # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
-    SolutionsGreengrassIoTPolicy:
+    IoTPolicyForGreengrassCores:
         Type: "AWS::IoT::Policy"
         DeletionPolicy: Retain
         Properties:
@@ -276,6 +278,20 @@ Resources:
                     uuid: !GetAtt initAppUUID.UUID
                     mapboxToken: "NA"
                     anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
+            customAction: 'dynamodbSaveItem'
+
+    initAddonsSettings:
+        Type: 'Custom::LoadLambda'
+        DependsOn: initAppUUID
+        Properties:
+            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            ddbTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
+            ddbItem:
+                id: "app-addons"
+                type: "config"
+                setting:
+                    installed: []
             customAction: 'dynamodbSaveItem'
 
     # Initialization - UUID

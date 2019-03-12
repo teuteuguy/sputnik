@@ -235,6 +235,10 @@ type Query {
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 type Mutation {
+    ## Addons
+    addAddon(addonId: String!, cfnUrl: String!): Boolean!
+        @aws_auth(cognito_groups: ["Administrators"])
+
     ## Deployments
     addDeployment(thingId: String!): Deployment!
         @aws_auth(cognito_groups: ["Administrators"])

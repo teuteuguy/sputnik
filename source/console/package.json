@@ -36,6 +36,7 @@
     "rxjs": "6",
     "rxjs-compat": "6",
     "sweetalert2": "^7.29.2",
+    "systemjs": "0.21.5",
     "underscore": "^1.9.1",
     "uuid": "^3.3.2",
     "zone.js": "^0.8.26"

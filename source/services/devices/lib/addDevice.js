@@ -72,6 +72,7 @@ module.exports = function (event, context) {
             } else {
                 // Lets prepare. Lets check what type of device we are trying to provision :)
 
+                // TODO: much better way of writing this bit of code.
                 if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
                     return documentClient.get({
                         TableName: process.env.TABLE_DEVICE_TYPES,

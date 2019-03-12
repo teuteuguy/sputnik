@@ -17,6 +17,7 @@
             "dom"
         ],
         "paths": {
+            "@assets/*": ["../assets/*"],
             "@common-components/*": ["common/components/*"],
             "@common-modules/*": ["common/modules/*"],
             "@common-secure/*": ["secure/common/*"],
@@ -28,5 +29,5 @@
             "@services/*": ["services/*"],
             "@solutions/*": ["secure/child-views/*"]
         }
-    }
+    },
 }
