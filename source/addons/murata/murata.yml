@@ -59,22 +59,11 @@ Resources:
                     #     Resource:
                     #         - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
                     #         - !Join ['', [!Ref dataS3BucketArn, '*']]
-            # Roles:
-            #     -
-            #         !Ref IAMRoleForGreengrassGroups
+            Roles:
+                -
+                    !Ref IAMRoleForGreengrassGroups
 
-    DefaultSDeviceBlueprints:
-        Type: 'Custom::LoadLambda'
-        Properties:
-            ServiceToken: !Ref customResourceUtilsHelperArn
-            Region: !Ref 'AWS::Region'
-            sourceS3Bucket: !Ref sourceS3Bucket
-            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
-            uuid: !Ref deploymentUUID
-            table: !Ref deviceBlueprintsTable
-            customAction: 'dynamodbPutObjectsFromS3Folder'
-
-    DefaultSDeviceTypes:
+    MurataDeviceTypes:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
@@ -85,16 +74,38 @@ Resources:
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    DefaultLambdaRole:
-        Type: 'AWS::IAM::Role'
-        Properties:
-            AssumeRolePolicyDocument:
-                Version: '2012-10-17'
-                Statement:
-                    - Effect: 'Allow'
-                      Principal:
-                          Service:
-                              - 'lambda.amazonaws.com'
-                      Action:
-                          - 'sts:AssumeRole'
-            Path: '/'
+    # DefaultSDeviceBlueprints:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !Ref customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Ref sourceS3Bucket
+    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
+    #         uuid: !Ref deploymentUUID
+    #         table: !Ref deviceBlueprintsTable
+    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DefaultSDeviceTypes:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !Ref customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Ref sourceS3Bucket
+    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
+    #         uuid: !Ref deploymentUUID
+    #         table: !Ref deviceTypesTable
+    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DefaultLambdaRole:
+    #     Type: 'AWS::IAM::Role'
+    #     Properties:
+    #         AssumeRolePolicyDocument:
+    #             Version: '2012-10-17'
+    #             Statement:
+    #                 - Effect: 'Allow'
+    #                   Principal:
+    #                       Service:
+    #                           - 'lambda.amazonaws.com'
+    #                   Action:
+    #                       - 'sts:AssumeRole'
+    #         Path: '/'

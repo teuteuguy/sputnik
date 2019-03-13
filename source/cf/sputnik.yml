@@ -86,7 +86,8 @@ Resources:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/lambda/sputnik-lambda.yml']]]]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
-                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
+                lambdaSourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'lambda']]
+                addonsSourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]
                 destBucketArn: !GetAtt CFStackForWebsite.Outputs.websiteBucketArn
                 dataBucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 dataBucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
@@ -341,6 +342,9 @@ Outputs:
     iotEndpoint:
         Description: "IoT Endpoint"
         Value: !GetAtt iotEndpoint.endpointAddress
+    iamRoleForGreengrassGroups:
+        Description: "IAM Role For Greengrass Groups to be used by Addons"
+        Value: !Ref IAMRoleForGreengrassGroups
     # # Data Bucket
     # dataBucketAccessPolicy:
     #     Description: "IAM Policy to access the sputnik Data bucket"

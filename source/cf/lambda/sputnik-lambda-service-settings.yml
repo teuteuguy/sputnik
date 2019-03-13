@@ -4,7 +4,7 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    sourceKeyPrefix:
+    lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
     iotThingAutoRegistrationTopicRuleName:
@@ -74,7 +74,7 @@ Resources:
             Description: "sputnik administration microservice"
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ["/", [!Ref sourceKeyPrefix, "sputnik-settings-service.zip"]]
+                S3Key: !Join ["/", [!Ref lambdaSourceKeyPrefix, "sputnik-settings-service.zip"]]
             Handler: index.handler
             Runtime: nodejs8.10
             Role: !GetAtt lambdaServiceSettingsRole.Arn

@@ -7,8 +7,8 @@ function handler(event, context, callback) {
     let promise = null;
 
     switch (event.cmd) {
-        case 'addAddon':
-            promise = libs.addAddon;
+        case 'installAddon':
+            promise = libs.installAddon;
             break;
         default:
             callback('Unknown cmd, unable to resolve for arguments: ' + event, null);

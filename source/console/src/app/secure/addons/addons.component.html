@@ -16,8 +16,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let addon of addons" (click)="openAddon(addon.id)">
+                            <tr *ngFor="let addon of addons" (click)="installAddon(addon)">
                                 <td>
+                                    <img src="{{addon.img}}" width="100px">
                                     <!-- <span class="round round-light-grey">
                                         <i class="mdi mdi-chip text-normal"></i>
                                         <div [class]="device.connectionState.state === 'connected' ? 'notify device success' : 'notify device error'">
@@ -43,11 +44,5 @@
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-lg-12">
-        Add Ons
-        <div #content></div>
-    </div>
-</div>
 <!-- Row -->
+

@@ -16,7 +16,7 @@ export class AddonService {
         return this.appSyncService.listDeployments(limit, nextToken);
     }
 
-    public addAddon(addonId: string, cfnUrl: string) {
-        return this.appSyncService.addAddon(addonId, cfnUrl);
+    public installAddon(key: string) {
+        return this.appSyncService.installAddon(key);
     }
 }

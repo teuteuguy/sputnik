@@ -1,8 +1,9 @@
 export class AddonSettings {
     public static addons = [
         {
-            id: 'F101B3E5-7FED-40D9-B22D-9E4525112394',
+            key: 'murata/murata.yml',
             name: 'Murata',
+            img: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Murata_Manufacturing_logo.svg/1280px-Murata_Manufacturing_logo.svg.png',
             version: '1.0.0',
             description: "Murata's Predictive maintenance solution"
         }

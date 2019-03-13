@@ -316,13 +316,13 @@ Resources:
     # ####################################################################################################
 
     # RESOLVERS - MUTATIONS - Addons - Add Addon
-    appSyncResolverMutationAddAddon:
+    appSyncResolverMutationInstallAddon:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
         Properties:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Mutation
-            FieldName: addAddon
+            FieldName: installAddon
             DataSourceName: !GetAtt appSyncDataSourceAddonsLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'addons', 'addons-request-mapping-template-add.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'

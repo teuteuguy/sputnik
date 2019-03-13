@@ -4,7 +4,7 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    sourceKeyPrefix:
+    lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
 Resources:
@@ -45,7 +45,7 @@ Resources:
             Description: 'sputnik Custom resource helper for deploying the app'
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'sputnik-custom-resource-helper-thing-groups.zip']]
+                S3Key: !Join ['/', [!Ref lambdaSourceKeyPrefix, 'sputnik-custom-resource-helper-thing-groups.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
             Role: !GetAtt customResourceThingGroupsHelperRole.Arn

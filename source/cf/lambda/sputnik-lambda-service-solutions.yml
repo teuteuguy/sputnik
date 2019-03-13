@@ -4,7 +4,7 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    sourceKeyPrefix:
+    lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
     settingsTable:
@@ -93,7 +93,7 @@ Resources:
             Description: 'sputnik solutions microservice'
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'sputnik-solutions-service.zip']]
+                S3Key: !Join ['/', [!Ref lambdaSourceKeyPrefix, 'sputnik-solutions-service.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
             Role: !GetAtt lambdaServiceSolutionsRole.Arn

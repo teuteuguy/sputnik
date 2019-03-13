@@ -4,7 +4,7 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    sourceKeyPrefix:
+    lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
     devicesTable:
@@ -77,7 +77,7 @@ Resources:
             Description: "sputnik Thing Group Auto Registration microservice"
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ["/", [!Ref sourceKeyPrefix, "sputnik-thing-auto-registration-service.zip"]]
+                S3Key: !Join ["/", [!Ref lambdaSourceKeyPrefix, "sputnik-thing-auto-registration-service.zip"]]
             Handler: index.handler
             Runtime: nodejs8.10
             Role: !GetAtt lambdaServiceThingAutoRegistrationRole.Arn

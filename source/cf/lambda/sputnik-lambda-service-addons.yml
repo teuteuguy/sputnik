@@ -4,9 +4,12 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    sourceKeyPrefix:
+    lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
+    addonsSourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for Addons code.
     userPoolId:
         Type: String
         Description: Cognito User Pool Id
@@ -50,6 +53,7 @@ Resources:
                         Action:
                             - 'cloudformation:CreateStack'
                             - 'cloudformation:UpdateStack'
+                            - 'cloudformation:DescribeStacks'
                         Resource:
                             - '*'
             Roles:
@@ -62,7 +66,7 @@ Resources:
             Description: 'sputnik Addons microservice'
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ['/', [!Ref sourceKeyPrefix, 'sputnik-addons-service.zip']]
+                S3Key: !Join ['/', [!Ref lambdaSourceKeyPrefix, 'sputnik-addons-service.zip']]
             Handler: index.handler
             Runtime: nodejs8.10
             Role: !GetAtt lambdaServiceAddonsRole.Arn
@@ -73,6 +77,8 @@ Resources:
                     USER_POOL_ID: !Ref userPoolId
                     LOGGING_LEVEL: 2
                     CFN_STACK_ID: !Ref cfnStackId
+                    SOURCE_BUCKET: !Ref sourceBucket
+                    ADDONS_SOURCE_KEY_PREFIX: !Ref addonsSourceKeyPrefix
 
 
 Outputs:
