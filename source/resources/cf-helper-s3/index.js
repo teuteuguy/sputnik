@@ -25,7 +25,7 @@ exports.handler = (event, context, callback) => {
         if (event.ResourceProperties.customAction === 'putFile') {
             let _s3Helper = new S3Helper();
             console.log(event.ResourceProperties.file);
-            _s3Helper.putFile(event.ResourceProperties.file, event.ResourceProperties.destS3Bucket, event.ResourceProperties.destS3Key).then((data) => {
+            _s3Helper.putFile(event.ResourceProperties.varName, event.ResourceProperties.file, event.ResourceProperties.destS3Bucket, event.ResourceProperties.destS3Key).then((data) => {
                 responseStatus = 'SUCCESS';
                 responseData = data;
                 sendResponse(event, callback, context.logStreamName, responseStatus, responseData);

@@ -1,10 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Murata Vibration Sensor Network - Sputnik setup v1.0'
 Parameters:
-    sourceS3Bucket:
+    addonSourceBucket:
         Type: String
         Description: sputnik S3 bucket.
-    sourceKeyPrefix:
+    addonSourceKeyPrefix:
         Type: String
         Description: sputnik Source key prefix.
     deviceBlueprintsTable:
@@ -19,16 +19,7 @@ Parameters:
     customResourceUtilsHelperArn:
         Type: String
         Description: Utils custom resource helper ARN
-    deploymentUUID:
-        Type: String
-        Description: Used to force update / create of inits
-    dataS3Bucket:
-        Type: String
-        Description: sputnik Data S3 Bucket
-    dataS3BucketArn:
-        Type: String
-        Description: sputnik Data S3 Bucket ARN
-    IAMRoleForGreengrassGroups:
+    iamRoleForGreengrassGroups:
         Type: String
         Description: Greengrass Group Role
 
@@ -49,50 +40,37 @@ Resources:
                             - 'logs:PutLogEvents'
                             - 'logs:CreateLogGroup'
                         Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
-                    # -
-                    #     Effect: 'Allow'
-                    #     Action:
-                    #         - 's3:ListBucket'
-                    #         - 's3:GetObject'
-                    #         - 's3:ListObjects'
-                    #         - 's3:PutObject'
-                    #     Resource:
-                    #         - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
-                    #         - !Join ['', [!Ref dataS3BucketArn, '*']]
             Roles:
                 -
-                    !Ref IAMRoleForGreengrassGroups
+                    !Ref iamRoleForGreengrassGroups
 
     MurataDeviceTypes:
         Type: 'Custom::LoadLambda'
         Properties:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
-            sourceS3Bucket: !Ref sourceS3Bucket
-            sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
-            uuid: !Ref deploymentUUID
+            sourceS3Bucket: !Ref addonSourceBucket
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
 
-    # DefaultSDeviceBlueprints:
-    #     Type: 'Custom::LoadLambda'
-    #     Properties:
-    #         ServiceToken: !Ref customResourceUtilsHelperArn
-    #         Region: !Ref 'AWS::Region'
-    #         sourceS3Bucket: !Ref sourceS3Bucket
-    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-blueprints']]
-    #         uuid: !Ref deploymentUUID
-    #         table: !Ref deviceBlueprintsTable
-    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+    MurataDeviceBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref addonSourceBucket
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-blueprints']]
+            table: !Ref deviceBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
 
     # DefaultSDeviceTypes:
     #     Type: 'Custom::LoadLambda'
     #     Properties:
     #         ServiceToken: !Ref customResourceUtilsHelperArn
     #         Region: !Ref 'AWS::Region'
-    #         sourceS3Bucket: !Ref sourceS3Bucket
-    #         sourceS3Key: !Join ['/', [!Ref sourceKeyPrefix, 'device-types']]
-    #         uuid: !Ref deploymentUUID
+    #         sourceS3Bucket: !Ref addonSourceBucket
+    #         sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
     #         table: !Ref deviceTypesTable
     #         customAction: 'dynamodbPutObjectsFromS3Folder'
 

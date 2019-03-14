@@ -38,7 +38,6 @@ import listUsers from '@graphql/queries/users.list';
 import listSolutionBlueprints from '@graphql/queries/solution-blueprints.list';
 import s3ListObjectsV2 from '@graphql/queries/s3.list-objects-v2';
 // Mutations
-import installAddon from '@graphql/mutations/addons.install';
 import addDeployment from '@graphql/mutations/deployment.add';
 import addDevice from '@graphql/mutations/device.add';
 import addDeviceBlueprint from '@graphql/mutations/device-blueprint.add';
@@ -144,13 +143,6 @@ export class AppSyncService {
         const _self = this;
         const obs: any = _self.amplifyService.api().graphql({ query: subscription.loc.source.body, variables: params });
         return obs;
-    }
-
-    // Addon
-    public installAddon(key: String) {
-        return this.mutation(installAddon, { key: key }).then(
-            result => result.data.installAddon
-        );
     }
 
     // Admin

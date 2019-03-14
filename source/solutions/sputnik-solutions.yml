@@ -32,7 +32,7 @@ Parameters:
     dataS3BucketArn:
         Type: String
         Description: sputnik Data S3 Bucket ARN
-    IAMRoleForGreengrassGroups:
+    iamRoleForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass Group Role
 
@@ -66,7 +66,7 @@ Resources:
                 deploymentUUID: !Ref deploymentUUID
                 dataS3Bucket: !Ref dataS3Bucket
                 dataS3BucketArn: !Ref dataS3BucketArn
-                IAMRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
+                iamRoleForGreengrassGroups: !Ref iamRoleForGreengrassGroups
 
     # CFStackForSolutionsReInvent2018MCF:
     #     Type: AWS::CloudFormation::Stack
@@ -83,7 +83,7 @@ Resources:
     #             deploymentUUID: !Ref deploymentUUID
     #             dataS3Bucket: !Ref dataS3Bucket
     #             dataS3BucketArn: !Ref dataS3BucketArn
-    #             IAMRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
+    #             iamRoleForGreengrassGroups: !Ref iamRoleForGreengrassGroups
 
     # CFStackForSolutionsFleetTrackers:
     #     Type: AWS::CloudFormation::Stack
@@ -100,4 +100,4 @@ Resources:
     #             deploymentUUID: !Ref deploymentUUID
     #             dataS3Bucket: !Ref dataS3Bucket
     #             dataS3BucketArn: !Ref dataS3BucketArn
-    #             IAMRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
+    #             iamRoleForGreengrassGroups: !Ref iamRoleForGreengrassGroups

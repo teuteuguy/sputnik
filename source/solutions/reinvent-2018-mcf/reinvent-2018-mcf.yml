@@ -31,7 +31,7 @@ Parameters:
     dataS3BucketArn:
         Type: String
         Description: sputnik Data S3 Bucket ARN
-    IAMRoleForGreengrassGroups:
+    iamRoleForGreengrassGroups:
         Type: String
         Description: Greengrass Group Role
 
@@ -170,7 +170,7 @@ Resources:
                             - !Join ['', [!Ref dataS3BucketArn, '*']]
             Roles:
                 -
-                    !Ref IAMRoleForGreengrassGroups
+                    !Ref iamRoleForGreengrassGroups
 
 
     MCFLegoModel:

@@ -10,14 +10,10 @@ import { AddOn } from '@models/addon.model';
 // Services
 import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
 import { LoggerService } from '@services/logger.service';
-import { AddonService } from '@services/addon.service';
 
-import { AddonSettings } from './addons';
-
-import * as addons from './addons';
 declare var $: any;
-
 declare var appVariables: any;
+declare var addons: any;
 
 @Component({
     selector: 'app-root-addons',
@@ -35,13 +31,12 @@ export class AddOnsComponent implements OnInit {
     constructor(
         private logger: LoggerService,
         protected localStorage: LocalStorage,
-        private addonService: AddonService,
         private breadCrumbService: BreadCrumbService
     ) {}
 
     ngOnInit() {
         const _self = this;
-        console.log(AddonSettings.addons);
+        // console.log(AddonSettings.addons);
 
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             _self.profile = new ProfileInfo(profile);
@@ -50,7 +45,7 @@ export class AddOnsComponent implements OnInit {
                 new Crumb({ title: _self.title, active: true, link: 'addons' })
             ]);
 
-            _self.addons = AddonSettings.addons;
+            _self.addons = addons;
         });
     }
 
@@ -59,7 +54,7 @@ export class AddOnsComponent implements OnInit {
         const _self = this;
         swal({
             title: `Are you sure you want to install the ${addon.name} add-on ?`,
-            text: ``,
+            text: `This will open a new cloudformation page`,
             type: 'question',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -67,18 +62,12 @@ export class AddOnsComponent implements OnInit {
             confirmButtonText: 'Yes, install it!'
         }).then(result => {
             if (result.value) {
-                _self.blockUI.start(`Installing the ${addon.name} add-on...`);
-                _self.addonService
-                    .installAddon(addon.key)
-                    .then((resp: any) => {
-                        _self.blockUI.stop();
-                    })
-                    .catch(err => {
-                        _self.blockUI.stop();
-                        swal('Oops...', `Something went wrong! Unable to install the ${addon.name} add-on.`, 'error');
-                        _self.logger.error('error occurred calling installAddon api, show message');
-                        _self.logger.error(err);
-                    });
+                const url = `https://console.aws.amazon.com/cloudformation/home?region=${
+                    appVariables.REGION
+                    }#/stacks/create/review?stackName=sputnik-addon-${addon.id}&${
+                    appVariables.ADDON_TEMPLATES_URL
+                    }/${addon.id}/${addon.id}.yml`;
+                window.open(url);
             }
         });
     }

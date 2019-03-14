@@ -5,12 +5,9 @@ Parameters:
     sourceBucket:
         Type: String
         Description: S3 Bucket for Lambda code.
-    lambdaSourceKeyPrefix:
+    sourceKeyPrefix:
         Type: String
-        Description: S3 Bucket Key prefix for Lambda code.
-    addonsSourceKeyPrefix:
-        Type: String
-        Description: S3 Bucket Key prefix for Addons code.
+        Description: S3 Bucket Key prefix for code.
     destBucketArn:
         Type: String
         Description: ARN of the sputnik Website Bucket.
@@ -41,10 +38,10 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
-    IAMRoleArnForGreengrassGroups:
+    iamRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
-    IoTPolicyForGreengrassCores:
+    iotPolicyForGreengrassCores:
         Type: String
         Description: sputnik Greengrass IoT Policy
     userPoolId:
@@ -66,10 +63,10 @@ Resources:
     CFStackForCustomResourceS3Helper:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-helper-s3.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-s3.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 destBucketArn: !Ref destBucketArn
                 dataBucketArn: !Ref dataBucketArn
 
@@ -77,19 +74,19 @@ Resources:
     CFStackForCustomResourceThingGroupsHelper:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-helper-thing-groups.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-thing-groups.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
 
     # Nested stack - Custom resource - Utils Helper
     CFStackForCustomResourceUtilsHelper:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-helper-utils.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-utils.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 destBucketArn: !Ref destBucketArn
                 dataBucketArn: !Ref dataBucketArn
                 settingsTable: !Ref settingsTable
@@ -99,53 +96,41 @@ Resources:
                 solutionsTable: !Ref solutionsTable
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
 
-    # Nested stack - MicroService - Addons
-    CFStackForAddonsService:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-addons.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
-                addonsSourceKeyPrefix: !Ref addonsSourceKeyPrefix
-                userPoolId: !Ref userPoolId
-                cfnStackId: !Ref cfnStackId
-
     # Nested stack - MicroService - Admin
     CFStackForAdminService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-admin.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-admin.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 userPoolId: !Ref userPoolId
 
     # Nested stack - MicroService - Deployments
     CFStackForDeploymentsService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-deployments.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-deployments.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deploymentsTable: !Ref deploymentsTable
                 dataBucket: !Ref dataBucket
-                IAMRoleArnForGreengrassGroups: !Ref IAMRoleArnForGreengrassGroups
-                IoTPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
+                iamRoleArnForGreengrassGroups: !Ref iamRoleArnForGreengrassGroups
+                iotPolicyForGreengrassCores: !Ref iotPolicyForGreengrassCores
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-devices.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-devices.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
@@ -156,10 +141,10 @@ Resources:
     CFStackForFactoryResetService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-factoryreset.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-factoryreset.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 deviceTypesTable: !Ref deviceTypesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
@@ -169,10 +154,10 @@ Resources:
     CFStackForSettingsService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-settings.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-settings.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 iotThingAutoRegistrationTopicRuleName: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
                 settingsTable: !Ref settingsTable
 
@@ -180,10 +165,10 @@ Resources:
     CFStackForSolutionsService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-solutions.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-solutions.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
@@ -195,10 +180,10 @@ Resources:
     CFStackForThingAutoRegistrationService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-thing-auto-registration.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-thing-auto-registration.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
 
@@ -206,10 +191,10 @@ Resources:
     CFStackForCertDeletorService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/lambda/sputnik-lambda-service-cert-deletor.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-cert-deletor.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Ref lambdaSourceKeyPrefix
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 certsBucket: !Ref certsBucket
 
 
@@ -226,9 +211,6 @@ Outputs:
     lambdaServiceDeploymentsArn:
         Description: 'Deployments Service ARN'
         Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
-    lambdaServiceAddonsArn:
-        Description: 'Addons Service ARN'
-        Value: !GetAtt CFStackForAddonsService.Outputs.lambdaServiceAddonsArn
     lambdaServiceAdminArn:
         Description: 'Admin Service ARN'
         Value: !GetAtt CFStackForAdminService.Outputs.lambdaServiceAdminArn

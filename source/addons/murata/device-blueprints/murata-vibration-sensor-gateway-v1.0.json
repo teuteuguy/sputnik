@@ -1,6 +1,6 @@
 {
     "id": "murata-vibration-sensor-gateway-v1.0",
-    "name": "Marata Vibration Sensor Gateway v1.0",
+    "name": "Murata Vibration Sensor Gateway v1.0",
     "type": "GREENGRASS",
     "compatibility": ["raspberry-pi-3-v1.0", "raspberry-pi-3-sense-hat-v1.0", "intel-up2-v1.0"],
     "deviceTypeMappings": [],

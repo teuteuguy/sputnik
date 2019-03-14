@@ -25,13 +25,13 @@ class s3Helper {
      * @param {JSON} destS3Bucket -  S3 destination bucket.
      * @param {JSON} destS3key -  S3 destination key.
      */
-    putFile(content, destS3Bucket, destS3key) {
+    putFile(varName, content, destS3Bucket, destS3key) {
         console.log(`Attempting to save content blob destination location: ${destS3Bucket}/${destS3key}`);
         console.log(JSON.stringify(content));
 
         let _self = this;
 
-        let _content = `'use strict';\n\nconst appVariables = {\n`;
+        let _content = `'use strict';\n\nconst ${varName} = {\n`;
 
         let i = 0;
         for (let key in content) {
