@@ -96,6 +96,12 @@ Resources:
                 solutionsTable: !Ref solutionsTable
                 solutionBlueprintsTable: !Ref solutionBlueprintsTable
 
+    # Nested stack - Custom resource - UUID Helper
+    CFStackForCustomResourceUUIDHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-uuid.yml']]
+
     # Nested stack - MicroService - Admin
     CFStackForAdminService:
         Type: AWS::CloudFormation::Stack

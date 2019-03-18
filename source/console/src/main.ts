@@ -10,8 +10,13 @@ declare const SystemJS;
 import * as angularCore from '@angular/core';
 import * as angularCommon from '@angular/common';
 
+import * as awsAmplify from 'aws-amplify';
+import * as awsAmplifyAngular from 'aws-amplify-angular';
+
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
 SystemJS.set('@angular/common', SystemJS.newModule(angularCommon));
+SystemJS.set('aws-amplify', SystemJS.newModule(awsAmplify));
+SystemJS.set('aws-amplify-angular', SystemJS.newModule(awsAmplifyAngular));
 
 // AWS related
 import Amplify from 'aws-amplify';

@@ -53,6 +53,7 @@ Resources:
             sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
+            uuid: !Transform { 'Name' : 'UUID' }
 
     MurataDeviceBlueprints:
         Type: 'Custom::LoadLambda'

@@ -15,8 +15,10 @@ echo
 echo "Removing old $2/addons dir (rm -rf $2/addons)"
 rm -rf $2/addons
 
-echo "Copying addons folder accross (cp -R $1/addons $2)"
-cp -R $1/addons $2
+# echo "Copying addons folder accross (cp -R $1/addons $2)"
+# cp -R $1/addons $2
+echo "Copying addons folder accross (rsync -a --exclude=src $1/addons $2)"
+rsync -a --exclude=src $1/addons $2
 
 echo
 echo "------------------------------------------------------------------------------"

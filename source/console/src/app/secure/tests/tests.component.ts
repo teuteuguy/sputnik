@@ -21,7 +21,8 @@ export class TestsComponent implements AfterViewInit {
         // import external module bundle
         // const module = await SystemJS.import('assets/plugins/plugin-a.bundle.js');
         const module = await SystemJS.import(
-            'https://raw.githubusercontent.com/teuteuguy/sputnik-sample-addon/master/dist/sputnik-sample-addon.bundle.js'
+            'assets/sample.bundle.js'
+            // 'https://raw.githubusercontent.com/teuteuguy/sputnik-sample-addon/master/dist/sputnik-sample-addon.bundle.js'
         );
         // 'https://raw.github.com/username/project/master/script.js';
 
