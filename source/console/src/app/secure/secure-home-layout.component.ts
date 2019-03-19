@@ -12,7 +12,8 @@ import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
 import { UserLoginService, LoggedInCallback } from '@services/user-login.service';
 import { LoggerService } from '@services/logger.service';
 import { StatService, Stats } from '@services/stat.service';
-import { IOTService } from '@services/iot.service';
+// import { IOTService } from '@services/iot.service';
+import { AddonIoTService } from 'services/addon.iot/addon-iot.service';
 
 // Services that cache
 import { DeviceTypeService } from '@services/device-type.service';
@@ -50,7 +51,7 @@ export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
         public userService: UserLoginService,
         private statService: StatService,
         private ngZone: NgZone,
-        private iotService: IOTService,
+        private iotService: AddonIoTService,
         // Here we load cached services for rest of app
         private deviceTypeService: DeviceTypeService,
         private deviceBlueprintService: DeviceBlueprintService,
@@ -203,11 +204,14 @@ export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
                 _self.isAdminUser = _self.profile.isAdmin();
             }
             _self.iotService.connect();
+            _self.iotService.connectionObservable$.subscribe((connected: boolean) => {
+                console.log('Change of connection state: setting subscriptions', connected);
+            });
 
             _self.statService.statObservable$.subscribe((msg: Stats) => {
                 _self.deviceStats = msg.deviceStats;
                 _self.solutionStats = msg.solutionStats;
-                _self.ngZone.run(() => { });
+                _self.ngZone.run(() => {});
             });
             _self.statService.refresh();
         }

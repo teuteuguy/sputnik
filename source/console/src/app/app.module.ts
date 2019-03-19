@@ -54,6 +54,7 @@ import { PipesModule } from './pipes/pipes.module';
 
 // Services
 import { AppServicesModule } from './services/services.module';
+import { AddonIoTModule } from './services/addon.iot/addon-iot.module';
 import { LoggerService, ConsoleLoggerService } from './services/logger.service';
 
 // Common Modules
@@ -146,7 +147,8 @@ export function createCompiler(fn: CompilerFactory): Compiler {
         PipesModule,
 
         // Services
-        AppServicesModule
+        AppServicesModule,
+        AddonIoTModule
 
         // .forRoot()
     ],

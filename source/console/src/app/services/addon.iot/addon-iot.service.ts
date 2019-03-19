@@ -8,30 +8,21 @@ import Api from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
-import attachPrincipalPolicy from '../graphql/mutations/attach-principal-policy';
-import describeEndpoint from '../graphql/queries/describe-endpoint.get';
-import getThingShadow from '../graphql/queries/iotdata-thing-shadow.get';
-import updateThingShadow from '../graphql/mutations/iotdata-thing-shadow.update';
-
-// // AWS
-// // import * as AWS from 'aws-sdk';
-// import { AmplifyService } from 'aws-amplify-angular';
-
-// // import Amplify from 'aws-amplify';
-// import Amplify from '@aws-amplify/core';
-// import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
+import attachPrincipalPolicy from '../../graphql/mutations/attach-principal-policy';
+import getThingShadow from '../../graphql/queries/iotdata-thing-shadow.get';
+import updateThingShadow from '../../graphql/mutations/iotdata-thing-shadow.update';
 
 declare var appVariables: any;
 
 @Injectable()
-export class IOTService {
+export class AddonIoTService {
     private iot;
 
     private connectionSubject: any = new Subject<boolean>();
     public connectionObservable$ = this.connectionSubject.asObservable();
     public isConnected = false;
 
-    constructor() {}
+    constructor() { }
 
     connect() {
         Auth.currentCredentials()

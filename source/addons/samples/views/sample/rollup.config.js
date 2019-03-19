@@ -3,14 +3,18 @@ import resolve from 'rollup-plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 import commonjs from 'rollup-plugin-commonjs';
 
-const name = __dirname.split('/').pop();
+const files = __dirname.split('/');
+
+const viewName = files.pop();
+files.pop();
+const parentName = files.pop();
 
 export default [{
     input: 'src/main.ts',
     output: {
-        file: `../../compiled-views/${name}.bundle.js`,
+        file: `../../../dist/${parentName}/views/${viewName}.bundle.js`,
         format: 'umd',
-        name: name,
+        name: viewName,
     },
     plugins: [
         angular(),

@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Samples - Sputnik setup v1.0'
+Parameters:
+    addonSourceBucket:
+        Type: String
+        Description: sputnik S3 bucket.
+    addonSourceKeyPrefix:
+        Type: String
+        Description: sputnik Source key prefix.
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    solutionBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the solution blueprints
+    customResourceUtilsHelperArn:
+        Type: String
+        Description: Utils custom resource helper ARN
+    iamRoleForGreengrassGroups:
+        Type: String
+        Description: Greengrass Group Role
+
+Resources:
+
+    SamplesGreengrassGroupPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'Policy for the sputnik Greengrass Role.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:DescribeLogStreams'
+                            - 'logs:PutLogEvents'
+                            - 'logs:CreateLogGroup'
+                        Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
+            Roles:
+                -
+                    !Ref iamRoleForGreengrassGroups
+
+    SamplesDeviceTypes:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref addonSourceBucket
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
+            table: !Ref deviceTypesTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+            uuid: !Transform { 'Name' : 'UUID' }
+
+    SamplesDeviceBlueprints:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref addonSourceBucket
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-blueprints']]
+            table: !Ref deviceBlueprintsTable
+            customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DefaultSDeviceTypes:
+    #     Type: 'Custom::LoadLambda'
+    #     Properties:
+    #         ServiceToken: !Ref customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         sourceS3Bucket: !Ref addonSourceBucket
+    #         sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
+    #         table: !Ref deviceTypesTable
+    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+
+    # DefaultLambdaRole:
+    #     Type: 'AWS::IAM::Role'
+    #     Properties:
+    #         AssumeRolePolicyDocument:
+    #             Version: '2012-10-17'
+    #             Statement:
+    #                 - Effect: 'Allow'
+    #                   Principal:
+    #                       Service:
+    #                           - 'lambda.amazonaws.com'
+    #                   Action:
+    #                       - 'sts:AssumeRole'
+    #         Path: '/'

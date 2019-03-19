@@ -10,7 +10,7 @@
         "@angular/core": "^6.x.x",
         "rollup": "^1.5.0",
         "rxjs": "6",
-        "aws-iot": "../../../libs/aws-iot"
+        "aws-iot": "../../../dist/libs/aws-iot"
     },
     "devDependencies": {
         "rollup-plugin-angular": "*",

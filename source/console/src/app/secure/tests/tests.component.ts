@@ -18,16 +18,25 @@ export class TestsComponent implements AfterViewInit {
     }
 
     private async loadPlugins() {
+
+        console.log('loadPlugins');
         // import external module bundle
         // const module = await SystemJS.import('assets/plugins/plugin-a.bundle.js');
         const module = await SystemJS.import(
-            'assets/sample.bundle.js'
+            // 'assets/sample.bundle.js'
             // 'https://raw.githubusercontent.com/teuteuguy/sputnik-sample-addon/master/dist/sputnik-sample-addon.bundle.js'
+            // 'https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9/addons/murata/murata-vibration-sensor-network.bundle.js'
+            'assets/murata-vibration-sensor-network.bundle.js'
         );
         // 'https://raw.github.com/username/project/master/script.js';
 
+        console.log('module', module);
+
+
         // compile module
-        const moduleFactory = await this._compiler.compileModuleAsync<any>(module['SputnikSampleAddonModule']);
+        const moduleFactory = await this._compiler.compileModuleAsync<any>(
+            module['MurataVibrationSensorNetworkModule']
+        );
 
         // resolve component factory
         const moduleRef = moduleFactory.create(this._injector);
