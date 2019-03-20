@@ -9,17 +9,8 @@ import PubSub from '@aws-amplify/pubsub';
 import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
 import attachPrincipalPolicy from '../graphql/mutations/attach-principal-policy';
-import describeEndpoint from '../graphql/queries/describe-endpoint.get';
 import getThingShadow from '../graphql/queries/iotdata-thing-shadow.get';
 import updateThingShadow from '../graphql/mutations/iotdata-thing-shadow.update';
-
-// // AWS
-// // import * as AWS from 'aws-sdk';
-// import { AmplifyService } from 'aws-amplify-angular';
-
-// // import Amplify from 'aws-amplify';
-// import Amplify from '@aws-amplify/core';
-// import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 
 declare var appVariables: any;
 

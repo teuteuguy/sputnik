@@ -22,6 +22,9 @@ Parameters:
     iamRoleForGreengrassGroups:
         Type: String
         Description: Greengrass Group Role
+    uuid:
+        Type: String
+        Description: UUID of the deployment
 
 Resources:
 
@@ -53,7 +56,7 @@ Resources:
             sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
-            uuid: !Transform { 'Name' : 'UUID' }
+            uuid: !Ref uuid
 
     MurataDeviceBlueprints:
         Type: 'Custom::LoadLambda'
@@ -64,6 +67,7 @@ Resources:
             sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-blueprints']]
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
+            uuid: !Ref uuid
 
     # DefaultSDeviceTypes:
     #     Type: 'Custom::LoadLambda'

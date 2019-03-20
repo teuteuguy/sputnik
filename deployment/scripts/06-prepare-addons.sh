@@ -17,30 +17,22 @@ rm -rf $2/addons
 echo "Creating addons folder: mkdir -p $2/addons"
 mkdir -p $2/addons
 
-echo
-echo "[Rebuild] addons"
+# echo
+# echo "[Rebuild] addons"
 
 # build and copy console distribution files
-cd $1/addons
-rm -rf ./dist
-mkdir -p dist
-mkdir -p dist/libs
+# cd $1/addons
+# rm -rf $1/addons/dist
+# mkdir -p dist
 
-echo "build libs - aws-iot"
-cd $1/addons/libs/aws-iot
-yarn install
-yarn build
+# echo "Copying the blueprints over"
+# rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
 
-cp -R $1/addons/libs/aws-iot/dist/aws-iot $1/addons/dist/libs/aws-iot
-
-echo "Copying the blueprints over"
-rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
-
-echo "build addons - murata"
-cd $1/addons/murata/views/murata-vibration-sensor-network
-yarn install
-yarn build
-cp $1/addons/murata/views/murata-vibration-sensor-network/dist/*.js $1/addons/dist/murata/
+# echo "build addons - murata"
+# cd $1/addons/murata/views/murata-vibration-sensor-network
+# yarn install
+# yarn build
+# cp $1/addons/murata/views/murata-vibration-sensor-network/dist/*.js $1/addons/dist/murata/
 
 # echo "build addons - samples"
 # cd $1/addons/samples/views/sample
@@ -48,8 +40,9 @@ cp $1/addons/murata/views/murata-vibration-sensor-network/dist/*.js $1/addons/di
 # yarn build
 
 # rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
+# cp -r $1/addons/dist/* $2/addons
 
-cp -r $1/addons/dist/* $2/addons
+rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $2/addons
 
 echo
 echo "------------------------------------------------------------------------------"

@@ -15,6 +15,8 @@ declare var $: any;
 declare var appVariables: any;
 declare var addons: any;
 
+import * as uuid from 'uuid';
+
 @Component({
     selector: 'app-root-addons',
     templateUrl: './addons.component.html'
@@ -61,12 +63,13 @@ export class AddOnsComponent implements OnInit {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, install it!'
         }).then(result => {
+            console.log(uuid.v4());
             if (result.value) {
                 const url = `https://console.aws.amazon.com/cloudformation/home?region=${
                     appVariables.REGION
-                    }#/stacks/create/review?stackName=sputnik-addon-${addon.id}&${
+                }#/stacks/create/review?stackName=sputnik-addon-${addon.id}&${
                     appVariables.ADDON_TEMPLATES_URL
-                    }/${addon.id}/${addon.id}.yml`;
+                }/${addon.id}/${addon.id}.yml&param_uuid=${uuid.v4()}`;
                 window.open(url);
             }
         });

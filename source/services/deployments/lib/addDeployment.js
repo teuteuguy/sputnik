@@ -210,6 +210,12 @@ module.exports = function (event, context) {
                             _newGreengrassGroupVersion.DeviceDefinitionVersionArn = d.Arn;
                         }
                         return d;
+                    }),
+                    createGreengrassXDefinitionVersion('Connector', _newSpec, groupDefinitionVersion).then(d => {
+                        if (d) {
+                            _newGreengrassGroupVersion.ConnectorDefinitionVersionArn = d.Arn;
+                        }
+                        return d;
                     })
                 ]);
 

@@ -10,7 +10,8 @@
         "deepmerge": "^2.2.1",
         "moment": "*",
         "underscore": "*",
-        "uuid": "^3.3.2"
+        "uuid": "^3.3.2",
+        "aws-sdk": "*"
     },
     "devDependencies": {},
     "scripts": {

@@ -12,7 +12,7 @@ function extend(parent, child, type) { //parentKey, childKey, on) {
 
     console.log(tag, 'start');
 
-    if (['Core', 'Device', 'Function', 'Logger', 'Resource', 'Subscription'].indexOf(type) === -1) {
+    if (['Core', 'Device', 'Function', 'Logger', 'Resource', 'Subscription', 'Connector'].indexOf(type) === -1) {
         console.log(tag, 'provided type', type, 'is not something this supports yet');
     } else {
 
@@ -66,6 +66,15 @@ function extend(parent, child, type) { //parentKey, childKey, on) {
                         }
                     });
                     break;
+                case 'Connector':
+                    child[parentKey][childKey].forEach(subChild => {
+                        if (result[parentKey][childKey].findIndex(subParent => {
+                                return subParent.ConnectorArn === subChild.ConnectorArn;
+                            }) === -1) {
+                            result[parentKey][childKey] = [...result[parentKey][childKey], subChild];
+                        }
+                    });
+                    break;
                 default:
                     // Simply concat
                     result[parentKey][childKey] = [...result[parentKey][childKey], ...child[parentKey][childKey]];
@@ -94,5 +103,6 @@ module.exports = function (parent, child) {
     result = extend(result, child, 'Subscription'); //'SubscriptionDefinitionVersion', 'Subscriptions');
     result = extend(result, child, 'Resource'); //'ResourceDefinitionVersion', 'Resources');
     result = extend(result, child, 'Device'); //'DeviceDefinitionVersion', 'Devices');
+    result = extend(result, child, 'Connector');
     return result;
 };
