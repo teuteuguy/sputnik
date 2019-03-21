@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-12 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <div class="pull-right" role="group">
+                    <button type="button" class="btn btn-success btn-sm m-l-10" data-toggle="tooltip" title="Scan"
+                        (click)="showScanModal()">
+                        <i class="fa fa-wrench"></i> Scan</button>
+                </div>
+                <h5 class="card-title">Murata Vibration Sensor Gateway</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
+                <div class="card-text">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- .modal -->
+<div class="modal fade" id="scanModal" tabindex="-1" role="dialog" aria-labelledby="scanModalLabel1">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Scanning...</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submitCreateDevice(f.value)"
+                    novalidate>
+                    <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+                        <label for="name" class="form-control-label">Device name:</label>
+                        <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
+                            name="thingName" id="thingName" #name="ngModel" [(ngModel)]="newDevice.thingName" pattern="[a-zA-Z0-9:_-]+"
+                            required ngModel>
+                        <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
+                            <small>Name of your device.</small>
+                        </div>
+                        <div *ngIf="(name.invalid && (name.dirty || name.touched)) && name.errors" class="form-control-feedback">
+                            <small>Name of device is required or has errors.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="cancelCreateForm(f);">Cancel</button>
+                        <button *ngIf="!name.errors" type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form> -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- .modal -->

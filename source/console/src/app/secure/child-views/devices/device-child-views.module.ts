@@ -13,6 +13,9 @@ import { GGMLDemoSqueezenetV10Module } from './gg-ml-demo-squeezenet-v1.0/gg-ml-
 import { ModelTrainerV10Module } from './model-trainer-v1.0/model-trainer.module';
 import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense-hat-demo-v1-0.module';
 
+import { MurataVibrationSensorGatewayV10Module } from './murata-vibration-sensor-gateway-v1.0/murata-vibration-sensor-gateway-v1-0.module';
+
+
 @Component({
     selector: 'app-device-child-view',
     template: `
@@ -51,6 +54,15 @@ import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense
             [device]="device"
         >
         </app-rpi3-sense-hat-demo-v1-0>
+        <app-murata-vibration-sensor-gateway-v1-0
+            *ngIf="
+                device &&
+                device.deviceBlueprintId &&
+                device.deviceBlueprintId == 'murata-vibration-sensor-gateway-v1.0'
+            "
+            [device]="device"
+        >
+        </app-murata-vibration-sensor-gateway-v1-0>
     `
 })
 export class DeviceChildViewComponent {
@@ -69,7 +81,8 @@ export class DeviceChildViewComponent {
         ImageCaptureV10Module,
         GGMLDemoSqueezenetV10Module,
         ModelTrainerV10Module,
-        RPI3SenseHatDemoV10Module
+        RPI3SenseHatDemoV10Module,
+        MurataVibrationSensorGatewayV10Module
     ]
 })
 export class DeviceChildViewsModule {}
