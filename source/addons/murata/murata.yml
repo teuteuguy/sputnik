@@ -53,7 +53,7 @@ Resources:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref addonSourceBucket
-            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'murata', 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref uuid
@@ -64,31 +64,47 @@ Resources:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref addonSourceBucket
-            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-blueprints']]
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'murata', 'device-blueprints']]
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref uuid
 
-    # DefaultSDeviceTypes:
-    #     Type: 'Custom::LoadLambda'
-    #     Properties:
-    #         ServiceToken: !Ref customResourceUtilsHelperArn
-    #         Region: !Ref 'AWS::Region'
-    #         sourceS3Bucket: !Ref addonSourceBucket
-    #         sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
-    #         table: !Ref deviceTypesTable
-    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+    MurataLambdaRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'lambda.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
 
-    # DefaultLambdaRole:
-    #     Type: 'AWS::IAM::Role'
-    #     Properties:
-    #         AssumeRolePolicyDocument:
-    #             Version: '2012-10-17'
-    #             Statement:
-    #                 - Effect: 'Allow'
-    #                   Principal:
-    #                       Service:
-    #                           - 'lambda.amazonaws.com'
-    #                   Action:
-    #                       - 'sts:AssumeRole'
-    #         Path: '/'
+    MurataVibrationSensorGatewayMainLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'murata-vibration-sensor-gateway-main-lambda-python'
+            Description: 'Murata Vibration Sensor Gateway Main Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'murata', 'lambdas', 'murata-vibration-sensor-gateway-main-lambda-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt MurataLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    MurataVibrationSensorGatewayMainLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName:
+                Ref: 'MurataVibrationSensorGatewayMainLambda'
+            Description: 'A first version of murata-vibration-sensor-gateway-main-lambda-python'
+    MurataVibrationSensorGatewayMainLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref MurataVibrationSensorGatewayMainLambda
+            FunctionVersion: !GetAtt MurataVibrationSensorGatewayMainLambdaVersion.Version
+            Name: 'Prod'

@@ -42,7 +42,14 @@ mkdir -p $2/addons
 # rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
 # cp -r $1/addons/dist/* $2/addons
 
-rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $2/addons
+rsync -a --exclude=views --exclude=libs --exclude=dist --exclude=lambdas $1/addons/* $2/addons
+
+echo
+echo "[Build Murata addon lambda functions]"
+mkdir $2/addons/murata/lambdas
+cd $1/addons/murata/lambdas/murata-vibration-sensor-gateway-main-lambda-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/murata/lambdas/`echo ${PWD##*/}`.zip .
 
 echo
 echo "------------------------------------------------------------------------------"

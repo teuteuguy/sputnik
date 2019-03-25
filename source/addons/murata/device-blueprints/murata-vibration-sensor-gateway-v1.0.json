@@ -6,7 +6,69 @@
     "deviceTypeMappings": [],
     "spec": {
         "Shadow": {
-            "desired": {}
+            "desired": {
+                "mode": "listen"
+            }
+        },
+        "ConnectorDefinitionVersion": {
+            "Connectors": [{
+                "ConnectorArn": "arn:aws:greengrass:us-east-1::/connectors/SerialStream/versions/1",
+                "Parameters": {
+                    "SerialPort-ResourceId": "usb-dongle",
+                    "SerialPort": "/dev/ttyUSB0",
+                    "RtsCts": "false",
+                    "BaudRate": "115200",
+                    "Timeout": "2",
+                    "PollingReadLength": "176",
+                    "XonXoff": "false",
+                    "PollingRead": "true",
+                    "Parity": "N",
+                    "PollingReadInterval": "1",
+                    "PollingReadType": "ascii"
+                }
+            }]
+        },
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": true,
+                        "Variables": {
+                            "SERIAL_PORT": "/dev/ttyUSB0"
+                        }
+                    },
+                    "MemorySize": 262144,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                "Id": "usb-dongle",
+                "Name": "usb-dongle",
+                "ResourceDataContainer": {
+                    "LocalDeviceResourceData": {
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/dev/ttyUSB0"
+                    }
+                }
+            }]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
+                "Target": "arn:aws:greengrass:us-east-1::/connectors/SerialStream/versions/1",
+                "Subject": "serial/[CORE]/write/dev/ttyUSB0"
+            }, {
+                "Source": "arn:aws:greengrass:us-east-1::/connectors/SerialStream/versions/1",
+                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
+                "Subject": "serial/[CORE]/read_response/#"
+            }]
         }
     }
 }

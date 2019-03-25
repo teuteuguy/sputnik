@@ -31,24 +31,28 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
             console.error('Error:', err);
         }
 
-        // self.subscribe([
-        //     {
-        //         topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
-        //         onMessage: data => {
-        //             self.ngZone.run(() => {
-        //                 self.updateIncomingShadow(data.value);
-        //             });
-        //         },
-        //         onError: defaultErrorCallback
-        //     }
-        // ]);
-
         self.getLastState(self.device.thingName).then(data => {
+
             console.log('getLastState:', data, self.desired);
+
+            self.subscribe([
+                {
+                    topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
+                    onMessage: message => {
+                        self.ngZone.run(() => {
+                            self.updateIncomingShadow(message.value);
+                        });
+                    },
+                    onError: defaultErrorCallback
+                }
+            ]);
+
+            if (self.desired.mode === 'scan') {
+                self.showScanModal();
+            }
         });
 
         $('#scanModal').on('hide.bs.modal', (e) => {
-            console.log('Hide');
             self.stopScanning();
         });
     }
@@ -75,9 +79,9 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
                 })
             })
             .then(result => {
-                this.getLastState(this.device.thingName).then(data => {
-                    console.log('getLastState:', data, this.desired);
-                });
+                // this.getLastState(this.device.thingName).then(data => {
+                //     console.log('getLastState:', data, this.desired);
+                // });
                 return result;
             })
             .catch(err => {
@@ -99,9 +103,9 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
                 })
             })
             .then(result => {
-                this.getLastState(this.device.thingName).then(data => {
-                    console.log('getLastState:', data);
-                });
+                // this.getLastState(this.device.thingName).then(data => {
+                //     console.log('getLastState:', data);
+                // });
                 return result;
             })
             .catch(err => {

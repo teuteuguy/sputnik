@@ -9,7 +9,8 @@
         "moment": "*",
         "sputnik-custom-resource-helper-utils": "../../resources/utils/",
         "underscore": "*",
-        "usage-metrics": "file:../../resources/usage-metrics/"
+        "usage-metrics": "file:../../resources/usage-metrics/",
+        "aws-sdk": "*"
     },
     "devDependencies": {},
     "scripts": {
