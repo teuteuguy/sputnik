@@ -1,10 +1,11 @@
-from transitions import Machine
 from ggiot import GGIoT
 import json
 import os
 import sys
-from threading import Event, Thread, Timer
 import time
+from threading import Thread, Timer, Event
+
+from murata import Murata
 
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
@@ -15,123 +16,132 @@ THING_NAME = get_parameter("AWS_IOT_THING_NAME", "UNKNOWN")
 SERIAL_PORT = get_parameter("SERIAL_PORT", "UNKNOWN")
 PREFIX = "murata"
 
-TX_TOPIC = 'serial/{0}/write{1}'.format(THING_NAME, SERIAL_PORT)
-RX_TOPIC = 'serial/{0}/read_response{1}'.format(THING_NAME, SERIAL_PORT)
+SHADOW_UPDATE_ACCEPTED_TOPIC = '$aws/things/{0}/shadow/update/accepted'.format(THING_NAME)
+SHADOW_UPDATE_DELTA_TOPIC = '$aws/things/{0}/shadow/update/delta'.format(THING_NAME)
 
-print("Lambda start:")
+SENSOR_DATA_TOPIC = '{0}/{1}/sensordata'.format(PREFIX, THING_NAME)
+
+print('Murata Lambda function starting')
+print('THING_NAME:                   {}'.format(THING_NAME))
+print('SERIAL_PORT:                  {}'.format(SERIAL_PORT))
+print('SHADOW_UPDATE_ACCEPTED_TOPIC: {}'.format(SHADOW_UPDATE_ACCEPTED_TOPIC))
+print('SHADOW_UPDATE_DELTA_TOPIC:    {}'.format(SHADOW_UPDATE_DELTA_TOPIC))
+print('SENSOR_DATA_TOPIC:            {}'.format(SENSOR_DATA_TOPIC))
 
 GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
-def txFunction(message):
-    print("TX: {}".format(message))
-    GGIOT.publish(topic=TX_TOPIC, payload={
-        "data": message,
-        "type": "ascii"
+def reportTo(mode):
+    GGIOT.updateThingShadow(payload={
+        "state": {
+            "reported": {
+                "mode": mode
+            }
+        }
     })
 
+def reportAndDesireTo(mode):
+    GGIOT.updateThingShadow(payload={
+        "state": {
+            "desired": {
+                "mode": mode
+            },
+            "reported": {
+                "mode": mode
+            }
+        }
+    })
+
+MURATA = Murata()
+
+class MainThread(Thread):
+    def __init__(self):
+        super(MainThread, self).__init__()
+        self.stop_request = Event()
+
+        self.mode = "init"
+        reportTo(self.mode)
+
+        MURATA.initialize()
+
+        self.mode = "idle"
+        reportTo(self.mode)
 
 
-class Gateway(object):
-    def __init__(self, txFunction):
-        self.txFunction = txFunction
+    def run(self):
+        while 42:
+            try:
+                if MURATA.ser.inWaiting() > 0:
+                    data = MURATA.readline()
+                    if len(data) > 100:
+                        ts, freqs, accs, rmsval, kurtosis, stemp, rssival, nodeid = MURATA.convertPacket(data)
+                        message = {
+                            "timestamp": ts,
+                            "frequencies": freqs,
+                            "accels": accs,
+                            "rms": rmsval,
+                            "kurtosis": kurtosis,
+                            "surfaceTemperature": stemp,
+                            "rssi": rssival,
+                            "nodeId": nodeid
+                        }
+                        GGIOT.publish(topic=SENSOR_DATA_TOPIC, payload=message)
 
-    def printState(self):
-        print('Gateway entered {} state'.format(self.state))
+                if self.mode == "scan":
+                    print("Scan mode: Enter:")
 
-    def on_enter_idle(self, rxData=None):
-        self.printState()
+                    reportTo(self.mode)
 
-    def on_enter_reset(self, rxData = None):
-        self.printState()
-        self.txFunction('XKSLEEP\r\n')
-        self.resetState = 0
+                    result = MURATA.scan()
 
-    def on_enter_resetChangeDefault(self, rxData=None):
-        self.printState()
-        self.txFunction('XKNSETINFO 35 1011 818D\r\n')
+                    if result == 1:
+                        print("Config mode: Enter")
+                        result = MURATA.config()
+                        if result == 1:
+                            pass
+                        #     f.seek(0);
+                        #     f.write("0");
+                        #     f.truncate();
 
-    def on_enter_resetSetKey(self, rxData=None):
-        self.printState()
-        self.txFunction('XKSETKEY 00000000000000000000000000000000\r\n')
+                    MURATA.resume()
+                    self.mode = "idle"
+                    reportAndDesireTo(self.mode)
 
-    def on_enter_resetSRegS0E(self, rxData=None):
-        self.printState()
-        self.txFunction('XKSREG S0E 1\r\n')
+                if self.mode == "init":
+                    print("Init: Enter")
+                    reportTo(self.mode)
 
-    def on_enter_resetSRegS2A(self, rxData=None):
-        self.printState()
-        self.txFunction('XKSREG S2A 0\r\n')
+                    MURATA.initialize()
+                    self.mode = "idle"
+                    reportAndDesireTo(self.mode)
 
-    def on_enter_resetRX1(self, rxData=None):
-        self.printState()
-        self.txFunction('XK-RX 1\r\n')
+            except Exception as ex:
+                print("ERROR: {}".format(str(ex)))
+                time.sleep(1)
 
-    def on_enter_resetNGW(self, rxData=None):
-        self.printState()
-        self.txFunction('XKNGW 7FFF\r\n')
+    def join(self):
+        self.stop_request.set()
 
-    # def is_ewake(self, rxData):
-    #     if not 'data' in rxData: return False
-    #     return rxData['data'] == "EWAKE\r\n"
+    def setMode(self, mode):
+        print("Setting mode to: {}".format(mode))
+        self.mode = mode
 
-    # def is_ok(self, rxData):
-    #     if not 'data' in rxData: return False
-    #     return rxData['data'].endswith('OK\r\n')
-
-    def is_resetDone(self, rxData):
-        if not 'data' in rxData:
-            return False
-
-        def is_ewake(rxData):
-            return rxData['data'] == "EWAKE\r\n"
-
-        def is_ok(rxData):
-            return rxData['data'].endswith('OK\r\n')
-
-        if self.resetState == 0:
-            if is_ewake(rxData):
-                self.resetState += 1
-            else:
-                self.on_enter_reset(rxData)
-        elif self.resetState == 1:
-            if is_ok(rxData):
-                self.resetState += 1
-            else:
-                self.on_enter_reset(rxData)
-        elif self.resetState == 2:
-            return True
-
-        return False
-
-
-murata = Gateway(txFunction)
-
-states = ['reset', 'resetChangeDefault', 'resetSetKey', 'resetSRegS0E', 'resetSRegS2A', 'resetRX', 'resetNGW', 'idle']
-
-stateMachine = Machine(model=murata, states=states, initial='idle', auto_transitions=False)
-stateMachine.add_transition('reset', '*', 'reset')
-stateMachine.add_transition('rx', 'idle', 'idle')
-# stateMachine.add_transition('rx', 'reset', 'resetChangeDefault', conditions=['is_ewake'])
-# stateMachine.add_transition('rx', 'resetChangeDefault', 'resetSetKey', conditions=['is_ok'])
-# stateMachine.add_transition('rx', 'resetSetKey', 'resetSRegS0E', conditions=['is_ok'])
-# stateMachine.add_transition('rx', 'resetSRegS0E', 'resetSRegS2A', conditions=['is_ok'])
-# stateMachine.add_transition('rx', 'resetSRegS2A', 'resetRX', conditions=['is_ok'])
-# stateMachine.add_transition('rx', 'resetRX', 'resetNGW', conditions=['is_ok'])
-stateMachine.add_transition('rx', 'reset', 'idle', conditions=['is_resetDone'])
-# stateMachine.add_transition('rx', '*', 'idle')
-
-murata.reset()
-murata.rx({"data": "EWAKE\r\n"})
-murata.rx({"data": "bla OK\r\n"})
-murata.rx({"data": "bla OK\r\n"})
-murata.rx({"data": "bla OK\r\n"})
-murata.rx({"data": "bla OK\r\n"})
-murata.rx({"data": "bla OK\r\n"})
-murata.rx({"data": "bla OK\r\n"})
+mainThread = MainThread()
+mainThread.start()
 
 def lambda_handler(event, context):
-    print("Received Event: {}".format(json.dumps(event)))
     topic = context.client_context.custom["subject"]
-    print("Received Topic: {}".format(topic))
-    murata.rx(event)
+    print("lambda_handler: {}: {}".format(topic, json.dumps(event)))
+
+    if event and "state" in event:
+        state = event["state"]
+
+        if topic == SHADOW_UPDATE_ACCEPTED_TOPIC:
+            if "desired" in state and "mode" in state["desired"]:
+                mainThread.setMode(state["desired"]["mode"])
+        elif topic == SHADOW_UPDATE_DELTA_TOPIC:
+            if "mode" in state:
+                mainThread.setMode(state["mode"])
+
     return
+
+

@@ -1,2 +1,3 @@
 ../../../libs/ggiot
 transitions
+pyserial

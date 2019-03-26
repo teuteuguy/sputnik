@@ -33,7 +33,7 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
 
         self.getLastState(self.device.thingName).then(data => {
 
-            console.log('getLastState:', data, self.desired);
+            // console.log('getLastState:', data, self.desired);
 
             self.subscribe([
                 {
@@ -44,36 +44,26 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
                         });
                     },
                     onError: defaultErrorCallback
+                },
+                {
+                    topic: 'murata/' + self.device.thingName + '/sensordata',
+                    onMessage: message => {
+                        console.log('Data:', message);
+                    },
+                    onError: defaultErrorCallback
                 }
             ]);
-
-            if (self.desired.mode === 'scan') {
-                self.showScanModal();
-            }
-        });
-
-        $('#scanModal').on('hide.bs.modal', (e) => {
-            self.stopScanning();
         });
     }
 
-    showScanModal() {
-        $('#scanModal').modal('show');
-        this.startScanning();
-    }
-    closeScanModal(form: NgForm) {
-        form.reset();
-        $('#scanModal').modal('hide');
-    }
-
-    private startScanning() {
+    private changeMode(mode) {
         this.iotService
             .updateThingShadow({
                 thingName: this.device.thingName,
                 payload: JSON.stringify({
                     state: {
                         desired: {
-                            mode: 'scan'
+                            mode: mode
                         }
                     }
                 })
@@ -87,29 +77,14 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
             .catch(err => {
                 console.error(err);
             });
-
     }
 
-    private stopScanning() {
-        this.iotService
-            .updateThingShadow({
-                thingName: this.device.thingName,
-                payload: JSON.stringify({
-                    state: {
-                        desired: {
-                            mode: 'listen'
-                        }
-                    }
-                })
-            })
-            .then(result => {
-                // this.getLastState(this.device.thingName).then(data => {
-                //     console.log('getLastState:', data);
-                // });
-                return result;
-            })
-            .catch(err => {
-                console.error(err);
-            });
+    init() {
+        this.changeMode('init');
     }
+
+    scan() {
+        this.changeMode('scan');
+    }
+
 }

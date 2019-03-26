@@ -1,0 +1,31 @@
+{
+    "reset": {
+        "commands": [{
+            "tx": "XKSLEEP\r\n",
+            "rx": "EWAKE\r\n"
+        }, {
+            "tx": "XKNSETINFO 35 1011 818D\r\n",
+            "rx": "35 1011 818D OK\r\n"
+        }, {
+            "tx": "XKSETKEY 00000000000000000000000000000000\r\n",
+            "rx": "00000000000000000000000000000000 OK\r\n"
+        }, {
+            "tx": "XKSREG S0E 1\r\n",
+            "rx": "OK\r\n"
+        }, {
+            "tx": "XKSREG S2A 0\r\n",
+            "rx": "OK\r\n"
+        }, {
+            "tx": "XK-RX 1\r\n",
+            "rx": "OK\r\n"
+        }, {
+            "tx": "XKNGW 7FFF\r\n",
+            "rx": "7FFF OK\r\n"
+        }],
+        "default": true,
+        "to": "idle"
+    },
+    "idle": {
+        "default": false
+    }
+}
