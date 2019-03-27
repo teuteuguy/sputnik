@@ -5,11 +5,6 @@
     "compatibility": ["raspberry-pi-3-v1.0", "raspberry-pi-3-sense-hat-v1.0", "intel-up2-v1.0"],
     "deviceTypeMappings": [],
     "spec": {
-        "Shadow": {
-            "desired": {
-                "mode": "idle"
-            }
-        },
         "FunctionDefinitionVersion": {
             "Functions": [{
                 "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
@@ -49,11 +44,7 @@
             "Subscriptions": [{
                 "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
                 "Target": "cloud",
-                "Subject": "murata/[CORE]/sensordata"
-            }, {
-                "Source": "cloud",
-                "Subject": "murata/[CORE]/trigger",
-                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod"
+                "Subject": "murata/[CORE]/+/data"
             }, {
                 "Source": "GGShadowService",
                 "Subject": "$aws/things/[CORE]/shadow/update/delta",

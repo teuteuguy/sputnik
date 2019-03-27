@@ -17,6 +17,8 @@ class Murata:
             timeout=3
         )
 
+        self.defaultNodeConfig = '000109FF09090909000102670001000000000000000001'
+
     def tx(self, cmd='\r\n'):
         print('{0}: TX: {1}'.format(datetime.datetime.now(), cmd))
         self.ser.write(cmd)
@@ -76,16 +78,12 @@ class Murata:
                 return 0.001
 
         ss = 50
-        # ts = time.strftime("%x %X", time.localtime())
-        ts = math.floor(time.time() * 1000)
+        timestamp = math.floor(time.time() * 1000)
 
-        print('convertPacket: {0}: {1}:'.format(ts, len(data)))
+        print('convertPacket: {0}: {1}:'.format(str(timestamp), len(data)))
 
         freqs = [None]*5
         accs = [None]*5
-
-        # datarow = [None]*16
-        # datarow[0] = ts
 
         for i in range(5):
             freq = data[ss+(8*2*i):ss+(8*2*i)+8]
@@ -99,55 +97,45 @@ class Murata:
             acc = int(tempa, 16)
             acc = acc*scalea
 
-            # print('             Freq:         {0}: {1}'.format(i+1, freq))
-            # print('             Acc:          {0}: {1}'.format(i+1, acc))
-            # datarow[(2*i)+1] = freq
-            # datarow[(2*i)+2] = acc
-
             freqs[i] = freq
             accs[i] = acc
 
-        # print('             Freq:         {0} {1} {2} {3} {4}'.format(datarow[1], datarow[3], datarow[5], datarow[7], datarow[9]))
-        # print('             Acc:          {0} {1} {2} {3} {4}'.format(datarow[2], datarow[4], datarow[6], datarow[8], datarow[10]))
-        print('             Freq:         {0} {1} {2} {3} {4}'.format(freqs[0], freqs[1], freqs[2], freqs[3], freqs[4]))
-        print('             Acc:          {0} {1} {2} {3} {4}'.format(accs[0], accs[1], accs[2], accs[3], accs[4]))
-
-        rmsval = data[ss+80:ss+80+8]
-        scalerms = datascale(rmsval)
-        temprms = rmsval[0:0+4]
-        rmsval = int(temprms, 16)
-        rmsval = rmsval*scalerms
-        # datarow[11] = rmsval
-        print('             RMS Acc:      {0}'.format(rmsval))
+        rmsVal = data[ss+80:ss+80+8]
+        scalerms = datascale(rmsVal)
+        temprms = rmsVal[0:0+4]
+        rmsVal = int(temprms, 16)
+        rmsVal = rmsVal*scalerms
 
         kurtosis = data[ss+80+8:ss+80+16]
         scalek = datascale(kurtosis)
         tempkurtosis = kurtosis[0:0+4]
         kurtosis = int(tempkurtosis, 16)
         kurtosis = kurtosis*scalek
-        # datarow[12] = kurtosis
-        print('             Kurtosis:     {0}'.format(kurtosis))
 
-        stemp = data[ss+80+16:ss+80+24]
-        scales = datascale(stemp)
-        tempstemp = stemp[0:0+4]
-        stemp = int(tempstemp, 16)
-        stemp = stemp*scales
-        # datarow[13] = stemp
-        print('             Surface temp: {0}'.format(stemp))
+        sTemp = data[ss+80+16:ss+80+24]
+        scales = datascale(sTemp)
+        tempstemp = sTemp[0:0+4]
+        sTemp = int(tempstemp, 16)
+        sTemp = sTemp*scales
 
         rssi = data[28:28+2]
-        rssival = int(rssi, 16)
-        rssival = rssival - 107
-        # datarow[14] = rssival
-        print('             RSSI:         {0}'.format(rssival))
+        rssiVal = int(rssi, 16)
+        rssiVal = rssiVal - 107
 
-        nodeid = data[8:8+4]
-        # datarow[15] = nodeid
-        print('             Node ID:      {0}'.format(nodeid))
+        nodeId = data[8:8+4]
 
-        # return datarow
-        return ts, freqs, accs, rmsval, kurtosis, stemp, rssival, nodeid
+        messageId = data[18:18+4]
+
+        print('             Node ID:      {0}'.format(nodeId))
+        print('             Message ID:   {0}'.format(messageId))
+        print('             RSSI:         {0}'.format(rssiVal))
+        print('             Freq:         {0} {1} {2} {3} {4}'.format(freqs[0], freqs[1], freqs[2], freqs[3], freqs[4]))
+        print('             Acc:          {0} {1} {2} {3} {4}'.format(accs[0], accs[1], accs[2], accs[3], accs[4]))
+        print('             RMS Acc:      {0}'.format(rmsVal))
+        print('             Kurtosis:     {0}'.format(kurtosis))
+        print('             Surface temp: {0}'.format(sTemp))
+
+        return nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp
 
     def resume(self):
         self.tx('XKNGW 7FFF\r\n')
@@ -158,9 +146,6 @@ class Murata:
         #Function to send XKNINFO command. This is needed in the joining mode.
         def nodejoin_info(dev_id, ntwk_id):
             net_info = 'XKNINFO ' + dev_id + ' ' + ntwk_id + ' ' + dev_id + '\r\n'
-            # print datetime.datetime.now()
-            # print net_info
-            # ser.write(str(net_info))
 
             self.tx(str(net_info))
 
@@ -173,11 +158,13 @@ class Murata:
 
                     if response[0:6] == "ENCONF":
                         print('      Node Join INFO: Success for {0} on {1}'.format(dev_id, ntwk_id))
-                        return 1
-                elif (time.time() > t_end):
+                        return True
+
+                elif time.time() > t_end:
                     print('      Node Join INFO: Failed to join for {0} on {1}'.format(dev_id, ntwk_id))
-                    return 0
-                elif (time.time() > (t_retry + 2)):
+                    return False
+
+                elif time.time() > (t_retry + 2):
                     self.tx(str(net_info))
                     t_retry = time.time()
 
@@ -195,10 +182,12 @@ class Murata:
 
                     if response[0:4] == "ENOK":
                         print('      Node Join NOK: Success for {0} on {1}'.format(dev_id, ntwk_id))
-                        return 1
+                        return True
+
                 elif (time.time() > t_end):
                     print('      Node Join NOK: Failed for {0} on {1}'.format(dev_id, ntwk_id))
-                    return 0
+                    return False
+
                 elif (time.time() > (t_retry + 2)):
                     self.tx(str(net_nok))
                     t_retry = time.time()
@@ -215,42 +204,27 @@ class Murata:
 
             if time.time() > t_end:
                 print('Scan: No sensor node found. Exiting.')
-                return 0
+                return False, None, None
 
             elif self.ser.inWaiting() > 0:
                 response = self.readline()
 
                 if response[0:5] == "ENREQ":
 
-                    # f = open("scan_result.csv", "w")
                     dev_id = response[6:10]
                     ntwk_id = response[19:31]
 
-                    # print('     Device ID:  {}'.format(dev_id))
-                    # print('     Network ID: {}'.format(ntwk_id))
+                    if nodejoin_info(dev_id, ntwk_id) == True:
+                        result = nodejoin_nok(dev_id, ntwk_id)
 
-                    # f.write(dev_id + "," + ntwk_id)
-                    # f.close()
-
-                    result = nodejoin_info(dev_id, ntwk_id)
-                    if (result != 1):
-                        return 0
-
-                    result = nodejoin_nok(dev_id, ntwk_id)
-                    if (result != 1):
-                        return 0
-
-                    break
-
-        print('Scan: Stop. Exiting.')
-
-        return 1
+                    print('Scan: Stop. Exiting.')
+                    return result, dev_id, ntwk_id
 
     #Function to start config mode. This is executed after the sensor node has joined the network.
-    def config(self):
+    def config(self, dev_id, config):
 
         #Function to send config. settings. This is needed for configuration mode.
-        def send_setting_dc00(dev_id):
+        def send_setting_dc00(dev_id, config):
 
             # f = open("scan_result.csv", "r")
             # dev_id = f.read()
@@ -270,9 +244,11 @@ class Murata:
                     response = self.readline()
                     if (len(response) > 60):
                         break
+
                 elif (time.time() > t_end):
                     print('Failed to check node FW_D800\r\n')
-                    return 0
+                    return False
+
                 elif (time.time() > (t_retry + 2)):
                     self.tx(str(send_check))
                     t_retry = time.time()
@@ -290,12 +266,11 @@ class Murata:
             #     interval = 'FF0B0B0B0B00'  # 6 hours
             # elif config == "720":
             #     interval = 'FF0C0C0C0C00'  # 12 hours
+            # interval = 'FF0404040400'  # 1 min for now
+            # print('interval : ', interval)
+            # send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 000109' + interval + '0102670001000000000000000001' + 'FFFFFC00010001FFFF\r\n'
 
-            interval = 'FF0404040400'  # 1 min
-
-            print('interval : ', interval)
-
-            send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 000109' + interval + '0102670001000000000000000001FFFFFC00010001FFFF\r\n'
+            send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 ' + config + 'FFFFFC00010001FFFF\r\n'
             self.tx(str(send_dc00))
 
             t_end = time.time()+30
@@ -307,11 +282,12 @@ class Murata:
 
                     if (response[34:40] == "020109"):
                         print('XKSEND_setting_DC00 complete')
-                        return 1
+                        return True
 
                 elif (time.time() > t_end):
                     print('Failed to join at XKSEND_settings_DC00')
-                    return 0
+                    return False
+
                 elif (time.time() > (t_retry + 2)):
                     self.tx(str(send_dc00))
                     t_retry = time.time()
@@ -333,43 +309,40 @@ class Murata:
                     response = self.readline()
 
                     if (response[23:27] == "DE00"):
-                            #if response[0:7] == "ERXDATA":
+                        #if response[0:7] == "ERXDATA":
                         print('XKSEND_setting_DE00 complete.')
-                        return 1
+                        return True
+
                 elif (time.time() > t_end):
                     print('Failed to join at XKSEND_setting_DE00.')
-                    return 0
+                    return False
+
                 elif (time.time() > (t_retry + 2)):
                     self.tx(str(send_de00))
                     t_retry = time.time()
 
-        print('Config: Waiting for node to send node config data')
+        print('Murata.Config: Start of configuration of {0} with {1}'.format(dev_id, config))
 
         self.resume()
 
         t_end = time.time()+10
 
         while 42:
-            if self.ser.inWaiting() > 0:
-                response = self.readline()
 
+            if self.ser.inWaiting() > 0:
+                # self.readline()
+                response = self.readline()
                 if response[0:7] == "ERXDATA":
 
-                    dev_id = response[8:12]
-                    result = send_setting_dc00(dev_id)
+                    if send_setting_dc00(dev_id, config) == False:
+                        return False
 
-                    if (result != 1):
-                        return 0
+                    if send_setting_de00(dev_id) == False:
+                        return False
 
-                    result = send_setting_de00(dev_id)
+                    print('Murata.Config: Success: exit')
+                    return True
 
-                    if (result != 1):
-                        return 0
-
-                    break
             elif time.time() > t_end:
-                print('Config: Cannot configure node settings. Exiting')
-                return 0
-
-        print('Config: Success: exit')
-        return 1
+                print('Murata.Config: Cannot configure node settings. Exiting')
+                return False

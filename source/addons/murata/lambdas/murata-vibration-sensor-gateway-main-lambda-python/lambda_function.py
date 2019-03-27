@@ -19,37 +19,24 @@ PREFIX = "murata"
 SHADOW_UPDATE_ACCEPTED_TOPIC = '$aws/things/{0}/shadow/update/accepted'.format(THING_NAME)
 SHADOW_UPDATE_DELTA_TOPIC = '$aws/things/{0}/shadow/update/delta'.format(THING_NAME)
 
-SENSOR_DATA_TOPIC = '{0}/{1}/sensordata'.format(PREFIX, THING_NAME)
+
+def SENSOR_DATA_TOPIC(nodeId="UNKNOWN"):
+    return '{0}/{1}/{2}/data'.format(PREFIX, THING_NAME, nodeId)
 
 print('Murata Lambda function starting')
 print('THING_NAME:                   {}'.format(THING_NAME))
 print('SERIAL_PORT:                  {}'.format(SERIAL_PORT))
 print('SHADOW_UPDATE_ACCEPTED_TOPIC: {}'.format(SHADOW_UPDATE_ACCEPTED_TOPIC))
 print('SHADOW_UPDATE_DELTA_TOPIC:    {}'.format(SHADOW_UPDATE_DELTA_TOPIC))
-print('SENSOR_DATA_TOPIC:            {}'.format(SENSOR_DATA_TOPIC))
+print('SENSOR_DATA_TOPIC:            {}'.format(SENSOR_DATA_TOPIC()))
 
 GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
-def reportTo(mode):
+def updateThingShadow(state):
     GGIOT.updateThingShadow(payload={
-        "state": {
-            "reported": {
-                "mode": mode
-            }
-        }
+        "state": state
     })
 
-def reportAndDesireTo(mode):
-    GGIOT.updateThingShadow(payload={
-        "state": {
-            "desired": {
-                "mode": mode
-            },
-            "reported": {
-                "mode": mode
-            }
-        }
-    })
 
 MURATA = Murata()
 
@@ -58,61 +45,76 @@ class MainThread(Thread):
         super(MainThread, self).__init__()
         self.stop_request = Event()
 
-        self.mode = "init"
-        reportTo(self.mode)
-
         MURATA.initialize()
-
         self.mode = "idle"
-        reportTo(self.mode)
+        self.config = "000109FF09090909000102670001000000000000000001"
 
+        updateThingShadow({
+            "reported": {
+                "mode": self.mode,
+                "config": self.config
+            }
+        })
 
     def run(self):
         while 42:
             try:
                 if MURATA.ser.inWaiting() > 0:
                     data = MURATA.readline()
-                    if len(data) > 100:
-                        ts, freqs, accs, rmsval, kurtosis, stemp, rssival, nodeid = MURATA.convertPacket(data)
+
+                    if len(data) > 100 and data[0:7] == "ERXDATA":
+
+                        nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp = MURATA.convertPacket(data)
+                        # ts, freqs, accs, rmsval, kurtosis, stemp, rssival, nodeId = MURATA.convertPacket(data)
                         message = {
-                            "timestamp": ts,
+                            "messageId": messageId,
+                            "timestamp": timestamp,
                             "frequencies": freqs,
                             "accels": accs,
-                            "rms": rmsval,
+                            "rms": rmsVal,
                             "kurtosis": kurtosis,
-                            "surfaceTemperature": stemp,
-                            "rssi": rssival,
-                            "nodeId": nodeid
+                            "surfaceTemperature": sTemp,
+                            "rssi": rssiVal,
+                            "nodeId": nodeId
                         }
-                        GGIOT.publish(topic=SENSOR_DATA_TOPIC, payload=message)
+                        GGIOT.publish(topic=SENSOR_DATA_TOPIC(nodeId=nodeId), payload=message)
 
                 if self.mode == "scan":
                     print("Scan mode: Enter:")
 
-                    reportTo(self.mode)
+                    result, nodeId, networkId = MURATA.scan()
 
-                    result = MURATA.scan()
+                    if result == True:
+                        print("Scan mode: found {0} for {1}".format(nodeId, networkId))
+                        print("Configure: {0} with {1}".format(nodeId, self.config))
 
-                    if result == 1:
-                        print("Config mode: Enter")
-                        result = MURATA.config()
-                        if result == 1:
+                        if MURATA.config(nodeId, self.config) == True:
                             pass
-                        #     f.seek(0);
-                        #     f.write("0");
-                        #     f.truncate();
 
                     MURATA.resume()
                     self.mode = "idle"
-                    reportAndDesireTo(self.mode)
+                    updateThingShadow({
+                        "reported": {
+                            "mode": self.mode
+                        },
+                        "desired": {
+                            "mode": self.mode
+                        }
+                    })
 
                 if self.mode == "init":
                     print("Init: Enter")
-                    reportTo(self.mode)
 
                     MURATA.initialize()
                     self.mode = "idle"
-                    reportAndDesireTo(self.mode)
+                    updateThingShadow({
+                        "reported": {
+                            "mode": self.mode
+                        },
+                        "desired": {
+                            "mode": self.mode
+                        }
+                    })
 
             except Exception as ex:
                 print("ERROR: {}".format(str(ex)))
@@ -122,8 +124,22 @@ class MainThread(Thread):
         self.stop_request.set()
 
     def setMode(self, mode):
-        print("Setting mode to: {}".format(mode))
+        print("Setting mode to: {0}".format(mode))
         self.mode = mode
+        updateThingShadow({
+            "reported": {
+                "mode": self.mode
+            }
+        })
+
+    def setConfig(self, config):
+        print("Setting config to: {0}".format(config))
+        self.config = config
+        updateThingShadow({
+            "reported": {
+                "config": self.config
+            }
+        })
 
 mainThread = MainThread()
 mainThread.start()
@@ -132,15 +148,25 @@ def lambda_handler(event, context):
     topic = context.client_context.custom["subject"]
     print("lambda_handler: {}: {}".format(topic, json.dumps(event)))
 
-    if event and "state" in event:
-        state = event["state"]
+    state = event.get("state")
+    mode = None
+    config = None
+
+    if state != None:
 
         if topic == SHADOW_UPDATE_ACCEPTED_TOPIC:
-            if "desired" in state and "mode" in state["desired"]:
-                mainThread.setMode(state["desired"]["mode"])
+            desired = state.get("desired")
+            if desired != None:
+                mode = desired.get("mode")
+                config = desired.get("config")
         elif topic == SHADOW_UPDATE_DELTA_TOPIC:
-            if "mode" in state:
-                mainThread.setMode(state["mode"])
+            mode = state.get("mode")
+            config = state.get("config")
+
+        if mode != None:
+            mainThread.setMode(mode)
+        if config != None:
+            mainThread.setConfig(config)
 
     return
 
