@@ -19,22 +19,39 @@ PREFIX = "murata"
 SHADOW_UPDATE_ACCEPTED_TOPIC = '$aws/things/{0}/shadow/update/accepted'.format(THING_NAME)
 SHADOW_UPDATE_DELTA_TOPIC = '$aws/things/{0}/shadow/update/delta'.format(THING_NAME)
 
+MURATA_SENSOR_NODE_DEVICE_TYPE_ID = "murata-sensor-node-v1.0"
+MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID = "murata-vibration-sensor-node-v1.0"
 
-def SENSOR_DATA_TOPIC(nodeId="UNKNOWN"):
+
+def SENSOR_NODE_DATA_TOPIC(nodeId="UNKNOWN"):
     return '{0}/{1}/{2}/data'.format(PREFIX, THING_NAME, nodeId)
+
+def SENSOR_NODE_PRESENCE_TOPIC(nodeId="UNKNOWN"):
+    return '{0}/{1}/presence/{2}'.format(PREFIX, THING_NAME, nodeId)
 
 print('Murata Lambda function starting')
 print('THING_NAME:                   {}'.format(THING_NAME))
 print('SERIAL_PORT:                  {}'.format(SERIAL_PORT))
 print('SHADOW_UPDATE_ACCEPTED_TOPIC: {}'.format(SHADOW_UPDATE_ACCEPTED_TOPIC))
 print('SHADOW_UPDATE_DELTA_TOPIC:    {}'.format(SHADOW_UPDATE_DELTA_TOPIC))
-print('SENSOR_DATA_TOPIC:            {}'.format(SENSOR_DATA_TOPIC()))
+print('SENSOR_NODE_DATA_TOPIC:       {}'.format(SENSOR_NODE_DATA_TOPIC()))
 
 GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
 def updateThingShadow(state):
     GGIOT.updateThingShadow(payload={
         "state": state
+    })
+
+
+def publishNodePresence(nodeId):
+    GGIOT.publish(topic=SENSOR_NODE_PRESENCE_TOPIC(nodeId), payload={
+        "cmd": "addDevice",
+        "thingName":  "MURATA_{}".format(nodeId),
+        "generateCert": False,
+        "spec": {},
+        "deviceTypeId": MURATA_SENSOR_NODE_DEVICE_TYPE_ID,
+        "deviceBlueprintId": MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID
     })
 
 
@@ -55,6 +72,8 @@ class MainThread(Thread):
                 "config": self.config
             }
         })
+
+        self.nodes = []
 
     def run(self):
         while 42:
@@ -77,7 +96,12 @@ class MainThread(Thread):
                             "rssi": rssiVal,
                             "nodeId": nodeId
                         }
-                        GGIOT.publish(topic=SENSOR_DATA_TOPIC(nodeId=nodeId), payload=message)
+
+                        GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload=message)
+
+                        if nodeId not in self.nodes:
+                            publishNodePresence(nodeId)
+                            self.nodes.append(nodeId)
 
                 if self.mode == "scan":
                     print("Scan mode: Enter:")
@@ -89,7 +113,9 @@ class MainThread(Thread):
                         print("Configure: {0} with {1}".format(nodeId, self.config))
 
                         if MURATA.config(nodeId, self.config) == True:
-                            pass
+                            if nodeId not in self.nodes:
+                                publishNodePresence(nodeId)
+                                self.nodes.append(nodeId)
 
                     MURATA.resume()
                     self.mode = "idle"

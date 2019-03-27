@@ -17,8 +17,6 @@ class Murata:
             timeout=3
         )
 
-        self.defaultNodeConfig = '000109FF09090909000102670001000000000000000001'
-
     def tx(self, cmd='\r\n'):
         print('{0}: TX: {1}'.format(datetime.datetime.now(), cmd))
         self.ser.write(cmd)
@@ -270,7 +268,9 @@ class Murata:
             # print('interval : ', interval)
             # send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 000109' + interval + '0102670001000000000000000001' + 'FFFFFC00010001FFFF\r\n'
 
-            send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 ' + config + 'FFFFFC00010001FFFF\r\n'
+
+            # self.defaultNodeConfig = '000109FF09090909000102670001000000000000000001'
+            send_dc00 = 'XKSEND 0 DC00 ' + dev_id + ' 40 000109' + config + 'FFFFFC00010001FFFF\r\n'
             self.tx(str(send_dc00))
 
             t_end = time.time()+30

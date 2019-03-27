@@ -2,11 +2,7 @@
     "id": "murata-vibration-sensor-node-v1.0",
     "name": "Murata Vibration Sensor Node v1.0",
     "type": "THING_ONLY",
-    "spec": {
-        "Shadow": {
-            "desired": {
-                "frequency": 60
-            }
-        }
-    }
+    "compatibility": ["murata-sensor-node-v1.0"],
+    "deviceTypeMappings": [],
+    "spec": {}
 }

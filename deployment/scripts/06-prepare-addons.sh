@@ -51,10 +51,10 @@ cd $1/addons/murata/lambdas/murata-vibration-sensor-gateway-main-lambda-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/addons/murata/lambdas/`echo ${PWD##*/}`.zip .
 
-echo
-cd $1/addons/murata/services/nodes-manager
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/addons/murata/services/`jq -cr '.name' package.json`.zip
+# echo
+# cd $1/addons/murata/services/nodes-manager
+# yarn run build
+# cp ./dist/`jq -cr '.name' package.json`.zip $2/addons/murata/services/`jq -cr '.name' package.json`.zip
 
 echo
 echo "------------------------------------------------------------------------------"

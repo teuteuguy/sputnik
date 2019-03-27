@@ -15,9 +15,73 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
                 <div class="card-text">
 
+                    <div class="form-group row">
+                        <div class="col-lg-3">
+                            <label for="interval" class="form-control-label">Interval:</label>
+                            <select class="custom-select col-12" name="interval" id="interval" #interval="ngModel"
+                                [(ngModel)]="config.interval" required ngModel>
+                                <option *ngFor="let i of intervals" ng-selected="config.interval === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="autoConf" class="form-control-label">Auto conf:</label>
+                            <select class="custom-select col-12" name="autoConf" id="autoConf" #autoConf="ngModel"
+                                [(ngModel)]="config.autoConf" required ngModel>
+                                <option *ngFor="let i of autoConfs" ng-selected="config.autoConf === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="fft" class="form-control-label">FFT:</label>
+                            <select class="custom-select col-12" name="fft" id="fft" #fft="ngModel"
+                                [(ngModel)]="config.fft" required ngModel>
+                                <option *ngFor="let i of autoConfs" ng-selected="config.fft === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="rssiTime" class="form-control-label">RSSI Check Timeout:</label>
+                            <select class="custom-select col-12" name="rssiTime" id="rssiTime" #rssiTime="ngModel"
+                                [(ngModel)]="config.rssiTime" required ngModel>
+                                <option *ngFor="let i of rssiTimes" ng-selected="config.rssiTime === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="detect" class="form-control-label">Wake Detect:</label>
+                            <select class="custom-select col-12" name="detect" id="detect" #detect="ngModel"
+                                [(ngModel)]="config.detect" required ngModel>
+                                <option *ngFor="let i of autoConfs" ng-selected="config.detect === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="detectRetry" class="form-control-label">Detect Retry:</label>
+                            <select class="custom-select col-12" name="detectRetry" id="detectRetry"
+                                #detectRetry="ngModel"
+                                [(ngModel)]="config.detectRetry" required ngModel>
+                                <option ng-selected="config.detectRetry === '00'" [ngValue]="'00'">none</option>
+                                <option *ngFor="let item of detectRetries; let i = index;"
+                                    ng-selected="config.detectRetry === i.toString(16).padStart(2, '0')"
+                                    [ngValue]="i.toString(16).padStart(2, '0')">{{i}}</option>
+                                <option ng-selected="config.detectRetry === 'FF'" [ngValue]="'FF'">Until Detect</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <label for="retryInterval" class="form-control-label">Retry Interval:</label>
+                            <select class="custom-select col-12" name="retryInterval" id="retryInterval"
+                                #retryInterval="ngModel" [(ngModel)]="config.retryInterval" required ngModel>
+
+                                <option *ngFor="let i of retryIntervals" ng-selected="config.retryInterval === i.value"
+                                    [ngValue]="i.value">{{i.text}}</option>
+
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-

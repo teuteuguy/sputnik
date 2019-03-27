@@ -1,0 +1,6 @@
+{
+    "id": "murata-sensor-node-v1.0",
+    "name": "Murata Sensor Node v1.0",
+    "type": "THING_ONLY",
+    "spec": {}
+}

@@ -46,6 +46,10 @@
                 "Target": "cloud",
                 "Subject": "murata/[CORE]/+/data"
             }, {
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod",
+                "Target": "cloud",
+                "Subject": "murata/[CORE]/presence/+"
+            }, {
                 "Source": "GGShadowService",
                 "Subject": "$aws/things/[CORE]/shadow/update/delta",
                 "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:murata-vibration-sensor-gateway-main-lambda-python:Prod"

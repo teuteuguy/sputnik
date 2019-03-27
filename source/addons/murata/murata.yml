@@ -16,6 +16,9 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
+    lambdaServiceDevicesArn:
+        Type: String
+        Description: Lambda Service Devices ARN
     customResourceUtilsHelperArn:
         Type: String
         Description: Utils custom resource helper ARN
@@ -69,7 +72,7 @@ Resources:
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref uuid
 
-    MurataLambdaRole:
+    MurataGreengrassLambdaRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -93,7 +96,7 @@ Resources:
                 S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'murata', 'lambdas', 'murata-vibration-sensor-gateway-main-lambda-python.zip']]
             Handler: lambda_function.lambda_handler
             Runtime: python2.7
-            Role: !GetAtt MurataLambdaRole.Arn
+            Role: !GetAtt MurataGreengrassLambdaRole.Arn
             Timeout: 3
             MemorySize: 128
     MurataVibrationSensorGatewayMainLambdaVersion:
@@ -108,3 +111,23 @@ Resources:
             FunctionName: !Ref MurataVibrationSensorGatewayMainLambda
             FunctionVersion: !GetAtt MurataVibrationSensorGatewayMainLambdaVersion.Version
             Name: 'Prod'
+
+    iotMurataThingAutoRegistrationTopicRule:
+        Type: "AWS::IoT::TopicRule"
+        Properties:
+            TopicRulePayload:
+                RuleDisabled: false
+                Sql: >-
+                    SELECT * FROM 'murata/+/presence/+'
+                Actions:
+                    - Lambda:
+                        FunctionArn: !Ref lambdaServiceDevicesArn
+
+    iotMurataThingAutoRegistrationLambdaInvocationPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "iotMurataThingAutoRegistrationTopicRule" ] ]
+            Action: lambda:InvokeFunction
+            Principal: iot.amazonaws.com
+            FunctionName: !Ref lambdaServiceDevicesArn
+            SourceAccount: !Ref AWS::AccountId

@@ -252,6 +252,7 @@ Resources:
                 ADDON_TEMPLATES_URL: !Join ['&', [
                     !Join ['=', ['param_addonSourceBucket', !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]]],
                     !Join ['=', ['param_addonSourceKeyPrefix', !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]]],
+                    !Join ['=', ['param_lambdaServiceDevicesArn', !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn]],
                     !Join ['=', ['param_deviceBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable]],
                     !Join ['=', ['param_deviceTypesTable', !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable]],
                     !Join ['=', ['param_solutionBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable]],
