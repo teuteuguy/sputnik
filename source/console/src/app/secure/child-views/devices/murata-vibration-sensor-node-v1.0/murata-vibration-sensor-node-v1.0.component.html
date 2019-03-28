@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-12 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <!-- <div class="pull-right" role="group">
+                    <div class="input-group-text">
+                        <div class="form-check" style="padding: 0px; margin-bottom: -4px;">
+                            <input type="checkbox" id="storeData" style="padding-left: 18px;"
+                                (change)="toggleStoreData()" [checked]="storeData">
+                            <label class="form-check-label" for="storeData" style="padding-left: 25px;">Store
+                                data</label>
+                        </div>
+                    </div>
+                </div> -->
+                <h5 class="card-title">Murata Vibration Sensor Node</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
+                <div class="card-text">
+                    <div class="row">
+                        <div class="col-6">
+                            <canvas baseChart [datasets]="freqsBarChart.data" [labels]="freqsBarChart.labels"
+                                [options]="freqsBarChart.options" [legend]="freqsBarChart.legend"
+                                [chartType]="freqsBarChart.type">
+                            </canvas>
+                        </div>
+                        <div class="col-6">
+                            <table style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Timestamp:</td>
+                                        <td class="text-right">{{reported.timestamp | fromNow}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Surface Temperature:</td>
+                                        <td class="text-right">{{reported.surfaceTemperature}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RSSI:</td>
+                                        <td class="text-right">{{reported.rssi}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kurtosis:</td>
+                                        <td class="text-right">{{reported.kurtosis}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RMS:</td>
+                                        <td class="text-right">{{reported.rms}}</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

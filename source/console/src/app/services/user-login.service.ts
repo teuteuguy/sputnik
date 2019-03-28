@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route } from '@angular/router';
+import { Observable } from 'rxjs';
 
 // import * as jwtDecode from 'jwt-decode';
 
@@ -22,75 +24,91 @@ export interface LoggedInCallback {
 }
 
 @Injectable()
-export class UserLoginService {
+export class UserLoginService implements CanActivate {
     constructor(
         public amplifyService: AmplifyService,
+        private router: Router,
         protected localStorage: LocalStorage,
         private logger: LoggerService
-    ) {
-        this.amplifyService = amplifyService;
+    ) {}
+
+    canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+        return this.isAuthenticated().then(result => {
+
+            if (!result) {
+                this.router.navigate(['/home/login']);
+            }
+
+            return result;
+
+        }).catch(err => {
+            this.logger.error(
+                `UserLogiunService.canActivate: there was a problem with checking authentication ${err}`
+            );
+            return false;
+        });
     }
 
     authenticate(username: string, password: string, callback: CognitoCallback) {
-        const _self = this;
-        _self.logger.info('UserLoginService.authenticate: starting the authentication');
-        _self.amplifyService
+        const self = this;
+        self.logger.info('UserLoginService.authenticate: starting the authentication');
+        self.amplifyService
             .auth()
             .signIn(username, password)
             .then(user => {
-                _self.logger.info('UserLoginService.authenticate: successfully logged in', user);
+                self.logger.info('UserLoginService.authenticate: successfully logged in', user);
 
                 if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-                    _self.logger.warn('UserLoginService.authenticate: User needs to set password.');
+                    self.logger.warn('UserLoginService.authenticate: User needs to set password.');
                     callback.cognitoCallback('User needs to set password.', null);
                 } else {
-                    _self
+                    self
                         .getUserInfo()
                         .then((data: ProfileInfo) => {
-                            _self.localStorage.setItem('profile', data).subscribe(() => {});
+                            self.localStorage.setItem('profile', data).subscribe(() => {});
                             callback.cognitoCallback(null, user);
                         })
                         .catch(err2 => {
-                            _self.logger.error('[Error] Error occurred retrieving user info to validate admin role.');
-                            _self.logger.error(err2);
+                            self.logger.error('[Error] Error occurred retrieving user info to validate admin role.');
+                            self.logger.error(err2);
                             callback.cognitoCallback(null, user);
                         });
                 }
             })
             .catch(err => {
-                _self.logger.error(err);
+                self.logger.error(err);
                 callback.cognitoCallback(err.message, null);
             });
     }
 
     forgotPassword(username: string, callback: CognitoCallback) {
-        const _self = this;
-        _self.logger.info('UserLoginService.forgotPassword(', username, ')');
-        _self.amplifyService
+        const self = this;
+        self.logger.info('UserLoginService.forgotPassword(', username, ')');
+        self.amplifyService
             .auth()
             .forgotPassword(username)
             .then(data => {
-                _self.logger.info('UserLoginService.forgotPassword(', username, '):', data);
+                self.logger.info('UserLoginService.forgotPassword(', username, '):', data);
                 callback.cognitoCallback(null, null);
             })
             .catch(err => {
-                _self.logger.info('UserLoginService.forgotPassword(', username, '): Error:', err);
+                self.logger.info('UserLoginService.forgotPassword(', username, '): Error:', err);
                 callback.cognitoCallback(err.message, null);
             });
     }
 
     confirmNewPassword(email: string, verificationCode: string, password: string, callback: CognitoCallback) {
-        const _self = this;
-        _self.logger.info('UserLoginService.confirmNewPassword(', email, ',', verificationCode, ')');
-        _self.amplifyService
+        const self = this;
+        self.logger.info('UserLoginService.confirmNewPassword(', email, ',', verificationCode, ')');
+        self.amplifyService
             .auth()
             .forgotPasswordSubmit(email, verificationCode, password)
             .then(data => {
-                _self.logger.info('UserLoginService.confirmNewPassword(', email, ',', verificationCode, '):', data);
+                self.logger.info('UserLoginService.confirmNewPassword(', email, ',', verificationCode, '):', data);
                 callback.cognitoCallback(null, null);
             })
             .catch(err => {
-                _self.logger.error(
+                self.logger.error(
                     'UserLoginService.confirmNewPassword(',
                     email,
                     ',',
@@ -103,25 +121,25 @@ export class UserLoginService {
     }
 
     changePassword(oldpassword: string, newpassword: string) {
-        const _self = this;
-        return _self.amplifyService
+        const self = this;
+        return self.amplifyService
             .auth()
             .currentAuthenticatedUser()
             .then(user => {
-                return _self.amplifyService
+                return self.amplifyService
                     .auth()
                     .userSession(user)
                     .then(session => {
-                        _self.logger.info('UserLoginService.changePassword: Session is ' + session.isValid());
+                        self.logger.info('UserLoginService.changePassword: Session is ' + session.isValid());
                         if (session.isValid()) {
-                            return _self.amplifyService.auth().changePassword(user, oldpassword, newpassword);
+                            return self.amplifyService.auth().changePassword(user, oldpassword, newpassword);
                         } else {
                             throw new Error('The users current session is invalid.');
                         }
                     });
             })
             .catch(err => {
-                _self.logger.warn('UserLoginService.changePassword: cant retrieve the current user');
+                self.logger.warn('UserLoginService.changePassword: cant retrieve the current user');
                 throw new Error('Cant retrieve the CurrentUser');
             });
     }
@@ -131,64 +149,81 @@ export class UserLoginService {
         this.amplifyService.auth().signOut();
     }
 
-    isAuthenticated(callback: LoggedInCallback, loadProfile: boolean) {
-        const _self = this;
-        if (callback == null) {
-            throw new Error('UserLoginService.isAuthenticated: Callback in isAdminAuthenticated() cannot be null');
-        }
+    isAuthenticated() {
+        const self = this;
 
-        _self.amplifyService
+        return self.amplifyService
             .auth()
             .currentAuthenticatedUser()
             .then(user => {
-                return _self.amplifyService.auth().userSession(user);
+                return self.amplifyService.auth().userSession(user);
             })
             .then(session => {
-                _self.logger.info(
-                    'UserLoginService.isAuthenticated(' + loadProfile + '): Session is ' + session.isValid()
-                );
-                if (session.isValid()) {
-                    if (loadProfile) {
-                        return _self
-                            .getUserInfo()
-                            .then((data: ProfileInfo) => {
-                                _self.logger.info(
-                                    'UserLoginService.isAuthenticated(' + loadProfile + '): getUserInfo:',
-                                    data
-                                );
-                                return callback.isLoggedIn(null, session.isValid(), data);
-                            })
-                            .catch(err => {
-                                _self.logger.error(
-                                    '[Error] Error occurred retrieving user info to validate admin role.'
-                                );
-                                _self.logger.error(err);
-                            });
-                    }
-                }
-                return callback.isLoggedIn(null, session.isValid(), null);
+                self.logger.info(`UserLoginService.isAuthenticated(): Session is ${session.isValid()}`);
+                return session.isValid();
             })
             .catch(err => {
-                _self.logger.warn(
-                    'UserLoginService.isAuthenticated(' +
-                        loadProfile +
-                        '): cant retrieve the current authenticated user',
-                    err
-                );
-                callback.isLoggedIn(err.message, false, null);
+                self.logger.warn(`UserLoginService.isAuthenticated(): cant retrieve the current authenticated user: ${err}`);
+                return false;
             });
     }
 
+
+    // isAuthenticated(callback: LoggedInCallback, loadProfile: boolean) {
+    //     const self = this;
+    //     if (callback == null) {
+    //         throw new Error('UserLoginService.isAuthenticated: Callback in isAdminAuthenticated() cannot be null');
+    //     }
+
+    //     self.amplifyService
+    //         .auth()
+    //         .currentAuthenticatedUser()
+    //         .then(user => {
+    //             return self.amplifyService.auth().userSession(user);
+    //         })
+    //         .then(session => {
+    //             self.logger.info(
+    //                 'UserLoginService.isAuthenticated(' + loadProfile + '): Session is ' + session.isValid()
+    //             );
+    //             if (session.isValid() && loadProfile) {
+    //                 return self
+    //                     .getUserInfo()
+    //                     .then((data: ProfileInfo) => {
+    //                         self.logger.info(
+    //                             'UserLoginService.isAuthenticated(' + loadProfile + '): getUserInfo:',
+    //                             data
+    //                         );
+    //                         return callback.isLoggedIn(null, session.isValid(), data);
+    //                     })
+    //                     .catch(err => {
+    //                         self.logger.error('[Error] Error occurred retrieving user info to validate admin role.');
+    //                         self.logger.error(err);
+    //                     });
+    //             } else {
+    //                 callback.isLoggedIn(null, session.isValid(), null);
+    //             }
+    //         })
+    //         .catch(err => {
+    //             self.logger.warn(
+    //                 'UserLoginService.isAuthenticated(' +
+    //                     loadProfile +
+    //                     '): cant retrieve the current authenticated user',
+    //                 err
+    //             );
+    //             callback.isLoggedIn(err, false, null);
+    //         });
+    // }
+
     getUserInfo() {
-        const _self = this;
+        const self = this;
 
-        _self.logger.info('UserLoginService.getUserInfo');
+        self.logger.info('UserLoginService.getUserInfo');
 
-        return _self.amplifyService
+        return self.amplifyService
             .auth()
             .currentSession()
             .then(session => {
-                _self.logger.info('UserLoginService.getUserInfo: session', session);
+                self.logger.info('UserLoginService.getUserInfo: session', session);
                 const payload = session.getIdToken().decodePayload();
                 const data = {
                     user_id: payload['cognito:username'],
@@ -205,11 +240,11 @@ export class UserLoginService {
                 //   enabled: _decodedJwt.email_verified,
                 //   groups: _decodedJwt['cognito:groups']
                 // };
-                _self.logger.info('UserLoginService.getUserInfo:', data);
+                self.logger.info('UserLoginService.getUserInfo:', data);
                 return new ProfileInfo(data);
             })
             .catch(err => {
-                _self.logger.error('UserLoginService.getUserInfo: ERROR', err);
+                self.logger.error('UserLoginService.getUserInfo: ERROR', err);
                 throw new Error(err.message);
             });
     }

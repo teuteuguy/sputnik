@@ -81,11 +81,20 @@ export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
                 );
                 _self.profile = new ProfileInfo(profile);
                 _self.isAdminUser = _self.profile.isAdmin();
-                _self.userService.isAuthenticated(_self, false);
             } else {
                 _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
                 _self.loadedProfile = true;
-                _self.userService.isAuthenticated(_self, true);
+                _self.userService
+                    .getUserInfo()
+                    .then((data: ProfileInfo) => {
+                        _self.isLoggedIn(null, true, data);
+                    })
+                    .catch(err => {
+                        _self.logger.error(
+                            '[Error] Error occurred retrieving user info to validate admin role.'
+                        );
+                        _self.logger.error(err);
+                    });
             }
         });
 

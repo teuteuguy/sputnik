@@ -124,6 +124,12 @@ class Murata:
 
         messageId = data[18:18+4]
 
+        batteryVoltage = data[ss-8:ss]
+        scalebatv = datascale(batteryVoltage)
+        tempbatv = batteryVoltage[0:0+4]
+        batteryVoltage = int(tempbatv, 16)
+        batteryVoltage = batteryVoltage*scalebatv
+
         print('             Node ID:      {0}'.format(nodeId))
         print('             Message ID:   {0}'.format(messageId))
         print('             RSSI:         {0}'.format(rssiVal))
@@ -132,8 +138,9 @@ class Murata:
         print('             RMS Acc:      {0}'.format(rmsVal))
         print('             Kurtosis:     {0}'.format(kurtosis))
         print('             Surface temp: {0}'.format(sTemp))
+        print('             Battery:      {0}V'.format(batteryVoltage))
 
-        return nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp
+        return nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp, batteryVoltage
 
     def resume(self):
         self.tx('XKNGW 7FFF\r\n')

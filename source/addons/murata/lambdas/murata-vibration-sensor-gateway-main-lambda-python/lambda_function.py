@@ -83,7 +83,8 @@ class MainThread(Thread):
 
                     if len(data) > 100 and data[0:7] == "ERXDATA":
 
-                        nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp = MURATA.convertPacket(data)
+                        nodeId, messageId, rssiVal, timestamp, freqs, accs, rmsVal, kurtosis, sTemp, batteryVoltage = MURATA.convertPacket(
+                            data)
                         # ts, freqs, accs, rmsval, kurtosis, stemp, rssival, nodeId = MURATA.convertPacket(data)
                         message = {
                             "messageId": messageId,
@@ -94,10 +95,16 @@ class MainThread(Thread):
                             "kurtosis": kurtosis,
                             "surfaceTemperature": sTemp,
                             "rssi": rssiVal,
-                            "nodeId": nodeId
+                            "nodeId": nodeId,
+                            "batteryVoltage": batteryVoltage
                         }
 
-                        GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload=message)
+                        # GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload=message)
+                        GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload={
+                            "state": {
+                                "reported": message
+                            }
+                        })
 
                         if nodeId not in self.nodes:
                             publishNodePresence(nodeId)

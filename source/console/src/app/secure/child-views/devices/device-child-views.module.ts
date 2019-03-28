@@ -14,6 +14,7 @@ import { ModelTrainerV10Module } from './model-trainer-v1.0/model-trainer.module
 import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense-hat-demo-v1-0.module';
 
 import { MurataVibrationSensorGatewayV10Module } from './murata-vibration-sensor-gateway-v1.0/murata-vibration-sensor-gateway-v1-0.module';
+import { MurataVibrationSensorNodeV10Module } from './murata-vibration-sensor-node-v1.0/murata-vibration-sensor-node-v1.0.module';
 
 
 @Component({
@@ -56,13 +57,17 @@ import { MurataVibrationSensorGatewayV10Module } from './murata-vibration-sensor
         </app-rpi3-sense-hat-demo-v1-0>
         <app-murata-vibration-sensor-gateway-v1-0
             *ngIf="
-                device &&
-                device.deviceBlueprintId &&
-                device.deviceBlueprintId == 'murata-vibration-sensor-gateway-v1.0'
+                device && device.deviceBlueprintId && device.deviceBlueprintId == 'murata-vibration-sensor-gateway-v1.0'
             "
             [device]="device"
         >
         </app-murata-vibration-sensor-gateway-v1-0>
+        <app-murata-vibration-sensor-node-v1-0
+            *ngIf="
+                device && device.deviceBlueprintId && device.deviceBlueprintId == 'murata-vibration-sensor-node-v1.0'
+            "
+            [device]="device"
+        ></app-murata-vibration-sensor-node-v1-0>
     `
 })
 export class DeviceChildViewComponent {
@@ -82,7 +87,8 @@ export class DeviceChildViewComponent {
         GGMLDemoSqueezenetV10Module,
         ModelTrainerV10Module,
         RPI3SenseHatDemoV10Module,
-        MurataVibrationSensorGatewayV10Module
+        MurataVibrationSensorGatewayV10Module,
+        MurataVibrationSensorNodeV10Module
     ]
 })
 export class DeviceChildViewsModule {}

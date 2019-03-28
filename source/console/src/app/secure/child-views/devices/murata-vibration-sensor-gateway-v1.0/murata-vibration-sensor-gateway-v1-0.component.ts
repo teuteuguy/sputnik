@@ -182,13 +182,6 @@ export class MurataVibrationSensorGatewayV10Component extends IoTPubSuberCompone
                         });
                     },
                     onError: defaultErrorCallback
-                },
-                {
-                    topic: 'murata/' + self.device.thingName + '/sensordata',
-                    onMessage: message => {
-                        console.log('Data:', message);
-                    },
-                    onError: defaultErrorCallback
                 }
             ]);
         });

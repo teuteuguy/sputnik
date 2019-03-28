@@ -131,3 +131,40 @@ Resources:
             Principal: iot.amazonaws.com
             FunctionName: !Ref lambdaServiceDevicesArn
             SourceAccount: !Ref AWS::AccountId
+
+    iotMurataRulesRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "iot.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: 'murata-sensor-node-republish-to-shadow-policy'
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: "Allow"
+                                Action: "iot:Publish"
+                                Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/$aws/things/*/shadow/update" ] ]
+
+    iotMurataThingSensorDataToShadowTopicRule:
+        Type: "AWS::IoT::TopicRule"
+        Properties:
+            TopicRulePayload:
+                RuleDisabled: false
+                Sql: SELECT * as state.reported FROM 'murata/+/+/data'
+                AwsIotSqlVersion: '2016-03-23'
+                Actions:
+                    - Republish:
+                        RoleArn: !GetAtt iotMurataRulesRole.Arn
+                        Topic: "$$aws/things/MURATA_${topic(3)}/shadow/update"

@@ -2,11 +2,12 @@ import { COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule } from '@angular/
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+// import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { BlockUIModule } from 'ng-block-ui';
 import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
+import { ChartsModule } from 'ng2-charts';
 
 import { AppRoutingModule } from './app.routes';
 
@@ -112,10 +113,11 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
+        // HttpModule,
         HttpClientModule,
         ReactiveFormsModule,
         RouterModule,
+        ChartsModule,
 
         AppRoutingModule,
 

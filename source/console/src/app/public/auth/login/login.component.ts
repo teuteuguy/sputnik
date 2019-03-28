@@ -20,7 +20,7 @@ declare var $: any;
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback {
+export class LoginComponent implements OnInit, CognitoCallback { //, LoggedInCallback {
     appName: string = environment.appName;
     version: string = appVariables.VERSION;
     email: string = null;
@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback
     }
 
     cognitoCallback(message: string, result: any) {
+        console.log('here');
         if (message != null) {
             // error
             this.errorMessage = message;
@@ -72,13 +73,13 @@ export class LoginComponent implements OnInit, CognitoCallback, LoggedInCallback
         }
     }
 
-    isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
-        console.log('isLoggedIn');
-        if (isLoggedIn) {
-            this.logger.info('LoginComponent.isLoggedIn: User logged in. Moving to securehome');
-            this.router.navigate(['/securehome']);
-        } else {
-            this.logger.info('LoginComponent.isLoggedIn: User NOT logged in');
-        }
-    }
+    // isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
+    //     console.log('isLoggedIn');
+    //     if (isLoggedIn) {
+    //         this.logger.info('LoginComponent.isLoggedIn: User logged in. Moving to securehome');
+    //         this.router.navigate(['/securehome']);
+    //     } else {
+    //         this.logger.info('LoginComponent.isLoggedIn: User NOT logged in');
+    //     }
+    // }
 }

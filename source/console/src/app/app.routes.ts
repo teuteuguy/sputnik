@@ -29,6 +29,10 @@ import { UsersComponent } from './secure/users/users.component';
 
 import { TestsComponent } from './secure/tests/tests.component';
 
+
+import { UserLoginService } from './services/user-login.service';
+
+
 const homeRoutes: Routes = [
     {
         path: '',
@@ -59,6 +63,7 @@ const secureHomeRoutes: Routes = [
     {
         path: 'securehome',
         component: SecureHomeLayoutComponent,
+        canActivate: [UserLoginService],
         children: [
             { path: '', component: SecureHomeComponent },
             { path: 'addons', component: AddOnsComponent },
