@@ -17,44 +17,65 @@ rm -rf $2/addons
 echo "Creating addons folder: mkdir -p $2/addons"
 mkdir -p $2/addons
 
-# echo
-# echo "[Rebuild] addons"
-
-# build and copy console distribution files
-# cd $1/addons
-# rm -rf $1/addons/dist
-# mkdir -p dist
-
-# echo "Copying the blueprints over"
-# rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
-
-# echo "build addons - murata"
-# cd $1/addons/murata/views/murata-vibration-sensor-network
-# yarn install
-# yarn build
-# cp $1/addons/murata/views/murata-vibration-sensor-network/dist/*.js $1/addons/dist/murata/
-
-# echo "build addons - samples"
-# cd $1/addons/samples/views/sample
-# yarn install
-# yarn build
-
-# rsync -a --exclude=views --exclude=libs --exclude=dist $1/addons/* $1/addons/dist
-# cp -r $1/addons/dist/* $2/addons
+echo
+echo "[Rebuild] addons"
 
 rsync -a --exclude=views --exclude=libs --exclude=dist --exclude=lambdas $1/addons/* $2/addons
 
+echo "[SAMPLES]"
+mkdir $2/addons/samples/lambdas
+
 echo
-echo "[Build Murata addon lambda functions]"
+echo "[Build] Samples - rpi-sense-hat-display-ip-python"
+echo
+cd $1/addons/samples/lambdas/rpi-sense-hat-display-ip-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Samples - rpi-sense-hat-demo-python"
+echo
+cd $1/addons/samples/lambdas/rpi-sense-hat-demo-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Samples - image-capture-python"
+echo
+cd $1/addons/samples/lambdas/image-capture-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Samples - gg-ml-demo-squeezenet-python"
+echo
+cd $1/addons/samples/lambdas/gg-ml-demo-squeezenet-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Samples - ml-inference-camera-python"
+echo
+cd $1/addons/samples/lambdas/ml-inference-camera-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+echo
+echo "[Build] Samples - model-trainer-python"
+echo
+cd $1/addons/samples/lambdas/model-trainer-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/addons/samples/lambdas/`echo ${PWD##*/}`.zip .
+
+
+echo "[MURATA]"
 mkdir $2/addons/murata/lambdas
+
+echo
+echo "[Build] Murata addon lambda functions"
 cd $1/addons/murata/lambdas/murata-vibration-sensor-gateway-main-lambda-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/addons/murata/lambdas/`echo ${PWD##*/}`.zip .
-
-# echo
-# cd $1/addons/murata/services/nodes-manager
-# yarn run build
-# cp ./dist/`jq -cr '.name' package.json`.zip $2/addons/murata/services/`jq -cr '.name' package.json`.zip
 
 echo
 echo "------------------------------------------------------------------------------"

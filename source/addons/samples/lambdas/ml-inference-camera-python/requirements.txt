@@ -1,0 +1,4 @@
+../../../libs/camera
+../../../libs/ggiot
+../../../libs/file_output
+../../../libs/save_frames

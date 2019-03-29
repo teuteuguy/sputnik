@@ -1,61 +1,61 @@
 <div class="row">
-    <div class="col-12 col-md-12">
+    <div class="col-lg-2 col-sm-3">
+        <app-card>
+            <card-title #title>
+                <div class="text-center text-uppercase">Battery</div>
+            </card-title>
+            <card-text #text>
+                <div class="text-center">
+                    <app-gauge id="battery" [minValue]="battery.min" [maxValue]="battery.max" [value]="battery.value"
+                        [opts]="battery.options" [animationSpeed]="10" class="text-overflow-center">
+                    </app-gauge>
+                </div>
+                <div class="text-center">{{battery.value}}V</div>
+            </card-text>
+        </app-card>
+    </div>
+    <div class="col-lg-2 col-sm-3">
+        <app-card>
+            <card-title #title>
+                <div class="text-center text-uppercase">Temperature</div>
+            </card-title>
+            <card-text #text>
+                <div class="text-overflow-center" style="font-size: 48px;">{{reported.surfaceTemperature | number:'.1'}}
+                </div>
+                <div class="text-center">°C</div>
+            </card-text>
+        </app-card>
+    </div>
+    <div class="col-lg-8 col-sm-6">
+        <app-card>
+            <card-title #title>Data<div class="pull-right text-muted" role="group">
+                    {{reported.rssi}}dB</div>
+            </card-title>
+            <card-text #text>
+                <div class="row">
+                    <div class="col-7">Kurtosis</div>
+                    <div class="col-5 text-right">{{reported.kurtosis | number: '.2'}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-7">RMS</div>
+                    <div class="col-5 text-right">{{reported.rms | number: '.2'}}</div>
+                </div>
+            </card-text>
+        </app-card>
+    </div>
+    <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">
-                <!-- <div class="pull-right" role="group">
-                    <div class="input-group-text">
-                        <div class="form-check" style="padding: 0px; margin-bottom: -4px;">
-                            <input type="checkbox" id="storeData" style="padding-left: 18px;"
-                                (change)="toggleStoreData()" [checked]="storeData">
-                            <label class="form-check-label" for="storeData" style="padding-left: 25px;">Store
-                                data</label>
-                        </div>
-                    </div>
-                </div> -->
-                <h5 class="card-title">Murata Vibration Sensor Node</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
-                <div class="card-text">
-                    <div class="row">
-                        <div class="col-6">
-                            <canvas baseChart [datasets]="freqsBarChart.data" [labels]="freqsBarChart.labels"
-                                [options]="freqsBarChart.options" [legend]="freqsBarChart.legend"
-                                [chartType]="freqsBarChart.type">
-                            </canvas>
-                        </div>
-                        <div class="col-6">
-                            <table style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Timestamp:</td>
-                                        <td class="text-right">{{reported.timestamp | fromNow}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Surface Temperature:</td>
-                                        <td class="text-right">{{reported.surfaceTemperature}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>RSSI:</td>
-                                        <td class="text-right">{{reported.rssi}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Kurtosis:</td>
-                                        <td class="text-right">{{reported.kurtosis}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>RMS:</td>
-                                        <td class="text-right">{{reported.rms}}</td>
-                                    </tr>
 
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <h5 class="card-title">Murata Vibration Sensor Node</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}<div class="pull-right" role="group">
+                        {{reported.timestamp | fromNow}}</div>
+                </h6>
+                <div class="card-text">
+                    <canvas baseChart [datasets]="freqsBarChart.data" [labels]="freqsBarChart.labels"
+                        [options]="freqsBarChart.options" [legend]="freqsBarChart.legend"
+                        [chartType]="freqsBarChart.type">
+                    </canvas>
                 </div>
             </div>
         </div>

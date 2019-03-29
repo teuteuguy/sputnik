@@ -34,7 +34,7 @@ export class IoTPubSuberComponent implements OnDestroy {
     protected subscribe(iotSubscriptions: IoTSubscription[]) {
         this.iotSubscriptions = iotSubscriptions;
         this._iotService.connectionObservable$.subscribe((connected: boolean) => {
-            console.log('Change of connection state: setting subscriptions', connected);
+            console.log('Change of connection state: setting subscriptions');
             this.setSubscriptions();
         });
         this.setSubscriptions();

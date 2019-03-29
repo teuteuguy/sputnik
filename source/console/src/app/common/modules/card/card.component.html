@@ -1,0 +1,19 @@
+<div class="card card-outline-info">
+    <div class="card-header truncate" *ngIf="header">
+        <ng-content select="card-header"></ng-content>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title truncate" *ngIf="title">
+            <ng-content select="card-title"></ng-content>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted truncate" *ngIf="subtitle">
+            <ng-content select="card-subtitle"></ng-content>
+        </h6>
+        <div class="card-text truncate" *ngIf="text">
+            <ng-content select="card-text"></ng-content>
+        </div>
+    </div>
+    <div class="card-footer truncate" *ngIf="footer">
+        <ng-content select="card-footer"></ng-content>
+    </div>
+</div>

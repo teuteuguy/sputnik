@@ -13,15 +13,30 @@ Parameters:
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
+    settingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the settings
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
+    lambdaServiceDevicesArn:
+        Type: String
+        Description: Lambda Service Devices ARN
+    dataS3Bucket:
+        Type: String
+        Description: sputnik Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: sputnik Data S3 Bucket ARN
     customResourceUtilsHelperArn:
         Type: String
         Description: Utils custom resource helper ARN
     iamRoleForGreengrassGroups:
         Type: String
         Description: Greengrass Group Role
+    uuid:
+        Type: String
+        Description: UUID of the deployment
 
 Resources:
 
@@ -40,6 +55,40 @@ Resources:
                             - 'logs:PutLogEvents'
                             - 'logs:CreateLogGroup'
                         Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                        Resource:
+                            - 'arn:aws:s3:::deeplens*/*'
+                            - 'arn:aws:s3:::deeplens*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'deeplens:*'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'kinesisvideo:DescribeStream'
+                            - 'kinesisvideo:CreateStream'
+                            - 'kinesisvideo:GetDataEndpoint'
+                            - 'kinesisvideo:PutMedia'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                            - 's3:PutObject'
+                        Resource:
+                            - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
+                            - !Join ['', [!Ref dataS3BucketArn, '*']]
             Roles:
                 -
                     !Ref iamRoleForGreengrassGroups
@@ -50,10 +99,10 @@ Resources:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref addonSourceBucket
-            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
-            uuid: !Transform { 'Name' : 'UUID' }
+            uuid: !Ref uuid
 
     SamplesDeviceBlueprints:
         Type: 'Custom::LoadLambda'
@@ -61,30 +110,184 @@ Resources:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref addonSourceBucket
-            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-blueprints']]
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'device-blueprints']]
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
+            uuid: !Ref uuid
 
-    # DefaultSDeviceTypes:
-    #     Type: 'Custom::LoadLambda'
-    #     Properties:
-    #         ServiceToken: !Ref customResourceUtilsHelperArn
-    #         Region: !Ref 'AWS::Region'
-    #         sourceS3Bucket: !Ref addonSourceBucket
-    #         sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'device-types']]
-    #         table: !Ref deviceTypesTable
-    #         customAction: 'dynamodbPutObjectsFromS3Folder'
+    SamplesGreengrassLambdaRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: 'Allow'
+                      Principal:
+                          Service:
+                              - 'lambda.amazonaws.com'
+                      Action:
+                          - 'sts:AssumeRole'
+            Path: '/'
 
-    # DefaultLambdaRole:
-    #     Type: 'AWS::IAM::Role'
-    #     Properties:
-    #         AssumeRolePolicyDocument:
-    #             Version: '2012-10-17'
-    #             Statement:
-    #                 - Effect: 'Allow'
-    #                   Principal:
-    #                       Service:
-    #                           - 'lambda.amazonaws.com'
-    #                   Action:
-    #                       - 'sts:AssumeRole'
-    #         Path: '/'
+    SamplesRPiSenseHatDisplayIPLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'rpi-sense-hat-display-ip-python'
+            Description: 'sputnik Raspberry Pi Sense Hat display IP Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'rpi-sense-hat-display-ip-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesRPiSenseHatDisplayIPLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesRPiSenseHatDisplayIPLambda
+            Description: 'A first version of rpi-sense-hat-display-ip-python'
+    SamplesRPiSenseHatDisplayIPLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesRPiSenseHatDisplayIPLambda
+            FunctionVersion: !GetAtt SamplesRPiSenseHatDisplayIPLambdaVersion.Version
+            Name: 'Prod'
+
+    SamplesRPiSenseHatDemoLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'rpi-sense-hat-demo-python'
+            Description: 'sputnik Raspberry Pi Sense Hat Demo Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'rpi-sense-hat-demo-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesRPiSenseHatDemoLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesRPiSenseHatDemoLambda
+            Description: 'A first version of rpi-sense-hat-demo-python'
+    SamplesRPiSenseHatDemoLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesRPiSenseHatDemoLambda
+            FunctionVersion: !GetAtt SamplesRPiSenseHatDemoLambdaVersion.Version
+            Name: 'Prod'
+
+    SamplesImageCaptureLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'image-capture-python'
+            Description: 'sputnik Image Capture Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'image-capture-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesImageCaptureLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesImageCaptureLambda
+            Description: 'A first version of image-capture-python'
+    SamplesImageCaptureLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesImageCaptureLambda
+            FunctionVersion: !GetAtt SamplesImageCaptureLambdaVersion.Version
+            Name: 'Prod'
+
+    SamplesGGMLDemoSqueezenetLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'gg-ml-demo-squeezenet-python'
+            Description: 'AWS GG ML Squeezenet Demo Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'gg-ml-demo-squeezenet-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesGGMLDemoSqueezenetLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesGGMLDemoSqueezenetLambda
+            Description: 'A first version of gg-ml-demo-squeezenet-python'
+    SamplesGGMLDemoSqueezenetLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesGGMLDemoSqueezenetLambda
+            FunctionVersion: !GetAtt SamplesGGMLDemoSqueezenetLambdaVersion.Version
+            Name: 'Prod'
+
+    SamplesInferenceCameraLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'ml-inference-camera-python'
+            Description: 'sputnik AWS ML Inference Camera Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'ml-inference-camera-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesInferenceCameraLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesInferenceCameraLambda
+            Description: 'A first version of ml-inference-camera-python'
+    SamplesInferenceCameraLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesInferenceCameraLambda
+            FunctionVersion: !GetAtt SamplesInferenceCameraLambdaVersion.Version
+            Name: 'Prod'
+
+    SamplesModelTrainerLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'model-trainer-python'
+            Description: 'sputnik Model Trainer for models Lambda Code'
+            Code:
+                S3Bucket: !Ref addonSourceBucket
+                S3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'lambdas', 'model-trainer-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt SamplesGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    SamplesModelTrainerLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref SamplesModelTrainerLambda
+            Description: 'A first version of model-trainer-python'
+    SamplesModelTrainerLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref SamplesModelTrainerLambda
+            FunctionVersion: !GetAtt SamplesModelTrainerLambdaVersion.Version
+            Name: 'Prod'
+
+
+    SamplesSqueezenetModel:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref addonSourceBucket
+            sourceS3Key: !Join ['/', [!Ref addonSourceKeyPrefix, 'samples', 'models', 'squeezenet.zip']]
+            destS3Bucket: !Ref dataS3Bucket
+            destS3Key: !Join ['/', ['gg-ml-demo-squeezenet-v1.0', 'models', 'squeezenet.zip']]
+            uuid: !Ref uuid
+            customAction: 'copyFileFromS3ToS3'

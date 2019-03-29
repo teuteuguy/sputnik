@@ -1,0 +1,36 @@
+{
+    "id": "rpi3-sense-hat-display-ip-v1.0",
+    "name": "Raspberry Pi Sense Hat Display IP v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["raspberry-pi-3-sense-hat-v1.0"],
+    "deviceTypeMappings": [],
+    "spec": {
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-display-ip-python:Prod",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": true,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "sense-hat-led"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "sense-hat-i2c"
+                            },
+                            {
+                                "Permission": "ro",
+                                "ResourceId": "sense-hat-event0"
+                            }
+                        ]
+                    },
+                    "MemorySize": 65536,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        }
+    }
+}

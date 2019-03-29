@@ -1,3 +1,0 @@
-../common/camera
-../common/ggiot
-../common/file_output

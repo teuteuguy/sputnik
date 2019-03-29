@@ -99,12 +99,7 @@ class MainThread(Thread):
                             "batteryVoltage": batteryVoltage
                         }
 
-                        # GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload=message)
-                        GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload={
-                            "state": {
-                                "reported": message
-                            }
-                        })
+                        GGIOT.publish(topic=SENSOR_NODE_DATA_TOPIC(nodeId=nodeId), payload=message)
 
                         if nodeId not in self.nodes:
                             publishNodePresence(nodeId)

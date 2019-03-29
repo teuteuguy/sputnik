@@ -1,4 +1,4 @@
-import { COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule } from '@angular/core';
+import { COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -48,7 +48,6 @@ import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
 
 import { TestsComponent } from './secure/tests/tests.component';
-
 
 // Pipes
 import { PipesModule } from './pipes/pipes.module';
@@ -170,6 +169,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
             deps: [CompilerFactory]
         }
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class AppModule {}

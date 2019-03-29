@@ -1,5 +1,0 @@
-../common/ggiot
-../common/camera
-../common/file_output
-../common/save_frames
-

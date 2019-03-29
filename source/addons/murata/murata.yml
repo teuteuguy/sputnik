@@ -13,12 +13,21 @@ Parameters:
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
+    settingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the settings
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
     lambdaServiceDevicesArn:
         Type: String
         Description: Lambda Service Devices ARN
+    dataS3Bucket:
+        Type: String
+        Description: sputnik Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: sputnik Data S3 Bucket ARN
     customResourceUtilsHelperArn:
         Type: String
         Description: Utils custom resource helper ARN

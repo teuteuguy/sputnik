@@ -12,14 +12,15 @@ export class GaugeComponent implements AfterViewInit {
 
     @Input() id = '';
     @Input() opts: any;
-    @Input() maxValue = '0';
-    @Input() minValue = '0';
-    @Input() animationSpeed = '0';
+    @Input() maxValue = 0;
+    @Input() minValue = 0;
+    @Input() animationSpeed = 0;
+    // @Input() value = 0;
 
     constructor() {}
 
     ngAfterViewInit() {
-        console.log(this.opts);
+        // console.log(this.opts);
         if (!this.opts) {
             this.opts = {
                 angle: 0,
@@ -38,17 +39,26 @@ export class GaugeComponent implements AfterViewInit {
         const id = this.id + '-gauge';
         const target = document.getElementById(id); // your canvas element
         this.gauge = new Gauge(target).setOptions(this.opts); // create sexy gauge!
-        this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
-        this.gauge.setMinValue = parseInt(this.minValue || '0', 10); // set max gauge value
-        this.gauge.animationSpeed = parseInt(this.animationSpeed || '0', 10); // set max gauge value
-        this.gauge.set(parseInt(this._value || '0', 10)); // set actual value
+        this.gauge.maxValue = this.maxValue || 0;
+        this.gauge.setMinValue(this.minValue || 0);
+        this.gauge.animationSpeed = this.animationSpeed || 0;
+        // this.gauge.set(this.value);
+        console.log(this.gauge, this.value);
+        // this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
+        // this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
+        // this.gauge.setMinValue(parseInt(this.minValue || '0', 10)); // set min gauge value
+        // this.gauge.animationSpeed = parseInt(this.animationSpeed || '0', 10); // set max gauge value
+        // this.gauge.set(parseInt(this._value || '0', 10)); // set actual value
     }
 
     @Input()
     set value(val: any) {
-        this._value = val;
+        // this.value = val;
+        // this._value = val;
         if (this.gauge) {
-            this.gauge.set(this._value);
+            // this.gauge.set(this._value);
+            // this.gauge.set(this.value);
+            this.gauge.set(val);
         }
     }
 

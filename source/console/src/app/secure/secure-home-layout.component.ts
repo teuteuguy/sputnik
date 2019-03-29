@@ -29,8 +29,9 @@ import { _ } from 'underscore';
     selector: 'app-root',
     templateUrl: './secure-home-layout.component.html'
 })
-export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
-    private loadedProfile = false;
+export class SecureHomeLayoutComponent implements OnInit {
+    //}, LoggedInCallback {
+    // private loadedProfile = false;
 
     public crumbs: Crumb[] = [];
     public deviceStats: DeviceStats = new DeviceStats();
@@ -57,48 +58,84 @@ export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
         private deviceBlueprintService: DeviceBlueprintService,
         private solutionBlueprintService: SolutionBlueprintService
     ) {
-        const _self = this;
-        _self.isAdminUser = false;
-        _self.loadedProfile = false;
-        _self.localStorage.setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 }).subscribe(() => {});
+        const self = this;
+        self.isAdminUser = false;
+        // self.loadedProfile = false;
+        self.localStorage.setItem('deviceStats', { total: 0, connected: 0, disconnected: 0 }).subscribe(() => {});
+    }
+
+    private logError(err) {
+        this.logger.error(err);
+    }
+
+    private checkLoggedIn(isLoggedIn: boolean, loadProfile: boolean, profile: ProfileInfo) {
+        const self = this;
+        if (!isLoggedIn) {
+            self.logger.info(
+                'SecureHomeCommonComponent.checkLoggedIn: Does not seem to be logged in. Navigating to Login'
+            );
+            self.router.navigate(['/home/login']);
+        } else {
+            self.logger.info(`SecureHomeCommonComponent.checkLoggedIn: Logged In.`);
+
+            if (loadProfile) {
+                self.localStorage.setItem('profile', profile).subscribe(() => {});
+                self.profile = profile;
+                self.isAdminUser = self.profile.isAdmin();
+            }
+
+            self.iotService.connect();
+            self.iotService.connectionObservable$.subscribe((connected: boolean) => {
+                self.logger.info(`Change of connection state: new state: ${connected}`);
+            });
+
+            self.statService.statObservable$.subscribe((msg: Stats) => {
+                self.deviceStats = msg.deviceStats;
+                self.solutionStats = msg.solutionStats;
+                self.ngZone.run(() => {});
+            });
+            self.statService.refresh();
+        }
     }
 
     ngOnInit() {
-        const _self = this;
+        const self = this;
 
-        _self.breadCrumbService.pageTitleObservable$.subscribe(title => (_self.title = title));
-        _self.breadCrumbService.crumbObservable$.subscribe(crumbs => {
-            _self.crumbs.splice(0, _self.crumbs.length);
-            _self.crumbs.push(...crumbs);
-            _self.ngZone.run(() => {});
+        self.breadCrumbService.pageTitleObservable$.subscribe(title => (self.title = title));
+        self.breadCrumbService.crumbObservable$.subscribe(crumbs => {
+            self.crumbs.splice(0, self.crumbs.length);
+            self.crumbs.push(...crumbs);
+            self.ngZone.run(() => {});
         });
 
-        _self.logger.info('SecureHomeComponent.constructor: checking if user is authenticated');
-        _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
+        self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             if (profile) {
-                _self.logger.info(
-                    'SecureHomeComponent.constructor: profile exists, no need to request it. Check if authenticated though.'
-                );
-                _self.profile = new ProfileInfo(profile);
-                _self.isAdminUser = _self.profile.isAdmin();
+                self.logger.info('SecureHomeComponent.ngOnInit: profile loaded, no need to request it.');
+                self.profile = new ProfileInfo(profile);
+                self.isAdminUser = self.profile.isAdmin();
+                self.userService
+                    .isAuthenticated()
+                    .then(result => {
+                        self.checkLoggedIn(result, false, self.profile);
+                    })
+                    .catch(self.logError);
             } else {
-                _self.logger.info('SecureHomeComponent.constructor: no profile found, requesting profile');
-                _self.loadedProfile = true;
-                _self.userService
+                self.logger.info('SecureHomeComponent.ngOnInit: no profile found, requesting profile');
+                // self.loadedProfile = true;
+                self.userService
                     .getUserInfo()
-                    .then((data: ProfileInfo) => {
-                        _self.isLoggedIn(null, true, data);
+                    .then((newProfile: ProfileInfo) => {
+                        self.checkLoggedIn(true, true, newProfile);
+                        // self.isLoggedIn(null, true, newProfile);
                     })
                     .catch(err => {
-                        _self.logger.error(
-                            '[Error] Error occurred retrieving user info to validate admin role.'
-                        );
-                        _self.logger.error(err);
+                        self.logger.error('[Error] Error occurred retrieving user info to validate admin role.');
+                        self.logger.error(err);
                     });
             }
         });
 
-        _self.prepUI();
+        self.prepUI();
     }
 
     prepUI() {
@@ -199,30 +236,30 @@ export class SecureHomeLayoutComponent implements OnInit, LoggedInCallback {
         this.blockUI.stop();
     }
 
-    isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
-        const _self = this;
+    // isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
+    //     const self = this;
 
-        if (!isLoggedIn) {
-            _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn);
-            _self.router.navigate(['/home/login']);
-        } else {
-            _self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn, _self.loadedProfile);
-            if (_self.loadedProfile) {
-                _self.localStorage.setItem('profile', profile).subscribe(() => {});
-                _self.profile = profile;
-                _self.isAdminUser = _self.profile.isAdmin();
-            }
-            _self.iotService.connect();
-            _self.iotService.connectionObservable$.subscribe((connected: boolean) => {
-                console.log('Change of connection state: setting subscriptions', connected);
-            });
+    //     if (!isLoggedIn) {
+    //         self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn);
+    //         self.router.navigate(['/home/login']);
+    //     } else {
+    //         self.logger.info('SecureHomeCommonComponent.isLoggedIn:', message, isLoggedIn, self.loadedProfile);
+    //         if (self.loadedProfile) {
+    //             self.localStorage.setItem('profile', profile).subscribe(() => {});
+    //             self.profile = profile;
+    //             self.isAdminUser = self.profile.isAdmin();
+    //         }
+    //         self.iotService.connect();
+    //         self.iotService.connectionObservable$.subscribe((connected: boolean) => {
+    //             console.log('Change of connection state: setting subscriptions', connected);
+    //         });
 
-            _self.statService.statObservable$.subscribe((msg: Stats) => {
-                _self.deviceStats = msg.deviceStats;
-                _self.solutionStats = msg.solutionStats;
-                _self.ngZone.run(() => {});
-            });
-            _self.statService.refresh();
-        }
-    }
+    //         self.statService.statObservable$.subscribe((msg: Stats) => {
+    //             self.deviceStats = msg.deviceStats;
+    //             self.solutionStats = msg.solutionStats;
+    //             self.ngZone.run(() => {});
+    //         });
+    //         self.statService.refresh();
+    //     }
+    // }
 }
