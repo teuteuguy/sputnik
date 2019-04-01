@@ -2,7 +2,7 @@ export class SolutionBlueprint {
     id: string;
     name = 'new';
     description = 'UNKNOWN';
-    prefix = 'MTM_';
+    prefix = 'Sputnik_';
     spec: any = {};
     createdAt: string;
     updatedAt: string;

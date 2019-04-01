@@ -75,21 +75,21 @@ export class AFR3DBeltSerialV10Component extends IoTPubSuberComponent implements
                 onError: defaultErrorCallback
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/sensors/speed',
+                topic: 'sputnik/' + this.device.thingName + '/sensors/speed',
                 onMessage: data => {
                     this.sensors.speed = data.value;
                 },
                 onError: defaultErrorCallback
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/sensors/chassis',
+                topic: 'sputnik/' + this.device.thingName + '/sensors/chassis',
                 onMessage: data => {
                     this.sensors.chassis = data.value;
                 },
                 onError: defaultErrorCallback
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/sensors/proximity',
+                topic: 'sputnik/' + this.device.thingName + '/sensors/proximity',
                 onMessage: data => {
                     this.sensors.proximity = data.value;
                     console.log(this.sensors.proximity);

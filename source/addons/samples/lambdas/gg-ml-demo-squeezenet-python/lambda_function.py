@@ -21,8 +21,8 @@ def get_parameter(name, default):
 THING_NAME = get_parameter('AWS_IOT_THING_NAME', 'Unknown')
 CAMERA_TYPE = get_parameter("CAMERA_TYPE", "")
 PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
-PREFIX = 'mtm'
-TOPIC_CAMERA = 'mtm/{}/camera'.format(THING_NAME)
+PREFIX = 'sputnik'
+TOPIC_CAMERA = '{0}/{1}/camera'.format(PREFIX, THING_NAME)
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
 RESOLUTION = "858x480"
 CAMERA = None
@@ -41,7 +41,7 @@ def parseResolution(strResolution):
 
 try:
     print("Start of lambda function")
-    GGIOT = GGIoT(thing=THING_NAME, prefix='mtm')
+    GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
     GGIOT.info('OpenCV '+cv2.__version__)
 

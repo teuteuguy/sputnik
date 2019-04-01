@@ -5,8 +5,8 @@ const _ = require('underscore');
 const moment = require('moment');
 const shortid = require('shortid');
 
-const MTMThingGroups = require('sputnik-custom-resource-helper-thing-groups');
-const DevicesLibs = require('sputnik-devices-service');
+// const MTMThingGroups = require('sputnik-custom-resource-helper-thing-groups');
+// const DevicesLibs = require('sputnik-devices-service');
 
 const lib = 'refreshSolution';
 

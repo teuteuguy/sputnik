@@ -74,7 +74,7 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
                 onError: defaultErrorCallback
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/sensors',
+                topic: 'sputnik/' + this.device.thingName + '/sensors',
                 onMessage: data => {
                     this.sensors = data.value;
                     this.sensors.temperature.temp =

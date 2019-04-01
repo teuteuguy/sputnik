@@ -7,7 +7,6 @@
     "private": "true",
     "dependencies": {
         "moment": "*",
-        "sputnik-custom-resource-helper-thing-groups": "../../resources/mtm-thing-groups",
         "sputnik-devices-service": "../devices",
         "shortid": "^2.2.13",
         "underscore": "*",

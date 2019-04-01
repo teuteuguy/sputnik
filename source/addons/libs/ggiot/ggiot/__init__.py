@@ -7,7 +7,7 @@ from inspect import currentframe
 class GGIoT:
 
     # Constructor
-    def __init__(self, thing='default', prefix='mtm'):
+    def __init__(self, thing='default', prefix='sputnik'):
         self.thing = thing
         self.prefix = prefix
         self.topicPrefix = self.prefix + '/' + self.thing + '/'

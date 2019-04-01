@@ -74,7 +74,7 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
                 }
             },
             {
-                topic: 'mtm/' + _self.device.thingName + '/camera',
+                topic: 'sputnik/' + _self.device.thingName + '/camera',
                 onMessage: data => {
                     _self.latestData = data.value;
                 },
@@ -83,7 +83,7 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
                 }
             },
             {
-                topic: 'mtm/' + _self.device.thingName + '/logger',
+                topic: 'sputnik/' + _self.device.thingName + '/logger',
                 onMessage: data => {
                     if (data.value.hasOwnProperty('type') && data.value.type === 'info') {
                         _self.logger.info('INFO:', data.value.payload);

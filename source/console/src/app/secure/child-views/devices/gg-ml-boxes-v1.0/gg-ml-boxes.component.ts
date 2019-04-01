@@ -38,7 +38,7 @@ export class GGMLBoxesV10Component extends IoTPubSuberComponent implements OnIni
                 }
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/inference',
+                topic: 'sputnik/' + this.device.thingName + '/inference',
                 onMessage: data => {
                     // console.log('Inference:', data.value);
                     // console.log(data.value.payload.fps);
@@ -50,7 +50,7 @@ export class GGMLBoxesV10Component extends IoTPubSuberComponent implements OnIni
                 }
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/logger',
+                topic: 'sputnik/' + this.device.thingName + '/logger',
                 onMessage: data => {
                     // console.log('Admin:', data.value);
                 },

@@ -9,8 +9,8 @@ const uuid = require('uuid');
 
 const createGreengrassXDefinitionVersion = require('./createGreengrassXDefinitionVersion');
 
-const mergeMTMSpecs = require('./merge-mtm-specs');
-const mergeMTMShadows = require('./merge-mtm-shadows');
+const mergeSputnikSpecs = require('./merge-sputnik-specs');
+const mergeSputnikShadows = require('./merge-sputnik-shadows');
 
 const lib = 'addDeployment';
 
@@ -89,20 +89,20 @@ module.exports = function (event, context) {
         _newShadow = {};
         if (_device.spec) {
             console.log(`Device Spec: ${JSON.stringify(_device.spec, null, 4)}`);
-            _newSpec = mergeMTMSpecs(_newSpec, _device.spec);
-            _newShadow = mergeMTMShadows(_newShadow, _device.spec.Shadow);
+            _newSpec = mergeSputnikSpecs(_newSpec, _device.spec);
+            _newShadow = mergeSputnikShadows(_newShadow, _device.spec.Shadow);
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
         if (_deviceType.spec) {
             console.log(`Device Type Spec: ${JSON.stringify(_deviceType.spec, null, 4)}`);
-            _newSpec = mergeMTMSpecs(_newSpec, _deviceType.spec);
-            _newShadow = mergeMTMShadows(_newShadow, _deviceType.spec.Shadow);
+            _newSpec = mergeSputnikSpecs(_newSpec, _deviceType.spec);
+            _newShadow = mergeSputnikShadows(_newShadow, _deviceType.spec.Shadow);
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
         if (_deviceBlueprint.spec) {
             console.log(`Device Blueprint Spec: ${JSON.stringify(_deviceBlueprint.spec, null, 4)}`);
-            _newSpec = mergeMTMSpecs(_newSpec, _deviceBlueprint.spec);
-            _newShadow = mergeMTMShadows(_newShadow, _deviceBlueprint.spec.Shadow);
+            _newSpec = mergeSputnikSpecs(_newSpec, _deviceBlueprint.spec);
+            _newShadow = mergeSputnikShadows(_newShadow, _deviceBlueprint.spec.Shadow);
             console.log(`WIP Spec: ${JSON.stringify(_newSpec, null, 4)}`);
         }
 

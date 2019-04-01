@@ -25,7 +25,7 @@ export class GGMLDemoSqueezenetV10Component extends IoTPubSuberComponent impleme
     ngOnInit() {
         this.subscribe([
             {
-                topic: 'mtm/' + this.device.thingName + '/camera',
+                topic: 'sputnik/' + this.device.thingName + '/camera',
                 onMessage: data => {
                     // console.log('Data:', data.value);
                     this.latestData = data.value;
@@ -35,7 +35,7 @@ export class GGMLDemoSqueezenetV10Component extends IoTPubSuberComponent impleme
                 }
             },
             {
-                topic: 'mtm/' + this.device.thingName + '/logger',
+                topic: 'sputnik/' + this.device.thingName + '/logger',
                 onMessage: data => {
                     // console.log('Logger:', data.value);
                     if (data.value.hasOwnProperty('type') && data.value.type === 'info') {

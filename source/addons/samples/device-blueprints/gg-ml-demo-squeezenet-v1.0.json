@@ -60,7 +60,7 @@
                             },
                             {
                                 "Permission": "rw",
-                                "ResourceId": "mtm-model-squeezenet"
+                                "ResourceId": "sputnik-model-squeezenet"
                             },
                             {
                                 "Permission": "[CAM_STREAM_PERMISSIONS]",
@@ -86,8 +86,8 @@
         },
         "ResourceDefinitionVersion": {
             "Resources": [{
-                    "Id": "mtm-model-squeezenet",
-                    "Name": "mtm-model-squeezenet",
+                    "Id": "sputnik-model-squeezenet",
+                    "Name": "sputnik-model-squeezenet",
                     "ResourceDataContainer": {
                         "S3MachineLearningModelResourceData": {
                             "DestinationPath": "/greengrass-machine-learning/mxnet/squeezenet/",
@@ -113,11 +113,11 @@
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
                 "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:gg-ml-demo-squeezenet-python:Prod",
-                "Subject": "mtm/[CORE]/logger",
+                "Subject": "sputnik/[CORE]/logger",
                 "Target": "cloud"
             }, {
                 "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:gg-ml-demo-squeezenet-python:Prod",
-                "Subject": "mtm/[CORE]/camera",
+                "Subject": "sputnik/[CORE]/camera",
                 "Target": "cloud"
             }]
         }

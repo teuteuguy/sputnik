@@ -24,7 +24,7 @@ THING_NAME = get_parameter("AWS_IOT_THING_NAME", "Unknown")
 CAMERA_TYPE = get_parameter("CAMERA_TYPE", "")
 PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
 
-PREFIX = "mtm"
+PREFIX = "sputnik"
 SHADOW_OBJECT_NAME = "modelTrainer"
 TOPIC_CAMERA = "{}/{}/camera".format(PREFIX, THING_NAME)
 CAMERA = None

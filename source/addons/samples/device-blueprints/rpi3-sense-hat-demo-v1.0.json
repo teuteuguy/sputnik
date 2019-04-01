@@ -63,7 +63,7 @@
             "Subscriptions": [{
                 "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-demo-python:Prod",
                 "Target": "cloud",
-                "Subject": "mtm/[CORE]/+"
+                "Subject": "sputnik/[CORE]/+"
             }, {
                 "Source": "GGShadowService",
                 "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:rpi-sense-hat-demo-python:Prod",

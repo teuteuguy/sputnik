@@ -4,8 +4,8 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
 
-const MTMThingGroups = require('sputnik-custom-resource-helper-thing-groups');
-const DevicesLibs = require('sputnik-devices-service');
+// const MTMThingGroups = require('sputnik-custom-resource-helper-thing-groups');
+// const DevicesLibs = require('sputnik-devices-service');
 
 const lib = 'deleteSolution';
 
