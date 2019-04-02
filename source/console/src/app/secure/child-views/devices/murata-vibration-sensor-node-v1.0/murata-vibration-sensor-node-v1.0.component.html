@@ -26,7 +26,43 @@
             </card-text>
         </app-card>
     </div>
-    <div class="col-lg-8 col-sm-6">
+    <div class="col-lg-2 col-sm-3">
+        <app-card>
+            <card-title #title>
+                <div class="text-center text-uppercase">RSSI</div>
+            </card-title>
+            <card-text #text>
+                <div class="text-overflow-center" style="font-size: 48px;">{{reported.rssi}}
+                </div>
+                <div class="text-center">dB</div>
+            </card-text>
+        </app-card>
+    </div>
+    <div class="col-lg-2 col-sm-3">
+        <app-card>
+            <card-title #title>
+                <div class="text-center text-uppercase">RMS</div>
+            </card-title>
+            <card-text #text>
+                <div class="text-overflow-center" style="font-size: 48px;">{{reported.rms | number: '.2'}}
+                </div>
+                <!-- <div class="text-center">dB</div> -->
+            </card-text>
+        </app-card>
+    </div>
+    <div class="col-lg-2 col-sm-3">
+        <app-card>
+            <card-title #title>
+                <div class="text-center text-uppercase">Kurtosis</div>
+            </card-title>
+            <card-text #text>
+                <div class="text-overflow-center" style="font-size: 40px;">{{reported.kurtosis | number: '.2'}}
+                </div>
+                <!-- <div class="text-center">dB</div> -->
+            </card-text>
+        </app-card>
+    </div>
+    <!-- <div class="col-lg-8 col-sm-6">
         <app-card>
             <card-title #title>Data<div class="pull-right text-muted" role="group">
                     {{reported.rssi}}dB</div>
@@ -42,7 +78,7 @@
                 </div>
             </card-text>
         </app-card>
-    </div>
+    </div> -->
     <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">

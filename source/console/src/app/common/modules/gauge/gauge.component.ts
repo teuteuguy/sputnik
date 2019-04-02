@@ -43,12 +43,6 @@ export class GaugeComponent implements AfterViewInit {
         this.gauge.setMinValue(this.minValue || 0);
         this.gauge.animationSpeed = this.animationSpeed || 0;
         // this.gauge.set(this.value);
-        console.log(this.gauge, this.value);
-        // this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
-        // this.gauge.maxValue = parseInt(this.maxValue || '0', 10); // set max gauge value
-        // this.gauge.setMinValue(parseInt(this.minValue || '0', 10)); // set min gauge value
-        // this.gauge.animationSpeed = parseInt(this.animationSpeed || '0', 10); // set max gauge value
-        // this.gauge.set(parseInt(this._value || '0', 10)); // set actual value
     }
 
     @Input()
