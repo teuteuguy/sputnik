@@ -6,6 +6,7 @@ import socket
 import sys
 from threading import Event, Thread, Timer
 import time
+import math
 
 sense = sense_hat.SenseHat()
 
@@ -72,7 +73,9 @@ class MainAppThread(Thread):
                 orientation = sense.get_orientation()
                 north = sense.get_compass()
                 gyro = sense.get_gyroscope()
-                accel = sense.get_accelerometer()
+                accel = sense.get_accelerometer_raw()
+                # accel = sense.get_accelerometer()
+                magnitude = math.sqrt(accel['x']*accel['x'] + accel['y']*accel['y'] + accel['z']*accel['z'])
                 print("Temperature1: {}".format(temperature1))
                 print("Temperature2: {}".format(temperature2))
                 print("Humidity:     {}".format(humidity))
@@ -80,7 +83,8 @@ class MainAppThread(Thread):
                 print("North:        {}".format(north))
                 print("Orientation:  p: {pitch}, r: {roll}, y: {yaw}".format(**orientation))
                 print("Gyro:         p: {pitch}, r: {roll}, y: {yaw}".format(**gyro))
-                print("Accel:        p: {pitch}, r: {roll}, y: {yaw}".format(**accel))
+                print("Accel:        x: {x}, y: {y}, z: {z}".format(**accel))
+                print("Magnitude:    {}".format(magnitude))
 
                 GGIOT.publish(TOPIC_SENSORS, {
                     "temperature": {
@@ -92,7 +96,8 @@ class MainAppThread(Thread):
                     "north": north,
                     "orientation": orientation,
                     "gyro": gyro,
-                    "accel": accel
+                    "accel": accel,
+                    "magnitude": magnitude
                 })
 
                 time.sleep(float(SHADOW_OBJECT["config"]["freq"]))
