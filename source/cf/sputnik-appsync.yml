@@ -13,6 +13,9 @@ Parameters:
     settingsTable:
         Type: String
         Description: DynamoDB Table for storing the application settings
+    dataStoreTable:
+        Type: String
+        Description: DynamoDB Table for the data store
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
@@ -90,6 +93,7 @@ Resources:
                             - 'dynamodb:UpdateItem'
                         Resource:
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref settingsTable ]]
+                            - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref dataStoreTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceTypesTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref deviceBlueprintsTable ]]
                             - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref devicesTable ]]
@@ -154,6 +158,17 @@ Resources:
             DynamoDBConfig:
                 AwsRegion: !Ref 'AWS::Region'
                 TableName: !Ref settingsTable
+    appSyncDataSourceDataStoreDynamoDB:
+        Type: 'AWS::AppSync::DataSource'
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            Name: appSyncDataSourceDataStoreDynamoDB
+            Description: The Data Store DynamoDB table App Sync Data Source
+            Type: AMAZON_DYNAMODB
+            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
+            DynamoDBConfig:
+                AwsRegion: !Ref 'AWS::Region'
+                TableName: !Ref dataStoreTable
     appSyncDataSourceDeviceTypesDynamoDB:
         Type: 'AWS::AppSync::DataSource'
         Properties:
@@ -291,6 +306,26 @@ Resources:
             ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
             LambdaConfig:
                 LambdaFunctionArn: !Ref lambdaServiceUtilsArn
+
+    # ####################################################################################################
+    # ####################################################################################################
+    #
+    # RESOLVERS - Data Store
+    #
+    # ####################################################################################################
+    # ####################################################################################################
+
+    # RESOLVERS - QUERIES - Data Store - Get Data
+    appSyncResolverQueryGetData:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Query
+            FieldName: getData
+            DataSourceName: !GetAtt appSyncDataSourceDataStoreDynamoDB.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'data-store', 'data-store-request-mapping-template-get.gql']]
+            ResponseMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'data-store', 'data-store-response-mapping-template-get.gql']]
 
     # ####################################################################################################
     # ####################################################################################################

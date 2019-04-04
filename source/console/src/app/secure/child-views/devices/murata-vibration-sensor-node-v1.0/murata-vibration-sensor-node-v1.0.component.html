@@ -79,7 +79,7 @@
             </card-text>
         </app-card>
     </div> -->
-    <div class="col-lg-6 col-md-12">
+    <!-- <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">
 
@@ -92,6 +92,82 @@
                         [options]="freqsBarChart.options" [legend]="freqsBarChart.legend"
                         [chartType]="freqsBarChart.type">
                     </canvas>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="col-lg-6 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">Temperature<div class="pull-right" role="group">
+                        Battery</div></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{reported.surfaceTemperature | number:'.1'}}°C<div class="pull-right" role="group">
+                        {{reported.batteryVoltage}}V</div></h6>
+                <div class="card-text">
+                    <canvas baseChart [datasets]="[{data: graphs.surfaceTemperature, label: 'Surface temperature', fill: false}, {data: graphs.batteryVoltage, label: 'Battery', yAxisID: 'y-axis-1', fill: false}]" [labels]="graphs.labels"
+                        [options]="tempAndBattLineChart.options" [colors]="tempAndBattLineChart.colors"
+                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">Frequencies</h5> 
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-2 text-center">{{reported.frequencies[0]}}Hz</div>
+                        <div class="col-2 text-center">{{reported.frequencies[1]}}Hz</div>
+                        <div class="col-2 text-center">{{reported.frequencies[2]}}Hz</div>
+                        <div class="col-2 text-center">{{reported.frequencies[3]}}Hz</div>
+                        <div class="col-2 text-center">{{reported.frequencies[4]}}Hz</div>
+                        <div class="col-1"></div>
+                    </div>
+                </h6>               
+                <div class="card-text">
+                    <canvas baseChart [datasets]="[{data: graphs.frequencies[0], label: 'F1', fill: false}, {data: graphs.frequencies[1], label: 'F2', fill: false}, {data: graphs.frequencies[2], label: 'F3', fill: false}, {data: graphs.frequencies[3], label: 'F4', fill: false}, {data: graphs.frequencies[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
+                        [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
+                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">Accelerations</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-2 text-center">{{reported.accels[0]}}</div>
+                        <div class="col-2 text-center">{{reported.accels[1]}}</div>
+                        <div class="col-2 text-center">{{reported.accels[2]}}</div>
+                        <div class="col-2 text-center">{{reported.accels[3]}}</div>
+                        <div class="col-2 text-center">{{reported.accels[4]}}</div>
+                        <div class="col-1"></div>
+                    </div>
+                </h6>          
+                <div class="card-text">
+                    <canvas baseChart [datasets]="[{data: graphs.accels[0], label: 'F1', fill: false}, {data: graphs.accels[1], label: 'F2', fill: false}, {data: graphs.accels[2], label: 'F3', fill: false}, {data: graphs.accels[3], label: 'F4', fill: false}, {data: graphs.accels[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
+                        [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
+                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <h5 class="card-title">RMS<div class="pull-right" role="group">
+                        Kurtosis</div></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{reported.rms | number:'.2'}}m/s2<div class="pull-right" role="group">
+                        {{reported.kurtosis | number:'.2'}}</div></h6>
+                <div class="card-text">
+                    <canvas baseChart [datasets]="[{data: graphs.rms, label: 'RMS', fill: false}, {data: graphs.kurtosis, label: 'Kurtosis', yAxisID: 'y-axis-1', fill: false}]" [labels]="graphs.labels"
+                        [options]="rmsAndKurtosisLineChart.options" [colors]="rmsAndKurtosisLineChart.colors"
+                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
                 </div>
             </div>
         </div>

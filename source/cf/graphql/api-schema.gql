@@ -167,7 +167,22 @@ type PaginatedUsers {
     PaginationToken: String
 }
 
+type Data {
+    ThingNameAndMetric: String
+    Timestamp: String
+    ExpirationTime: String
+    Data: AWSJSON
+}
+type PaginatedData {
+    Data: [Data]
+}
+
 type Query {
+
+    # Data Store
+    getData(thingName: String!, metricName: String!, timeAgoInSecs: Int!): PaginatedData
+        @aws_auth(cognito_groups: ["Administrators", "Members"])
+
     ## Deployments
     listDeployments(limit: Int, nextToken: String): PaginatedDeployments
         @aws_auth(cognito_groups: ["Administrators", "Members"])

@@ -45,7 +45,16 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-solutions.yml']]
 
+    # Nested stack - DynamoDB Table - Data Store
+    CFStackForDDBDataStore:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-data-store.yml']]
+
 Outputs:
+    dataStoreTable:
+        Description: "DynamoDB Data Store Table"
+        Value: !GetAtt CFStackForDDBDataStore.Outputs.dataStoreTable
     deploymentsTable:
         Description: "DynamoDB Deployments Table"
         Value: !GetAtt CFStackForDDBDeployments.Outputs.deploymentsTable

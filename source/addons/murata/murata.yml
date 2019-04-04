@@ -7,6 +7,9 @@ Parameters:
     addonSourceKeyPrefix:
         Type: String
         Description: sputnik Source key prefix.
+    dataStoreTable:
+        Type: String
+        Description: DynamoDB Table for storing data
     deviceBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the device blueprints
@@ -77,7 +80,6 @@ Resources:
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref uuid
-
     MurataDeviceBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
@@ -88,6 +90,10 @@ Resources:
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref uuid
+
+    #####################################################
+    # Greengrass Lambda
+    #####################################################
 
     MurataGreengrassLambdaRole:
         Type: 'AWS::IAM::Role'
@@ -129,27 +135,60 @@ Resources:
             FunctionVersion: !GetAtt MurataVibrationSensorGatewayMainLambdaVersion.Version
             Name: 'Prod'
 
-    iotMurataThingAutoRegistrationTopicRule:
+    #####################################################
+    # IoT Rules
+    #####################################################
+
+    MurataErrorTopicRuleRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "iot.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: 'murata-errors-republish-policy'
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: "Allow"
+                                Action: "iot:Publish"
+                                Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/murata/*/errors" ] ]
+
+    MurataThingAutoRegistrationTopicRuleLambdaInvocationPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "MurataThingAutoRegistrationTopicRule" ] ]
+            Action: lambda:InvokeFunction
+            Principal: iot.amazonaws.com
+            FunctionName: !Ref lambdaServiceDevicesArn
+            SourceAccount: !Ref AWS::AccountId
+    MurataThingAutoRegistrationTopicRule:
         Type: "AWS::IoT::TopicRule"
         Properties:
             TopicRulePayload:
                 RuleDisabled: false
                 Sql: >-
-                    SELECT * FROM 'murata/+/presence/+'
+                    SELECT * FROM 'murata/+/+/presence'
                 Actions:
                     - Lambda:
                         FunctionArn: !Ref lambdaServiceDevicesArn
+                ErrorAction:
+                    Republish:
+                        RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
+                        Topic: "murata/MURATA_${topic(3)/errors"
 
-    iotMurataThingAutoRegistrationTopicRuleLambdaInvocationPermission:
-        Type: AWS::Lambda::Permission
-        Properties:
-            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "iotMurataThingAutoRegistrationTopicRule" ] ]
-            Action: lambda:InvokeFunction
-            Principal: iot.amazonaws.com
-            FunctionName: !Ref lambdaServiceDevicesArn
-            SourceAccount: !Ref AWS::AccountId
 
-    iotMurataThingSensorDataToShadowTopicRuleRole:
+    MurataThingSensorDataToShadowTopicRuleRole:
         Type: AWS::IAM::Role
         Properties:
             AssumeRolePolicyDocument:
@@ -173,8 +212,7 @@ Resources:
                                 Effect: "Allow"
                                 Action: "iot:Publish"
                                 Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/$aws/things/*/shadow/update" ] ]
-
-    iotMurataThingSensorDataToShadowTopicRule:
+    MurataThingSensorDataToShadowTopicRule:
         Type: "AWS::IoT::TopicRule"
         Properties:
             TopicRulePayload:
@@ -183,11 +221,64 @@ Resources:
                 AwsIotSqlVersion: '2016-03-23'
                 Actions:
                     - Republish:
-                        RoleArn: !GetAtt iotMurataThingSensorDataToShadowTopicRuleRole.Arn
+                        RoleArn: !GetAtt MurataThingSensorDataToShadowTopicRuleRole.Arn
                         Topic: "$$aws/things/MURATA_${topic(3)}/shadow/update"
+                ErrorAction:
+                    Republish:
+                        RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
+                        Topic: "murata/MURATA_${topic(3)/errors"
+
+    MurataDataStoreTopicRuleRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "iot.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Path: "/"
+            Policies:
+                -
+                    PolicyName: 'murata-sensor-node-data-to-data-store-policy'
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -
+                                Effect: 'Allow'
+                                Action:
+                                    - 'dynamodb:BatchWriteItem'
+                                    - 'dynamodb:PutItem'
+                                    - 'dynamodb:UpdateItem'
+                                Resource:
+                                    - !Join ['', ['arn:aws:dynamodb:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':table/', !Ref dataStoreTable]]
+    MurataDataStoreTopicRule:
+        Type: "AWS::IoT::TopicRule"
+        Properties:
+            TopicRulePayload:
+                RuleDisabled: false
+                Sql: SELECT concat('MURATA_', topic(3), '-graphdata') as ThingNameAndMetric, (cast((timestamp / 1000) as Integer) + 172800) as ExpirationTime, timestamp as Timestamp, * as Data FROM 'murata/+/+/data'
+                AwsIotSqlVersion: '2016-03-23'
+                Actions:
+                    - DynamoDBv2:
+                        RoleArn: !GetAtt MurataDataStoreTopicRuleRole.Arn
+                        PutItem:
+                            TableName: !Ref dataStoreTable
+                ErrorAction:
+                    Republish:
+                        RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
+                        Topic: "murata/MURATA_${topic(3)/errors"
 
 
-    iotMurataFirehoseIoTTopicRuleRole:
+    #####################################################
+    # Firehose to S3
+    #####################################################
+
+    MurataFirehoseIoTTopicRuleRole:
         Type: AWS::IAM::Role
         Properties:
             AssumeRolePolicyDocument:
@@ -215,9 +306,8 @@ Resources:
                                     - firehose:ListDeliveryStreams
                                     - firehose:PutRecord
                                     - firehose:PutRecordBatch
-                                Resource: !Sub '${MurataRawDataDeliveryStream.Arn}'
-
-    iotMurataFirehoseTopicRule:
+                                Resource: !Sub '${MurataRawDataFirehoseDeliveryStream.Arn}'
+    MurataFirehoseIoTTopicRule:
         Type: AWS::IoT::TopicRule
         Properties:
             TopicRulePayload:
@@ -227,46 +317,15 @@ Resources:
                 Sql: !Sub 'SELECT *, parse_time("yyyy-MM-dd HH:mm:ss", timestamp()) as ts FROM "murata/+/+/data"'
                 Actions:
                     - Firehose:
-                        DeliveryStreamName: !Ref MurataRawDataDeliveryStream
-                        RoleArn: !Sub '${iotMurataFirehoseIoTTopicRuleRole.Arn}'
+                        DeliveryStreamName: !Ref MurataRawDataFirehoseDeliveryStream
+                        RoleArn: !Sub '${MurataFirehoseIoTTopicRuleRole.Arn}'
                         Separator: "\n"
-
 
     MurataIoTDataLogGroup:
         Type: AWS::Logs::LogGroup
         Properties:
             RetentionInDays: !FindInMap ['Defaults', 'Retention', 'Days']
-
-    MurataRawDataDeliveryStream:
-        Type: AWS::KinesisFirehose::DeliveryStream
-        Properties:
-            S3DestinationConfiguration:
-                BucketARN: !GetAtt MurataRawDataBucket.Arn
-                BufferingHints:
-                    IntervalInSeconds: 60
-                    SizeInMBs: 10
-                CloudWatchLoggingOptions:
-                    Enabled: true
-                    LogGroupName: !Ref MurataIoTDataLogGroup
-                    LogStreamName: 'MurataRawDataS3Delivery'
-                CompressionFormat: 'UNCOMPRESSED'
-                EncryptionConfiguration:
-                    NoEncryptionConfig: 'NoEncryption'
-                Prefix: !FindInMap ['SourceCode', 'General', 'LogPrefix']
-                RoleARN: !GetAtt MurataRawDataDeliveryStreamRole.Arn
-
-    MurataRawDataBucket:
-        DeletionPolicy: Retain
-        Type: AWS::S3::Bucket
-        Properties:
-            LifecycleConfiguration:
-                Rules:
-                    -
-                        Id: ExpirationRule
-                        Status: Enabled
-                        ExpirationInDays: !FindInMap ['Defaults', 'Retention', 'Days']
-
-    MurataRawDataDeliveryStreamRole:
+    MurataRawDataFirehoseDeliveryStreamRole:
         Type: AWS::IAM::Role
         Properties:
             AssumeRolePolicyDocument:
@@ -316,3 +375,31 @@ Resources:
                                     - logs:PutLogEvents
                                 Resource:
                                     !Join ['', ['arn:aws:logs:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':log-group:*']]
+    MurataRawDataFirehoseDeliveryStream:
+        Type: AWS::KinesisFirehose::DeliveryStream
+        Properties:
+            S3DestinationConfiguration:
+                BucketARN: !GetAtt MurataRawDataBucket.Arn
+                BufferingHints:
+                    IntervalInSeconds: 60
+                    SizeInMBs: 10
+                CloudWatchLoggingOptions:
+                    Enabled: true
+                    LogGroupName: !Ref MurataIoTDataLogGroup
+                    LogStreamName: 'MurataRawDataS3Delivery'
+                CompressionFormat: 'UNCOMPRESSED'
+                EncryptionConfiguration:
+                    NoEncryptionConfig: 'NoEncryption'
+                Prefix: !FindInMap ['SourceCode', 'General', 'LogPrefix']
+                RoleARN: !GetAtt MurataRawDataFirehoseDeliveryStreamRole.Arn
+
+    MurataRawDataBucket:
+        DeletionPolicy: Retain
+        Type: AWS::S3::Bucket
+        Properties:
+            LifecycleConfiguration:
+                Rules:
+                    -
+                        Id: ExpirationRule
+                        Status: Enabled
+                        ExpirationInDays: !FindInMap ['Defaults', 'Retention', 'Days']

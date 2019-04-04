@@ -16,6 +16,7 @@ import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '@models/stat
 // Queries
 // import getAllDeviceTypes from '@graphql/queries/getAllDeviceTypes';
 import factoryReset from '@graphql/mutations/factoryReset';
+import getData from '@graphql/queries/data.get';
 import getDevice from '@graphql/queries/device.get';
 import getDeviceBlueprint from '@graphql/queries/device-blueprint.get';
 import getDeviceStats from '@graphql/queries/device.getStats';
@@ -143,6 +144,19 @@ export class AppSyncService {
         const _self = this;
         const obs: any = _self.amplifyService.api().graphql({ query: subscription.loc.source.body, variables: params });
         return obs;
+    }
+
+    // Admin
+    public getData(thingName: string, metricName: string, timeAgoInSecs: number) {
+        return this.query(getData, { thingName: thingName, metricName: metricName, timeAgoInSecs: timeAgoInSecs }).then(
+            r => {
+                return r.data.getData.Data.map(d => {
+                    // d.data = JSON.parse(d.data);
+                    // return d;
+                    return JSON.parse(d.Data);
+                });
+            }
+        );
     }
 
     // Admin

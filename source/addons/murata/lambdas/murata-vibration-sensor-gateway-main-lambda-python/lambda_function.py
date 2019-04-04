@@ -27,7 +27,7 @@ def SENSOR_NODE_DATA_TOPIC(nodeId="UNKNOWN"):
     return '{0}/{1}/{2}/data'.format(PREFIX, THING_NAME, nodeId)
 
 def SENSOR_NODE_PRESENCE_TOPIC(nodeId="UNKNOWN"):
-    return '{0}/{1}/presence/{2}'.format(PREFIX, THING_NAME, nodeId)
+    return '{0}/{1}/{2}/presence'.format(PREFIX, THING_NAME, nodeId)
 
 print('Murata Lambda function starting')
 print('THING_NAME:                   {}'.format(THING_NAME))
