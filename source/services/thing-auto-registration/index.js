@@ -69,7 +69,8 @@ function handler(event, context, callback) {
                                 console.log('Check if the new timestamp is after existing one');
 
                                 let newMomentTimestamp = moment(event.timestamp);
-                                if (_device.hasOwnProperty('connectionState') && _device.connectionState.hasOwnProperty('at')) {
+                                
+                                if (_device && _device.hasOwnProperty('connectionState') && _device.connectionState.hasOwnProperty('at')) {
                                     let oldMomentTimestamp = moment(_device.connectionState.at);
                                     if (oldMomentTimestamp.isAfter(newMomentTimestamp)) {
                                         console.log('Skip update because MQTT messages are swapped');
