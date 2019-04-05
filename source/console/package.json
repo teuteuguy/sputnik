@@ -28,6 +28,7 @@
     "aws-amplify-angular": "^2.1.9",
     "chart.js": "^2.8.0",
     "chartjs-plugin-annotation": "^0.5.7",
+    "chartjs-plugin-draggable": "^0.1.6",
     "core-js": "^2.5.4",
     "fs-extra": "^7.0.1",
     "graphql": "^14.0.2",

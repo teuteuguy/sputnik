@@ -6,11 +6,12 @@
             </card-title>
             <card-text #text>
                 <div class="text-center">
-                    <app-gauge id="battery" [minValue]="battery.min" [maxValue]="battery.max" [value]="battery.value"
-                        [opts]="battery.options" [animationSpeed]="10" class="text-overflow-center">
+                    <app-gauge id="batteryGauge" [minValue]="batteryGauge.min" [maxValue]="batteryGauge.max"
+                        [value]="batteryGauge.value"
+                        [opts]="batteryGauge.options" [animationSpeed]="10" class="text-overflow-center">
                     </app-gauge>
                 </div>
-                <div class="text-center">{{battery.value}}V</div>
+                <div class="text-center">{{batteryGauge.value}}V</div>
             </card-text>
         </app-card>
     </div>
@@ -96,7 +97,25 @@
             </div>
         </div>
     </div> -->
-    <div class="col-lg-6 col-md-12">
+    <app-murata-temperature-graph *ngIf="reported.surfaceTemperature" class="col-lg-6 col-md-12" 
+        [device]="device"
+        [surfaceTemperatureHigh]="desired.thresholds.surfaceTemperatureHigh || 50" 
+        [surfaceTemperatureLow]="desired.thresholds.surfaceTemperatureLow || 20" 
+        [surfaceTemperature]="reported.surfaceTemperature" 
+        [data]="graphs.surfaceTemperature"
+        [labels]="graphs.labels" 
+        (thresholdChanged)="onTemperatureUpdate($event[0], $event[1])">
+    </app-murata-temperature-graph>
+    <app-murata-battery-graph *ngIf="reported.batteryVoltage" class="col-lg-6 col-md-12"
+        [batteryMin]="2.2"
+        [batteryMax]="3.6"
+        [batteryLow]="2.7"
+        [batteryVLow]="2.5"
+        [batteryVoltage]="reported.batteryVoltage"
+        [data]="graphs.batteryVoltage"
+        [labels]="graphs.labels">
+    </app-murata-battery-graph>
+    <!-- <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">Temperature<div class="pull-right" role="group">
@@ -114,7 +133,7 @@
     <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">
-                <h5 class="card-title">Frequencies</h5> 
+                <h5 class="card-title">Frequencies</h5>
                 <h6 class="card-subtitle mb-2 text-muted">
                     <div class="row">
                         <div class="col-1"></div>
@@ -125,7 +144,7 @@
                         <div class="col-2 text-center">{{reported.frequencies[4]}}Hz</div>
                         <div class="col-1"></div>
                     </div>
-                </h6>               
+                </h6>
                 <div class="card-text">
                     <canvas baseChart [datasets]="[{data: graphs.frequencies[0], label: 'F1', fill: false}, {data: graphs.frequencies[1], label: 'F2', fill: false}, {data: graphs.frequencies[2], label: 'F3', fill: false}, {data: graphs.frequencies[3], label: 'F4', fill: false}, {data: graphs.frequencies[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
                         [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
@@ -148,7 +167,7 @@
                         <div class="col-2 text-center">{{reported.accels[4]}}</div>
                         <div class="col-1"></div>
                     </div>
-                </h6>          
+                </h6>
                 <div class="card-text">
                     <canvas baseChart [datasets]="[{data: graphs.accels[0], label: 'F1', fill: false}, {data: graphs.accels[1], label: 'F2', fill: false}, {data: graphs.accels[2], label: 'F3', fill: false}, {data: graphs.accels[3], label: 'F4', fill: false}, {data: graphs.accels[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
                         [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
@@ -171,5 +190,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
