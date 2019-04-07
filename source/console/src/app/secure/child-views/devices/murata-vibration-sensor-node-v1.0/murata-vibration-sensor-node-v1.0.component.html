@@ -7,11 +7,11 @@
             <card-text #text>
                 <div class="text-center">
                     <app-gauge id="batteryGauge" [minValue]="batteryGauge.min" [maxValue]="batteryGauge.max"
-                        [value]="batteryGauge.value"
-                        [opts]="batteryGauge.options" [animationSpeed]="10" class="text-overflow-center">
+                        [value]="batteryGauge.value" [opts]="batteryGauge.options" [animationSpeed]="10"
+                        class="text-overflow-center">
                     </app-gauge>
                 </div>
-                <div class="text-center">{{batteryGauge.value}}V</div>
+                <div class="text-center">{{batteryGauge.value | number:'.2'}}V</div>
             </card-text>
         </app-card>
     </div>
@@ -21,7 +21,7 @@
                 <div class="text-center text-uppercase">Temperature</div>
             </card-title>
             <card-text #text>
-                <div class="text-overflow-center" style="font-size: 48px;">{{reported.surfaceTemperature | number:'.1'}}
+                <div class="text-overflow-center" style="font-size: 48px;">{{reported.surfaceTemperature | number:'.2'}}
                 </div>
                 <div class="text-center">°C</div>
             </card-text>
@@ -97,35 +97,61 @@
             </div>
         </div>
     </div> -->
-    <app-murata-temperature-graph *ngIf="reported.surfaceTemperature" class="col-lg-6 col-md-12" 
-        [device]="device"
-        [surfaceTemperatureHigh]="desired.thresholds.surfaceTemperatureHigh || 50" 
-        [surfaceTemperatureLow]="desired.thresholds.surfaceTemperatureLow || 20" 
-        [surfaceTemperature]="reported.surfaceTemperature" 
-        [data]="graphs.surfaceTemperature"
-        [labels]="graphs.labels" 
-        (thresholdChanged)="onTemperatureUpdate($event[0], $event[1])">
-    </app-murata-temperature-graph>
-    <app-murata-battery-graph *ngIf="reported.batteryVoltage" class="col-lg-6 col-md-12"
-        [batteryMin]="2.2"
-        [batteryMax]="3.6"
-        [batteryLow]="2.7"
-        [batteryVLow]="2.5"
-        [batteryVoltage]="reported.batteryVoltage"
-        [data]="graphs.batteryVoltage"
-        [labels]="graphs.labels">
-    </app-murata-battery-graph>
-    <!-- <div class="col-lg-6 col-md-12">
+    <!-- <app-murata-temperature-graph *ngIf="reported.surfaceTemperature != undefined" class="col-lg-6 col-md-12"
+        title="Temperature"
+        unit="°C" [device]="device" [value]="reported.surfaceTemperature" [data]="graphs.surfaceTemperature"
+        [labels]="graphs.labels" [surfaceTemperatureHigh]="desired.thresholds.surfaceTemperatureHigh || 50"
+        [surfaceTemperatureLow]="desired.thresholds.surfaceTemperatureLow || 20"
+        (thresholdChanged)="onTemperatureUpdate($event)">
+    </app-murata-temperature-graph> -->
+
+    <app-murata-line-graph *ngIf="reported.rms != undefined" class="col-lg-6 col-md-12" title="RMS" unit="m/s2"
+        [device]="device" [value]="reported.rms" [data]="graphs.rms"
+        [labels]="graphs.labels" [high]="desired.thresholds.rmsHigh || 2"
+        [low]="desired.thresholds.rmsLow || -2"
+        (thresholdChanged)="onRMSUpdate($event)">
+    </app-murata-line-graph>
+
+    <app-murata-line-graph *ngIf="reported.kurtosis != undefined" class="col-lg-6 col-md-12" title="Kurtosis"
+        [device]="device" [value]="reported.kurtosis" [data]="graphs.kurtosis" [labels]="graphs.labels"
+        [high]="desired.thresholds.kurtosisHigh || 2" [low]="desired.thresholds.kurtosisLow || -2"
+        (thresholdChanged)="onKurtosisUpdate($event)">
+    </app-murata-line-graph>
+
+    <app-murata-line-graph *ngIf="reported.surfaceTemperature != undefined" class="col-lg-6 col-md-12"
+        title="Temperature" unit="°C" [device]="device" [value]="reported.surfaceTemperature" [data]="graphs.surfaceTemperature"
+        [labels]="graphs.labels" [high]="desired.thresholds.surfaceTemperatureHigh || 50"
+        [low]="desired.thresholds.surfaceTemperatureLow || 20" (thresholdChanged)="onTemperatureUpdate($event)">
+    </app-murata-line-graph>
+
+    <app-murata-line-graph *ngIf="reported.batteryVoltage != undefined" class="col-lg-6 col-md-12"
+        title="Battery" unit="V" [device]="device" [value]="reported.batteryVoltage"
+        [data]="graphs.batteryVoltage" [labels]="graphs.labels"
+        [low]="desired.thresholds.batteryVoltageLow || 2.7" (thresholdChanged)="onBatteryUpdate($event)">
+    </app-murata-line-graph>
+
+    <!-- <app-murata-battery-graph *ngIf="reported.batteryVoltage != undefined" class="col-lg-6 col-md-12" title="Battery"
+        unit="V"
+        [device]="device" [value]="reported.batteryVoltage" [data]="graphs.batteryVoltage" [labels]="graphs.labels"
+        [batteryMin]="2.2" [batteryMax]="3.6" [batteryVoltageLow]="desired.thresholds.batteryVoltageLow || 2.7"
+        [batteryVoltageVeryLow]="2.5">
+    </app-murata-battery-graph> -->
+    <div class="col-lg-6 col-md-12">
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">Temperature<div class="pull-right" role="group">
-                        Battery</div></h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{reported.surfaceTemperature | number:'.1'}}°C<div class="pull-right" role="group">
-                        {{reported.batteryVoltage}}V</div></h6>
+                        Battery</div>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{reported.surfaceTemperature | number:'.1'}}°C<div
+                        class="pull-right" role="group">
+                        {{reported.batteryVoltage}}V</div>
+                </h6>
                 <div class="card-text">
-                    <canvas baseChart [datasets]="[{data: graphs.surfaceTemperature, label: 'Surface temperature', fill: false}, {data: graphs.batteryVoltage, label: 'Battery', yAxisID: 'y-axis-1', fill: false}]" [labels]="graphs.labels"
-                        [options]="tempAndBattLineChart.options" [colors]="tempAndBattLineChart.colors"
-                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                    <canvas baseChart
+                        [datasets]="[{data: graphs.surfaceTemperature, label: 'Surface temperature', fill: false}, {data: graphs.batteryVoltage, label: 'Battery', yAxisID: 'y-axis-1', fill: false}]"
+                        [labels]="graphs.labels" [options]="tempAndBattLineChart.options"
+                        [colors]="tempAndBattLineChart.colors" [legend]="true" [chartType]="'line'"
+                        [plugins]="lineChartPlugins"></canvas>
                 </div>
             </div>
         </div>
@@ -146,9 +172,11 @@
                     </div>
                 </h6>
                 <div class="card-text">
-                    <canvas baseChart [datasets]="[{data: graphs.frequencies[0], label: 'F1', fill: false}, {data: graphs.frequencies[1], label: 'F2', fill: false}, {data: graphs.frequencies[2], label: 'F3', fill: false}, {data: graphs.frequencies[3], label: 'F4', fill: false}, {data: graphs.frequencies[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
-                        [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
-                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                    <canvas baseChart
+                        [datasets]="[{data: graphs.frequencies[0], label: 'F1', fill: false}, {data: graphs.frequencies[1], label: 'F2', fill: false}, {data: graphs.frequencies[2], label: 'F3', fill: false}, {data: graphs.frequencies[3], label: 'F4', fill: false}, {data: graphs.frequencies[4], label: 'F5', fill: false}]"
+                        [labels]="graphs.labels" [options]="frequenciesLineChart.options"
+                        [colors]="frequenciesLineChart.colors" [legend]="true" [chartType]="'line'"
+                        [plugins]="lineChartPlugins"></canvas>
                 </div>
             </div>
         </div>
@@ -169,9 +197,11 @@
                     </div>
                 </h6>
                 <div class="card-text">
-                    <canvas baseChart [datasets]="[{data: graphs.accels[0], label: 'F1', fill: false}, {data: graphs.accels[1], label: 'F2', fill: false}, {data: graphs.accels[2], label: 'F3', fill: false}, {data: graphs.accels[3], label: 'F4', fill: false}, {data: graphs.accels[4], label: 'F5', fill: false}]" [labels]="graphs.labels"
-                        [options]="frequenciesLineChart.options" [colors]="frequenciesLineChart.colors"
-                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                    <canvas baseChart
+                        [datasets]="[{data: graphs.accels[0], label: 'F1', fill: false}, {data: graphs.accels[1], label: 'F2', fill: false}, {data: graphs.accels[2], label: 'F3', fill: false}, {data: graphs.accels[3], label: 'F4', fill: false}, {data: graphs.accels[4], label: 'F5', fill: false}]"
+                        [labels]="graphs.labels" [options]="frequenciesLineChart.options"
+                        [colors]="frequenciesLineChart.colors" [legend]="true" [chartType]="'line'"
+                        [plugins]="lineChartPlugins"></canvas>
                 </div>
             </div>
         </div>
@@ -180,15 +210,20 @@
         <div class="card card-outline-info">
             <div class="card-body">
                 <h5 class="card-title">RMS<div class="pull-right" role="group">
-                        Kurtosis</div></h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{reported.rms | number:'.2'}}m/s2<div class="pull-right" role="group">
-                        {{reported.kurtosis | number:'.2'}}</div></h6>
+                        Kurtosis</div>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{reported.rms | number:'.2'}}m/s2<div class="pull-right"
+                        role="group">
+                        {{reported.kurtosis | number:'.2'}}</div>
+                </h6>
                 <div class="card-text">
-                    <canvas baseChart [datasets]="[{data: graphs.rms, label: 'RMS', fill: false}, {data: graphs.kurtosis, label: 'Kurtosis', yAxisID: 'y-axis-1', fill: false}]" [labels]="graphs.labels"
-                        [options]="rmsAndKurtosisLineChart.options" [colors]="rmsAndKurtosisLineChart.colors"
-                        [legend]="true" [chartType]="'line'" [plugins]="lineChartPlugins"></canvas>
+                    <canvas baseChart
+                        [datasets]="[{data: graphs.rms, label: 'RMS', fill: false}, {data: graphs.kurtosis, label: 'Kurtosis', yAxisID: 'y-axis-1', fill: false}]"
+                        [labels]="graphs.labels" [options]="rmsAndKurtosisLineChart.options"
+                        [colors]="rmsAndKurtosisLineChart.colors" [legend]="true" [chartType]="'line'"
+                        [plugins]="lineChartPlugins"></canvas>
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 </div>

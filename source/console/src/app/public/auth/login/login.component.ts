@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit, CognitoCallback { //, LoggedInCal
     }
 
     cognitoCallback(message: string, result: any) {
-        console.log('here');
         if (message != null) {
             // error
             this.errorMessage = message;

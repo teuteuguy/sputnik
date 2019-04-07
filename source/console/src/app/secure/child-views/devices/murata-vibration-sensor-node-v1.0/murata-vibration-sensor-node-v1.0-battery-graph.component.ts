@@ -2,6 +2,8 @@ import { Component, Input, OnInit, NgZone } from '@angular/core';
 import * as ChartPluginAnnotation from 'chartjs-plugin-annotation';
 import * as ChartPluginDraggable from 'chartjs-plugin-draggable';
 
+import { IOTService } from '@services/iot.service';
+import { MurataLineGraphComponent } from './murata-vibration-sensor-node-v1.0-line-graph.component';
 
 declare var $: any;
 
@@ -10,15 +12,17 @@ declare var $: any;
     template: `
         <div class="card card-outline-info">
             <div class="card-body">
-                <h5 class="card-title">Battery</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ batteryVoltage }}V</h6>
+                <h5 class="card-title">
+                    {{ title }}
+                    <div class="pull-right" role="group">{{ value | number: '.2' }}{{ unit }}</div>
+                </h5>
                 <div class="card-text">
                     <canvas
                         baseChart
                         [datasets]="[
                             {
                                 data: data,
-                                label: 'Battery Voltage',
+                                label: title,
                                 yAxisID: 'y-axis-0',
                                 fill: false,
                                 borderColor: 'rgb(0, 0, 255)',
@@ -37,87 +41,65 @@ declare var $: any;
         </div>
     `
 })
-export class MurataBatteryGraphComponent implements OnInit {
+export class MurataBatteryGraphComponent extends MurataLineGraphComponent implements OnInit {
     @Input() batteryMin: number;
     @Input() batteryMax: number;
-    @Input() batteryLow: number;
-    @Input() batteryVLow: number;
-    @Input() batteryVoltage: number;
-    @Input() labels: number;
-    @Input() data: [number];
+    @Input() batteryVoltageLow: number;
+    @Input() batteryVoltageVeryLow: number;
 
-    constructor() {}
-
-    public chartPlugins = [ChartPluginAnnotation, ChartPluginDraggable];
-    public options: any;
+    constructor(private iotService: IOTService) {
+        // super(iotService);
+        super();
+    }
 
     ngOnInit() {
         const self = this;
 
-        self.options = {
-            elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
-            tooltips: {
-                enabled: true
-            },
-            responsive: true,
-            scales: {
-                // We use this empty structure as a placeholder for dynamic theming.
-                xAxes: [
-                    {
-                        id: 'x-axis-0',
-                        position: 'bottom',
-                        ticks: {
-                            min: 0,
-                            max: 100
-                        }
-                    }
-                ],
-                yAxes: [
-                    {
-                        id: 'y-axis-0',
-                        position: 'left',
-                        ticks: {
-                            min: self.batteryMin,
-                            max: self.batteryMax
-                        }
-                    }
-                ]
-            },
-            annotation: {
-                events: ['click'],
-                annotations: [
-                    {
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y-axis-0',
-                        value: self.batteryVLow,
-                        borderColor: '#F03E3E',
-                        borderWidth: 1,
-                        label: {
-                            enabled: false,
-                            content: 'ZERO'
-                        }
-                    },
-                    {
-                        id: 'hline',
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y-axis-0',
-                        value: self.batteryLow,
-                        borderColor: '#FFDD00',
-                        borderWidth: 1,
-                        label: {
-                            backgroundColor: '#FFDD00',
-                            enabled: true,
-                            content: 'Low Voltage'
-                        },
-                        draggable: true,
-                        onDragEnd: e => {
-                            console.log(e.subject.config.value);
-                        }
-                    }
-                ]
+        self.options.scales.yAxes = [
+            {
+                id: 'y-axis-0',
+                position: 'left',
+                ticks: {
+                    min: self.batteryMin,
+                    max: self.batteryMax
+                }
             }
-        };
+        ];
+        self.options.annotation.annotations = [
+            {
+                type: 'line',
+                mode: 'horizontal',
+                scaleID: 'y-axis-0',
+                value: self.batteryVoltageVeryLow,
+                borderColor: '#F03E3E',
+                borderWidth: 1,
+                label: {
+                    enabled: false,
+                    content: 'ZERO'
+                }
+            },
+            {
+                id: 'hline',
+                type: 'line',
+                mode: 'horizontal',
+                scaleID: 'y-axis-0',
+                value: self.batteryVoltageLow,
+                borderColor: '#FFDD00',
+                borderWidth: 1,
+                label: {
+                    backgroundColor: '#FFDD00',
+                    enabled: true,
+                    content: 'Low Voltage'
+                },
+                draggable: true,
+                onDragEnd: e => {
+                    // console.log(e.subject.config.value);
+                    self.batteryVoltageLow = e.subject.config.value;
+                    self.updateThresholds({
+                        batteryVoltageLow: self.batteryVoltageLow
+                    });
+                }
+            }
+        ];
     }
 }

@@ -7,10 +7,12 @@ from threading import Thread, Timer, Event
 
 from murata import Murata
 
+
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
         return os.environ[name]
     return default
+
 
 THING_NAME = get_parameter("AWS_IOT_THING_NAME", "UNKNOWN")
 SERIAL_PORT = get_parameter("SERIAL_PORT", "UNKNOWN")
@@ -26,8 +28,10 @@ MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID = "murata-vibration-sensor-node-v1.0"
 def SENSOR_NODE_DATA_TOPIC(nodeId="UNKNOWN"):
     return '{0}/{1}/{2}/data'.format(PREFIX, THING_NAME, nodeId)
 
+
 def SENSOR_NODE_PRESENCE_TOPIC(nodeId="UNKNOWN"):
     return '{0}/{1}/{2}/presence'.format(PREFIX, THING_NAME, nodeId)
+
 
 print('Murata Lambda function starting')
 print('THING_NAME:                   {}'.format(THING_NAME))
@@ -37,6 +41,7 @@ print('SHADOW_UPDATE_DELTA_TOPIC:    {}'.format(SHADOW_UPDATE_DELTA_TOPIC))
 print('SENSOR_NODE_DATA_TOPIC:       {}'.format(SENSOR_NODE_DATA_TOPIC()))
 
 GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
+
 
 def updateThingShadow(state):
     GGIOT.updateThingShadow(payload={
@@ -56,6 +61,7 @@ def publishNodePresence(nodeId):
 
 
 MURATA = Murata()
+
 
 class MainThread(Thread):
     def __init__(self):
@@ -104,6 +110,11 @@ class MainThread(Thread):
                         if nodeId not in self.nodes:
                             publishNodePresence(nodeId)
                             self.nodes.append(nodeId)
+                            updateThingShadow({
+                                "reported": {
+                                    "nodes": self.nodes
+                                }
+                            })
 
                 if self.mode == "scan":
                     print("Scan mode: Enter:")
@@ -169,8 +180,10 @@ class MainThread(Thread):
             }
         })
 
+
 mainThread = MainThread()
 mainThread.start()
+
 
 def lambda_handler(event, context):
     topic = context.client_context.custom["subject"]
@@ -197,5 +210,3 @@ def lambda_handler(event, context):
             mainThread.setConfig(config)
 
     return
-
-

@@ -12,10 +12,8 @@ declare var $: any;
     template: `
         <div class="card card-outline-info">
             <div class="card-body">
-                <h5 class="card-title">
-                    {{ title }}
-                    <div class="pull-right" role="group">{{ value | number: '.2' }}{{ unit }}</div>
-                </h5>
+                <h5 class="card-title">{{ title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ value | number: '.2' }}{{ unit }}</h6>
                 <div class="card-text">
                     <canvas
                         baseChart
@@ -41,9 +39,9 @@ declare var $: any;
         </div>
     `
 })
-export class MurataTemperatureGraphComponent extends MurataLineGraphComponent implements OnInit {
-    @Input() surfaceTemperatureHigh: number;
-    @Input() surfaceTemperatureLow: number;
+export class MurataRMSGraphComponent extends MurataLineGraphComponent implements OnInit {
+    @Input() rmsHigh: number;
+    @Input() rmsLow: number;
 
     constructor(private iotService: IOTService) {
         // super(iotService);
@@ -58,8 +56,8 @@ export class MurataTemperatureGraphComponent extends MurataLineGraphComponent im
                 id: 'y-axis-0',
                 position: 'left',
                 ticks: {
-                    min: 0,
-                    max: Math.max(self.surfaceTemperatureHigh, self.value) * 1.25
+                    min: Math.sign(Math.min(self.rmsLow, self.value)) * Math.abs(Math.min(self.rmsLow, self.value)) * 1.25,
+                    max: Math.max(self.rmsHigh, self.value) * 1.25
                 }
             }
         ];
@@ -70,7 +68,7 @@ export class MurataTemperatureGraphComponent extends MurataLineGraphComponent im
                 type: 'line',
                 mode: 'horizontal',
                 scaleID: 'y-axis-0',
-                value: self.surfaceTemperatureLow,
+                value: self.rmsLow,
                 borderColor: 'rgb(255, 0, 0)',
                 borderWidth: 1,
                 label: {
@@ -81,10 +79,10 @@ export class MurataTemperatureGraphComponent extends MurataLineGraphComponent im
                 draggable: true,
                 onDragEnd: e => {
                     // console.log(e.subject.config.value);
-                    self.surfaceTemperatureLow = e.subject.config.value;
+                    self.rmsLow = e.subject.config.value;
                     self.updateThresholds({
-                        surfaceTemperatureHigh: self.surfaceTemperatureHigh,
-                        surfaceTemperatureLow: self.surfaceTemperatureLow
+                        rmsHigh: self.rmsHigh,
+                        rmsLow: self.rmsLow
                     });
                 }
             },
@@ -93,7 +91,7 @@ export class MurataTemperatureGraphComponent extends MurataLineGraphComponent im
                 type: 'line',
                 mode: 'horizontal',
                 scaleID: 'y-axis-0',
-                value: self.surfaceTemperatureHigh,
+                value: self.rmsHigh,
                 borderColor: 'rgb(255, 0, 0)',
                 borderWidth: 1,
                 label: {
@@ -104,10 +102,10 @@ export class MurataTemperatureGraphComponent extends MurataLineGraphComponent im
                 draggable: true,
                 onDragEnd: e => {
                     // console.log(e.subject.config.value);
-                    self.surfaceTemperatureHigh = e.subject.config.value;
+                    self.rmsHigh = e.subject.config.value;
                     self.updateThresholds({
-                        surfaceTemperatureHigh: self.surfaceTemperatureHigh,
-                        surfaceTemperatureLow: self.surfaceTemperatureLow
+                        rmsHigh: self.rmsHigh,
+                        rmsLow: self.rmsLow
                     });
                 }
             }
