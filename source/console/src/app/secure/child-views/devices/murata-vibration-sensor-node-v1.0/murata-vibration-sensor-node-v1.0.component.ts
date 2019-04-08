@@ -36,17 +36,17 @@ export class MurataNodeData {
     }
 }
 
-const BATTERY_MIN = 2.2;
-const BATTERY_VLOW = 2.5;
-const BATTERY_LOW = 2.7;
-const BATTERY_MAX = 3.6;
-
 @Component({
     selector: 'app-murata-vibration-sensor-node-v1-0',
     templateUrl: './murata-vibration-sensor-node-v1.0.component.html'
 })
 export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
+
+    public BATTERY_MIN = 2.2;
+    public BATTERY_VLOW = 2.5;
+    public BATTERY_LOW = 2.7;
+    public BATTERY_MAX = 3.6;
 
     constructor(private iotService: IOTService, private appSyncService: AppSyncService, private ngZone: NgZone) {
         super(iotService);
@@ -56,36 +56,10 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
 
         this.desired.thresholds = {};
     }
-    public batteryGauge = {
-        min: BATTERY_MIN,
-        max: BATTERY_MAX,
-        percent: 0,
-        value: 0,
-        options: {
-            angle: 0,
-            lineWidth: 0.42,
-            radiusScale: 1,
-            pointer: { length: 0.64, strokeWidth: 0.04, color: '#000000' },
-            limitMax: true,
-            limitMin: true,
-            colorStart: '#009efb',
-            colorStop: '#009efb',
-            strokeColor: '#E0E0E0',
-            generateGradient: true,
-            highDpiSupport: true,
-            staticLabels: {
-                // font: "10px sans-serif",  // Specifies font
-                labels: [2.2, 2.5, 3.6], // Print labels at these values
-                color: '#000000', // Optional: Label text color
-                fractionDigits: 1 // Optional: Numerical precision. 0=round off.
-            },
-            staticZones: [
-                { strokeStyle: '#F03E3E', min: BATTERY_MIN, max: BATTERY_VLOW },
-                { strokeStyle: '#FFDD00', min: BATTERY_VLOW, max: BATTERY_LOW },
-                { strokeStyle: '#30B32D', min: BATTERY_LOW, max: BATTERY_MAX }
-            ]
-        }
-    };
+
+    public batteryGauge: any;
+
+    public batterySpecificAnnotations = [];
 
     public freqsBarChart = {
         options: {
@@ -105,194 +79,6 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
 
     public graphs: any;
 
-    public lineChartPlugins = [pluginAnnotations];
-    public tempAndBattLineChart = {
-        options: {
-            elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
-            tooltips: {
-                enabled: true
-            },
-            responsive: true,
-            scales: {
-                // We use this empty structure as a placeholder for dynamic theming.
-                xAxes: [{}],
-                yAxes: [
-                    {
-                        id: 'y-axis-0',
-                        position: 'left'
-                    },
-                    {
-                        id: 'y-axis-1',
-                        position: 'right',
-                        ticks: {
-                            min: BATTERY_MIN,
-                            max: BATTERY_MAX
-                        }
-                    }
-                ]
-            },
-            annotation: {
-                annotations: [
-                    {
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y-axis-1',
-                        value: BATTERY_VLOW,
-                        borderColor: '#F03E3E',
-                        borderWidth: 1,
-                        label: {
-                            enabled: false,
-                            content: 'low voltage'
-                        }
-                    },
-                    {
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y-axis-1',
-                        value: BATTERY_LOW,
-                        borderColor: '#FFDD00',
-                        borderWidth: 1,
-                        label: {
-                            enabled: false,
-                            content: 'low voltage'
-                        }
-                    }
-                ]
-            }
-        },
-        colors: [
-            {
-                // grey
-                backgroundColor: 'rgba(148,159,177,0.2)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-            },
-            {
-                // dark grey
-                backgroundColor: 'rgba(77,83,96,0.2)',
-                borderColor: 'rgba(77,83,96,1)',
-                pointBackgroundColor: 'rgba(77,83,96,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(77,83,96,1)'
-            }
-        ]
-    };
-
-    public rmsAndKurtosisLineChart = {
-        options: {
-            elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
-            tooltips: {
-                enabled: true
-            },
-            responsive: true,
-            scales: {
-                // We use this empty structure as a placeholder for dynamic theming.
-                xAxes: [{}],
-                yAxes: [
-                    {
-                        id: 'y-axis-0',
-                        position: 'left'
-                    },
-                    {
-                        id: 'y-axis-1',
-                        position: 'right'
-                    }
-                ]
-            }
-        },
-        colors: [
-            {
-                // grey
-                backgroundColor: 'rgba(148,159,177,0.2)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-            },
-            {
-                // dark grey
-                backgroundColor: 'rgba(77,83,96,0.2)',
-                borderColor: 'rgba(77,83,96,1)',
-                pointBackgroundColor: 'rgba(77,83,96,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(77,83,96,1)'
-            }
-        ]
-    };
-
-    public frequenciesLineChart = {
-        options: {
-            elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
-            tooltips: {
-                enabled: true
-            },
-            responsive: true,
-            scales: {
-                // We use this empty structure as a placeholder for dynamic theming.
-                xAxes: [{}],
-                yAxes: [
-                    {
-                        id: 'y-axis-0',
-                        position: 'left'
-                    }
-                ]
-            }
-        },
-        colors: [
-            {
-                // red
-                backgroundColor: 'rgba(255,0,0,0.2)',
-                borderColor: 'rgba(255,0,0,1)',
-                pointBackgroundColor: 'rgba(255,0,0,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(255,0,0,0.8)'
-            },
-            {
-                // green
-                backgroundColor: 'rgba(0,255,0,0.2)',
-                borderColor: 'rgba(0,255,0,1)',
-                pointBackgroundColor: 'rgba(0,255,0,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(0,255,0,0.8)'
-            },
-            {
-                // blue
-                backgroundColor: 'rgba(0,0,255,0.2)',
-                borderColor: 'rgba(0,0,255,1)',
-                pointBackgroundColor: 'rgba(0,0,255,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(0,0,255,0.8)'
-            },
-            {
-                // grey
-                backgroundColor: 'rgba(148,159,177,0.2)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-            },
-            {
-                // dark grey
-                backgroundColor: 'rgba(77,83,96,0.2)',
-                borderColor: 'rgba(77,83,96,1)',
-                pointBackgroundColor: 'rgba(77,83,96,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(77,83,96,1)'
-            }
-        ]
-    };
-
     ngOnInit() {
         const self = this;
 
@@ -307,6 +93,79 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
             frequencies: [[], [], [], [], []],
             accels: [[], [], [], [], []]
         };
+
+        self.batteryGauge = {
+            min: self.BATTERY_MIN,
+            max: self.BATTERY_MAX,
+            percent: 0,
+            value: 0,
+            options: {
+                angle: 0,
+                lineWidth: 0.42,
+                radiusScale: 1,
+                pointer: { length: 0.64, strokeWidth: 0.04, color: '#000000' },
+                limitMax: true,
+                limitMin: true,
+                colorStart: '#009efb',
+                colorStop: '#009efb',
+                strokeColor: '#E0E0E0',
+                generateGradient: true,
+                highDpiSupport: true,
+                staticLabels: {
+                    // font: "10px sans-serif",  // Specifies font
+                    labels: [2.2, 2.5, 3.6], // Print labels at these values
+                    color: '#000000', // Optional: Label text color
+                    fractionDigits: 1 // Optional: Numerical precision. 0=round off.
+                },
+                staticZones: [
+                    { strokeStyle: '#F03E3E', min: self.BATTERY_MIN, max: self.BATTERY_VLOW },
+                    { strokeStyle: '#FFDD00', min: self.BATTERY_VLOW, max: self.BATTERY_LOW },
+                    { strokeStyle: '#30B32D', min: self.BATTERY_LOW, max: self.BATTERY_MAX }
+                ]
+            }
+        };
+
+        self.batterySpecificAnnotations.push(
+            {
+                type: 'box',
+                drawTime: 'beforeDatasetsDraw',
+                id: 'battery-red-zone-box',
+                yScaleID: 'y-axis-0',
+                xMin: 0,
+                xMax: 0,
+                yMax: self.BATTERY_MIN,
+                yMin: 0,
+                borderColor: 'red',
+                borderWidth: 2,
+                backgroundColor: 'red'
+            },
+            {
+                type: 'box',
+                drawTime: 'beforeDatasetsDraw',
+                id: 'battery-yellow-zone-box',
+                yScaleID: 'y-axis-0',
+                xMin: 0,
+                xMax: 0,
+                yMax: self.BATTERY_MAX,
+                yMin: self.BATTERY_LOW,
+                borderColor: '#30B32D',
+                borderWidth: 2,
+                backgroundColor: '#30B32D'
+            },
+            {
+                type: 'box',
+                drawTime: 'beforeDatasetsDraw',
+                id: 'battery-green-zone-box',
+                yScaleID: 'y-axis-0',
+                xMin: 0,
+                xMax: 0,
+                yMax: self.BATTERY_LOW,
+                yMin: self.BATTERY_MIN,
+                borderColor: '#FFDD00',
+                borderWidth: 2,
+                backgroundColor: '#FFDD00'
+            }
+        );
 
         function defaultErrorCallback(err) {
             console.error('Error:', err);
@@ -363,7 +222,12 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
                     }
                 });
 
-                // console.log('Setup', this.graphs.timestamp.length, 'data points');
+                this.batterySpecificAnnotations.forEach(a => {
+                    a.xMin = Math.min.apply(Math, this.graphs.timestamp) - 1;
+                    a.xMax = Math.max.apply(Math, this.graphs.timestamp) + 1;
+                });
+
+                console.log('Setup', this.graphs.timestamp.length, 'data points', this.graphs);
                 // console.log('Graphs', this.graphs);
             })
             .catch(err => {

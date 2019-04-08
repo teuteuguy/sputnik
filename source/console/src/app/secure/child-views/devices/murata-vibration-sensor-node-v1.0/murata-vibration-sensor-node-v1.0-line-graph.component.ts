@@ -47,6 +47,9 @@ export class MurataLineGraphComponent implements OnInit {
     @Input() unit = '';
     @Input() labels: number;
     @Input() data: [number];
+    @Input() yMin: any;
+    @Input() yMax: any;
+    @Input() annotations: [any];
 
     @Output() thresholdChanged: EventEmitter<any> = new EventEmitter();
 
@@ -62,6 +65,13 @@ export class MurataLineGraphComponent implements OnInit {
         }
         if (this.high) {
             ticks['max'] = Math.abs(this.high - this.value) * 2 + this.value;
+        }
+
+        if (this.yMin) {
+            ticks['min'] = parseFloat(this.yMin);
+        }
+        if (this.yMax) {
+            ticks['max'] = parseFloat(this.yMax);
         }
 
         if (chart) {
@@ -81,7 +91,12 @@ export class MurataLineGraphComponent implements OnInit {
             responsive: true,
             scales: {
                 // We use this empty structure as a placeholder for dynamic theming.
-                xAxes: [{}],
+                xAxes: [
+                    {
+                        id: 'x-axis-0',
+                        position: 'bottom'
+                    }
+                ],
                 yAxes: [
                     {
                         id: 'y-axis-0',
@@ -108,7 +123,7 @@ export class MurataLineGraphComponent implements OnInit {
                 label: {
                     enabled: true,
                     backgroundColor: '#FF0000',
-                    content: 'Low Temperature'
+                    content: `Low ${this.title}`
                 },
                 draggable: true,
                 onDragEnd: e => {
@@ -131,7 +146,7 @@ export class MurataLineGraphComponent implements OnInit {
                 label: {
                     backgroundColor: '#FF0000',
                     enabled: true,
-                    content: 'High Temperature'
+                    content: `High ${this.title}`
                 },
                 draggable: true,
                 onDragEnd: e => {
@@ -143,9 +158,13 @@ export class MurataLineGraphComponent implements OnInit {
             });
         }
 
+        if (this.annotations) {
+            this.options.annotation.annotations.push(...this.annotations);
+        }
+
         this.setYAxeMinMax(null);
 
-        console.log(this.high, this.low, this.value, this.options.scales.yAxes[0].ticks);
+        // console.log(this.high, this.low, this.value, this.options.scales.yAxes[0].ticks);
     }
 
     protected updateThresholds() {
