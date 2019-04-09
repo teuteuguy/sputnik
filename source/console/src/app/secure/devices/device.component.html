@@ -22,10 +22,10 @@
                                 <h3>{{device.name}}</h3>
                             </div>
                         </div>
-                        <hr class="m-t-0 m-b-40">
+                        <!-- <hr class="m-t-0 m-b-40"> -->
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right ">Thing Name:</label>
                                     <div class="col-md-8">
                                         <p class="form-control-static">{{device.thingName}}</p>
@@ -33,7 +33,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right">Status:</label>
                                     <div class="col-md-8">
                                         <p class="form-control-static">
@@ -48,7 +48,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right ">Device Type:</label>
                                     <div class="col-md-8">
                                         <p class="form-control-static" *ngIf="device.deviceTypeId !== 'UNKNOWN'">
@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right">Created:</label>
                                     <div class="col-md-8">
                                         <p class="form-control-static">{{device.createdAt | moment:"MMM Do YYYY
@@ -75,7 +75,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right ">Device Blueprint:</label>
                                     <div class="col-md-8">
                                         <p *ngIf="device.deviceBlueprintId !== 'UNKNOWN'" class="form-control-static">
@@ -89,7 +89,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right">Updated:</label>
                                     <div class="col-md-8">
                                         <p class="form-control-static">{{device.updatedAt | moment:"MMM Do YYYY
@@ -100,7 +100,7 @@
                         </div>
                         <div class="row" *ngIf="device.cert && device.cert.at && device.cert.url && (device.cert.at | fromNowValue) < 300">
                             <div class="col-md-6">
-                                <div class="row">
+                                <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right ">Device Cert:</label>
                                     <div class="col-md-8">
                                         <a class="btn btn-success btn-sm m-l-10" data-toggle="tooltip" title="Download" href="{{device.cert.url}}" role="button" target="_blank">
