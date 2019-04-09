@@ -178,8 +178,17 @@ Resources:
         Properties:
             TopicRulePayload:
                 RuleDisabled: false
-                Sql: >-
-                    SELECT * FROM 'murata/+/+/presence'
+                Sql: !Join [ "", [
+                        "SELECT ",
+                        !Join [ ", ", [
+                            "concat('MURATA_', topic(3)) as thingName",
+                            "'addDevice' as cmd",
+                            "false as generateCert",
+                            "'murata-sensor-node-v1.0' as deviceTypeId",
+                            "'murata-vibration-sensor-node-v1.0' as deviceBlueprintId"
+                        ]],
+                        " FROM 'murata/+/+/presence'"
+                    ] ]
                 Actions:
                     - Lambda:
                         FunctionArn: !Ref lambdaServiceDevicesArn

@@ -19,6 +19,7 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
     private shadowObject = 'sense-hat';
 
     public sensors = {
+        magnitude: 0,
         humidity: 0,
         north: 0,
         pressure: 0,

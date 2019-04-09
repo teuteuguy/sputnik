@@ -21,8 +21,8 @@ PREFIX = "murata"
 SHADOW_UPDATE_ACCEPTED_TOPIC = '$aws/things/{0}/shadow/update/accepted'.format(THING_NAME)
 SHADOW_UPDATE_DELTA_TOPIC = '$aws/things/{0}/shadow/update/delta'.format(THING_NAME)
 
-MURATA_SENSOR_NODE_DEVICE_TYPE_ID = "murata-sensor-node-v1.0"
-MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID = "murata-vibration-sensor-node-v1.0"
+# MURATA_SENSOR_NODE_DEVICE_TYPE_ID = "murata-sensor-node-v1.0"
+# MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID = "murata-vibration-sensor-node-v1.0"
 
 
 def SENSOR_NODE_DATA_TOPIC(nodeId="UNKNOWN"):
@@ -50,14 +50,14 @@ def updateThingShadow(state):
 
 
 def publishNodePresence(nodeId):
-    GGIOT.publish(topic=SENSOR_NODE_PRESENCE_TOPIC(nodeId), payload={
-        "cmd": "addDevice",
-        "thingName":  "MURATA_{}".format(nodeId),
-        "generateCert": False,
-        "spec": {},
-        "deviceTypeId": MURATA_SENSOR_NODE_DEVICE_TYPE_ID,
-        "deviceBlueprintId": MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID
-    })
+    GGIOT.publish(topic=SENSOR_NODE_PRESENCE_TOPIC(nodeId), payload={})
+    #     "cmd": "addDevice",
+    #     "thingName":  "MURATA_{}".format(nodeId),
+    #     "generateCert": False,
+    #     "spec": {},
+    #     "deviceTypeId": MURATA_SENSOR_NODE_DEVICE_TYPE_ID,
+    #     "deviceBlueprintId": MURATA_SENSOR_NODE_DEVICE_BLUEPRINT_ID
+    # })
 
 
 MURATA = Murata()
