@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RPI3SenseHatDemoV10Component } from './rpi3-sense-hat-demo-v1-0.component';
 
 import { GaugeModule } from '../../../../common/modules/gauge/gauge.module';
+import { GraphLineModule } from '../../../../common/modules/graph-line/graph-line.module';
 
 // Pipes
 import { PipesModule } from '../../../../pipes/pipes.module';
@@ -11,7 +12,7 @@ import { PipesModule } from '../../../../pipes/pipes.module';
 @NgModule({
     declarations: [RPI3SenseHatDemoV10Component],
     exports: [RPI3SenseHatDemoV10Component],
-    imports: [PipesModule, CommonModule, GaugeModule],
+    imports: [PipesModule, CommonModule, GaugeModule, GraphLineModule],
     providers: []
 })
 export class RPI3SenseHatDemoV10Module {}

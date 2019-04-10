@@ -1,13 +1,13 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as ChartPluginAnnotation from 'chartjs-plugin-annotation';
 import * as ChartPluginDraggable from 'chartjs-plugin-draggable';
+import * as ChartPluginStreaming from 'chartjs-plugin-streaming';
 
-import { Device } from '@models/device.model';
-
-declare var $: any;
+import { ChartPoint } from 'chart.js';
+import { BaseChartDirective, Color, Label } from 'ng2-charts';
 
 @Component({
-    selector: 'app-murata-line-graph',
+    selector: 'app-graph-line',
     template: `
         <div class="card card-outline-info">
             <div class="card-body">
@@ -18,7 +18,7 @@ declare var $: any;
                         baseChart
                         [datasets]="[
                             {
-                                data: data,
+                                data: data || [],
                                 label: title,
                                 yAxisID: 'y-axis-0',
                                 fill: false,
@@ -38,24 +38,26 @@ declare var $: any;
         </div>
     `
 })
-export class MurataLineGraphComponent implements OnInit {
-    @Input() device: Device = new Device();
-    @Input() value: number;
+export class GraphLineComponent implements OnInit, OnChanges {
+    @Input() value: any;
     @Input() high: number;
     @Input() low: number;
     @Input() title: string;
     @Input() unit = '';
     @Input() labels: number;
-    @Input() data: [number];
+    @Input() data: number[];
     @Input() yMin: any;
     @Input() yMax: any;
-    @Input() annotations: [any];
+    @Input() annotations: any[];
+    @Input() type: String;
 
     @Output() thresholdChanged: EventEmitter<any> = new EventEmitter();
 
+    @ViewChild(BaseChartDirective) chart: BaseChartDirective;
+
     constructor() {}
 
-    public chartPlugins = [ChartPluginAnnotation, ChartPluginDraggable];
+    public chartPlugins = [ChartPluginAnnotation, ChartPluginDraggable, ChartPluginStreaming];
     public options: any;
 
     private setYAxeMinMax(chart) {
@@ -83,6 +85,7 @@ export class MurataLineGraphComponent implements OnInit {
     }
 
     ngOnInit() {
+
         this.options = {
             elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
             tooltips: {
@@ -158,13 +161,32 @@ export class MurataLineGraphComponent implements OnInit {
             });
         }
 
+        if (this.type === 'realtime') {
+
+            this.options.scales.xAxes[0].type = this.type;
+            this.options.scales.xAxes[0].realtime = {
+                delay: 2000
+            };
+        }
+
         if (this.annotations) {
             this.options.annotation.annotations.push(...this.annotations);
         }
 
         this.setYAxeMinMax(null);
+    }
 
-        // console.log(this.high, this.low, this.value, this.options.scales.yAxes[0].ticks);
+    ngOnChanges(changes: SimpleChanges) {
+        const currentValue = changes.value.currentValue;
+        if (this.chart.chart) {
+            (this.chart.chart.data.datasets[0].data as ChartPoint[]).push({
+                x: Date.now(),
+                y: currentValue
+            });
+            this.chart.chart.update({
+                preservation: true
+            });
+        }
     }
 
     protected updateThresholds() {

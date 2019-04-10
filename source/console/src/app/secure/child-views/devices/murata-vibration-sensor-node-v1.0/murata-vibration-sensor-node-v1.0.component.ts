@@ -191,6 +191,7 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
 
     private updateWidgets() {
         console.log(`Updating widgets for ${this.reported.messageId}`);
+        // console.log(`Reported state: ${JSON.stringify(this.reported, null, 2)}`);
         this.freqsBarChart.labels = this.reported.frequencies;
         this.freqsBarChart.data[0].data = this.reported.accels;
 
@@ -200,7 +201,7 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
         this.appSyncService
             .getData(this.device.thingName, 'graphdata', 24 * 3600)
             .then(data => {
-                // console.log('Received', data.length, 'data points.');
+                // console.log('Received', data.length, 'data points.', data);
 
                 _.each(data, d => {
                     let index = _.indexOf(this.graphs.timestamp, d.timestamp);
@@ -227,8 +228,6 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
                     a.xMax = Math.max.apply(Math, this.graphs.timestamp) + 1;
                 });
 
-                console.log('Setup', this.graphs.timestamp.length, 'data points', this.graphs);
-                // console.log('Graphs', this.graphs);
             })
             .catch(err => {
                 console.error(err);

@@ -9,6 +9,8 @@ import { Device } from '@models/device.model';
 // Services
 import { IOTService } from '@services/iot.service';
 
+const NBPOINTS = 10;
+
 @Component({
     selector: 'app-rpi3-sense-hat-demo-v1-0',
     templateUrl: './rpi3-sense-hat-demo-v1-0.component.html'
@@ -28,17 +30,6 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
             1: 0,
             2: 0
         }
-        // ,
-        // accel: {
-        //     yaw: 0,
-        //     roll: 0,
-        //     pitch: 0
-        // },
-        // orientation: {
-        //     yaw: 0,
-        //     roll: 0,
-        //     pitch: 0
-        // }
     };
 
     public northOpts = {
@@ -54,6 +45,9 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
         generateGradient: true,
         highDpiSupport: true
     };
+
+    public magnitudes = [];
+    public labels = [];
 
     constructor(private iotService: IOTService, private ngZone: NgZone) {
         super(iotService);
@@ -82,7 +76,6 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
                         Math.floor(((this.sensors.temperature['1'] + this.sensors.temperature['2']) * 10) / 2) / 10;
                     this.sensors.humidity = Math.floor(this.sensors.humidity * 10) / 10;
                     this.sensors.pressure = Math.floor(this.sensors.pressure * 10) / 10;
-                    // console.log(this.sensors.north);
                 },
                 onError: defaultErrorCallback
             }

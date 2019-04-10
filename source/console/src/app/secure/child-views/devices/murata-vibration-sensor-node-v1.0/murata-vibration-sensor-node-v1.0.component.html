@@ -64,33 +64,33 @@
         </app-card>
     </div>
 
-    <app-murata-line-graph *ngIf="reported.rms != undefined" class="col-lg-6 col-md-12" title="RMS" unit="m/s2"
-        [device]="device" [value]="reported.rms" [data]="graphs.rms"
+    <app-graph-line *ngIf="reported.rms != undefined" class="col-lg-6 col-md-12" title="RMS" unit="m/s2"
+        [value]="reported.rms" [data]="graphs.rms"
         [labels]="graphs.labels" [high]="desired.thresholds.rmsHigh || 2"
         [low]="desired.thresholds.rmsLow || -2"
         (thresholdChanged)="onRMSUpdate($event)">
-    </app-murata-line-graph>
+    </app-graph-line>
 
-    <app-murata-line-graph *ngIf="reported.kurtosis != undefined" class="col-lg-6 col-md-12" title="Kurtosis"
-        [device]="device" [value]="reported.kurtosis" [data]="graphs.kurtosis" [labels]="graphs.labels"
+    <app-graph-line *ngIf="reported.kurtosis != undefined" class="col-lg-6 col-md-12" title="Kurtosis"
+        [value]="reported.kurtosis" [data]="graphs.kurtosis" [labels]="graphs.labels"
         [high]="desired.thresholds.kurtosisHigh || 2" [low]="desired.thresholds.kurtosisLow || -2"
         (thresholdChanged)="onKurtosisUpdate($event)">
-    </app-murata-line-graph>
+    </app-graph-line>
 
-    <app-murata-line-graph *ngIf="reported.surfaceTemperature != undefined" class="col-lg-6 col-md-12"
-        title="Temperature" unit="°C" [device]="device" [value]="reported.surfaceTemperature" [data]="graphs.surfaceTemperature"
+    <app-graph-line *ngIf="reported.surfaceTemperature != undefined" class="col-lg-6 col-md-12"
+        title="Temperature" unit="°C" [value]="reported.surfaceTemperature" [data]="graphs.surfaceTemperature"
         [labels]="graphs.labels" [high]="desired.thresholds.surfaceTemperatureHigh || 50"
         [low]="desired.thresholds.surfaceTemperatureLow || 20" (thresholdChanged)="onTemperatureUpdate($event)">
-    </app-murata-line-graph>
+    </app-graph-line>
 
-    <app-murata-line-graph *ngIf="reported.batteryVoltage != undefined" class="col-lg-6 col-md-12"
-        title="Battery" unit="V" [device]="device" [value]="reported.batteryVoltage"
+    <app-graph-line *ngIf="reported.batteryVoltage != undefined" class="col-lg-6 col-md-12"
+        title="Battery" unit="V" [value]="reported.batteryVoltage"
         [data]="graphs.batteryVoltage" [labels]="graphs.labels"
         [low]="desired.thresholds.batteryVoltageLow || 2.7" (thresholdChanged)="onBatteryUpdate($event)"
         yMin="{{2}}" yMax="{{BATTERY_MAX}}" [annotations]="batterySpecificAnnotations">
-    </app-murata-line-graph>
+    </app-graph-line>
 
-    <div class="col-lg-6 col-md-12">
+    <div class="col-lg-6 col-md-12" *ngIf="reported.frequencies != undefined">
         <div class="card card-outline-info">
             <div class="card-body">
 

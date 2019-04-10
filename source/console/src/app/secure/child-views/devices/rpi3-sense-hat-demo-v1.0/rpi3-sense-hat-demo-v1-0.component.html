@@ -44,10 +44,10 @@
                         <div class="col-7" *ngIf="reported.led">
                             <div class="row" *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7]" style="margin-bottom: 2px;">
                                 <div class="col-1"></div>
-                                <div class="col-1" *ngFor="let value of reported.led.slice(i * 8, i * 8 + 8); let j = index"
+                                <div class="col-1"
+                                    *ngFor="let value of reported.led.slice(i * 8, i * 8 + 8); let j = index"
                                     [ngStyle]="{'margin-left': '2px', 'border': '1px solid ' + (desired.led[i * 8 + j] === reported.led[i * 8 + j] ?
-                                        'lightgray' : 'red'), 'height': '25px', 'background-color': getRGBString(value) }"
-                                    (click)="changeLed(i, j)"></div>
+                                        'lightgray' : 'red'), 'height': '25px', 'background-color': getRGBString(value) }" (click)="changeLed(i, j)"></div>
                                 <!-- <div class="col-2"></div> -->
                             </div>
                         </div>
@@ -75,4 +75,6 @@
             </div>
         </div>
     </div>
+    <app-graph-line class="col-lg-6 col-md-12" title="Magnitude" [value]="sensors.magnitude" type="realtime"></app-graph-line>
+
 </div>
