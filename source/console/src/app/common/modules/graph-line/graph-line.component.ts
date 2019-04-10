@@ -163,7 +163,8 @@ export class GraphLineComponent implements OnInit, OnChanges {
         if (this.type === 'realtime') {
             this.options.scales.xAxes[0].type = this.type;
             this.options.scales.xAxes[0].realtime = {
-                delay: 2000
+                delay: 2000,
+                duration: 60000
             };
         }
 
