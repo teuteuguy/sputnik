@@ -162,7 +162,7 @@ Resources:
                             -
                                 Effect: "Allow"
                                 Action: "iot:Publish"
-                                Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/murata/*/errors" ] ]
+                                Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/murata/*/*/errors" ] ]
 
     # IoT Rules - Add device on presence
     MurataThingAutoRegistrationTopicRuleLambdaInvocationPermission:
@@ -195,7 +195,7 @@ Resources:
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
-                        Topic: "murata/MURATA_${topic(3)}/errors"
+                        Topic: "murata/${topic(2)}/${topic(3)}/errors"
 
     # IoT Rules - Live data to shadow
     MurataThingSensorDataToShadowTopicRuleRole:
@@ -236,7 +236,7 @@ Resources:
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
-                        Topic: "murata/MURATA_${topic(3)}/errors"
+                        Topic: "murata/${topic(2)}/${topic(3)}/errors"
 
     # IoT Rules - Live data to dynamoDB
     MurataDataStoreTopicRuleRole:
@@ -282,7 +282,7 @@ Resources:
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
-                        Topic: "murata/MURATA_${topic(3)}/errors"
+                        Topic: "murata/${topic(2)}/${topic(3)}/errors"
 
 
     # IoT Rules - Thresholds management
@@ -380,7 +380,7 @@ Resources:
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
-                        Topic: "murata/MURATA_${topic(3)}/errors"
+                        Topic: "murata/${topic(2)}/${topic(3)}/errors"
     MurataThresholdsCalculateTopicRule:
         Type: 'AWS::IoT::TopicRule'
         Properties:
@@ -409,7 +409,7 @@ Resources:
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
-                        Topic: "murata/MURATA_${topic(3)}/errors"
+                        Topic: "murata/${topic(2)}/${topic(3)}/errors"
 
     #####################################################
     # Firehose to S3

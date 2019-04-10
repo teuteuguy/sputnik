@@ -85,7 +85,6 @@ export class GraphLineComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-
         this.options = {
             elements: { point: { hitRadius: 2, hoverRadius: 2, radius: 0 } },
             tooltips: {
@@ -162,7 +161,6 @@ export class GraphLineComponent implements OnInit, OnChanges {
         }
 
         if (this.type === 'realtime') {
-
             this.options.scales.xAxes[0].type = this.type;
             this.options.scales.xAxes[0].realtime = {
                 delay: 2000
@@ -177,15 +175,17 @@ export class GraphLineComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        const currentValue = changes.value.currentValue;
-        if (this.chart.chart) {
-            (this.chart.chart.data.datasets[0].data as ChartPoint[]).push({
-                x: Date.now(),
-                y: currentValue
-            });
-            this.chart.chart.update({
-                preservation: true
-            });
+        if (this.type === 'realtime') {
+            const currentValue = changes.value.currentValue;
+            if (this.chart.chart) {
+                (this.chart.chart.data.datasets[0].data as ChartPoint[]).push({
+                    x: Date.now(),
+                    y: currentValue
+                });
+                this.chart.chart.update({
+                    preservation: true
+                });
+            }
         }
     }
 
