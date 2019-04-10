@@ -403,6 +403,9 @@ Resources:
                     - Sns:
                         RoleArn: !GetAtt MurataThresholdsManagementTopicRuleRole.Arn
                         TargetArn: !Ref MurataThresholdsSNSTopic
+                    - Republish:
+                        RoleArn: !GetAtt MurataThresholdsManagementTopicRuleRole.Arn
+                        Topic: "murata/${topic(2)}/${topic(3)}/thresholdReached"
                 ErrorAction:
                     Republish:
                         RoleArn: !GetAtt MurataErrorTopicRuleRole.Arn
