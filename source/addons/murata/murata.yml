@@ -387,15 +387,15 @@ Resources:
             TopicRulePayload:
                 RuleDisabled: false
                 Sql: !Join [ "", [
-                        "SELECT topic(2) as gateway, topic(3) as thingname, * FROM 'murata/+/+/thresholdCheck' WHERE ",
+                        "SELECT topic(2) as gateway, topic(3) as thingname, , * FROM 'murata/+/+/thresholdCheck' WHERE ",
                         !Join [ " OR ", [
-                            "data.batteryVoltage < thresholds.batteryVoltageLow",
-                            "data.surfaceTemperature > thresholds.surfaceTemperatureHigh",
-                            "data.surfaceTemperature < thresholds.surfaceTemperatureLow",
-                            "data.kurtosis > thresholds.kurtosisHigh",
-                            "data.kurtosis < thresholds.kurtosisLow",
-                            "data.rms > thresholds.rmsHigh",
-                            "data.rms < thresholds.rmsLow",
+                            "(isUndefined(thresholds.batteryVoltageLow) = False AND data.batteryVoltage < thresholds.batteryVoltageLow)",
+                            "(isUndefined(thresholds.surfaceTemperatureHigh) = False AND data.surfaceTemperature > thresholds.surfaceTemperatureHigh)",
+                            "(isUndefined(thresholds.surfaceTemperatureLow) = False AND data.surfaceTemperature < thresholds.surfaceTemperatureLow)",
+                            "(isUndefined(thresholds.kurtosisHigh) = False AND data.kurtosis > thresholds.kurtosisHigh)",
+                            "(isUndefined(thresholds.kurtosisLow) = False AND data.kurtosis < thresholds.kurtosisLow)",
+                            "(isUndefined(thresholds.rmsHigh) = False AND data.rms > thresholds.rmsHigh)",
+                            "(isUndefined(thresholds.rmsLow) = False AND data.rms < thresholds.rmsLow)",
                         ]]
                     ] ]
                 AwsIotSqlVersion: '2016-03-23'
