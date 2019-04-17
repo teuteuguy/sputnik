@@ -201,7 +201,7 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
         this.appSyncService
             .getData(this.device.thingName, 'graphdata', 24 * 3600)
             .then(data => {
-                // console.log('Received', data.length, 'data points.', data);
+                console.log('Received', data.length, 'data points.');
 
                 _.each(data, d => {
                     let index = _.indexOf(this.graphs.timestamp, d.timestamp);
