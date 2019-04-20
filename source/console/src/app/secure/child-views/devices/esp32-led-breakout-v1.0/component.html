@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-lg-4 col-sm-12">
+        <app-card>
+            <card-title #title>LEDs</card-title>
+            <card-text #text>
+                <div *ngFor="let i of [0, 1, 2, 3, 4]" class="text-center">
+                    <input [value]="led[i]" [style.background]="led[i]" [cpOKButton]="true" [cpSaveClickOutside]="false"
+                        [cpOKButtonClass]="'btn btn-primary btn-xs'" [(colorPicker)]="led[i]"
+                        (colorPickerSelect)="updateLeds()" />
+                </div>
+            </card-text>
+        </app-card>
+    </div>
+
+    <app-graph-line *ngIf="reported.sensors != undefined" class="col-lg-6 col-md-12" title="Temperature" unit="°C"
+        [value]="reported.sensors.temperature" [data]="graphs.temperature" [labels]="graphs.labels">
+    </app-graph-line>
+    <app-graph-line *ngIf="reported.sensors != undefined" class="col-lg-6 col-md-12" title="Pressure" unit="P"
+        [value]="reported.sensors.pressure" [data]="graphs.pressure" [labels]="graphs.labels">
+    </app-graph-line>
+    <app-graph-line *ngIf="reported.sensors != undefined" class="col-lg-6 col-md-12" title="Humidity"
+        [value]="reported.sensors.humidity" [data]="graphs.humidity" [labels]="graphs.labels">
+    </app-graph-line>
+    <app-graph-line *ngIf="reported.sensors != undefined" class="col-lg-6 col-md-12" title="Illuminance"
+        [value]="reported.sensors.illuminance" [data]="graphs.illuminance" [labels]="graphs.labels">
+    </app-graph-line>
+
+</div>

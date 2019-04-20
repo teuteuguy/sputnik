@@ -5,6 +5,9 @@ import { Subscription } from 'rxjs';
 import { IOTService } from '@services/iot.service';
 
 import { _ } from 'underscore';
+import * as underscoreDeepExtend from 'underscore-deep-extend';
+
+_.mixin({ deepExtend: underscoreDeepExtend(_) });
 
 export class IoTSubscription {
     topic: string;
@@ -17,8 +20,8 @@ export class IoTSubscription {
     template: ''
 })
 export class IoTPubSuberComponent implements OnDestroy {
-    private subscriptions: Subscription = new Subscription();
-    private iotSubscriptions: IoTSubscription[];
+    private _subscriptions: Subscription = new Subscription();
+    private _iotSubscriptions: IoTSubscription[];
 
     public desired: any = {};
     public reported: any = {};
@@ -28,13 +31,13 @@ export class IoTPubSuberComponent implements OnDestroy {
 
     ngOnDestroy() {
         console.log('Unsubscribing to topics');
-        this.subscriptions.unsubscribe();
+        this._subscriptions.unsubscribe();
     }
 
-    protected subscribe(iotSubscriptions: IoTSubscription[]) {
-        this.iotSubscriptions = iotSubscriptions;
+    protected subscribe(_iotSubscriptions: IoTSubscription[]) {
+        this._iotSubscriptions = _iotSubscriptions;
         this._iotService.connectionObservable$.subscribe((connected: boolean) => {
-            console.log('Change of connection state: setting subscriptions');
+            console.log('Change of connection state: setting _subscriptions');
             this.setSubscriptions();
         });
         this.setSubscriptions();
@@ -42,9 +45,9 @@ export class IoTPubSuberComponent implements OnDestroy {
 
     private setSubscriptions() {
         if (this._iotService.isConnected) {
-            this.iotSubscriptions.forEach((sub: IoTSubscription) => {
+            this._iotSubscriptions.forEach((sub: IoTSubscription) => {
                 console.log('Subscribing to topic:', sub.topic);
-                this.subscriptions.add(this._iotService.subscribe(sub.topic, sub.onMessage, sub.onError));
+                this._subscriptions.add(this._iotService.subscribe(sub.topic, sub.onMessage, sub.onError));
             });
         } else {
             console.log('Not connected to AWS IoT: Cant subscribe');
@@ -53,20 +56,16 @@ export class IoTPubSuberComponent implements OnDestroy {
     protected updateIncomingShadow(incoming, shadowField = null) {
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('reported')) {
             if (shadowField !== null && incoming.state.reported.hasOwnProperty(shadowField)) {
-                _.extend(this.reported, incoming.state.reported[shadowField]);
-                // this.reported = incoming.state.reported[shadowField];
+                _.deepExtend(this.reported, incoming.state.reported[shadowField]);
             } else {
-                _.extend(this.reported, incoming.state.reported);
-                // this.reported = incoming.state.reported;
+                _.deepExtend(this.reported, incoming.state.reported);
             }
         }
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('desired')) {
             if (shadowField !== null && incoming.state.desired.hasOwnProperty(shadowField)) {
-                _.extend(this.desired, incoming.state.desired[shadowField]);
-                // this.desired = incoming.state.desired[shadowField];
+                _.deepExtend(this.desired, incoming.state.desired[shadowField]);
             } else {
-                _.extend(this.desired, incoming.state.desired);
-                // this.desired = incoming.state.desired;
+                _.deepExtend(this.desired, incoming.state.desired);
             }
         }
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('delta')) {

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Device } from '@models/device.model';
 
 // Devices
+import { DefaultModule } from './default/default.module';
 import { AFR3DBeltSerialV10Module } from './3d-belt-serial-v1.0/3d-belt-serial-v1-0.module';
 import { GGMLLegoHatsV10Module } from './gg-ml-lego-hats-v1.0/gg-ml-lego-hats.module';
 import { GGMLBoxesV10Module } from './gg-ml-boxes-v1.0/gg-ml-boxes.module';
@@ -12,63 +13,14 @@ import { ImageCaptureV10Module } from './image-capture-v1.0/image-capture.module
 import { GGMLDemoSqueezenetV10Module } from './gg-ml-demo-squeezenet-v1.0/gg-ml-demo-squeezenet-v1-0.module';
 import { ModelTrainerV10Module } from './model-trainer-v1.0/model-trainer.module';
 import { RPI3SenseHatDemoV10Module } from './rpi3-sense-hat-demo-v1.0/rpi3-sense-hat-demo-v1-0.module';
+import { ESP32LEDBreakoutModule } from './esp32-led-breakout-v1.0/module';
 
 import { MurataVibrationSensorGatewayV10Module } from './murata-vibration-sensor-gateway-v1.0/murata-vibration-sensor-gateway-v1-0.module';
 import { MurataVibrationSensorNodeV10Module } from './murata-vibration-sensor-node-v1.0/murata-vibration-sensor-node-v1.0.module';
 
-
 @Component({
     selector: 'app-device-child-view',
-    template: `
-        <app-3d-belt-serial-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === '3d-belt-serial-v1.0'"
-            [device]="device"
-        >
-        </app-3d-belt-serial-v1-0>
-        <app-gg-ml-lego-hats-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'gg-ml-lego-hats-v1.0'"
-            [device]="device"
-        >
-        </app-gg-ml-lego-hats-v1-0>
-        <app-gg-ml-boxes-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'gg-ml-boxes-v1.0'"
-            [device]="device"
-        >
-        </app-gg-ml-boxes-v1-0>
-        <app-image-capture-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'image-capture-v1.0'"
-            [device]="device"
-        >
-        </app-image-capture-v1-0>
-        <app-gg-ml-demo-squeezenet-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId === 'gg-ml-demo-squeezenet-v1.0'"
-            [device]="device"
-        >
-        </app-gg-ml-demo-squeezenet-v1-0>
-        <app-model-trainer-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId == 'model-trainer-v1.0'"
-            [device]="device"
-        >
-        </app-model-trainer-v1-0>
-        <app-rpi3-sense-hat-demo-v1-0
-            *ngIf="device && device.deviceBlueprintId && device.deviceBlueprintId == 'rpi3-sense-hat-demo-v1.0'"
-            [device]="device"
-        >
-        </app-rpi3-sense-hat-demo-v1-0>
-        <app-murata-vibration-sensor-gateway-v1-0
-            *ngIf="
-                device && device.deviceBlueprintId && device.deviceBlueprintId == 'murata-vibration-sensor-gateway-v1.0'
-            "
-            [device]="device"
-        >
-        </app-murata-vibration-sensor-gateway-v1-0>
-        <app-murata-vibration-sensor-node-v1-0
-            *ngIf="
-                device && device.deviceBlueprintId && device.deviceBlueprintId == 'murata-vibration-sensor-node-v1.0'
-            "
-            [device]="device"
-        ></app-murata-vibration-sensor-node-v1-0>
-    `
+    templateUrl: './device-child-views.component.html'
 })
 export class DeviceChildViewComponent {
     @Input()
@@ -80,7 +32,9 @@ export class DeviceChildViewComponent {
     exports: [DeviceChildViewComponent],
     imports: [
         CommonModule,
+        DefaultModule,
         AFR3DBeltSerialV10Module,
+        ESP32LEDBreakoutModule,
         GGMLLegoHatsV10Module,
         GGMLBoxesV10Module,
         ImageCaptureV10Module,

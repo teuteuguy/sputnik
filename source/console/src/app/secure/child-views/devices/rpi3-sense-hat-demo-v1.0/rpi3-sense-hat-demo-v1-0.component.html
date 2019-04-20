@@ -41,12 +41,13 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ device.name }}</h6>
                 <div class="card-text">
                     <div class="row">
-                        <div class="col-7" *ngIf="reported.led">
+                        <div class="col-7" *ngIf="desired.led">
                             <div class="row" *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7]" style="margin-bottom: 2px;">
                                 <div class="col-1"></div>
                                 <div class="col-1"
-                                    *ngFor="let value of reported.led.slice(i * 8, i * 8 + 8); let j = index"
-                                    [ngStyle]="{'margin-left': '2px', 'border': '1px solid ' + (desired.led[i * 8 + j] === reported.led[i * 8 + j] ?
+                                    *ngFor="let value of desired.led.slice(i * 8, i * 8 + 8); let j = index"
+                                    [ngStyle]="{'margin-left': '2px', 'border': '1px solid ' +
+                                    (desired.led[i * 8 + j] === reported.led[i * 8 + j] ?
                                         'lightgray' : 'red'), 'height': '25px', 'background-color': getRGBString(value) }" (click)="changeLed(i, j)"></div>
                                 <!-- <div class="col-2"></div> -->
                             </div>

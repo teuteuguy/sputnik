@@ -58,71 +58,28 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
             console.error('Error:', err);
         }
 
-        this.subscribe([
-            {
-                topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
-                onMessage: data => {
-                    this.ngZone.run(() => {
-                        this.updateIncomingShadow(data.value);
-                    });
+        this.getLastState(this.device.thingName, this.shadowObject).then(date => {
+            this.subscribe([
+                {
+                    topic: '$aws/things/' + this.device.thingName + '/shadow/update/accepted',
+                    onMessage: data => {
+                        this.updateIncomingShadow(data.value, this.shadowObject);
+                    },
+                    onError: defaultErrorCallback
                 },
-                onError: defaultErrorCallback
-            },
-            {
-                topic: 'sputnik/' + this.device.thingName + '/sensors',
-                onMessage: data => {
-                    this.sensors = data.value;
-                    this.sensors.temperature.temp =
-                        Math.floor(((this.sensors.temperature['1'] + this.sensors.temperature['2']) * 10) / 2) / 10;
-                    this.sensors.humidity = Math.floor(this.sensors.humidity * 10) / 10;
-                    this.sensors.pressure = Math.floor(this.sensors.pressure * 10) / 10;
-                },
-                onError: defaultErrorCallback
-            }
-        ]);
-
-        this.getLastState(this.device.thingName, this.shadowObject).then(data => {
-            // console.log('getLastState:', data);
-            // console.log(this.reported);
+                {
+                    topic: 'sputnik/' + this.device.thingName + '/sensors',
+                    onMessage: data => {
+                        this.sensors = data.value;
+                        this.sensors.temperature.temp =
+                            Math.floor(((this.sensors.temperature['1'] + this.sensors.temperature['2']) * 10) / 2) / 10;
+                        this.sensors.humidity = Math.floor(this.sensors.humidity * 10) / 10;
+                        this.sensors.pressure = Math.floor(this.sensors.pressure * 10) / 10;
+                    },
+                    onError: defaultErrorCallback
+                }
+            ]);
         });
-    }
-
-    desiredStateChange(button) {
-        // const desired = {
-        //     mode: button.mode,
-        //     speed: button.speed
-        // };
-        // this.iotService
-        //     .updateThingShadow({
-        //         thingName: this.device.thingName,
-        //         payload: JSON.stringify({
-        //             state: {
-        //                 desired: desired
-        //             }
-        //         })
-        //     })
-        //     .then(result => {
-        //         this.getLastState(this.device.thingName).then(data => {
-        //             // this.ngZone.run(() => {
-        //             //     // console.log('getLastState here:', data);
-        //             // });
-        //         });
-        //         // this.getLastState();
-        //         // console.log('updateThingShadow:', result);
-        //         // this.shadow = result;
-        //         // if (
-        //         //     this.shadow &&
-        //         //     this.shadow.hasOwnProperty('state') &&
-        //         //     this.shadow.state.hasOwnProperty('desired') &&
-        //         //     this.shadow.state.desired.hasOwnProperty('simpleCamera')
-        //         // ) {
-        //         //     this.simpleCamera = this.shadow.state.desired.simpleCamera;
-        //         // }
-        //         return result;
-        //     })
-        //     .catch(err => {
-        //         console.error(err);
-        //     });
     }
 
     public getRGBString(value) {
@@ -150,11 +107,11 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
                 })
             })
             .then(result => {
-                this.getLastState(this.device.thingName, this.shadowObject).then(data => {
-                    // this.ngZone.run(() => {
-                    //     // console.log('getLastState here:', data);
-                    // });
-                });
+                // this.getLastState(this.device.thingName, this.shadowObject).then(data => {
+                //     // this.ngZone.run(() => {
+                //     //     // console.log('getLastState here:', data);
+                //     // });
+                // });
                 // this.getLastState();
                 // console.log('updateThingShadow:', result);
                 // this.shadow = result;
