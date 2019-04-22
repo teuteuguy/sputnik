@@ -1,10 +1,11 @@
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { DefaultComponent } from './default.component';
 
-import { WidgetsModule } from '../widgets/widgets.module';
+// import { WidgetsModule } from '../../../../widgets/widgets.module';
+import { WidgetsModule } from '@app/widgets/widgets.module';
 
 // Pipes
 import { PipesModule } from '../../../../pipes/pipes.module';
@@ -19,6 +20,6 @@ import { PipesModule } from '../../../../pipes/pipes.module';
         WidgetsModule
     ],
     providers: [],
-    schemas: [NO_ERRORS_SCHEMA]
+    schemas: []
 })
 export class DefaultModule {}

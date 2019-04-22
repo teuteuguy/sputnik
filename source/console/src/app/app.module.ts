@@ -47,8 +47,6 @@ import { SettingsComponent } from './secure/settings/settings.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
 
-import { TestsComponent } from './secure/tests/tests.component';
-
 // Pipes
 import { PipesModule } from './pipes/pipes.module';
 
@@ -69,6 +67,10 @@ import { SolutionBlueprintsModule } from './secure/solution-blueprints/solution-
 
 // Solution Modules
 import { ChildViewsModule } from '@solutions/child-views.module';
+
+import { TestsModule } from './public/tests/tests.module';
+
+
 
 // Addons compilation
 export function createCompiler(fn: CompilerFactory): Compiler {
@@ -105,9 +107,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
         SecureHomeComponent,
         SettingsComponent,
         UserComponent,
-        UsersComponent,
-
-        TestsComponent
+        UsersComponent
     ],
     imports: [
         BrowserModule,
@@ -147,7 +147,9 @@ export function createCompiler(fn: CompilerFactory): Compiler {
         PipesModule,
 
         // Services
-        AppServicesModule
+        AppServicesModule,
+
+        TestsModule
 
         // .forRoot()
     ],

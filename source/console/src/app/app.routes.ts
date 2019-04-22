@@ -27,7 +27,7 @@ import { SettingsComponent } from './secure/settings/settings.component';
 import { UserComponent } from './secure/users/user.component';
 import { UsersComponent } from './secure/users/users.component';
 
-import { TestsComponent } from './secure/tests/tests.component';
+import { TestsComponent } from './public/tests/tests.component';
 
 
 import { UserLoginService } from './services/user-login.service';
@@ -49,7 +49,8 @@ const homeRoutes: Routes = [
             { path: 'resendCode', component: ResendCodeComponent },
             { path: 'forgotPassword/:email', component: ForgotPassword2Component },
             { path: 'forgotPassword', component: ForgotPasswordStep1Component },
-            { path: 'newPassword', component: NewPasswordComponent }
+            { path: 'newPassword', component: NewPasswordComponent },
+            { path: 'tests', component: TestsComponent }
         ]
     }
 ];
@@ -76,7 +77,6 @@ const secureHomeRoutes: Routes = [
             { path: 'settings', component: SettingsComponent },
             { path: 'users', component: UsersComponent },
             { path: 'users/:username', component: UserComponent },
-            { path: 'tests', component: TestsComponent },
 
             // Sub moduled paths :)
             { path: 'device-blueprints', redirectTo: '/securehome/device-blueprints', pathMatch: 'full' },

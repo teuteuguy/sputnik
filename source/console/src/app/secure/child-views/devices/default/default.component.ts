@@ -15,7 +15,7 @@ import { AppSyncService } from '@services/appsync.service';
 @Component({
     selector: 'app-default',
     template: `
-        <app-widgets *ngIf="widgets" [widgets]="widgets" [root]="root" class="row"></app-widgets>
+        <app-widgets *ngIf="widgets" [widgets]="widgets" [root]="root"></app-widgets>
     `
 })
 export class DefaultComponent extends IoTPubSuberComponent implements OnInit {

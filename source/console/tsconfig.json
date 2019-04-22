@@ -17,6 +17,7 @@
             "dom"
         ],
         "paths": {
+            "@app/*": ["./*"],
             "@assets/*": ["../assets/*"],
             "@common-components/*": ["common/components/*"],
             "@common-modules/*": ["common/modules/*"],
