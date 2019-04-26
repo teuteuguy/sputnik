@@ -1,8 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+import { Device } from '@models/device.model';
+
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 import { _ } from 'underscore';
 import * as underscoreDeepExtend from 'underscore-deep-extend';
@@ -15,19 +17,32 @@ export class IoTSubscription {
     onError: (data: any) => void;
 }
 
+export interface IoTPubSuber {
+    device: Device;
+
+    desired: any;
+    reported: any;
+    delta: any;
+
+    updateDesiredShadow(thingName: string, desiredState: any): Promise<void>;
+}
+
+
 @Component({
     selector: 'app-root-iot-pubsuber',
     template: ''
 })
-export class IoTPubSuberComponent implements OnDestroy {
+export class IoTPubSuberComponent implements OnDestroy, IoTPubSuber {
     private _subscriptions: Subscription = new Subscription();
     private _iotSubscriptions: IoTSubscription[];
+
+    @Input() device: Device = new Device();
 
     public desired: any = {};
     public reported: any = {};
     public delta: any = {};
 
-    constructor(private _iotService: IOTService) {}
+    constructor(private _iotService: IoTService) {}
 
     ngOnDestroy() {
         console.log('Unsubscribing to topics');
@@ -88,7 +103,7 @@ export class IoTPubSuberComponent implements OnDestroy {
             });
     }
 
-    protected updateDesiredShadow(thingName, desiredState) {
+    updateDesiredShadow(thingName, desiredState) {
         return this._iotService.updateThingShadow({
             thingName: thingName,
             payload: JSON.stringify({

@@ -15,6 +15,8 @@ import { CardWidgetComponent } from './card-widget.component';
 import { ColorPickerWidgetComponent } from './color-picker-widget.component';
 import { TextWidgetComponent } from './text-widget.component';
 
+// import { WidgetsService } from './widgets.service';
+
 // Pipes
 import { PipesModule } from '../pipes/pipes.module';
 
@@ -23,6 +25,7 @@ import { PipesModule } from '../pipes/pipes.module';
     entryComponents: [CardWidgetComponent, ColorPickerWidgetComponent, TextWidgetComponent],
     exports: [WidgetsComponent],
     imports: [PipesModule, CommonModule, FormsModule, CardModule, ColorPickerModule, GaugeModule, GraphLineModule],
+    // providers: [WidgetsService],
     providers: [],
     schemas: [NO_ERRORS_SCHEMA]
 })

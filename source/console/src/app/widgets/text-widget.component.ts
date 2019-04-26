@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 
-import { WidgetComponent } from './widget.component';
+import { Widget } from './widget.interface';
 
 @Component({
     template: `
-        <div>{{ data }}</div>
+        <div *ngIf="data">{{ data.value }}</div>
     `
 })
-export class TextWidgetComponent implements WidgetComponent {
-    @Input() root: any;
+export class TextWidgetComponent implements Widget {
+    @Input() parent: any;
     @Input() data: any;
 }
