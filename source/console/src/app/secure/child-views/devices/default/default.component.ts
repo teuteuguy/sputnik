@@ -9,24 +9,24 @@ import { Device } from '@models/device.model';
 import { DeviceBlueprint } from '@models/device-blueprint.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 import { AppSyncService } from '@services/appsync.service';
 
 @Component({
     selector: 'app-default',
     template: `
-        <app-widgets *ngIf="widgets" [widgets]="widgets" [root]="root"></app-widgets>
+        <app-widgets *ngIf="widgets" [widgets]="widgets" [parent]="self"></app-widgets>
     `
 })
 export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
-    constructor(private iotService: IOTService, private appSyncService: AppSyncService) {
+    constructor(private iotService: IoTService, private appSyncService: AppSyncService) {
         super(iotService);
     }
 
     public widgets: any[];
-    public root: any;
+    public self: any;
 
     ngOnInit() {
         const self = this;
@@ -50,8 +50,8 @@ export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
                     ]);
 
                     if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('view')) {
-                        self.root = self;
-                        self.widgets = deviceBlueprint.spec.view;
+                        self.self = self;
+                        self.widgets = deviceBlueprint.spec.widgets;
                     }
                 });
             })

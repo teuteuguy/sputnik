@@ -16,7 +16,7 @@ import { DeviceService } from './device.service';
 import { DeviceBlueprintService } from './device-blueprint.service';
 import { DeviceTypeService } from './device-type.service';
 import { FactoryResetService } from './factoryreset.service';
-import { IOTService } from './iot.service';
+import { IoTService } from './iot.service';
 import { SettingService } from './setting.service';
 import { SolutionService } from './solution.service';
 import { SolutionBlueprintService } from './solution-blueprint.service';
@@ -40,7 +40,7 @@ import { UserRegistrationService } from './user-registration.service';
         DeviceBlueprintService,
         DeviceTypeService,
         FactoryResetService,
-        IOTService,
+        IoTService,
         SettingService,
         SolutionService,
         SolutionBlueprintService,

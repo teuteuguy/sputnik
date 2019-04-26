@@ -14,7 +14,7 @@ import { Device } from '@models/device.model';
 import { Data } from '@models/data.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 import { AppSyncService } from '@services/appsync.service';
 
 declare var $: any;
@@ -48,7 +48,7 @@ export class MurataVibrationSensorNodeV10Component extends IoTPubSuberComponent 
     public BATTERY_LOW = 2.7;
     public BATTERY_MAX = 3.6;
 
-    constructor(private iotService: IOTService, private appSyncService: AppSyncService, private ngZone: NgZone) {
+    constructor(private iotService: IoTService, private appSyncService: AppSyncService, private ngZone: NgZone) {
         super(iotService);
 
         this.reported.frequencies = [];

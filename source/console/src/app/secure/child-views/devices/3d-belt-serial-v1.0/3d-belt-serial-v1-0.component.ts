@@ -7,7 +7,7 @@ import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
 import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-3d-belt-serial-v1-0',
@@ -54,7 +54,7 @@ export class AFR3DBeltSerialV10Component extends IoTPubSuberComponent implements
         }
     ];
 
-    constructor(private iotService: IOTService, private ngZone: NgZone) {
+    constructor(private iotService: IoTService, private ngZone: NgZone) {
         super(iotService);
     }
 

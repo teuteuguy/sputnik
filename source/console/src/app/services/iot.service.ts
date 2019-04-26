@@ -15,7 +15,7 @@ import updateThingShadow from '../graphql/mutations/iotdata-thing-shadow.update'
 declare var appVariables: any;
 
 @Injectable()
-export class IOTService {
+export class IoTService {
     private iot;
 
     private connectionSubject: any = new Subject<boolean>();

@@ -7,7 +7,7 @@ import { IoTPubSuberComponent } from '@common-secure/iot-pubsuber.component';
 import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-gg-ml-demo-squeezenet-v1-0',
@@ -18,7 +18,7 @@ export class GGMLDemoSqueezenetV10Component extends IoTPubSuberComponent impleme
     device: Device = new Device();
     latestData: any = null;
 
-    constructor(private iotService: IOTService) {
+    constructor(private iotService: IoTService) {
         super(iotService);
     }
 

@@ -14,7 +14,7 @@ import { Device } from '@models/device.model';
 import { Data } from '@models/data.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 import { AppSyncService } from '@services/appsync.service';
 
 declare var $: any;
@@ -26,7 +26,7 @@ declare var $: any;
 export class MyComponent extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
-    constructor(private iotService: IOTService, private appSyncService: AppSyncService, private ngZone: NgZone) {
+    constructor(private iotService: IoTService, private appSyncService: AppSyncService, private ngZone: NgZone) {
         super(iotService);
     }
 

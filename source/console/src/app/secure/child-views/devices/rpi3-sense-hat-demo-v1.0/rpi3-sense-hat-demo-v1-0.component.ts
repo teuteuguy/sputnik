@@ -7,7 +7,7 @@ import { IoTPubSuberComponent } from '../../../common/iot-pubsuber.component';
 import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 const NBPOINTS = 10;
 
@@ -49,7 +49,7 @@ export class RPI3SenseHatDemoV10Component extends IoTPubSuberComponent implement
     public magnitudes = [];
     public labels = [];
 
-    constructor(private iotService: IOTService, private ngZone: NgZone) {
+    constructor(private iotService: IoTService, private ngZone: NgZone) {
         super(iotService);
     }
 

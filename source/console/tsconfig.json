@@ -28,7 +28,8 @@
             "@pipes/*": ["pipes/*"],
             "@secure/*": ["secure/*"],
             "@services/*": ["services/*"],
-            "@solutions/*": ["secure/child-views/*"]
+            "@solutions/*": ["secure/child-views/*"],
+            "@widgets/*": ["widgets/*"]
         }
     },
 }

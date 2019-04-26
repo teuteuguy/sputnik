@@ -13,7 +13,7 @@ import { Device } from '@models/device.model';
 
 // Services
 import { AppSyncService } from '@services/appsync.service';
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 import { LoggerService } from '@services/logger.service';
 import { S3Service } from '@services/s3/s3.service';
 // import { checkAndUpdatePureExpressionDynamic } from '@angular/core/src/view/pure_expression';
@@ -38,7 +38,7 @@ export class ModelTrainerV10Component extends IoTPubSuberComponent implements On
     constructor(
         private amplifyService: AmplifyService,
         private appSyncService: AppSyncService,
-        private iotService: IOTService,
+        private iotService: IoTService,
         private logger: LoggerService,
         private s3Service: S3Service
     ) {

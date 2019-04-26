@@ -8,7 +8,7 @@ import { SolutionBlueprint } from '@models/solution-blueprint.model';
 // Services
 import { DeviceService } from '@services/device.service';
 import { SolutionBlueprintService } from '@services/solution-blueprint.service';
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-reinvent-2018-mcf-v1-0',
@@ -21,7 +21,7 @@ export class ReInvent2018MCFV10Component implements OnInit, OnChanges {
     public devices: Device[] = [new Device(), new Device()];
     public inferenceDecision: any = {};
 
-    constructor(private deviceService: DeviceService, private iotService: IOTService) {}
+    constructor(private deviceService: DeviceService, private iotService: IoTService) {}
 
     ngOnInit() {
         console.log('ngInit: ', this.solution.id);

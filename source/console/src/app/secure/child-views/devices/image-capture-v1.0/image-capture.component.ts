@@ -7,7 +7,7 @@ import { IoTPubSuberComponent } from '@common-secure/iot-pubsuber.component';
 import { Device } from '@models/device.model';
 
 // Services
-import { IOTService } from '@services/iot.service';
+import { IoTService } from '@services/iot.service';
 
 @Component({
     selector: 'app-image-capture-v1-0',
@@ -21,7 +21,7 @@ export class ImageCaptureV10Component extends IoTPubSuberComponent implements On
 
     latestData: any = null;
 
-    constructor(private iotService: IOTService) {
+    constructor(private iotService: IoTService) {
         super(iotService);
     }
 
