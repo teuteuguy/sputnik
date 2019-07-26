@@ -1,7 +1,0 @@
-{
-    "id": "services",
-    "type": "config",
-    "setting": {
-        "autoRegistration": true
-    }
-}

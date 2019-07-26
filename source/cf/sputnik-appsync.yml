@@ -37,9 +37,6 @@ Parameters:
     solutionBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the solution blueprints
-    lambdaServiceFactoryResetArn:
-        Type: String
-        Description: Factory Reset Micro Service ARN
     lambdaServiceSettingsArn:
         Type: String
         Description: Settings Micro Service ARN
@@ -119,7 +116,6 @@ Resources:
                             - !Ref lambdaServiceAdminArn
                             - !Ref lambdaServiceDeploymentsArn
                             - !Ref lambdaServiceDevicesArn
-                            - !Ref lambdaServiceFactoryResetArn
                             - !Ref lambdaServiceSettingsArn
                             - !Ref lambdaServiceSolutionsArn
                             - !Ref lambdaServiceUtilsArn
@@ -246,16 +242,6 @@ Resources:
             ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
             LambdaConfig:
                 LambdaFunctionArn: !Ref lambdaServiceAdminArn
-    appSyncDataSourceFactoryResetLambda:
-        Type: AWS::AppSync::DataSource
-        Properties:
-            ApiId: !GetAtt appSyncGraphQLApi.ApiId
-            Name: appSyncDataSourceFactoryResetLambda
-            Description: The Factory Reset Lambda App Sync Data Source
-            Type: AWS_LAMBDA
-            ServiceRoleArn: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':role/', !Ref appSyncRole]]
-            LambdaConfig:
-                LambdaFunctionArn: !Ref lambdaServiceFactoryResetArn
     appSyncDataSourceSettingsLambda:
         Type: AWS::AppSync::DataSource
         Properties:
@@ -898,26 +884,6 @@ Resources:
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'solution-blueprints', 'solution-blueprints-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($ctx.result)'
 
-
-    # ####################################################################################################
-    # ####################################################################################################
-    #
-    # RESOLVERS - Factory Reset
-    #
-    # ####################################################################################################
-    # ####################################################################################################
-
-    # RESOLVERS - MUTATIONS - FactoryReset
-    # appSyncResolverMutationFactoryResetDeviceTypes:
-    #     Type: 'AWS::AppSync::Resolver'
-    #     DependsOn: appSyncSchema
-    #     Properties:
-    #         ApiId: !GetAtt appSyncGraphQLApi.ApiId
-    #         TypeName: Mutation
-    #         FieldName: factoryReset
-    #         DataSourceName: !GetAtt appSyncDataSourceFactoryResetLambda.Name
-    #         RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": $util.toJson($context.arguments) }'
-    #         ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################
     # ####################################################################################################

@@ -128,7 +128,6 @@ Resources:
                 lambdaServiceAdminArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceAdminArn
                 lambdaServiceDevicesArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSettingsArn
-                lambdaServiceFactoryResetArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceFactoryResetArn
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDeploymentsArn
                 lambdaServiceSolutionsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSolutionsArn
                 lambdaServiceUtilsArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn

@@ -15,7 +15,6 @@ import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '@models/stat
 
 // Queries
 // import getAllDeviceTypes from '@graphql/queries/getAllDeviceTypes';
-import factoryReset from '@graphql/mutations/factoryReset';
 import getData from '@graphql/queries/data.get';
 import getDevice from '@graphql/queries/device.get';
 import getDeviceBlueprint from '@graphql/queries/device-blueprint.get';
@@ -468,13 +467,6 @@ export class AppSyncService {
             next: result => {
                 return hook.onDeletedDevice(this.cleanIncomingDevice(result.value.data.deletedDevice));
             }
-        });
-    }
-
-    // Factory Reset
-    public factoryReset(cmd: string) {
-        return this.query(factoryReset, { cmd: cmd }).then(result => {
-            return <boolean>result.data.factoryReset;
         });
     }
 

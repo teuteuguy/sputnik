@@ -143,19 +143,6 @@ Resources:
                 certsBucket: !Ref certsBucket
                 certsBucketArn: !Ref certsBucketArn
 
-    # Nested stack - MicroService - Factory Reset
-    CFStackForFactoryResetService:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-factoryreset.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                settingsTable: !Ref settingsTable
-                deviceTypesTable: !Ref deviceTypesTable
-                deviceBlueprintsTable: !Ref deviceBlueprintsTable
-                solutionBlueprintsTable: !Ref solutionBlueprintsTable
-
     # Nested stack - MicroService - Settings
     CFStackForSettingsService:
         Type: AWS::CloudFormation::Stack
@@ -223,9 +210,6 @@ Outputs:
     lambdaServiceDevicesArn:
         Description: 'Devices Service ARN'
         Value: !GetAtt CFStackForDevicesService.Outputs.lambdaServiceDevicesArn
-    lambdaServiceFactoryResetArn:
-        Description: "Stats Service ARN"
-        Value: !GetAtt CFStackForFactoryResetService.Outputs.lambdaServiceFactoryResetArn
     lambdaServiceSettingsArn:
         Description: "Settings Service ARN"
         Value: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn

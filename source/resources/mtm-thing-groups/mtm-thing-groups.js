@@ -419,21 +419,6 @@ class MTMThingGroups {
     //         });
     // }
 
-    // factoryReset(event, context, callback) {
-    //     const _self = this;
-    //     return _self
-    //         .deleteALLThingGroups()
-    //         .then(result => {
-    //             return _self.init();
-    //         })
-    //         .then(result => {
-    //             callback(null, null);
-    //         })
-    //         .catch(err => {
-    //             callback(err, null);
-    //         });
-    // }
-
 
     // listThingsInThingGroup(thingGroupName, naxResults, nextToken) {
     //     return iot.listThingsInThingGroup({

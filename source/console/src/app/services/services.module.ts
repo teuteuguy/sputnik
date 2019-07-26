@@ -15,7 +15,6 @@ import { DeploymentService } from './deployment.service';
 import { DeviceService } from './device.service';
 import { DeviceBlueprintService } from './device-blueprint.service';
 import { DeviceTypeService } from './device-type.service';
-import { FactoryResetService } from './factoryreset.service';
 import { IoTService } from './iot.service';
 import { SettingService } from './setting.service';
 import { SolutionService } from './solution.service';
@@ -39,7 +38,6 @@ import { UserRegistrationService } from './user-registration.service';
         DeviceService,
         DeviceBlueprintService,
         DeviceTypeService,
-        FactoryResetService,
         IoTService,
         SettingService,
         SolutionService,
