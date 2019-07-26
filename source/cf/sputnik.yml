@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'sputnik - Main - Version %%VERSION%%'
+Description: '(SO0053) - IoT Pilot Kickstart: Kickstart your IoT project, define, manage and monitor your IoT devices - (codename: sputnik) - Main - Version %%VERSION%%'
 Parameters:
     AdministratorName:
         Type: String
