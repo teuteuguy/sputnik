@@ -20,18 +20,24 @@ export class ColorPickerWidgetComponent implements Widget, OnInit {
     @Input() parent: IoTPubSuberPlusHelpers;
     @Input() data: any;
 
-    // public value: string;
+    public value: string;
 
-    get value() {
-        if (this.data.type === 'shadow') {
-            return this.parent.getValueByString(this.data.value);
-            // this.value = this.widgetsService.getObjectValueByString(this.parent, this.data.value);
-        } else {
-            return this.data.value;
-        }
-    }
+    // get value() {
+    //     if (this.data.type === 'shadow') {
+    //         return this.parent.getValueByString(this.data.value);
+    //         // this.value = this.widgetsService.getObjectValueByString(this.parent, this.data.value);
+    //     } else {
+    //         return this.data.value;
+    //     }
+    // }
 
     ngOnInit() {
+            if (this.data.type === 'shadow') {
+                this.value = this.parent.getValueByString(this.data.value);
+                // this.value = this.widgetsService.getObjectValueByString(this.parent, this.data.value);
+            } else {
+                this.value = this.data.value;
+            }
         // if (this.data.type === 'dynamic') {
         //     console.log(this.data.value, this.parent);
         //     this.value = this.parent.getValueByString(this.data.value);
