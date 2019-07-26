@@ -10,13 +10,8 @@ fi
 set -e
 
 echo "04-services-lambda.sh---------------------------------------------------------"
-echo "[Build] Services - Factory Reset"
 echo "mkdir -p $2/lambda"
 mkdir -p $2/lambda
-echo
-cd $1/services/factoryreset
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo
 echo "[Build] Services - Admin"
