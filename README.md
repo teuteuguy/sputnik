@@ -1,8 +1,12 @@
-# sputnik - The Simple IoT Management Solution
+# sputnik - The IoT Pilot Kickstart
 
-The sputnik solution has been designed to simplify getting started on AWS IoT, by removing notions of Things, Greengrass etc ... and only refering to Devices and Solutions.
+The IoT Pilot Kickstart solution has been designed to simplify getting started on AWS IoT, by providing you with a boilerplate, sample application to onboard and manage IoT devices with a minimum realtime data visualization capabilities.
+Project named Sputnik, after the first satellite, the goal of Sputnik, or the IoT Pilot Kickstart solution, is to help you get started and connecting your devices to AWS IoT and start generating business value from your use-case.
 
-As of Dec 2018, the built in supported devices are: Raspberry Pi, Intel Up2, Deeplens. And only the 1 solution available was built for re:Invent to support the mini connected factory use case.
+Sputnik removes notions of Things, Greengrass etc ... and refers to Devices and Systems.
+
+As part of this first release, Sputnik can, in theory support all types of devices, however as part of this first release, Sputnik only has support for Raspberry Pi, Intel Up2, Deeplens and ESP32 devices.
+For now, deployment of blueprints is only supported on Greengrass based devices, for now!
 
 ## How it works
 
