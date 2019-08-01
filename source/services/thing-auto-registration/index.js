@@ -13,7 +13,7 @@ const addDevice = require('sputnik-devices-service').addDevice;
 // TODO: The principal will refer to a cert. But this does not actually refer to the thing.
 //          We can assume the thing via it's attachement to the cert, but we need to combine it with the client id.
 // TODO: Try to re-use the addDevice service ?
-// TODO: remove the auto-registration part cause not convinced this is a good idea actually given provisioning via solutions
+// TODO: remove the auto-registration part cause not convinced this is a good idea actually given provisioning via systems
 
 // {
 //     "clientId": "iotconsole-1539277498927-0",
@@ -69,7 +69,7 @@ function handler(event, context, callback) {
                                 console.log('Check if the new timestamp is after existing one');
 
                                 let newMomentTimestamp = moment(event.timestamp);
-                                
+
                                 if (_device && _device.hasOwnProperty('connectionState') && _device.connectionState.hasOwnProperty('at')) {
                                     let oldMomentTimestamp = moment(_device.connectionState.at);
                                     if (oldMomentTimestamp.isAfter(newMomentTimestamp)) {

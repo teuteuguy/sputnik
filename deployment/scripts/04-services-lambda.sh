@@ -49,9 +49,9 @@ yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo
-echo "[Build] Services - Solutions"
+echo "[Build] Services - Systems"
 echo
-cd $1/services/solutions
+cd $1/services/systems
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 

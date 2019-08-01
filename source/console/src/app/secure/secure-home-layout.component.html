@@ -99,9 +99,9 @@
                         <div class="d-flex m-t-10 m-r-10 m-l-10 hidden-md-down">
                             <div class="chart-text">
                                 <h6 class="m-b-0" style="color: white">
-                                    <small>Solutions</small>
+                                    <small>Systems</small>
                                 </h6>
-                                <h4 class="m-t-0 text-warning">{{ solutionStats.total }} total</h4>
+                                <h4 class="m-t-0 text-warning">{{ systemStats.total }} total</h4>
                             </div>
                         </div>
                     </li>
@@ -183,10 +183,10 @@
                         </a>
                     </li> -->
                     <li class="nav-small-cap">MENU</li>
-                    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/securehome/solutions">
+                    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/securehome/systems">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-car"></i>
-                            <span class="hide-menu">Solutions </span>
+                            <span class="hide-menu">Systems </span>
                         </a>
                     </li>
                     <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/securehome/devices">
@@ -204,10 +204,10 @@
                     </li> -->
                     <li class="nav-small-cap">MODULES</li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-                        routerLink="/securehome/solution-blueprints">
+                        routerLink="/securehome/system-blueprints">
                         <a class="waves-effect waves-dark">
                             <i class="mdi mdi-sitemap"></i>
-                            <span class="hide-menu">Solution Blueprints </span>
+                            <span class="hide-menu">System Blueprints </span>
                         </a>
                     </li>
                     <li *ngIf="isAdminUser" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"

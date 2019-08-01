@@ -9,9 +9,9 @@ import { Device } from '@models/device.model';
 import { DeviceBlueprint } from '@models/device-blueprint.model';
 import { DeviceType } from '@models/device-type.model';
 import { Setting } from '@models/setting.model';
-import { Solution } from '@models/solution.model';
-import { SolutionBlueprint } from '@models/solution-blueprint.model';
-import { DeviceStats, SolutionStats, SolutionBlueprintStats } from '@models/stats.model';
+import { System } from '@models/system.model';
+import { SystemBlueprint } from '@models/system-blueprint.model';
+import { DeviceStats, SystemStats, SystemBlueprintStats } from '@models/stats.model';
 
 // Queries
 // import getAllDeviceTypes from '@graphql/queries/getAllDeviceTypes';
@@ -21,9 +21,9 @@ import getDeviceBlueprint from '@graphql/queries/device-blueprint.get';
 import getDeviceStats from '@graphql/queries/device.getStats';
 import getDeviceType from '@graphql/queries/device-type.get';
 import getSetting from '@graphql/queries/setting.get';
-import getSolution from '@graphql/queries/solution.get';
-import getSolutionStats from '@graphql/queries/solution.getStats';
-import getSolutionBlueprint from '@graphql/queries/solution-blueprint.get';
+import getSystem from '@graphql/queries/system.get';
+import getSystemStats from '@graphql/queries/system.getStats';
+import getSystemBlueprint from '@graphql/queries/system-blueprint.get';
 import getThingAutoRegistrationState from '@graphql/queries/thing-auto-registration-state.get';
 import getUser from '@graphql/queries/user.get';
 import listDeployments from '@graphql/queries/deployments.list';
@@ -33,51 +33,51 @@ import listDevicesWithDeviceBlueprint from '@graphql/queries/devices-with-device
 import listDeviceBlueprints from '@graphql/queries/device-blueprints.list';
 import listDeviceTypes from '@graphql/queries/device-types.list';
 import listGroups from '@graphql/queries/groups.list';
-import listSolutions from '@graphql/queries/solutions.list';
+import listSystems from '@graphql/queries/systems.list';
 import listUsers from '@graphql/queries/users.list';
-import listSolutionBlueprints from '@graphql/queries/solution-blueprints.list';
+import listSystemBlueprints from '@graphql/queries/system-blueprints.list';
 import s3ListObjectsV2 from '@graphql/queries/s3.list-objects-v2';
 // Mutations
 import addDeployment from '@graphql/mutations/deployment.add';
 import addDevice from '@graphql/mutations/device.add';
 import addDeviceBlueprint from '@graphql/mutations/device-blueprint.add';
 import addDeviceType from '@graphql/mutations/device-type.add';
-import addSolution from '@graphql/mutations/solution.add';
-import addSolutionBlueprint from '@graphql/mutations/solution-blueprint.add';
+import addSystem from '@graphql/mutations/system.add';
+import addSystemBlueprint from '@app/graphql/mutations/system-blueprint.add';
 import deleteDevice from '@graphql/mutations/device.delete';
 import deleteDeviceBlueprint from '@graphql/mutations/device-blueprint.delete';
 import deleteDeviceType from '@graphql/mutations/device-type.delete';
-import deleteSolution from '@graphql/mutations/solution.delete';
-import deleteSolutionBlueprint from '@graphql/mutations/solution-blueprint.delete';
+import deleteSystem from '@graphql/mutations/system.delete';
+import deleteSystemBlueprint from '@graphql/mutations/system-blueprint.delete';
 import deleteUser from '@graphql/mutations/user.delete';
 import disableUser from '@graphql/mutations/user.disable';
 import enableUser from '@graphql/mutations/user.enable';
 import inviteUser from '@graphql/mutations/user.invite';
-import refreshSolution from '@graphql/mutations/solution.refresh';
+import refreshSystem from '@graphql/mutations/system.refresh';
 import setThingAutoRegistrationState from '@graphql/mutations/thing-auto-registration-state.set';
 import updateDevice from '@graphql/mutations/device.update';
 import updateDeviceBlueprint from '@graphql/mutations/device-blueprint.update';
 import updateDeviceType from '@graphql/mutations/device-type.update';
 import updateSetting from '@graphql/mutations/setting.update';
-import updateSolution from '@graphql/mutations/solution.update';
-import updateSolutionBlueprint from '@graphql/mutations/solution-blueprint.update';
+import updateSystem from '@graphql/mutations/system.update';
+import updateSystemBlueprint from '@graphql/mutations/system-blueprint.update';
 import updateUser from '@graphql/mutations/user.update';
 // Subscriptions
 import addedDevice from '@graphql/subscriptions/device.added';
 import addedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.added';
 import addedDeviceType from '@graphql/subscriptions/device-type.added';
-import addedSolution from '@graphql/subscriptions/solution.added';
-import addedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.added';
+import addedSystem from '@graphql/subscriptions/system.added';
+import addedSystemBlueprint from '@graphql/subscriptions/system-blueprint.added';
 import deletedDevice from '@graphql/subscriptions/device.deleted';
 import deletedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.deleted';
 import deletedDeviceType from '@graphql/subscriptions/device-type.deleted';
-import deletedSolution from '@graphql/subscriptions/solution.deleted';
-import deletedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.deleted';
+import deletedSystem from '@graphql/subscriptions/system.deleted';
+import deletedSystemBlueprint from '@graphql/subscriptions/system-blueprint.deleted';
 import updatedDevice from '@graphql/subscriptions/device.updated';
 import updatedDeviceBlueprint from '@graphql/subscriptions/device-blueprint.updated';
 import updatedDeviceType from '@graphql/subscriptions/device-type.updated';
-import updatedSolution from '@graphql/subscriptions/solution.updated';
-import updatedSolutionBlueprint from '@graphql/subscriptions/solution-blueprint.updated';
+import updatedSystem from '@graphql/subscriptions/system.updated';
+import updatedSystemBlueprint from '@graphql/subscriptions/system-blueprint.updated';
 
 export interface AddedDevice {
     onAddedDevice(result: Device): void;
@@ -106,23 +106,23 @@ export interface UpdatedDeviceType {
 export interface DeletedDeviceType {
     onDeletedDeviceType(result: DeviceType): void;
 }
-export interface AddedSolution {
-    onAddedSolution(result: Solution): void;
+export interface AddedSystem {
+    onAddedSystem(result: System): void;
 }
-export interface UpdatedSolution {
-    onUpdatedSolution(result: Solution): void;
+export interface UpdatedSystem {
+    onUpdatedSystem(result: System): void;
 }
-export interface DeletedSolution {
-    onDeletedSolution(result: Solution): void;
+export interface DeletedSystem {
+    onDeletedSystem(result: System): void;
 }
-export interface AddedSolutionBlueprint {
-    onAddedSolutionBlueprint(result: SolutionBlueprint): void;
+export interface AddedSystemBlueprint {
+    onAddedSystemBlueprint(result: SystemBlueprint): void;
 }
-export interface UpdatedSolutionBlueprint {
-    onUpdatedSolutionBlueprint(result: SolutionBlueprint): void;
+export interface UpdatedSystemBlueprint {
+    onUpdatedSystemBlueprint(result: SystemBlueprint): void;
 }
-export interface DeletedSolutionBlueprint {
-    onDeletedSolutionBlueprint(result: SolutionBlueprint): void;
+export interface DeletedSystemBlueprint {
+    onDeletedSystemBlueprint(result: SystemBlueprint): void;
 }
 
 @Injectable()
@@ -502,141 +502,141 @@ export class AppSyncService {
         });
     }
 
-    // Solutions
-    public listSolutions(limit: number, nextToken: string) {
-        return this.query(listSolutions, { limit: limit, nextToken: nextToken }).then(result => {
-            return result.data.listSolutions;
+    // Systems
+    public listSystems(limit: number, nextToken: string) {
+        return this.query(listSystems, { limit: limit, nextToken: nextToken }).then(result => {
+            return result.data.listSystems;
         });
     }
-    public getSolution(id: string) {
-        return this.query(getSolution, { id: id }).then(d => <Solution>d.data.getSolution);
+    public getSystem(id: string) {
+        return this.query(getSystem, { id: id }).then(d => <System>d.data.getSystem);
     }
-    public getSolutionStats() {
-        return this.query(getSolutionStats, {}).then(result => <SolutionStats>result.data.getSolutionStats);
+    public getSystemStats() {
+        return this.query(getSystemStats, {}).then(result => <SystemStats>result.data.getSystemStats);
     }
-    public addSolution(name: string, description: string, deviceIds: string[], solutionBlueprintId: string) {
-        return this.mutation(addSolution, {
+    public addSystem(name: string, description: string, deviceIds: string[], systemBlueprintId: string) {
+        return this.mutation(addSystem, {
             name: name,
             description: description,
             deviceIds: deviceIds,
-            solutionBlueprintId: solutionBlueprintId
+            systemBlueprintId: systemBlueprintId
         }).then(result => {
-            return <Solution>result.data.solution;
+            return <System>result.data.system;
         });
     }
-    public deleteSolution(id: string) {
-        return this.mutation(deleteSolution, { id: id }).then(d => {
-            return <Solution>d.data.deleteSolution;
+    public deleteSystem(id: string) {
+        return this.mutation(deleteSystem, { id: id }).then(d => {
+            return <System>d.data.deleteSystem;
         });
     }
-    public updateSolution(id: string, name: string, description: string, deviceIds: string[]) {
-        return this.mutation(updateSolution, {
+    public updateSystem(id: string, name: string, description: string, deviceIds: string[]) {
+        return this.mutation(updateSystem, {
             id: id,
             name: name,
             description: description,
             deviceIds: deviceIds
         }).then(d => {
-            return <Solution>d.data.updateSolution;
+            return <System>d.data.updateSystem;
         });
     }
-    public refreshSolution(id: string) {
-        return this.mutation(refreshSolution, {
+    public refreshSystem(id: string) {
+        return this.mutation(refreshSystem, {
             id: id
-        }).then(r => r.data.refreshSolution);
+        }).then(r => r.data.refreshSystem);
     }
-    public onAddedSolution(hook: AddedSolution) {
-        this.subscribe(addedSolution, {}).subscribe({
+    public onAddedSystem(hook: AddedSystem) {
+        this.subscribe(addedSystem, {}).subscribe({
             next: result => {
-                return hook.onAddedSolution(result.value.data.addedSolution);
+                return hook.onAddedSystem(result.value.data.addedSystem);
             }
         });
     }
-    public onUpdatedSolution(hook: UpdatedSolution) {
-        this.subscribe(updatedSolution, {}).subscribe({
+    public onUpdatedSystem(hook: UpdatedSystem) {
+        this.subscribe(updatedSystem, {}).subscribe({
             next: result => {
-                return hook.onUpdatedSolution(result.value.data.updatedSolution);
+                return hook.onUpdatedSystem(result.value.data.updatedSystem);
             }
         });
     }
-    public onDeletedSolution(hook: DeletedSolution) {
-        this.subscribe(deletedSolution, {}).subscribe({
+    public onDeletedSystem(hook: DeletedSystem) {
+        this.subscribe(deletedSystem, {}).subscribe({
             next: result => {
-                return hook.onDeletedSolution(result.value.data.deletedSolution);
+                return hook.onDeletedSystem(result.value.data.deletedSystem);
             }
         });
     }
 
-    // Solution Blueprints
-    private cleanIncomingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
-        if (solutionBlueprint.spec) {
-            solutionBlueprint.spec = JSON.parse(solutionBlueprint.spec);
+    // System Blueprints
+    private cleanIncomingSystemBlueprint(systemBlueprint: SystemBlueprint) {
+        if (systemBlueprint.spec) {
+            systemBlueprint.spec = JSON.parse(systemBlueprint.spec);
         }
-        return solutionBlueprint;
+        return systemBlueprint;
     }
-    private cleanOutgoingSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
-        solutionBlueprint.spec = JSON.stringify(solutionBlueprint.spec);
-        return solutionBlueprint;
+    private cleanOutgoingSystemBlueprint(systemBlueprint: SystemBlueprint) {
+        systemBlueprint.spec = JSON.stringify(systemBlueprint.spec);
+        return systemBlueprint;
     }
-    public listSolutionBlueprints(limit: number, nextToken: string) {
-        return this.query(listSolutionBlueprints, { limit: limit, nextToken: nextToken }).then(result => {
-            result.data.listSolutionBlueprints.solutionBlueprints = result.data.listSolutionBlueprints.solutionBlueprints.map(
-                r => this.cleanIncomingSolutionBlueprint(r)
+    public listSystemBlueprints(limit: number, nextToken: string) {
+        return this.query(listSystemBlueprints, { limit: limit, nextToken: nextToken }).then(result => {
+            result.data.listSystemBlueprints.systemBlueprints = result.data.listSystemBlueprints.systemBlueprints.map(
+                r => this.cleanIncomingSystemBlueprint(r)
             );
-            return result.data.listSolutionBlueprints;
+            return result.data.listSystemBlueprints;
         });
     }
-    public getSolutionBlueprint(id: string) {
-        return this.query(getSolutionBlueprint, {
+    public getSystemBlueprint(id: string) {
+        return this.query(getSystemBlueprint, {
             id: id
-        }).then(d => this.cleanIncomingSolutionBlueprint(d.data.getSolutionBlueprint));
+        }).then(d => this.cleanIncomingSystemBlueprint(d.data.getSystemBlueprint));
     }
-    public addSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
-        solutionBlueprint = this.cleanOutgoingSolutionBlueprint(solutionBlueprint);
-        delete solutionBlueprint.id;
-        delete solutionBlueprint.createdAt;
-        delete solutionBlueprint.updatedAt;
-        return this.mutation(addSolutionBlueprint, {
-            name: solutionBlueprint.name,
-            description: solutionBlueprint.description,
-            spec: solutionBlueprint.spec
-        }).then(r => this.cleanIncomingSolutionBlueprint(r.data.addSolutionBlueprint));
+    public addSystemBlueprint(systemBlueprint: SystemBlueprint) {
+        systemBlueprint = this.cleanOutgoingSystemBlueprint(systemBlueprint);
+        delete systemBlueprint.id;
+        delete systemBlueprint.createdAt;
+        delete systemBlueprint.updatedAt;
+        return this.mutation(addSystemBlueprint, {
+            name: systemBlueprint.name,
+            description: systemBlueprint.description,
+            spec: systemBlueprint.spec
+        }).then(r => this.cleanIncomingSystemBlueprint(r.data.addSystemBlueprint));
     }
-    public deleteSolutionBlueprint(id: string) {
-        return this.mutation(deleteSolutionBlueprint, {
+    public deleteSystemBlueprint(id: string) {
+        return this.mutation(deleteSystemBlueprint, {
             id: id
-        }).then(r => this.cleanIncomingSolutionBlueprint(r.data.deleteSolutionBlueprint));
+        }).then(r => this.cleanIncomingSystemBlueprint(r.data.deleteSystemBlueprint));
     }
-    public updateSolutionBlueprint(solutionBlueprint: SolutionBlueprint) {
-        solutionBlueprint = this.cleanOutgoingSolutionBlueprint(solutionBlueprint);
-        delete solutionBlueprint.updatedAt;
-        delete solutionBlueprint.createdAt;
-        return this.mutation(updateSolutionBlueprint, solutionBlueprint).then(r =>
-            this.cleanIncomingSolutionBlueprint(r.data.updateSolutionBlueprint)
+    public updateSystemBlueprint(systemBlueprint: SystemBlueprint) {
+        systemBlueprint = this.cleanOutgoingSystemBlueprint(systemBlueprint);
+        delete systemBlueprint.updatedAt;
+        delete systemBlueprint.createdAt;
+        return this.mutation(updateSystemBlueprint, systemBlueprint).then(r =>
+            this.cleanIncomingSystemBlueprint(r.data.updateSystemBlueprint)
         );
     }
-    public onAddedSolutionBlueprint(hook: AddedSolutionBlueprint) {
-        this.subscribe(addedSolutionBlueprint, {}).subscribe({
+    public onAddedSystemBlueprint(hook: AddedSystemBlueprint) {
+        this.subscribe(addedSystemBlueprint, {}).subscribe({
             next: result => {
-                return hook.onAddedSolutionBlueprint(
-                    this.cleanIncomingSolutionBlueprint(result.value.data.addedSolutionBlueprint)
+                return hook.onAddedSystemBlueprint(
+                    this.cleanIncomingSystemBlueprint(result.value.data.addedSystemBlueprint)
                 );
             }
         });
     }
-    public onUpdatedSolutionBlueprint(hook: UpdatedSolutionBlueprint) {
-        this.subscribe(updatedSolutionBlueprint, {}).subscribe({
+    public onUpdatedSystemBlueprint(hook: UpdatedSystemBlueprint) {
+        this.subscribe(updatedSystemBlueprint, {}).subscribe({
             next: result => {
-                return hook.onUpdatedSolutionBlueprint(
-                    this.cleanIncomingSolutionBlueprint(result.value.data.updatedSolutionBlueprint)
+                return hook.onUpdatedSystemBlueprint(
+                    this.cleanIncomingSystemBlueprint(result.value.data.updatedSystemBlueprint)
                 );
             }
         });
     }
-    public onDeletedSolutionBlueprint(hook: DeletedSolutionBlueprint) {
-        this.subscribe(deletedSolutionBlueprint, {}).subscribe({
+    public onDeletedSystemBlueprint(hook: DeletedSystemBlueprint) {
+        this.subscribe(deletedSystemBlueprint, {}).subscribe({
             next: result => {
-                return hook.onDeletedSolutionBlueprint(
-                    this.cleanIncomingSolutionBlueprint(result.value.data.deletedSolutionBlueprint)
+                return hook.onDeletedSystemBlueprint(
+                    this.cleanIncomingSystemBlueprint(result.value.data.deletedSystemBlueprint)
                 );
             }
         });

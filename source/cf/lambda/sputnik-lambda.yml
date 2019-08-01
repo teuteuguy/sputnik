@@ -32,12 +32,12 @@ Parameters:
     deploymentsTable:
         Type: String
         Description: DynamoDB Table for storing the deployments
-    solutionsTable:
+    systemsTable:
         Type: String
-        Description: DynamoDB Table for storing the solutions
-    solutionBlueprintsTable:
+        Description: DynamoDB Table for storing the systems
+    systemBlueprintsTable:
         Type: String
-        Description: DynamoDB Table for storing the solution blueprints
+        Description: DynamoDB Table for storing the system blueprints
     iamRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
@@ -84,8 +84,8 @@ Resources:
                 devicesTable: !Ref devicesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
                 deviceTypesTable: !Ref deviceTypesTable
-                solutionsTable: !Ref solutionsTable
-                solutionBlueprintsTable: !Ref solutionBlueprintsTable
+                systemsTable: !Ref systemsTable
+                systemBlueprintsTable: !Ref systemBlueprintsTable
 
     # Nested stack - Custom resource - UUID Helper
     CFStackForCustomResourceUUIDHelper:
@@ -145,11 +145,11 @@ Resources:
                 iotThingAutoRegistrationTopicRuleName: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
                 settingsTable: !Ref settingsTable
 
-    # Nested stack - MicroService - Solutions
-    CFStackForSolutionsService:
+    # Nested stack - MicroService - Systems
+    CFStackForSystemsService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-solutions.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-systems.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
                 lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
@@ -157,8 +157,8 @@ Resources:
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
                 deviceBlueprintsTable: !Ref deviceBlueprintsTable
-                solutionBlueprintsTable: !Ref solutionBlueprintsTable
-                solutionsTable: !Ref solutionsTable
+                systemBlueprintsTable: !Ref systemBlueprintsTable
+                systemsTable: !Ref systemsTable
 
     # Nested stack - MicroService - Thing Auto Registration
     CFStackForThingAutoRegistrationService:
@@ -201,9 +201,9 @@ Outputs:
     lambdaServiceSettingsArn:
         Description: "Settings Service ARN"
         Value: !GetAtt CFStackForSettingsService.Outputs.lambdaServiceSettingsArn
-    lambdaServiceSolutionsArn:
-        Description: 'Solutions Service ARN'
-        Value: !GetAtt CFStackForSolutionsService.Outputs.lambdaServiceSolutionsArn
+    lambdaServiceSystemsArn:
+        Description: 'Systems Service ARN'
+        Value: !GetAtt CFStackForSystemsService.Outputs.lambdaServiceSystemsArn
     lambdaServiceThingAutoRegistrationArn:
         Description: "Thing Auto Registration Service ARN"
         Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.lambdaServiceThingAutoRegistrationArn

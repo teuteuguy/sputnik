@@ -77,7 +77,7 @@ export class UsersComponent implements OnInit {
         });
 
         // _self.statService.statObservable$.subscribe((message: Stats) => {
-        //     this.dataStats = message.solutionStats;
+        //     this.dataStats = message.systemStats;
         //     this.ngZone.run(() => { });
         // });
         // _self.statService.refresh();

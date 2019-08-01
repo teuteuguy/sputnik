@@ -7,14 +7,14 @@ export class DeviceStats {
     }
 }
 
-export class SolutionStats {
+export class SystemStats {
     total = 0;
     constructor(values: Object = {}) {
         Object.assign(this, values);
     }
 }
 
-export class SolutionBlueprintStats {
+export class SystemBlueprintStats {
     total = 0;
     constructor(values: Object = {}) {
         Object.assign(this, values);

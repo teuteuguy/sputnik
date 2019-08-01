@@ -81,8 +81,8 @@ const secureHomeRoutes: Routes = [
             // Sub moduled paths :)
             { path: 'device-blueprints', redirectTo: '/securehome/device-blueprints', pathMatch: 'full' },
             { path: 'device-types', redirectTo: '/securehome/device-types', pathMatch: 'full' },
-            { path: 'solutions', redirectTo: '/securehome/solutions', pathMatch: 'full' },
-            { path: 'solution-blueprints', redirectTo: '/securehome/solution-blueprints', pathMatch: 'full' }
+            { path: 'systems', redirectTo: '/securehome/systems', pathMatch: 'full' },
+            { path: 'system-blueprints', redirectTo: '/securehome/system-blueprints', pathMatch: 'full' }
         ]
     }
 ];

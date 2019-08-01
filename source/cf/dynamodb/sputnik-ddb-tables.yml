@@ -33,17 +33,17 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-settings.yml']]
 
-    # Nested stack - DynamoDB Table - Solution Blueprints
-    CFStackForDDBSolutionBlueprints:
+    # Nested stack - DynamoDB Table - System Blueprints
+    CFStackForDDBSystemBlueprints:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-solution-blueprints.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-system-blueprints.yml']]
 
-    # Nested stack - DynamoDB Table - Solutions
-    CFStackForDDBSolutions:
+    # Nested stack - DynamoDB Table - Systems
+    CFStackForDDBSystems:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-solutions.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], 'sputnik/%%VERSION%%/cf/dynamodb/sputnik-ddb-table-systems.yml']]
 
     # Nested stack - DynamoDB Table - Data Store
     CFStackForDDBDataStore:
@@ -70,9 +70,9 @@ Outputs:
     settingsTable:
         Description: "DynamoDB Settings Table"
         Value: !GetAtt CFStackForDDBSettings.Outputs.settingsTable
-    solutionBlueprintsTable:
-        Description: "DynamoDB Solution Blueprints Table"
-        Value: !GetAtt CFStackForDDBSolutionBlueprints.Outputs.solutionBlueprintsTable
-    solutionsTable:
-        Description: "DynamoDB Solutions Table"
-        Value: !GetAtt CFStackForDDBSolutions.Outputs.solutionsTable
+    systemBlueprintsTable:
+        Description: "DynamoDB System Blueprints Table"
+        Value: !GetAtt CFStackForDDBSystemBlueprints.Outputs.systemBlueprintsTable
+    systemsTable:
+        Description: "DynamoDB Systems Table"
+        Value: !GetAtt CFStackForDDBSystems.Outputs.systemsTable

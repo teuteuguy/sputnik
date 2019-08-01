@@ -81,25 +81,25 @@ type Setting {
     updatedAt: AWSDateTime
 }
 
-type Solution {
+type System {
     id: String!
     name: String!
     description: String
     thingIds: [String]
     deviceIds: [String]!
-    solutionBlueprintId: String!
+    systemBlueprintId: String!
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
-type PaginatedSolutions {
-    solutions: [Solution]
+type PaginatedSystems {
+    systems: [System]
     nextToken: String
 }
-type SolutionStat {
+type SystemStat {
     total: Int!
 }
 
-type SolutionBlueprint {
+type SystemBlueprint {
     id: String!
     name: String!
     description: String
@@ -108,11 +108,11 @@ type SolutionBlueprint {
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
-type PaginatedSolutionBlueprints {
-    solutionBlueprints: [SolutionBlueprint]
+type PaginatedSystemBlueprints {
+    systemBlueprints: [SystemBlueprint]
     nextToken: String
 }
-type SolutionBlueprintStat {
+type SystemBlueprintStat {
     total: Int!
 }
 
@@ -215,18 +215,18 @@ type Query {
     getSetting(id: String!): Setting
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    ## Solutions
-    listSolutions(limit: Int, nextToken: String): PaginatedSolutions
+    ## Systems
+    listSystems(limit: Int, nextToken: String): PaginatedSystems
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getSolution(id: String!): Solution
+    getSystem(id: String!): System
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getSolutionStats: SolutionStat
+    getSystemStats: SystemStat
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    ## Solution Blueprints
-    listSolutionBlueprints(limit: Int, nextToken: String): PaginatedSolutionBlueprints
+    ## System Blueprints
+    listSystemBlueprints(limit: Int, nextToken: String): PaginatedSystemBlueprints
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    getSolutionBlueprint(id: String!): SolutionBlueprint
+    getSystemBlueprint(id: String!): SystemBlueprint
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
     ## Users
@@ -283,22 +283,22 @@ type Mutation {
     updateSetting(id: String!, type: String!, setting: AWSJSON!): Setting
         @aws_auth(cognito_groups: ["Administrators"])
 
-    ## Solutions
-    addSolution(name: String!, description: String, deviceIds: [String]!, solutionBlueprintId: String!): Solution!
+    ## Systems
+    addSystem(name: String!, description: String, deviceIds: [String]!, systemBlueprintId: String!): System!
         @aws_auth(cognito_groups: ["Administrators"])
-    deleteSolution(id: String!): Solution
+    deleteSystem(id: String!): System
         @aws_auth(cognito_groups: ["Administrators"])
-    updateSolution(id: String!, name: String!, description: String, deviceIds: [String]!): Solution
+    updateSystem(id: String!, name: String!, description: String, deviceIds: [String]!): System
         @aws_auth(cognito_groups: ["Administrators"])
-    refreshSolution(id: String!): Boolean
+    refreshSystem(id: String!): Boolean
         @aws_auth(cognito_groups: ["Administrators"])
 
-    ## Solution Blueprints
-    addSolutionBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint!
+    ## System Blueprints
+    addSystemBlueprint(name: String!, description: String, prefix: String!, spec: AWSJSON!): SystemBlueprint!
         @aws_auth(cognito_groups: ["Administrators"])
-    deleteSolutionBlueprint(id: String!): SolutionBlueprint
+    deleteSystemBlueprint(id: String!): SystemBlueprint
         @aws_auth(cognito_groups: ["Administrators"])
-    updateSolutionBlueprint(id: String!, name: String!, description: String, prefix: String!, spec: AWSJSON!): SolutionBlueprint
+    updateSystemBlueprint(id: String!, name: String!, description: String, prefix: String!, spec: AWSJSON!): SystemBlueprint
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Users
@@ -355,26 +355,26 @@ type Subscription {
         @aws_subscribe(mutations: ["deleteDeviceType"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    ## Solutions
-    addedSolution: [Solution]
-        @aws_subscribe(mutations: ["addSolution"])
+    ## Systems
+    addedSystem: [System]
+        @aws_subscribe(mutations: ["addSystem"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedSolution: [Solution]
-        @aws_subscribe(mutations: ["updateSolution"])
+    updatedSystem: [System]
+        @aws_subscribe(mutations: ["updateSystem"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedSolution: [Solution]
-        @aws_subscribe(mutations: ["deleteSolution"])
+    deletedSystem: [System]
+        @aws_subscribe(mutations: ["deleteSystem"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 
-    ## Solution Blueprints
-    addedSolutionBlueprint: [SolutionBlueprint]
-        @aws_subscribe(mutations: ["addSolutionBlueprint"])
+    ## System Blueprints
+    addedSystemBlueprint: [SystemBlueprint]
+        @aws_subscribe(mutations: ["addSystemBlueprint"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    updatedSolutionBlueprint: [SolutionBlueprint]
-        @aws_subscribe(mutations: ["updateSolutionBlueprint"])
+    updatedSystemBlueprint: [SystemBlueprint]
+        @aws_subscribe(mutations: ["updateSystemBlueprint"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    deletedSolutionBlueprint: [SolutionBlueprint]
-        @aws_subscribe(mutations: ["deleteSolutionBlueprint"])
+    deletedSystemBlueprint: [SystemBlueprint]
+        @aws_subscribe(mutations: ["deleteSystemBlueprint"])
         @aws_auth(cognito_groups: ["Administrators", "Members"])
 }
 schema {

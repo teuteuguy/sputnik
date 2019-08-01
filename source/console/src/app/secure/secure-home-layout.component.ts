@@ -5,7 +5,7 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 
 // Models
 import { ProfileInfo } from '@models/profile-info.model';
-import { DeviceStats, SolutionStats } from '@models/stats.model';
+import { DeviceStats, SystemStats } from '@models/stats.model';
 
 // Services
 import { BreadCrumbService, Crumb } from '@services/bread-crumb.service';
@@ -18,7 +18,7 @@ import { IoTService } from '@services/iot.service';
 // Services that cache
 import { DeviceTypeService } from '@services/device-type.service';
 import { DeviceBlueprintService } from '@services/device-blueprint.service';
-import { SolutionBlueprintService } from '@services/solution-blueprint.service';
+import { SystemBlueprintService } from '@services/system-blueprint.service';
 
 // Helpers
 declare let jquery: any;
@@ -37,7 +37,7 @@ export class SecureHomeLayoutComponent implements OnInit {
     public deviceStats: DeviceStats = new DeviceStats();
     public isAdminUser = false;
     public profile: ProfileInfo = null;
-    public solutionStats: SolutionStats = new SolutionStats();
+    public systemStats: SystemStats = new SystemStats();
     public title: '';
 
     @BlockUI()
@@ -56,7 +56,7 @@ export class SecureHomeLayoutComponent implements OnInit {
         // Here we load cached services for rest of app
         private deviceTypeService: DeviceTypeService,
         private deviceBlueprintService: DeviceBlueprintService,
-        private solutionBlueprintService: SolutionBlueprintService
+        private systemBlueprintService: SystemBlueprintService
     ) {
         const self = this;
         self.isAdminUser = false;
@@ -91,7 +91,7 @@ export class SecureHomeLayoutComponent implements OnInit {
 
             self.statService.statObservable$.subscribe((msg: Stats) => {
                 self.deviceStats = msg.deviceStats;
-                self.solutionStats = msg.solutionStats;
+                self.systemStats = msg.systemStats;
                 self.ngZone.run(() => {});
             });
             self.statService.refresh();
@@ -256,7 +256,7 @@ export class SecureHomeLayoutComponent implements OnInit {
 
     //         self.statService.statObservable$.subscribe((msg: Stats) => {
     //             self.deviceStats = msg.deviceStats;
-    //             self.solutionStats = msg.solutionStats;
+    //             self.systemStats = msg.systemStats;
     //             self.ngZone.run(() => {});
     //         });
     //         self.statService.refresh();

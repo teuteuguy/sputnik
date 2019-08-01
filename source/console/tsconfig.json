@@ -28,7 +28,7 @@
             "@pipes/*": ["pipes/*"],
             "@secure/*": ["secure/*"],
             "@services/*": ["services/*"],
-            "@solutions/*": ["secure/child-views/*"],
+            "@systems/*": ["secure/child-views/*"],
             "@widgets/*": ["widgets/*"]
         }
     },

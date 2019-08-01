@@ -16,7 +16,7 @@ Mappings:
     SourceCode:
         App:
             ShortName: 'sputnik'
-            FullName: 'sputnik - The Simple IoT Management Solution'
+            FullName: 'sputnik - The Simple IoT Management System'
         General:
             S3Bucket: '%%BUCKET_NAME%%'
             KeyPrefix: 'sputnik/%%VERSION%%'
@@ -95,8 +95,8 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
-                solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
-                solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                systemsTable: !GetAtt CFStackForDynamoDB.Outputs.systemsTable
+                systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
                 iamRoleArnForGreengrassGroups: !GetAtt IAMRoleForGreengrassGroups.Arn
                 iotPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
@@ -123,13 +123,13 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
-                solutionsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionsTable
-                solutionBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable
+                systemsTable: !GetAtt CFStackForDynamoDB.Outputs.systemsTable
+                systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
                 lambdaServiceAdminArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceAdminArn
                 lambdaServiceDevicesArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn
                 lambdaServiceSettingsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSettingsArn
                 lambdaServiceDeploymentsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceDeploymentsArn
-                lambdaServiceSolutionsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSolutionsArn
+                lambdaServiceSystemsArn: !GetAtt CFStackForLambda.Outputs.lambdaServiceSystemsArn
                 lambdaServiceUtilsArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
 
 
@@ -146,8 +146,8 @@ Resources:
                 certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
 
 
-    # Solutions Greengrass group role
-    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
+    # Systems Greengrass group role
+    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Systems Stack.
     IAMRoleForGreengrassGroups:
         Type: 'AWS::IAM::Role'
         Properties:
@@ -162,8 +162,8 @@ Resources:
                           - 'sts:AssumeRole'
             Path: '/'
 
-    # Solutions IoT Policy for Greengrass devices
-    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Solutions Stack.
+    # Systems IoT Policy for Greengrass devices
+    # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Systems Stack.
     IoTPolicyForGreengrassCores:
         Type: "AWS::IoT::Policy"
         DeletionPolicy: Retain
@@ -235,7 +235,7 @@ Resources:
                     !Join ['=', ['param_deviceBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable]],
                     !Join ['=', ['param_deviceTypesTable', !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable]],
                     !Join ['=', ['param_settingsTable', !GetAtt CFStackForDynamoDB.Outputs.settingsTable]],
-                    !Join ['=', ['param_solutionBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.solutionBlueprintsTable]],
+                    !Join ['=', ['param_systemBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable]],
                     !Join ['=', ['param_customResourceUtilsHelperArn', !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn]],
                     !Join ['=', ['param_iamRoleForGreengrassGroups', !Ref IAMRoleForGreengrassGroups]],
                     !Join ['=', ['param_dataS3Bucket', !GetAtt CFStackForDataBucket.Outputs.dataBucket]],

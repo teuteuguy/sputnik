@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { DeviceBlueprintNameFromIdPipe } from '../pipes/device-blueprint-name-from-id.pipe';
 import { DeviceTypeNameFromIdPipe } from '../pipes/device-type-name-from-id.pipe';
 import { FromNowPipe, FromNowValuePipe, MomentPipe, MomentToPipe } from '../pipes/moment.pipe';
-import { SolutionBlueprintFromSolutionBlueprintIdPipe } from '../pipes/solution-blueprint-from-solution-blueprint-id.pipe';
+import { SystemBlueprintFromSystemBlueprintIdPipe } from '../pipes/system-blueprint-from-system-blueprint-id.pipe';
 import { StringifyPipe } from '../pipes/stringify.pipe';
 
 @NgModule({
@@ -13,7 +13,7 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         DeviceBlueprintNameFromIdPipe,
         DeviceTypeNameFromIdPipe,
         MomentPipe,
-        SolutionBlueprintFromSolutionBlueprintIdPipe,
+        SystemBlueprintFromSystemBlueprintIdPipe,
         FromNowPipe,
         FromNowValuePipe,
         MomentToPipe,
@@ -23,7 +23,7 @@ import { StringifyPipe } from '../pipes/stringify.pipe';
         DeviceBlueprintNameFromIdPipe,
         DeviceTypeNameFromIdPipe,
         MomentPipe,
-        SolutionBlueprintFromSolutionBlueprintIdPipe,
+        SystemBlueprintFromSystemBlueprintIdPipe,
         FromNowPipe,
         FromNowValuePipe,
         MomentToPipe,

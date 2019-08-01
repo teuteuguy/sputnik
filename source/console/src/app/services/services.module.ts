@@ -17,8 +17,8 @@ import { DeviceBlueprintService } from './device-blueprint.service';
 import { DeviceTypeService } from './device-type.service';
 import { IoTService } from './iot.service';
 import { SettingService } from './setting.service';
-import { SolutionService } from './solution.service';
-import { SolutionBlueprintService } from './solution-blueprint.service';
+import { SystemService } from './system.service';
+import { SystemBlueprintService } from './system-blueprint.service';
 import { StatService } from './stat.service';
 import { UserLoginService } from './user-login.service';
 import { UserRegistrationService } from './user-registration.service';
@@ -40,8 +40,8 @@ import { UserRegistrationService } from './user-registration.service';
         DeviceTypeService,
         IoTService,
         SettingService,
-        SolutionService,
-        SolutionBlueprintService,
+        SystemService,
+        SystemBlueprintService,
         StatService,
         UserLoginService,
         UserRegistrationService

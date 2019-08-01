@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - DynamoDB Table - System Blueprints - Version %%VERSION%%'
+
+Resources:
+
+    systemBlueprintsTable:
+        Type: "AWS::DynamoDB::Table"
+        DeletionPolicy: "Delete"
+        Properties:
+            AttributeDefinitions:
+                -
+                    AttributeName: "id"
+                    AttributeType: "S"
+            KeySchema:
+                -
+                    AttributeName: "id"
+                    KeyType: "HASH"
+            ProvisionedThroughput:
+                ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+            SSESpecification:
+                SSEEnabled: true
+            TableName: "sputnik-system-blueprints"
+
+Outputs:
+    systemBlueprintsTable:
+        Description: "DynamoDB System Blueprints Table"
+        Value: !Ref systemBlueprintsTable

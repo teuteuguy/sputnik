@@ -16,65 +16,65 @@ mkdir -p $2/greengrass
 
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
 echo
-echo "[Build] Solution - defaults - rpi-sense-hat-display-ip-python"
+echo "[Build] System - defaults - rpi-sense-hat-display-ip-python"
 echo
-cd $1/solutions/defaults/lambdas/rpi-sense-hat-display-ip-python
+cd $1/systems/defaults/lambdas/rpi-sense-hat-display-ip-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - defaults - rpi-sense-hat-demo-python"
+echo "[Build] System - defaults - rpi-sense-hat-demo-python"
 echo
-cd $1/solutions/defaults/lambdas/rpi-sense-hat-demo-python
+cd $1/systems/defaults/lambdas/rpi-sense-hat-demo-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - defaults - image-capture-python"
+echo "[Build] System - defaults - image-capture-python"
 echo
-cd $1/solutions/defaults/lambdas/image-capture-python
+cd $1/systems/defaults/lambdas/image-capture-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - defaults - gg-ml-demo-squeezenet-python"
+echo "[Build] System - defaults - gg-ml-demo-squeezenet-python"
 echo
-cd $1/solutions/defaults/lambdas/gg-ml-demo-squeezenet-python
+cd $1/systems/defaults/lambdas/gg-ml-demo-squeezenet-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - default - ml-inference-camera-python"
+echo "[Build] System - default - ml-inference-camera-python"
 echo
-cd $1/solutions/defaults/lambdas/ml-inference-camera-python
+cd $1/systems/defaults/lambdas/ml-inference-camera-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - defaults - model-trainer-python"
+echo "[Build] System - defaults - model-trainer-python"
 echo
-cd $1/solutions/defaults/lambdas/model-trainer-python
+cd $1/systems/defaults/lambdas/model-trainer-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-belt-serial-python"
+echo "[Build] System - reinvent-2018-mcf - reinvent-2018-mcf-belt-serial-python"
 echo
-cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-belt-serial-python
+cd $1/systems/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-belt-serial-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - reinvent-2018-mcf - reinvent-2018-mcf-python"
+echo "[Build] System - reinvent-2018-mcf - reinvent-2018-mcf-python"
 echo
-cd $1/solutions/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-python
+cd $1/systems/reinvent-2018-mcf/lambdas/reinvent-2018-mcf-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 
 echo
-echo "[Build] Solution - ebc-mcf-2018 - ebc-mcf-2018-python"
+echo "[Build] System - ebc-mcf-2018 - ebc-mcf-2018-python"
 echo
-cd $1/solutions/reinvent-2018-mcf/lambdas/ebc-mcf-2018-python
+cd $1/systems/reinvent-2018-mcf/lambdas/ebc-mcf-2018-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrass/`echo ${PWD##*/}`.zip .
 

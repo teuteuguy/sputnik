@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { environment } from '@env/environment';
 
 // Models
-import { DeviceStats, SolutionStats } from '@models/stats.model';
+import { DeviceStats, SystemStats } from '@models/stats.model';
 
 // Services
 import { LoggerService } from './logger.service';
@@ -15,7 +15,7 @@ import { _ } from 'underscore';
 
 export class Stats {
     deviceStats: DeviceStats;
-    solutionStats: SolutionStats;
+    systemStats: SystemStats;
     constructor(values: Object = {}) {
         Object.assign(this, values);
     }
@@ -42,9 +42,9 @@ export class StatService {
 
     loadStats() {
         const _self = this;
-        Promise.all([_self.appSyncService.getDeviceStats(), _self.appSyncService.getSolutionStats()])
+        Promise.all([_self.appSyncService.getDeviceStats(), _self.appSyncService.getSystemStats()])
             .then(results => {
-                _self.observer.next(new Stats({ deviceStats: results[0], solutionStats: results[1] }));
+                _self.observer.next(new Stats({ deviceStats: results[0], systemStats: results[1] }));
             })
             .catch(err => {
                 _self.logger.warn('error occurred calling getDeviceStats api, show message');

@@ -62,11 +62,11 @@ import { TableModule } from './common/modules/table/table.module';
 // Secure Modules
 import { DeviceBlueprintsModule } from './secure/device-blueprints/device-blueprints.module';
 import { DeviceTypesModule } from './secure/device-types/device-types.module';
-import { SolutionsModule } from './secure/solutions/solutions.module';
-import { SolutionBlueprintsModule } from './secure/solution-blueprints/solution-blueprints.module';
+import { SystemsModule } from './secure/systems/systems.module';
+import { SystemBlueprintsModule } from './secure/system-blueprints/system-blueprints.module';
 
-// Solution Modules
-import { ChildViewsModule } from '@solutions/child-views.module';
+// System Modules
+import { ChildViewsModule } from '@systems/child-views.module';
 
 import { TestsModule } from './public/tests/tests.module';
 
@@ -129,8 +129,8 @@ export function createCompiler(fn: CompilerFactory): Compiler {
         // Secure
         DeviceBlueprintsModule,
         DeviceTypesModule,
-        SolutionsModule,
-        SolutionBlueprintsModule,
+        SystemsModule,
+        SystemBlueprintsModule,
 
         BlockUIModule.forRoot(),
         SweetAlert2Module

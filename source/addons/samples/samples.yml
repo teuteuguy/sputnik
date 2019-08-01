@@ -16,9 +16,9 @@ Parameters:
     settingsTable:
         Type: String
         Description: DynamoDB Table for storing the settings
-    solutionBlueprintsTable:
+    systemBlueprintsTable:
         Type: String
-        Description: DynamoDB Table for storing the solution blueprints
+        Description: DynamoDB Table for storing the system blueprints
     lambdaServiceDevicesArn:
         Type: String
         Description: Lambda Service Devices ARN
