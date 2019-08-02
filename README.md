@@ -36,7 +36,7 @@ You can 1-click deploy this solution in your AWS Account in us-east-1 by clickin
 
 Region | Launch Template
 ------------ | -------------
-**N. Virginia** (us-east-1) | [![Launch the sputnik Stack into Virginia with CloudFormation](/Images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.1/cf/sputnik.yml)
+**N. Virginia** (us-east-1) | [![Launch the sputnik Stack into Virginia with CloudFormation](/Images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.2/cf/sputnik.yml)
 
 # Customize your own and build for yourself
 First of all. You do not need to do this step. Only do this if you want to build and run a customized version of this solution for your needs.
