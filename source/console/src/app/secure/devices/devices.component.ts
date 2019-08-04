@@ -159,10 +159,9 @@ export class DevicesComponent implements OnInit {
         _self.blockUI.start('Creating device...');
 
         _self.deviceService
-            .addDevice(_self.newDevice.thingName)
+            .addDevice(_self.newDevice.name)
             .then((device: Device) => {
                 _self.loadDevices();
-                // TODO: goto the /devices/thingId in the router
                 $('#createModal').modal('hide');
             })
             .catch(err => {
@@ -174,3 +173,4 @@ export class DevicesComponent implements OnInit {
             });
     }
 }
+

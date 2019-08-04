@@ -16,8 +16,8 @@ export default gql`
                 certificateArn
             }
             cert {
+                certificateId
                 at
-                url
             }
             spec
             greengrassGroupId

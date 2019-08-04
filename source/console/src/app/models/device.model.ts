@@ -9,7 +9,6 @@ export class ConnectionState {
 }
 
 export class DeviceCert {
-    url: string;
     at: string;
     certificateId: string;
     certificateArn: string;

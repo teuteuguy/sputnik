@@ -38,22 +38,24 @@ export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
         self.appSyncService
             .getDeviceBlueprint(self.device.deviceBlueprintId)
             .then((deviceBlueprint: DeviceBlueprint) => {
-                self.getLastState(self.device.thingName).then(data => {
-                    self.subscribe([
-                        {
-                            topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
-                            onMessage: message => {
-                                self.updateIncomingShadow(message.value);
-                            },
-                            onError: defaultErrorCallback
-                        }
-                    ]);
+                if (deviceBlueprint) {
+                    self.getLastState(self.device.thingName).then(data => {
+                        self.subscribe([
+                            {
+                                topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
+                                onMessage: message => {
+                                    self.updateIncomingShadow(message.value);
+                                },
+                                onError: defaultErrorCallback
+                            }
+                        ]);
 
-                    if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('view')) {
-                        self.self = self;
-                        self.widgets = deviceBlueprint.spec.widgets;
-                    }
-                });
+                        if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('view')) {
+                            self.self = self;
+                            self.widgets = deviceBlueprint.spec.widgets;
+                        }
+                    });
+                }
             })
             .catch(defaultErrorCallback);
     }

@@ -139,21 +139,19 @@
             <div class="modal-body">
                 <form name="attributeForm" #f="ngForm" class="form-control-line" (ngSubmit)="submitCreateDevice(f.value)"
                     novalidate>
-                    <div [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
+
+                    <div
+                        [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-group has-danger' :'form-group has-success-alt') : 'form-group'">
                         <label for="name" class="form-control-label">Device name:</label>
                         <input type="text" [class]="(name.dirty || name.touched) ? (name.invalid ? 'form-control form-control-line form-control-danger' : 'form-control form-control-line form-control-success-alt') : 'form-control form-control-line'"
-                            name="thingName" id="thingName" #name="ngModel" [(ngModel)]="newDevice.thingName" pattern="[a-zA-Z0-9:_-]+"
-                            required ngModel>
+                            name="name" id="name" #name="ngModel" [(ngModel)]="newDevice.name" pattern="[a-zA-Z 0-9:_-]+" required ngModel>
                         <div *ngIf="!((name.invalid && (name.dirty || name.touched)) && name.errors)" class="form-control-feedback">
                             <small>Name of your device.</small>
                         </div>
                         <div *ngIf="(name.invalid && (name.dirty || name.touched)) && name.errors" class="form-control-feedback">
                             <small>Name of device is required or has errors.</small>
                         </div>
-                        <!-- <div *ngIf=".errors?.pattern">
-                            newDevice.thingName not valid.
-                        </div> -->
-                    </div>
+                    </div>                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" (click)="cancelCreateForm(f);">Cancel</button>
                         <button *ngIf="!name.errors" type="submit" class="btn btn-success">Submit</button>

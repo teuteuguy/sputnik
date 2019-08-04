@@ -47,12 +47,6 @@ Parameters:
     userPoolId:
         Type: String
         Description: Cognito User Pool Id
-    certsBucket:
-        Type: String
-        Description: sputnik Certs Bucket
-    certsBucketArn:
-        Type: String
-        Description: sputnik Certs Bucket Arn
     cfnStackId:
         Type: String
         Description: sputnik CFN stack id, used by addons
@@ -131,8 +125,6 @@ Resources:
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
-                certsBucket: !Ref certsBucket
-                certsBucketArn: !Ref certsBucketArn
 
     # Nested stack - MicroService - Settings
     CFStackForSettingsService:
@@ -171,16 +163,6 @@ Resources:
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
 
-    # Nested stack - MicroService - Admin
-    CFStackForCertDeletorService:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-cert-deletor.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                certsBucket: !Ref certsBucket
-
 
 Outputs:
     customResourceS3HelperArn:
@@ -210,7 +192,3 @@ Outputs:
     iotThingAutoRegistrationTopicRuleName:
         Description: "ThingAutoRegistration Topic Rule Name"
         Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
-    lambdaServiceCertDeletorArn:
-        Description: 'Cert Deletor Service ARN'
-        Value: !GetAtt CFStackForCertDeletorService.Outputs.lambdaServiceCertDeletorArn
-

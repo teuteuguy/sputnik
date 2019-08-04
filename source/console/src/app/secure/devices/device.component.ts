@@ -31,6 +31,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     public thingId: string;
     private profile: ProfileInfo = null;
 
+    public isAdminUser: boolean;
     public device: Device = new Device();
 
     public deviceForEdit: Device = new Device();
@@ -74,6 +75,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
         _self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
             _self.profile = new ProfileInfo(profile);
+            _self.isAdminUser = _self.profile.isAdmin();
             _self.loadDevice();
             // this.pollerInterval = setInterval(function() {
             //     _self.loadDevice();
@@ -209,7 +211,10 @@ export class DeviceComponent implements OnInit, OnDestroy {
             return this.deviceBlueprintService.deviceBlueprints;
         } else {
             return _.filter(this.deviceBlueprintService.deviceBlueprints, (deviceBlueprint: DeviceBlueprint) => {
-                return _.contains(deviceBlueprint.compatibility, deviceTypeId) || _.contains(deviceBlueprint.compatibility, 'all');
+                return (
+                    _.contains(deviceBlueprint.compatibility, deviceTypeId) ||
+                    _.contains(deviceBlueprint.compatibility, 'all')
+                );
             });
         }
     }
@@ -217,5 +222,22 @@ export class DeviceComponent implements OnInit, OnDestroy {
     public deviceTypeChanged() {
         console.log('Changed device Type!', this.deviceForEdit.deviceTypeId);
         this.deviceBlueprintsForEdit = this.filterDeviceBlueprintsForDeviceTypeId(this.deviceForEdit.deviceTypeId);
+    }
+
+    public createCertificate() {
+        this.blockUI.start('Generating certificate for device...');
+
+        this.deviceService
+            .createCertificate(this.device.thingName, true)
+            .then((cert: any) => {
+                this.logger.info(cert);
+                this.blockUI.stop();
+            })
+            .catch(err => {
+                this.blockUI.stop();
+                swal('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
+                this.logger.error('error occurred calling createCertificate api, show message');
+                this.logger.error(err);
+            });
     }
 }

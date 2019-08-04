@@ -5,7 +5,11 @@
         <div class="card card-outline-info">
             <div class="card-body">
                 <div class="pull-right" role="group">
-                    <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Edit Device Type"
+                    <button *ngIf="isAdminUser" type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="Generate Certificate"
+                        data-placement="top" (click)="createCertificate()">
+                        <i class="mdi mdi-key"></i> Generate Cert</button>
+                    <button type="button" class="btn btn-success btn-sm m-l-10" data-toggle="tooltip"
+                        title="Edit Device"
                         data-placement="top" (click)="showEditForm()">
                         <i class="mdi mdi-pencil"></i> Edit</button>
                     <button type="button" class="btn btn-success btn-sm m-l-10" data-toggle="tooltip" title="Deploy"
@@ -98,7 +102,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" *ngIf="device.cert && device.cert.at && device.cert.url && (device.cert.at | fromNowValue) < 300">
+                        <!-- <div class="row" *ngIf="device.cert && device.cert.at && device.cert.url && (device.cert.at | fromNowValue) < 300">
                             <div class="col-md-6">
                                 <div class="form-group row m-b-10">
                                     <label class="col-md-4 control-label text-right ">Device Cert:</label>
@@ -110,7 +114,7 @@
                             </div>
                             <div class="col-md-6">
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </form>
             </div>

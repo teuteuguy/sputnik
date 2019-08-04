@@ -16,13 +16,6 @@ Parameters:
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
-    certsBucket:
-        Type: String
-        Description: S3 Bucket for Certs
-    certsBucketArn:
-        Type: String
-        Description: S3 Bucket Arn for Certs
-
 
 Resources:
 
@@ -58,13 +51,6 @@ Resources:
                     -
                         Effect: 'Allow'
                         Action:
-                            - 's3:PutObject'
-                            - 's3:GetObject'
-                        Resource:
-                            - !Join ['/', [!Ref certsBucketArn, '*']]
-                    -
-                        Effect: 'Allow'
-                        Action:
                             - 'dynamodb:BatchGetItem'
                             - 'dynamodb:BatchWriteItem'
                             - 'dynamodb:DeleteItem'
@@ -80,7 +66,8 @@ Resources:
                     -
                         Effect: 'Allow'
                         Action:
-                            # TODO: Too permissive for now.
+                            # Too permissive for now.
+                            # iot:createCertificateFromCsr
                             - 'iot:*'
                             - 'greengrass:*'
                         Resource:
@@ -106,7 +93,6 @@ Resources:
                     TABLE_DEVICES: !Ref devicesTable
                     TABLE_DEVICE_TYPES: !Ref deviceTypesTable
                     TABLE_SETTINGS: !Ref settingsTable
-                    S3_CERT_BUCKET: !Ref certsBucket
                     LOGGING_LEVEL: 2
 
 

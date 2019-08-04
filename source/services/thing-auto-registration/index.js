@@ -117,8 +117,7 @@ function handler(event, context, callback) {
                                         deviceTypeId: 'UNKNOWN',
                                         deviceBlueprintId: 'UNKNOWN',
                                         spec: {},
-                                        thingName: thing.thingName,
-                                        generateCert: false
+                                        thingName: thing.thingName
                                     }).then(device => {
                                         updateParams.UpdateExpression += ', #c = :c';
                                         updateParams.ExpressionAttributeNames['#c'] = 'cert';

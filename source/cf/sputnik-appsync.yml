@@ -720,6 +720,16 @@ Resources:
             DataSourceName: !GetAtt appSyncDataSourceDevicesLambda.Name
             RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'devices', 'devices-request-mapping-template-update.gql']]
             ResponseMappingTemplate: '$util.toJson($context.result)'
+    appSyncResolverMutationCreateCertificate:
+        Type: 'AWS::AppSync::Resolver'
+        DependsOn: appSyncSchema
+        Properties:
+            ApiId: !GetAtt appSyncGraphQLApi.ApiId
+            TypeName: Mutation
+            FieldName: createCertificate
+            DataSourceName: !GetAtt appSyncDataSourceDevicesLambda.Name
+            RequestMappingTemplateS3Location: !Join ['/', ['s3:/', !Ref sourceBucket, !Ref sourceKeyPrefix, 'devices', 'devices-request-mapping-template-create-certificate.gql']]
+            ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################
     # ####################################################################################################

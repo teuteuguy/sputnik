@@ -10,6 +10,9 @@ import { AppSyncService, AddedDevice, UpdatedDevice, DeletedDevice } from './app
 
 // Helpers
 import { _ } from 'underscore';
+import * as forge from 'node-forge';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Injectable()
 export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice {
@@ -70,19 +73,78 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
             return r;
         });
     }
-    public addDevice(
+    public addDevice(name: string, deviceTypeId: string = 'UNKNOWN', deviceBlueprintId: string = 'UNKNOWN') {
+        return this.appSyncService.addDevice(name, deviceTypeId, deviceBlueprintId).then(r => {
+            this.onAddedDevice(r);
+            return r;
+        });
+    }
+    public createCertificate(
         thingName: string,
-        deviceTypeId: string = 'UNKNOWN',
-        deviceBlueprintId: string = 'UNKNOWN',
-        spec: any = {},
-        generateCert: boolean = true
+        attachToThing: boolean = false,
+        deviceBlueprintId: string = null,
+        deviceTypeId: string = null
     ) {
-        return this.appSyncService
-            .addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert)
-            .then(r => {
-                this.onAddedDevice(r);
-                return r;
-            });
+        return new Promise((resolve, reject) => {
+            forge.pki.rsa.generateKeyPair(
+                {
+                    bits: 4096,
+                    workers: 2
+                },
+                (err, keypair) => {
+                    if (err) {
+                        console.error('createCertificate: error', err);
+                        return reject(err);
+                    } else {
+                        const csr = forge.pki.createCertificationRequest();
+                        csr.publicKey = keypair.publicKey;
+                        csr.setSubject([
+                            {
+                                name: 'organizationName',
+                                value: 'sputnik'
+                            },
+                            {
+                                name: 'commonName',
+                                value: thingName
+                            }
+                        ]);
+
+                        csr.sign(keypair.privateKey);
+
+                        let verified = csr.verify();
+                        console.log('createCertificate: Verified:', verified);
+
+                        let pem = forge.pki.certificationRequestToPem(csr);
+                        console.log('createCertificate: CSR:', pem);
+
+                        this.appSyncService.createCertificate(thingName, pem, attachToThing).then(cert => {
+                            cert.privateKey = forge.pki.privateKeyToPem(keypair.privateKey);
+                            cert.publicKey = forge.pki.publicKeyToPem(keypair.publicKey);
+                            // resolve(cert);
+
+                            const shortCertName = cert.certificateId.substring(0, 11);
+                            const zip = new JSZip();
+                            zip.file(shortCertName + '-cert.crt', cert.certificatePem);
+                            zip.file(shortCertName + '-private.key', cert.privateKey);
+                            zip.file(shortCertName + '-public.key', cert.publicKey);
+
+                            zip.generateAsync({
+                                type: 'blob'
+                            }).then(
+                                (blob: any) => {
+                                    // 1) generate the zip file
+                                    saveAs(blob, cert.certificateId + '.zip');
+                                    resolve(cert);
+                                },
+                                (error: any) => {
+                                    reject(error);
+                                }
+                            );
+                        });
+                    }
+                }
+            );
+        });
     }
 
     onAddedDevice(device: Device) {

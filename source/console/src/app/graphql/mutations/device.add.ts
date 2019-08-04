@@ -2,16 +2,12 @@ import gql from 'graphql-tag';
 
 export default gql`
     mutation AddDevice(
-        $thingName: String!
-        $spec: AWSJSON
-        $generateCert: Boolean!
+        $name: String!
         $deviceTypeId: String!
         $deviceBlueprintId: String!
     ) {
         addDevice(
-            thingName: $thingName
-            spec: $spec
-            generateCert: $generateCert
+            name: $name
             deviceTypeId: $deviceTypeId
             deviceBlueprintId: $deviceBlueprintId
         ) {

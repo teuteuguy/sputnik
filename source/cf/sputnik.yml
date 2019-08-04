@@ -40,12 +40,6 @@ Resources:
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-s3bucket-website.yml']]]]
 
-    # Nested stack - Certs bucket creation
-    CFStackForCertsBucket:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-s3bucket-certs.yml']]]]
-
     # ##########################################################################
     #
     # Cognito
@@ -100,8 +94,6 @@ Resources:
                 iamRoleArnForGreengrassGroups: !GetAtt IAMRoleForGreengrassGroups.Arn
                 iotPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
-                certsBucket: !GetAtt CFStackForCertsBucket.Outputs.certsBucket
-                certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
                 cfnStackId: !Ref AWS::StackId
 
     # ##########################################################################
@@ -142,8 +134,6 @@ Resources:
         Type: AWS::CloudFormation::Stack
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-cloudtrail.yml']]]]
-            Parameters:
-                certsBucketArn: !GetAtt CFStackForCertsBucket.Outputs.certsBucketArn
 
 
     # Systems Greengrass group role
@@ -178,6 +168,23 @@ Resources:
                             - "greengrass:*"
                         Resource:
                             - "*"
+
+    IoTConnectPolicyForSputnikCertificates:
+        Type: "AWS::IoT::Policy"
+        Properties:
+            PolicyName: "sputnik-default-connect-policy-for-new-certs"
+            PolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -
+                        Effect: "Allow"
+                        Action: "iot:Connect"
+                        Resource:
+                            - !Join [':', ['arn:aws:iot', Ref: 'AWS::Region', Ref: 'AWS::AccountId', 'client/${iot:Certificate.Subject.CommonName}']]
+                            - !Join [':', ['arn:aws:iot', Ref: 'AWS::Region', Ref: 'AWS::AccountId', 'client/${iot:Certificate.Subject.CommonName}-*']]
+                        Condition:
+                            StringEquals:
+                                iot:Certificate.Subject.Organization: "sputnik"
 
 
     # ##########################################################################

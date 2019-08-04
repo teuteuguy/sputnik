@@ -44,6 +44,7 @@ import addDeviceBlueprint from '@graphql/mutations/device-blueprint.add';
 import addDeviceType from '@graphql/mutations/device-type.add';
 import addSystem from '@graphql/mutations/system.add';
 import addSystemBlueprint from '@app/graphql/mutations/system-blueprint.add';
+import createCertificate from '@graphql/mutations/device.create-certificate';
 import deleteDevice from '@graphql/mutations/device.delete';
 import deleteDeviceBlueprint from '@graphql/mutations/device-blueprint.delete';
 import deleteDeviceType from '@graphql/mutations/device-type.delete';
@@ -197,7 +198,7 @@ export class AppSyncService {
 
     // Device Types
     private cleanIncomingDeviceType(deviceType: DeviceType) {
-        if (deviceType.spec) {
+        if (deviceType && deviceType.hasOwnProperty('spec') && deviceType.spec) {
             deviceType.spec = JSON.parse(deviceType.spec);
         }
         return deviceType;
@@ -270,7 +271,7 @@ export class AppSyncService {
 
     // Deployments
     private cleanIncomingDeployment(deployment: Deployment) {
-        if (deployment.spec) {
+        if (deployment && deployment.hasOwnProperty('spec') && deployment.spec) {
             deployment.spec = JSON.parse(deployment.spec);
         }
         return deployment;
@@ -288,10 +289,10 @@ export class AppSyncService {
 
     // Device Blueprints
     private cleanIncomingDeviceBlueprint(deviceBlueprint: DeviceBlueprint) {
-        if (deviceBlueprint.deviceTypeMappings) {
+        if (deviceBlueprint && deviceBlueprint.hasOwnProperty('deviceTypeMappings') && deviceBlueprint.deviceTypeMappings) {
             deviceBlueprint.deviceTypeMappings = JSON.parse(deviceBlueprint.deviceTypeMappings);
         }
-        if (deviceBlueprint.spec) {
+        if (deviceBlueprint && deviceBlueprint.hasOwnProperty('spec') && deviceBlueprint.spec) {
             deviceBlueprint.spec = JSON.parse(deviceBlueprint.spec);
         }
         return deviceBlueprint;
@@ -373,7 +374,7 @@ export class AppSyncService {
 
     // Devices
     private cleanIncomingDevice(device: Device) {
-        if (device.spec) {
+        if (device && device.hasOwnProperty('spec') && device.spec) {
             device.spec = JSON.parse(device.spec);
         }
         return device;
@@ -414,17 +415,9 @@ export class AppSyncService {
     public getDeviceStats() {
         return this.query(getDeviceStats, {}).then(result => <DeviceStats>result.data.getDeviceStats);
     }
-    public addDevice(
-        thingName: string,
-        deviceTypeId: string = 'UNKNOWN',
-        deviceBlueprintId: string = 'UNKNOWN',
-        spec: any = {},
-        generateCert: boolean = true
-    ) {
+    public addDevice(name: string, deviceTypeId: string = 'UNKNOWN', deviceBlueprintId: string = 'UNKNOWN') {
         return this.mutation(addDevice, {
-            thingName: thingName,
-            spec: JSON.stringify(spec),
-            generateCert: generateCert,
+            name: name,
             deviceTypeId: deviceTypeId,
             deviceBlueprintId: deviceBlueprintId
         }).then(result => this.cleanIncomingDevice(result.data.addDevice));
@@ -446,6 +439,16 @@ export class AppSyncService {
         return this.mutation(updateDevice, obj).then(d => {
             // console.log('updateDevice mutation return:', d);
             return this.cleanIncomingDevice(d.data.updateDevice);
+        });
+    }
+    public createCertificate(thingName: string, csr: string, attachToThing: boolean = false) {
+        console.log(thingName, csr, attachToThing);
+        return this.mutation(createCertificate, {
+            thingName: thingName,
+            csr: csr,
+            attachToThing: attachToThing
+        }).then(r => {
+            return r.data.createCertificate;
         });
     }
     public onAddedDevice(hook: AddedDevice) {
@@ -568,7 +571,7 @@ export class AppSyncService {
 
     // System Blueprints
     private cleanIncomingSystemBlueprint(systemBlueprint: SystemBlueprint) {
-        if (systemBlueprint.spec) {
+        if (systemBlueprint && systemBlueprint.hasOwnProperty('spec') && systemBlueprint.spec) {
             systemBlueprint.spec = JSON.parse(systemBlueprint.spec);
         }
         return systemBlueprint;
