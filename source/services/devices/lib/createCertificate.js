@@ -39,7 +39,7 @@ module.exports = function(event, context) {
                         return iot
                             .attachPrincipalPolicy({
                                 principal: _cert.certificateArn,
-                                policyName: 'sputnik-default-connect-policy-for-new-certs'
+                                policyName: process.env.IOT_DEFAULT_CONNECT_POLICY
                             })
                             .promise();
                     });

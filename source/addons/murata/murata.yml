@@ -165,15 +165,15 @@ Resources:
                                 Resource: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":topic/murata/*/*/errors" ] ]
 
     # IoT Rules - Add device on presence
-    MurataThingAutoRegistrationTopicRuleLambdaInvocationPermission:
+    MurataJustInTimeOnBoardingTopicRuleLambdaInvocationPermission:
         Type: AWS::Lambda::Permission
         Properties:
-            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "MurataThingAutoRegistrationTopicRule" ] ]
+            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "MurataJustInTimeOnBoardingTopicRule" ] ]
             Action: lambda:InvokeFunction
             Principal: iot.amazonaws.com
             FunctionName: !Ref lambdaServiceDevicesArn
             SourceAccount: !Ref AWS::AccountId
-    MurataThingAutoRegistrationTopicRule:
+    MurataJustInTimeOnBoardingTopicRule:
         Type: "AWS::IoT::TopicRule"
         Properties:
             TopicRulePayload:

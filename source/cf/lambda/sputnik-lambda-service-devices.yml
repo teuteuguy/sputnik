@@ -16,6 +16,9 @@ Parameters:
     deviceTypesTable:
         Type: String
         Description: DynamoDB Table for storing the device types
+    iotConnectPolicyForSputnikCertificates:
+        Type: String
+        Description: sputnik default connect IoT Policy for new certs
 
 Resources:
 
@@ -93,6 +96,7 @@ Resources:
                     TABLE_DEVICES: !Ref devicesTable
                     TABLE_DEVICE_TYPES: !Ref deviceTypesTable
                     TABLE_SETTINGS: !Ref settingsTable
+                    IOT_DEFAULT_CONNECT_POLICY: !Ref iotConnectPolicyForSputnikCertificates
                     LOGGING_LEVEL: 2
 
 

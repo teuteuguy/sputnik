@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "sputnik - Micro Service Lambda - Thing Group Auto Registration - Version %%VERSION%%"
+Description: "sputnik - Micro Service Lambda - Just In Time OnBoarding - Version %%VERSION%%"
 Parameters:
     sourceBucket:
         Type: String
@@ -16,7 +16,7 @@ Parameters:
 
 Resources:
 
-    lambdaServiceThingAutoRegistrationRole:
+    lambdaServiceJustInTimeOnBoardingRole:
         Type: "AWS::IAM::Role"
         Properties:
             AssumeRolePolicyDocument:
@@ -31,10 +31,10 @@ Resources:
                                 - "sts:AssumeRole"
             Path: "/"
 
-    lambdaServiceThingAutoRegistrationPolicy:
+    lambdaServiceJustInTimeOnBoardingPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
-            Description: 'sputnik policy for the Thing Group Auto Registration microservice Lambda function.'
+            Description: 'sputnik policy for the Just In Time On Boarding microservice Lambda function.'
             PolicyDocument:
                 Version: '2012-10-17'
                 Statement:
@@ -44,7 +44,7 @@ Resources:
                             - "logs:CreateLogGroup"
                             - "logs:CreateLogStream"
                             - "logs:PutLogEvents"
-                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref lambdaServiceThingAutoRegistration, ":*"]]
+                        Resource: !Join ["", ["arn:aws:logs:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":log-group:/aws/lambda/", !Ref lambdaServiceJustInTimeOnBoarding, ":*"]]
                     -
                         Effect: "Allow"
                         Action:
@@ -68,19 +68,19 @@ Resources:
                         Resource:
                             - "*"
             Roles:
-                - !Ref 'lambdaServiceThingAutoRegistrationRole'
+                - !Ref 'lambdaServiceJustInTimeOnBoardingRole'
 
-    lambdaServiceThingAutoRegistration:
+    lambdaServiceJustInTimeOnBoarding:
         Type: "AWS::Lambda::Function"
         Properties:
-            FunctionName: "sputnik-thing-auto-registration-service"
-            Description: "sputnik Thing Group Auto Registration microservice"
+            FunctionName: "sputnik-just-in-time-on-boarding-service"
+            Description: "sputnik just in time on boarding microservice"
             Code:
                 S3Bucket: !Ref sourceBucket
-                S3Key: !Join ["/", [!Ref lambdaSourceKeyPrefix, "sputnik-thing-auto-registration-service.zip"]]
+                S3Key: !Join ["/", [!Ref lambdaSourceKeyPrefix, "sputnik-just-in-time-on-boarding-service.zip"]]
             Handler: index.handler
             Runtime: nodejs8.10
-            Role: !GetAtt lambdaServiceThingAutoRegistrationRole.Arn
+            Role: !GetAtt lambdaServiceJustInTimeOnBoardingRole.Arn
             Timeout: 60
             MemorySize: 256
             Environment:
@@ -89,7 +89,7 @@ Resources:
                     TABLE_SETTINGS: !Ref settingsTable
                     LOGGING_LEVEL: 2
 
-    iotThingAutoRegistrationTopicRule:
+    iotJustInTimeOnBoardingTopicRule:
         Type: "AWS::IoT::TopicRule"
         Properties:
             TopicRulePayload:
@@ -98,22 +98,22 @@ Resources:
                     SELECT topic() as topic, * from '$aws/events/presence/#'
                 Actions:
                     - Lambda:
-                        FunctionArn: !GetAtt lambdaServiceThingAutoRegistration.Arn
+                        FunctionArn: !GetAtt lambdaServiceJustInTimeOnBoarding.Arn
 
-    iotThingAutoRegistrationLambdaInvocationPermission:
+    iotJustInTimeOnBoardingLambdaInvocationPermission:
         Type: AWS::Lambda::Permission
         Properties:
-            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "iotThingAutoRegistrationTopicRule" ] ]
+            SourceArn: !Join [ "", [ "arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":rule/", !Ref "iotJustInTimeOnBoardingTopicRule" ] ]
             Action: lambda:InvokeFunction
             Principal: iot.amazonaws.com
-            FunctionName: !GetAtt lambdaServiceThingAutoRegistration.Arn
+            FunctionName: !GetAtt lambdaServiceJustInTimeOnBoarding.Arn
             SourceAccount: !Ref AWS::AccountId
 
 
 Outputs:
-    lambdaServiceThingAutoRegistrationArn:
-        Description: "Thing Auto Registration Service ARN"
-        Value: !GetAtt lambdaServiceThingAutoRegistration.Arn
-    iotThingAutoRegistrationTopicRuleName:
-        Description: "ThingAutoRegistration Topic Rule Name"
-        Value: !Ref iotThingAutoRegistrationTopicRule
+    lambdaServiceJustInTimeOnBoardingArn:
+        Description: "Just in time on boarding Service ARN"
+        Value: !GetAtt lambdaServiceJustInTimeOnBoarding.Arn
+    iotJustInTimeOnBoardingTopicRuleName:
+        Description: "JustInTimeOnBoarding Topic Rule Name"
+        Value: !Ref iotJustInTimeOnBoardingTopicRule

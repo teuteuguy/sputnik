@@ -12,8 +12,10 @@ const lib = 'addDevice';
 
 module.exports = function(event, context) {
     const usageMetrics = new UsageMetrics();
-    const thingName = `sputnik-${shortid.generate()}`;
-    const tag = `${lib}(${thingName}):`;
+    if (event.thingName === undefined) {
+        event.thingName = `sputnik-${shortid.generate()}`;
+    }
+    const tag = `${lib}(${event.thingName}):`;
 
     console.log(tag, 'start');
 
@@ -24,7 +26,7 @@ module.exports = function(event, context) {
 
     return iot
         .createThing({
-            thingName: thingName
+            thingName: event.thingName
         })
         .promise()
         .then(thing => {
@@ -58,7 +60,7 @@ module.exports = function(event, context) {
                     certificateId: 'NOTSET',
                     certificateArn: 'NOTSET',
                     state: 'created',
-                    at: moment()
+                    at: moment(0)
                         .utc()
                         .format()
                 }

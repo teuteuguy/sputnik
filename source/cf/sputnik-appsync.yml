@@ -515,33 +515,33 @@ Resources:
     # ####################################################################################################
     # ####################################################################################################
     #
-    # RESOLVERS - Thing Group Auto Registration
+    # RESOLVERS - Just In Time On Boarding
     #
     # ####################################################################################################
     # ####################################################################################################
 
-    # RESOLVERS - QUERIES - Thing Auto Registration
-    appSyncResolverQueryGetThingAutoRegistrationState:
+    # RESOLVERS - QUERIES - Just In Time On Boarding
+    appSyncResolverQueryGetJustInTimeOnBoardingState:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
         Properties:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Query
-            FieldName: getThingAutoRegistrationState
+            FieldName: getJustInTimeOnBoardingState
             DataSourceName: !GetAtt appSyncDataSourceSettingsLambda.Name
-            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "getThingAutoRegistrationState", "arguments": $util.toJson($context.arguments) } }'
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "getJustInTimeOnBoardingState", "arguments": $util.toJson($context.arguments) } }'
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
-    # RESOLVERS - MUTATIONS - Thing Auto Registration
-    appSyncResolverMutationSetThingAutoRegistrationState:
+    # RESOLVERS - MUTATIONS - Just In Time On Boarding
+    appSyncResolverMutationSetJustInTimeOnBoardingState:
         Type: 'AWS::AppSync::Resolver'
         DependsOn: appSyncSchema
         Properties:
             ApiId: !GetAtt appSyncGraphQLApi.ApiId
             TypeName: Mutation
-            FieldName: setThingAutoRegistrationState
+            FieldName: setJustInTimeOnBoardingState
             DataSourceName: !GetAtt appSyncDataSourceSettingsLambda.Name
-            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "setThingAutoRegistrationState", "enabled": $context.arguments.enabled } }'
+            RequestMappingTemplate: '{ "version" : "2017-02-28", "operation": "Invoke", "payload": { "cmd": "setJustInTimeOnBoardingState", "enabled": $context.arguments.enabled } }'
             ResponseMappingTemplate: '$util.toJson($context.result)'
 
     # ####################################################################################################

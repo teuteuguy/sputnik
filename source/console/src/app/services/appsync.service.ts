@@ -24,7 +24,7 @@ import getSetting from '@graphql/queries/setting.get';
 import getSystem from '@graphql/queries/system.get';
 import getSystemStats from '@graphql/queries/system.getStats';
 import getSystemBlueprint from '@graphql/queries/system-blueprint.get';
-import getThingAutoRegistrationState from '@graphql/queries/thing-auto-registration-state.get';
+import getJustInTimeOnBoardingState from '@graphql/queries/just-in-time-on-boarding-state.get';
 import getUser from '@graphql/queries/user.get';
 import listDeployments from '@graphql/queries/deployments.list';
 import listDevices from '@graphql/queries/devices.list';
@@ -55,7 +55,7 @@ import disableUser from '@graphql/mutations/user.disable';
 import enableUser from '@graphql/mutations/user.enable';
 import inviteUser from '@graphql/mutations/user.invite';
 import refreshSystem from '@graphql/mutations/system.refresh';
-import setThingAutoRegistrationState from '@graphql/mutations/thing-auto-registration-state.set';
+import setJustInTimeOnBoardingState from '@app/graphql/mutations/just-in-time-on-boarding-state.set';
 import updateDevice from '@graphql/mutations/device.update';
 import updateDeviceBlueprint from '@graphql/mutations/device-blueprint.update';
 import updateDeviceType from '@graphql/mutations/device-type.update';
@@ -494,14 +494,14 @@ export class AppSyncService {
             return <Setting>result.data.updateSetting;
         });
     }
-    public getThingAutoRegistrationState() {
-        return this.query(getThingAutoRegistrationState, {}).then(result => {
-            return result.data.getThingAutoRegistrationState;
+    public getJustInTimeOnBoardingState() {
+        return this.query(getJustInTimeOnBoardingState, {}).then(result => {
+            return result.data.getJustInTimeOnBoardingState;
         });
     }
-    public setThingAutoRegistrationState(enabled: boolean) {
-        return this.query(setThingAutoRegistrationState, { enabled: enabled }).then(result => {
-            return result.data.setThingAutoRegistrationState;
+    public setJustInTimeOnBoardingState(enabled: boolean) {
+        return this.query(setJustInTimeOnBoardingState, { enabled: enabled }).then(result => {
+            return result.data.setJustInTimeOnBoardingState;
         });
     }
 

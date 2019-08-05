@@ -93,6 +93,7 @@ Resources:
                 systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
                 iamRoleArnForGreengrassGroups: !GetAtt IAMRoleForGreengrassGroups.Arn
                 iotPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
+                iotConnectPolicyForSputnikCertificates: !Ref IoTConnectPolicyForSputnikCertificates
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
                 cfnStackId: !Ref AWS::StackId
 
@@ -172,7 +173,6 @@ Resources:
     IoTConnectPolicyForSputnikCertificates:
         Type: "AWS::IoT::Policy"
         Properties:
-            PolicyName: "sputnik-default-connect-policy-for-new-certs"
             PolicyDocument:
                 Version: "2012-10-17"
                 Statement:

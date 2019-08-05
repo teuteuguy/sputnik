@@ -19,10 +19,10 @@ export class SettingService {
     public updateSetting(setting: Setting) {
         return this.appSyncService.updateSetting(setting);
     }
-    public getThingAutoRegistrationState() {
-        return this.appSyncService.getThingAutoRegistrationState();
+    public getJustInTimeOnBoardingState() {
+        return this.appSyncService.getJustInTimeOnBoardingState();
     }
-    public setThingAutoRegistrationState(enabled: boolean) {
-        return this.appSyncService.setThingAutoRegistrationState(enabled);
+    public setJustInTimeOnBoardingState(enabled: boolean) {
+        return this.appSyncService.setJustInTimeOnBoardingState(enabled);
     }
 }

@@ -1,6 +1,6 @@
 {
-    "name": "sputnik-thing-auto-registration-service",
-    "description": "The Thing Group Auto Registration microservice for the sputnik",
+    "name": "sputnik-just-in-time-on-boarding-service",
+    "description": "The Just In Time On Boarding microservice for sputnik",
     "main": "index.js",
     "license": "Amazon Software License (ASL)",
     "version": "0.0.1",
@@ -9,7 +9,9 @@
         "moment": "*",
         "sputnik-custom-resource-helper-utils": "../../resources/utils/",
         "sputnik-devices-service": "../devices",
-        "underscore": "*"
+        "underscore": "*",
+        "node-forge": "0.8.5",
+        "shortid": "2.2.14"
     },
     "devDependencies": {},
     "scripts": {

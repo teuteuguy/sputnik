@@ -4,11 +4,6 @@ type ConnectionState {
     certificateArn: String!
     certificateId: String!
 }
-type Cert {
-    certificateId: String!
-    certificateArn: String!
-    at: AWSDateTime
-}
 type Device {
     thingId: String!
     thingName: String!
@@ -17,7 +12,6 @@ type Device {
     deviceTypeId: String!
     deviceBlueprintId: String!
     connectionState: ConnectionState
-    cert: Cert
     greengrassGroupId: String!
     spec: AWSJSON
     lastDeploymentId: String
@@ -243,7 +237,7 @@ type Query {
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Other
-    getThingAutoRegistrationState: Boolean
+    getJustInTimeOnBoardingState: Boolean
         @aws_auth(cognito_groups: ["Administrators"])
 
     describeEndpoint(endpointType: String): String
@@ -323,7 +317,7 @@ type Mutation {
     ## Other
     attachPrincipalPolicy(policyName: String!, principal: String!): Boolean
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    setThingAutoRegistrationState(enabled: Boolean!): Boolean
+    setJustInTimeOnBoardingState(enabled: Boolean!): Boolean
         @aws_auth(cognito_groups: ["Administrators"])
     updateThingShadow(params: AWSJSON!): ThingShadowResponse
         @aws_auth(cognito_groups: ["Administrators", "Members"])
