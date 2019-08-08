@@ -31,6 +31,9 @@ Parameters:
     systemBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the system blueprints
+    greengrassServiceRoleArn:
+        Type: String
+        Description: sputnik Greengrass Group Role ARN
 
 Resources:
     customResourceUtilsHelperRole:
@@ -107,6 +110,14 @@ Resources:
                             - "iot:DeleteThingShadow"
                         Resource:
                             - "*"
+                    -
+                        Effect: "Allow"
+                        Action:
+                            - "iam:PassRole"
+                            - "greengrass:AssociateServiceRoleToAccount"
+                        Resource:
+                            - "*"
+
 
     customResourceUtilsHelper:
         Type: 'AWS::Lambda::Function'
@@ -129,6 +140,7 @@ Resources:
                     TABLE_SYSTEMS: !Ref systemsTable
                     TABLE_SYSTEM_BLUEPRINTS: !Ref systemBlueprintsTable
                     TABLE_SETTINGS: !Ref settingsTable
+                    GREENGRASS_SERVICE_ROLE_ARN: !Ref greengrassServiceRoleArn
                     LOGGING_LEVEL: 2
 
 Outputs:

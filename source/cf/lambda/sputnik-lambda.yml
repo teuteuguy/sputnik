@@ -38,6 +38,9 @@ Parameters:
     systemBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the system blueprints
+    greengrassServiceRoleArn:
+        Type: String
+        Description: IAM Role Arn for Greengrass Service
     iamRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
@@ -83,6 +86,7 @@ Resources:
                 deviceTypesTable: !Ref deviceTypesTable
                 systemsTable: !Ref systemsTable
                 systemBlueprintsTable: !Ref systemBlueprintsTable
+                greengrassServiceRoleArn: !Ref greengrassServiceRoleArn
 
     # Nested stack - Custom resource - UUID Helper
     CFStackForCustomResourceUUIDHelper:

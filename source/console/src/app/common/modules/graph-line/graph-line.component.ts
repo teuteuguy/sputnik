@@ -9,35 +9,60 @@ import { BaseChartDirective, Color, Label } from 'ng2-charts';
 @Component({
     selector: 'app-graph-line',
     template: `
-        <div class="card card-outline-info">
-            <div class="card-body">
-                <h5 class="card-title">{{ title }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ value | number: '.2' }}{{ unit }}</h6>
-                <div class="card-text">
-                    <canvas
-                        baseChart
-                        [datasets]="[
-                            {
-                                data: data || [],
-                                label: title,
-                                yAxisID: 'y-axis-0',
-                                fill: false,
-                                borderColor: 'rgb(0, 0, 255)',
-                                backgroundColor: 'rgb(0, 0, 255)',
-                                borderWidth: 1
-                            }
-                        ]"
-                        [options]="options"
-                        [plugins]="chartPlugins"
-                        [legend]="true"
-                        [labels]="labels"
-                        [chartType]="'line'"
-                    ></canvas>
-                </div>
+            <div>
+                <canvas
+                    baseChart
+                    [datasets]="[
+                        {
+                            data: data || [],
+                            label: title,
+                            yAxisID: 'y-axis-0',
+                            fill: false,
+                            borderColor: 'rgb(0, 0, 255)',
+                            backgroundColor: 'rgb(0, 0, 255)',
+                            borderWidth: 1
+                        }
+                    ]"
+                    [options]="options"
+                    [plugins]="chartPlugins"
+                    [legend]="true"
+                    [labels]="labels"
+                    [chartType]="'line'"
+                ></canvas>
             </div>
-        </div>
     `
 })
+
+// template: `
+//         <div class="card card-outline-info">
+//             <div class="card-body">
+//                 <h5 class="card-title">{{ title }}</h5>
+//                 <h6 class="card-subtitle mb-2 text-muted">{{ value | number: '.2' }}{{ unit }}</h6>
+//                 <div class="card-text">
+//                     <canvas
+//                         baseChart
+//                         [datasets]="[
+//                             {
+//                                 data: data || [],
+//                                 label: title,
+//                                 yAxisID: 'y-axis-0',
+//                                 fill: false,
+//                                 borderColor: 'rgb(0, 0, 255)',
+//                                 backgroundColor: 'rgb(0, 0, 255)',
+//                                 borderWidth: 1
+//                             }
+//                         ]"
+//                         [options]="options"
+//                         [plugins]="chartPlugins"
+//                         [legend]="true"
+//                         [labels]="labels"
+//                         [chartType]="'line'"
+//                     ></canvas>
+//                 </div>
+//             </div>
+//         </div>
+//     `
+
 export class GraphLineComponent implements OnInit, OnChanges {
     @Input() value: any;
     @Input() high: number;

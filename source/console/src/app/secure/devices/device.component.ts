@@ -198,7 +198,11 @@ export class DeviceComponent implements OnInit, OnDestroy {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to deploy the system.', 'error');
+                        swal(
+                            'Oops...',
+                            'Unable to deploy the device. ' + JSON.stringify(err),
+                            'error'
+                        );
                         this.logger.error('error occurred calling addDeployment api, show message');
                         this.logger.error(err);
                     });

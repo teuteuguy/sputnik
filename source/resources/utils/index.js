@@ -10,6 +10,7 @@ const moment = require('moment');
 const DDBHelper = require('./lib/dynamodb-helper');
 const S3Helper = require('./lib/s3-helper');
 const IOTHelper = require('./lib/iot-helper');
+const GREENGRASSHelper = require('./lib/greengrass-helper');
 
 const UsageMetrics = require('usage-metrics');
 
@@ -23,6 +24,7 @@ exports.handler = (event, context, callback) => {
     const ddbHelper = new DDBHelper();
     const s3Helper = new S3Helper();
     const iotHelper = new IOTHelper();
+    const greengrassHelper = new GREENGRASSHelper();
     const usageMetrics = new UsageMetrics();
 
     let responseStatus = 'FAILED';
@@ -119,7 +121,18 @@ exports.handler = (event, context, callback) => {
                     console.log([responseData.Error, ':\n', err].join(''));
                     sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
                 });
-
+            } else if (event.ResourceProperties.customAction === 'greengrassAssociateServiceRoleToAccount') {
+                greengrassHelper.associateServiceRoleToAccount().then(data => {
+                        responseStatus = 'SUCCESS';
+                        responseData = data;
+                        sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                }).catch(err => {
+                    responseData = {
+                        Error: `greengrassAssociateServiceRoleToAccount failed`
+                    };
+                    console.log([responseData.Error, ':\n', err].join(''));
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                });
             } else if (event.ResourceProperties.customAction === 'sendMetric' && event.ResourceProperties.anonymousData === 'Yes') {
                 responseStatus = 'SUCCESS';
 
@@ -144,8 +157,9 @@ exports.handler = (event, context, callback) => {
                     sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
                 });
 
+
             } else {
-                sendResponse(event, callback, context.logStreamName, 'SUCCESS');
+                       sendResponse(event, callback, context.logStreamName, 'SUCCESS');
             }
         }
 

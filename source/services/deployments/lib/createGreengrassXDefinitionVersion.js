@@ -128,6 +128,7 @@ module.exports = function (key, spec, currentGreengrassGroupDefinitionVersion) {
                 });
 
                 params[key + 's'] = spec[key + 'DefinitionVersion'][key + 's'];
+                console.log(tag, 'create' + key + 'DefinitionVersion:', params, 'for', spec);
                 return gg['create' + key + 'DefinitionVersion'](params).promise();
             }
         }).then(result => {

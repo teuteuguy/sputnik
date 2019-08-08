@@ -21,6 +21,9 @@ import { AppSyncService } from '@services/appsync.service';
 export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
+    private widgetSubscriptionSubjects: any = {};
+    public widgetSubscriptionObservables: any = {};
+
     constructor(private iotService: IoTService, private appSyncService: AppSyncService) {
         super(iotService);
     }
@@ -40,20 +43,51 @@ export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
             .then((deviceBlueprint: DeviceBlueprint) => {
                 if (deviceBlueprint) {
                     self.getLastState(self.device.thingName).then(data => {
-                        self.subscribe([
-                            {
-                                topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
-                                onMessage: message => {
-                                    self.updateIncomingShadow(message.value);
-                                },
-                                onError: defaultErrorCallback
-                            }
-                        ]);
+                        const subscriptions = [];
 
-                        if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('view')) {
+                        if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('View')) {
                             self.self = self;
-                            self.widgets = deviceBlueprint.spec.widgets;
+
+                            const view = JSON.parse(
+                                JSON.stringify(deviceBlueprint.spec.View)
+                                    .split('[CORE]')
+                                    .join(self.device.thingName)
+                                    .split('[THING_NAME]')
+                                    .join(self.device.thingName)
+                            );
+
+                            if (view.hasOwnProperty('widgets')) {
+                                self.widgets = view.widgets;
+                            }
+                            if (view.hasOwnProperty('subscriptions')) {
+                                const subs = view.subscriptions;
+                                for (let ref in subs) {
+                                    if (subs.hasOwnProperty(ref)) {
+                                        const topic = subs[ref];
+                                        console.log('Subscription:', ref, topic);
+                                        self.widgetSubscriptionSubjects[ref] = new Subject<any>();
+                                        self.widgetSubscriptionObservables[ref] = self.widgetSubscriptionSubjects[ref].asObservable();
+                                        subscriptions.push({
+                                            topic: subs[ref],
+                                            onMessage: message => {
+                                                self.widgetSubscriptionSubjects[ref].next(message.value);
+                                            },
+                                            onError: defaultErrorCallback
+                                        });
+                                    }
+                                }
+                            }
                         }
+
+                        // subscriptions.push({
+                        //     topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
+                        //     onMessage: message => {
+                        //         self.updateIncomingShadow(message.value);
+                        //     },
+                        //     onError: defaultErrorCallback
+                        // });
+
+                        self.subscribe(subscriptions);
                     });
                 }
             })

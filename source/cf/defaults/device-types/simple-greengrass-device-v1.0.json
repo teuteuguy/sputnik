@@ -1,6 +1,6 @@
 {
-    "id": "raspberry-pi-3-v1.0",
-    "name": "Raspberry Pi 3 v1.0",
+    "id": "simple-greengrass-device-v1.0",
+    "name": "Simple Greengrass Device v1.0",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {
@@ -27,26 +27,22 @@
         "LoggerDefinitionVersion": {
             "Loggers": [{
                     "Component": "GreengrassSystem",
-                    "Id": "deeplens-greengrass-AWSCloudWatch-GreengrassSystem",
                     "Level": "INFO",
                     "Type": "AWSCloudWatch"
                 },
                 {
                     "Component": "Lambda",
-                    "Id": "deeplens-greengrass-AWSCloudWatch-Lambda",
                     "Level": "INFO",
                     "Type": "AWSCloudWatch"
                 },
                 {
                     "Component": "GreengrassSystem",
-                    "Id": "deeplens-greengrass-FileSystem-GreengrassSystem",
                     "Level": "INFO",
                     "Space": 300000,
                     "Type": "FileSystem"
                 },
                 {
                     "Component": "Lambda",
-                    "Id": "deeplens-greengrass-FileSystem-Lambda",
                     "Level": "INFO",
                     "Space": 300000,
                     "Type": "FileSystem"

@@ -25,6 +25,7 @@ module.exports = function (event, context) {
     let _deployment;
     let _savedDeployment;
     let _newShadow = {};
+    let _certificateArn;
 
     let _substitutions = {
         THING_NAME: null,
@@ -74,12 +75,25 @@ module.exports = function (event, context) {
         console.log('Device Type:', _deviceType);
         console.log('Device Blueprint:', _deviceBlueprint);
 
+        return iot.listThingPrincipals({
+            thingName: _device.thingName
+        }).promise();
+
+    }).then(principals => {
+        principals = principals.principals;
+
+        if (principals.length === 0) {
+            throw 'Device does not yet have a certificate. Need to create one first.';
+        }
+
+        _certificateArn = principals[0];
+
         _substitutions.AWS_ACCOUNT = process.env.AWS_ACCOUNT;
         _substitutions.AWS_REGION = process.env.AWS_REGION;
         _substitutions.THING_NAME = _device.thingName;
         _substitutions.CORE = _device.thingName;
         _substitutions.CORE_ARN = _device.thingArn;
-        _substitutions.CORE_CERTIFICATE_ARN = _device.connectionState.certificateArn;
+        _substitutions.CORE_CERTIFICATE_ARN = _certificateArn;
         _substitutions.DATA_BUCKET = process.env.DATA_BUCKET;
         _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
 
@@ -243,10 +257,12 @@ module.exports = function (event, context) {
 
                 // TODO: this should ideally be in the specs!
 
-                return iot.attachPrincipalPolicy({
-                    policyName: process.env.IOT_POLICY_GREENGRASS_CORE,
-                    principal: _device.connectionState.certificateArn
-                }).promise();
+                return iot
+                    .attachPrincipalPolicy({
+                        policyName: process.env.IOT_POLICY_GREENGRASS_CORE,
+                        principal: _certificateArn
+                    })
+                    .promise();
 
             }).then(result => {
 

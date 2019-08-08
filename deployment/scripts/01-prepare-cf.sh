@@ -62,5 +62,8 @@ sed -i '' -e $replace $2/cf/lambda/*.yml
 
 echo
 echo "------------------------------------------------------------------------------"
+echo "Remove defaults lambda source code"
+rm -rf $2/cf/defaults/lambdas
+echo "------------------------------------------------------------------------------"
 echo
 exit 0

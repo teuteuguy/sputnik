@@ -1,6 +1,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'sputnik - Website Bucket - Version %%VERSION%%'
 
+Parameters:
+    IsWebsitePublic:
+        Type: String
+        Description: Do you want to make the public S3 website public ?
+        Default: false
+        AllowedValues:
+            - true
+            - false
+
+Conditions:
+    MakeS3WebsiteBucketPublic: !Equals [ !Ref IsWebsitePublic, true ]
+
+
 Resources:
     websiteBucket:
         Type: AWS::S3::Bucket
@@ -10,18 +23,18 @@ Resources:
                 IndexDocument: 'index.html'
                 ErrorDocument: 'index.html'
 
-    # Comment/Uncomment this to make bucket public
-    # websiteBucketPolicy:
-    #     Type: 'AWS::S3::BucketPolicy'
-    #     Properties:
-    #         Bucket:
-    #             !Ref 'websiteBucket'
-    #         PolicyDocument:
-    #             Statement:
-    #                 Action: 's3:GetObject'
-    #                 Effect: 'Allow'
-    #                 Resource: !Join ['', ['arn:aws:s3:::', !Ref websiteBucket, '/*']]
-    #                 Principal: '*'
+    websiteBucketPolicy:
+        Type: 'AWS::S3::BucketPolicy'
+        Condition: MakeS3WebsiteBucketPublic
+        Properties:
+            Bucket:
+                !Ref 'websiteBucket'
+            PolicyDocument:
+                Statement:
+                    Action: 's3:GetObject'
+                    Effect: 'Allow'
+                    Resource: !Join ['', ['arn:aws:s3:::', !Ref websiteBucket, '/*']]
+                    Principal: '*'
 
 Outputs:
     websiteBucket:

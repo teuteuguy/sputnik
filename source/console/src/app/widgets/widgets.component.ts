@@ -12,6 +12,7 @@ import {
 // Components
 import { CardWidgetComponent } from './card-widget.component';
 import { TextWidgetComponent } from './text-widget.component';
+import { GraphRealtimeWidgetComponent } from './graph-realtime-widget.component';
 import { ColorPickerWidgetComponent } from './color-picker-widget.component';
 
 // Directives
@@ -20,7 +21,8 @@ import { ColorPickerWidgetComponent } from './color-picker-widget.component';
 const widgetComponentTypes = {
     'text': TextWidgetComponent,
     'card': CardWidgetComponent,
-    'color-picker': ColorPickerWidgetComponent
+    'color-picker': ColorPickerWidgetComponent,
+    'graph-realtime': GraphRealtimeWidgetComponent
 };
 
 @Component({
