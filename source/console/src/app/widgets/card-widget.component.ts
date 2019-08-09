@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { Widget } from './widget.interface';
+import { WidgetComponent } from './widget.component';
 
 @Component({
     template: `
@@ -23,7 +23,4 @@ import { Widget } from './widget.interface';
         </app-card>
     `
 })
-export class CardWidgetComponent implements Widget {
-    @Input() parent: any;
-    @Input() data: any;
-}
+export class CardWidgetComponent extends WidgetComponent {}

@@ -105,7 +105,7 @@ Resources:
                 iotPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
                 iotConnectPolicyForSputnikCertificates: !Ref IoTConnectPolicyForSputnikCertificates
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
-                cfnStackId: !Ref AWS::StackId
+                # cfnStackId: !Ref AWS::StackId
 
     # ##########################################################################
     #
@@ -268,21 +268,21 @@ Resources:
                 APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
                 IOT_ENDPOINT: !GetAtt iotEndpoint.endpointAddress
                 DEPLOYMENT_UUID: '%%DEPLOYMENT_UUID%%'
-                ADDON_TEMPLATES_URL: !Join ['&', [
-                    !Join ['=', ['param_addonSourceBucket', !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]]],
-                    !Join ['=', ['param_addonSourceKeyPrefix', !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]]],
-                    !Join ['=', ['param_lambdaServiceDevicesArn', !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn]],
-                    !Join ['=', ['param_dataStoreTable', !GetAtt CFStackForDynamoDB.Outputs.dataStoreTable]],
-                    !Join ['=', ['param_deviceBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable]],
-                    !Join ['=', ['param_deviceTypesTable', !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable]],
-                    !Join ['=', ['param_settingsTable', !GetAtt CFStackForDynamoDB.Outputs.settingsTable]],
-                    !Join ['=', ['param_systemBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable]],
-                    !Join ['=', ['param_customResourceUtilsHelperArn', !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn]],
-                    !Join ['=', ['param_iamRoleForGreengrassGroups', !Ref IAMRoleForGreengrassGroups]],
-                    !Join ['=', ['param_dataS3Bucket', !GetAtt CFStackForDataBucket.Outputs.dataBucket]],
-                    !Join ['=', ['param_dataS3BucketArn', !GetAtt CFStackForDataBucket.Outputs.dataBucketArn]],
-                    !Join ['=', ['templateURL', !Join ['/', ['https:/', !Join ['.', [!Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']], 's3.amazonaws.com']], !FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]]],
-                ]]
+                # ADDON_TEMPLATES_URL: !Join ['&', [
+                #     !Join ['=', ['param_addonSourceBucket', !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]]],
+                #     !Join ['=', ['param_addonSourceKeyPrefix', !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]]],
+                #     !Join ['=', ['param_lambdaServiceDevicesArn', !GetAtt CFStackForLambda.Outputs.lambdaServiceDevicesArn]],
+                #     !Join ['=', ['param_dataStoreTable', !GetAtt CFStackForDynamoDB.Outputs.dataStoreTable]],
+                #     !Join ['=', ['param_deviceBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable]],
+                #     !Join ['=', ['param_deviceTypesTable', !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable]],
+                #     !Join ['=', ['param_settingsTable', !GetAtt CFStackForDynamoDB.Outputs.settingsTable]],
+                #     !Join ['=', ['param_systemBlueprintsTable', !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable]],
+                #     !Join ['=', ['param_customResourceUtilsHelperArn', !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn]],
+                #     !Join ['=', ['param_iamRoleForGreengrassGroups', !Ref IAMRoleForGreengrassGroups]],
+                #     !Join ['=', ['param_dataS3Bucket', !GetAtt CFStackForDataBucket.Outputs.dataBucket]],
+                #     !Join ['=', ['param_dataS3BucketArn', !GetAtt CFStackForDataBucket.Outputs.dataBucketArn]],
+                #     !Join ['=', ['templateURL', !Join ['/', ['https:/', !Join ['.', [!Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']], 's3.amazonaws.com']], !FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'addons']]]],
+                # ]]
             customAction: 'putFile'
             deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
@@ -304,19 +304,19 @@ Resources:
                     anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
             customAction: 'dynamodbSaveItem'
 
-    initAddonsSettings:
-        Type: 'Custom::LoadLambda'
-        DependsOn: initAppUUID
-        Properties:
-            ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
-            Region: !Ref 'AWS::Region'
-            ddbTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
-            ddbItem:
-                id: "app-addons"
-                type: "config"
-                setting:
-                    installed: []
-            customAction: 'dynamodbSaveItem'
+    # initAddonsSettings:
+    #     Type: 'Custom::LoadLambda'
+    #     DependsOn: initAppUUID
+    #     Properties:
+    #         ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+    #         Region: !Ref 'AWS::Region'
+    #         ddbTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
+    #         ddbItem:
+    #             id: "app-addons"
+    #             type: "config"
+    #             setting:
+    #                 installed: []
+    #         customAction: 'dynamodbSaveItem'
 
     # Initialization - UUID
     initAppUUID:
@@ -351,6 +351,9 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 customResourceUtilsHelperArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
+                iamRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
+                dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
+                dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
                 deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
 Outputs:

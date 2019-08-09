@@ -36,7 +36,7 @@ import { IoTPubSuberComponent } from './secure/common/iot-pubsuber.component';
 import { PrettifierComponent } from './secure/common/prettifier.component';
 import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 // Components - Secure
-import { AddOnsComponent } from './secure/addons/addons.component';
+// import { AddOnsComponent } from './secure/addons/addons.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
@@ -97,7 +97,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
         PrettifierComponent,
 
         // Components - Secure
-        AddOnsComponent,
+        // AddOnsComponent,
         DeploymentsComponent,
         DeviceComponent,
         DevicesComponent,

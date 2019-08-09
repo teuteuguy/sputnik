@@ -16,6 +16,15 @@ Parameters:
     customResourceUtilsHelperArn:
         Type: String
         Description: Utils custom resource helper ARN
+    dataS3Bucket:
+        Type: String
+        Description: sputnik Data S3 Bucket
+    dataS3BucketArn:
+        Type: String
+        Description: sputnik Data S3 Bucket ARN
+    iamRoleForGreengrassGroups:
+        Type: String
+        Description: Greengrass Group Role
     deploymentUUID:
         Type: String
         Description: UUID of the deployment
@@ -45,6 +54,61 @@ Resources:
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
             uuid: !Ref deploymentUUID
+
+    # Greengrass Role / Policy
+
+    DefaultsGreengrassGroupPolicy:
+        Type: 'AWS::IAM::ManagedPolicy'
+        Properties:
+            Description: 'Policy for the sputnik Greengrass Role.'
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'logs:CreateLogStream'
+                            - 'logs:DescribeLogStreams'
+                            - 'logs:PutLogEvents'
+                            - 'logs:CreateLogGroup'
+                        Resource: 'arn:aws:logs:*:*:log-group:/aws/greengrass/*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                        Resource:
+                            - 'arn:aws:s3:::deeplens*/*'
+                            - 'arn:aws:s3:::deeplens*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'deeplens:*'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'kinesisvideo:DescribeStream'
+                            - 'kinesisvideo:CreateStream'
+                            - 'kinesisvideo:GetDataEndpoint'
+                            - 'kinesisvideo:PutMedia'
+                        Resource:
+                            - '*'
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 's3:ListBucket'
+                            - 's3:GetObject'
+                            - 's3:ListObjects'
+                            - 's3:PutObject'
+                        Resource:
+                            - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
+                            - !Join ['', [!Ref dataS3BucketArn, '*']]
+            Roles:
+                -
+                    !Ref iamRoleForGreengrassGroups
 
     # Lambda functions
 
@@ -86,4 +150,41 @@ Resources:
             FunctionName: !Ref DefaultsRaspberryPiSenseHatDemoLambda
             FunctionVersion: !GetAtt DefaultsRaspberryPiSenseHatDemoLambdaVersion.Version
             Name: 'Prod'
+
+    DefaultsGGMLInferenceSqueezenetDemoLambda:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            FunctionName: 'sputnik-gg-ml-inference-squeezenet-demo-python'
+            Description: 'sputnik Greengrass ML Inference Squeezenet Demo Lambda Code'
+            Code:
+                S3Bucket: !Ref sourceS3Bucket
+                S3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'greengrasslambda', 'sputnik-gg-ml-inference-squeezenet-demo-python.zip']]
+            Handler: lambda_function.lambda_handler
+            Runtime: python2.7
+            Role: !GetAtt DefaultsGreengrassLambdaRole.Arn
+            Timeout: 3
+            MemorySize: 128
+    DefaultsGGMLInferenceSqueezenetDemoLambdaVersion:
+        Type: 'AWS::Lambda::Version'
+        Properties:
+            FunctionName: !Ref DefaultsGGMLInferenceSqueezenetDemoLambda
+            Description: 'A first version of sputnik-gg-ml-inference-squeezenet-demo-python'
+    DefaultsGGMLInferenceSqueezenetDemoLambdaAlias:
+        Type: 'AWS::Lambda::Alias'
+        Properties:
+            FunctionName: !Ref DefaultsGGMLInferenceSqueezenetDemoLambda
+            FunctionVersion: !GetAtt DefaultsGGMLInferenceSqueezenetDemoLambdaVersion.Version
+            Name: 'Prod'
+
+    DefaultsSqueezenetModel:
+        Type: 'Custom::LoadLambda'
+        Properties:
+            ServiceToken: !Ref customResourceUtilsHelperArn
+            Region: !Ref 'AWS::Region'
+            sourceS3Bucket: !Ref sourceS3Bucket
+            sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'models', 'squeezenet.zip']]
+            destS3Bucket: !Ref dataS3Bucket
+            destS3Key: !Join ['/', ['models', 'ml-demo-squeezenet-v1.0', 'squeezenet.zip']]
+            uuid: !Ref deploymentUUID
+            customAction: 'copyFileFromS3ToS3'
 

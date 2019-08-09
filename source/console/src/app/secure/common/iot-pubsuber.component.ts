@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Device } from '@models/device.model';
 
@@ -41,6 +42,10 @@ export class IoTPubSuberComponent implements OnDestroy, IoTPubSuber {
     public desired: any = {};
     public reported: any = {};
     public delta: any = {};
+    public shadow: any = {};
+
+    private subscriptionsSubject: any = new Subject<boolean>();
+    public subscriptionsObservable$ = this.subscriptionsSubject.asObservable();
 
     constructor(private _iotService: IoTService) {}
 
@@ -64,11 +69,15 @@ export class IoTPubSuberComponent implements OnDestroy, IoTPubSuber {
                 console.log('Subscribing to topic:', sub.topic);
                 this._subscriptions.add(this._iotService.subscribe(sub.topic, sub.onMessage, sub.onError));
             });
+            this.subscriptionsSubject.next();
         } else {
             console.log('Not connected to AWS IoT: Cant subscribe');
         }
     }
     protected updateIncomingShadow(incoming, shadowField = null) {
+
+        _.deepExtend(this.shadow, incoming);
+
         if (incoming.hasOwnProperty('state') && incoming.state.hasOwnProperty('reported')) {
             if (shadowField !== null && incoming.state.reported.hasOwnProperty(shadowField)) {
                 _.deepExtend(this.reported, incoming.state.reported[shadowField]);

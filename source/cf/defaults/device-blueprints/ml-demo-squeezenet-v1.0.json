@@ -1,0 +1,137 @@
+{
+    "id": "ml-demo-squeezenet-v1.0",
+    "name": "Greengrass ML Inference demo with Squeezenet Model v1.0",
+    "type": "GREENGRASS",
+    "compatibility": ["deeplens-aws-v1.0", "deeplens-sputnik-v1.0", "intel-up2-webcam-v1.0", "rpi3-sense-hat-camera-v1.0", "rpi3-camera-v1.0"],
+    "deviceTypeMappings": [{
+        "substitute": "CAM_STREAM_ID",
+        "value": {
+            "deeplens-sputnik-v1.0": "stream",
+            "deeplens-aws-v1.0": "stream",
+            "intel-up2-webcam-v1.0": "video0",
+            "rpi3-sense-hat-camera-v1.0": "video0",
+            "rpi3-camera-v1.0": "video0"
+        }
+    }, {
+        "substitute": "CAM_STREAM_PERMISSIONS",
+        "value": {
+            "deeplens-sputnik-v1.0": "ro",
+            "deeplens-aws-v1.0": "ro",
+            "intel-up2-webcam-v1.0": "rw",
+            "rpi3-sense-hat-camera-v1.0": "rw",
+            "rpi3-camera-v1.0": "rw"
+        }
+    }, {
+        "substitute": "CAMERA_TYPE",
+        "value": {
+            "deeplens-sputnik-v1.0": "awscam",
+            "deeplens-aws-v1.0": "awscam",
+            "intel-up2-webcam-v1.0": "video0",
+            "rpi3-sense-hat-camera-v1.0": "video0",
+            "rpi3-camera-v1.0": "video0"
+        }
+    }, {
+        "substitute": "PATH_TO_CAMERA",
+        "value": {
+            "deeplens-sputnik-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
+            "deeplens-aws-v1.0": "/opt/awscam/out/ch2_out.mjpeg",
+            "intel-up2-webcam-v1.0": "/dev/video0",
+            "rpi3-sense-hat-camera-v1.0": "/dev/video0",
+            "rpi3-camera-v1.0": "/dev/video0"
+        }
+    }, {
+        "substitute": "ML_MODEL_TYPE",
+        "value": {
+            "deeplens-sputnik-v1.0": "optimized",
+            "deeplens-aws-v1.0": "optimized",
+            "intel-up2-webcam-v1.0": "non_optimized",
+            "rpi3-sense-hat-camera-v1.0": "non_optimized",
+            "rpi3-camera-v1.0": "non_optimized"
+        }
+    }, {
+        "substitute": "GPU",
+        "value": {
+            "deeplens-sputnik-v1.0": "gpu",
+            "deeplens-aws-v1.0": "gpu",
+            "intel-up2-webcam-v1.0": "gpu",
+            "rpi3-sense-hat-camera-v1.0": "gpu",
+            "rpi3-camera-v1.0": "gpu"
+        }
+    }],
+    "spec": {
+        "FunctionDefinitionVersion": {
+            "Functions": [{
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-gg-ml-inference-squeezenet-demo-python:Prod",
+                "FunctionConfiguration": {
+                    "EncodingType": "json",
+                    "Environment": {
+                        "AccessSysfs": false,
+                        "ResourceAccessPolicies": [{
+                                "Permission": "rw",
+                                "ResourceId": "tmp"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "sputnik-model-squeezenet"
+                            },
+                            {
+                                "Permission": "[CAM_STREAM_PERMISSIONS]",
+                                "ResourceId": "[CAM_STREAM_ID]"
+                            },
+                            {
+                                "Permission": "rw",
+                                "ResourceId": "[GPU]"
+                            }
+                        ],
+                        "Variables": {
+                            "ML_MODEL_TYPE": "[ML_MODEL_TYPE]",
+                            "ML_MODEL_PATH": "/greengrass-machine-learning/mxnet/squeezenet/",
+                            "CAMERA_TYPE": "[CAMERA_TYPE]",
+                            "PATH_TO_CAMERA": "[PATH_TO_CAMERA]"
+                        }
+                    },
+                    "MemorySize": 2097152,
+                    "Pinned": true,
+                    "Timeout": 25
+                }
+            }]
+        },
+        "ResourceDefinitionVersion": {
+            "Resources": [{
+                    "Id": "sputnik-model-squeezenet",
+                    "Name": "sputnik-model-squeezenet",
+                    "ResourceDataContainer": {
+                        "S3MachineLearningModelResourceData": {
+                            "DestinationPath": "/greengrass-machine-learning/mxnet/squeezenet/",
+                            "S3Uri": "[DATA_BUCKET_S3_URL]/models/ml-demo-squeezenet-v1.0/squeezenet.zip"
+                        }
+                    }
+                },
+                {
+                    "Id": "tmp",
+                    "Name": "tmp_resource",
+                    "ResourceDataContainer": {
+                        "LocalVolumeResourceData": {
+                            "DestinationPath": "/tmp",
+                            "GroupOwnerSetting": {
+                                "AutoAddGroupOwner": true
+                            },
+                            "SourcePath": "/tmp"
+                        }
+                    }
+                }
+            ]
+        },
+        "SubscriptionDefinitionVersion": {
+            "Subscriptions": [{
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-gg-ml-inference-squeezenet-demo-python:Prod",
+                "Subject": "sputnik/[CORE]/logger",
+                "Target": "cloud"
+            }, {
+                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-gg-ml-inference-squeezenet-demo-python:Prod",
+                "Subject": "sputnik/[CORE]/camera",
+                "Target": "cloud"
+            }]
+        }
+    }
+}

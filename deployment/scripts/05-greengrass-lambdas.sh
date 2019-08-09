@@ -16,7 +16,14 @@ mkdir -p $2/greengrasslambda
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
 echo
 echo
+echo "sputnik-rpi-sense-hat-demo-python"
 cd $1/cf/defaults/lambdas/sputnik-rpi-sense-hat-demo-python
+pip install -r requirements.txt -t . --upgrade
+zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
+echo
+echo
+echo "sputnik-gg-ml-inference-squeezenet-demo-python"
+cd $1/cf/defaults/lambdas/sputnik-gg-ml-inference-squeezenet-demo-python
 pip install -r requirements.txt -t . --upgrade
 zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
 echo

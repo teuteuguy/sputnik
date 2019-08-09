@@ -53,9 +53,6 @@ Parameters:
     userPoolId:
         Type: String
         Description: Cognito User Pool Id
-    cfnStackId:
-        Type: String
-        Description: sputnik CFN stack id, used by addons
 
 Resources:
 

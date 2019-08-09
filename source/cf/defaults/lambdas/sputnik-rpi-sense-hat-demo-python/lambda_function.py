@@ -11,15 +11,9 @@ import math
 from sense_hat import SenseHat  # pylint: disable=import-error
 
 #############################################
-## INIT
+## CONSTANT and variables declaration
 #############################################
-#Initialize sense hat
-sense = SenseHat()
-sense.set_imu_config(True, True, True)
-sense.set_rotation(180)
-sense.low_light = True
-sense.clear(255, 255, 0)
-print("Sense Hat and IMU initialized")
+#Change it with your configuration
 
 def get_parameter(name, default):
     if name in os.environ and os.environ[name] != "":
@@ -29,8 +23,6 @@ def get_parameter(name, default):
 THING_NAME = get_parameter("AWS_IOT_THING_NAME", "UNKNOWN")
 PREFIX = "sputnik"
 
-#CONSTANT and variables declaration
-#Change it with your configuration
 JOYSTICK_IS_TRIGGER = True
 SEND_TELEMETRY = True
 FREQUENCY = 1.0
@@ -38,7 +30,25 @@ FREQUENCY = 1.0
 TOPIC_TELEMETRY = "{}/{}/telemetry".format(PREFIX, THING_NAME)
 TOPIC_JOYSTICK = "{}/{}/joystick".format(PREFIX, THING_NAME)
 TOPIC_SCREEN = "{}/{}/screen".format(PREFIX, THING_NAME)
+TOPIC_SHADOW_UPDATE_DELTA = "$aws/things/{}/shadow/update/delta".format(THING_NAME)
 TOPIC_SHADOW_UPDATE_ACCEPTED = "$aws/things/{}/shadow/update/accepted".format(THING_NAME)
+
+#############################################
+## INIT
+#############################################
+
+# Greengrass
+GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
+
+# Initialize sense hat
+sense = SenseHat()
+sense.set_imu_config(True, True, True)
+sense.set_rotation(180)
+sense.low_light = True
+sense.clear(255, 255, 0)
+GGIOT.updateThingShadow(payload={"state": {"reported": {"screen": {"r": 255, "g": 255, "b": 0}}}})
+print("Sense Hat and IMU initialized")
+
 
 #############################################
 ## SENSE HAT INPUTS
@@ -46,9 +56,11 @@ TOPIC_SHADOW_UPDATE_ACCEPTED = "$aws/things/{}/shadow/update/accepted".format(TH
 #Callback for joystick event
 def joystick_callback(event):
     global JOYSTICK_IS_TRIGGER
-    if event.action == "pressed" and JOYSTICK_IS_TRIGGER:
+    if event.action == "pressed":
         print("Joystick was pressed: %s" % (json.dumps(event)))
         GGIOT.publish(topic=TOPIC_JOYSTICK, payload=event)
+        if JOYSTICK_IS_TRIGGER:
+            GGIOT.publish(TOPIC_TELEMETRY, getSenseHatReadings())
 
 #Assigning callback
 sense.stick.direction_any = joystick_callback
@@ -100,12 +112,14 @@ def parseIncomingShadow(shadow):
         if "desired" in state:
             desired = state["desired"]
 
-            if "joystickIsTrigger" in desired and "sendTelemetry" in desired and "frequency" in desired:
-                JOYSTICK_IS_TRIGGER = desired['joystickIsTrigger']
-                SEND_TELEMETRY = desired['sendTelemetry']
-                FREQUENCY = desired['frequency']
+            if "joystickIsTrigger" in desired or "sendTelemetry" in desired or "frequency" in desired:
+                if "joystickIsTrigger" in desired:
+                    JOYSTICK_IS_TRIGGER = desired['joystickIsTrigger']
+                if "sendTelemetry" in desired:
+                    SEND_TELEMETRY = desired['sendTelemetry']
+                if "frequency" in desired:
+                    FREQUENCY = desired['frequency']
                 GGIOT.updateThingShadow(payload={"state": {"reported": {"joystickIsTrigger": JOYSTICK_IS_TRIGGER, "sendTelemetry": SEND_TELEMETRY, "frequency": FREQUENCY}}})
-
                 printShadowObject()
 
 
@@ -117,18 +131,23 @@ def lambda_handler(event, context):
 
         if topic == TOPIC_SHADOW_UPDATE_ACCEPTED:
             parseIncomingShadow(event)
-        elif topic == TOPIC_SCREEN:
-            if 'r' in payload and 'g' in payload and 'b' in payload:
-                sense.clear(payload['r'], payload['g'], payload['b'])
-            elif 'text' in payload:
-                sense.show_message(payload['text'], scroll_speed=0.05)
+        elif topic == TOPIC_SHADOW_UPDATE_DELTA:
+            if "state" in event:
+                state = event["state"]
+                parseIncomingShadow({"state": {"desired": state}})
+        elif topic == TOPIC_SCREEN and 'screen' in payload:
+            if 'r' in payload['screen'] and 'g' in payload['screen'] and 'b' in payload['screen']:
+                sense.clear(payload['screen']['r'], payload['screen']['g'], payload['screen']['b'])
+                GGIOT.updateThingShadow(payload={"state": {"reported": {"screen": payload['screen']}}})
+            elif isinstance(payload['screen'], basestring):
+                sense.show_message(payload['screen'], scroll_speed=0.05)
+                GGIOT.updateThingShadow(payload={"state": {"reported": {"screen": payload['screen']}}})
 
     except Exception as e:
         print(e)
 
     return
 
-GGIOT = GGIoT(thing=THING_NAME, prefix=PREFIX)
 
 class MainAppThread(Thread):
 
@@ -148,16 +167,17 @@ class MainAppThread(Thread):
         try:
             #Indicates it's connected and ready
             sense.clear(0, 255, 0)
+            GGIOT.updateThingShadow(payload={"state": {"reported": {"screen": {"r": 0, "g": 255, "b": 0}}}})
 
             parseIncomingShadow(GGIOT.getThingShadow())
 
             while 42:
                 senseHatReadings = getSenseHatReadings()
-                printShadowObject()
 
                 if (str(SEND_TELEMETRY) == 'True'):
                     GGIOT.publish(TOPIC_TELEMETRY, senseHatReadings)
                     print('Published to topic %s: %s\n' % (TOPIC_TELEMETRY, json.dumps(senseHatReadings)))
+                    printShadowObject()
 
                 time.sleep(float(FREQUENCY))
 

@@ -70,6 +70,10 @@ export class IoTService {
         );
     }
 
+    publish(topic: string, payload: any) {
+        return PubSub.publish(topic, payload, {});
+    }
+
     getThingShadow(params: any) {
         const promise: any = Api.graphql({
             query: getThingShadow.loc.source.body,

@@ -15,21 +15,21 @@ import { AppSyncService } from '@services/appsync.service';
 @Component({
     selector: 'app-default',
     template: `
-        <app-widgets *ngIf="widgets" [widgets]="widgets" [parent]="self"></app-widgets>
+        <app-widgets *ngIf="widgets" [widgets]="widgets" [parent]="parent"></app-widgets>
     `
 })
 export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
     @Input() device: Device = new Device();
 
     private widgetSubscriptionSubjects: any = {};
-    public widgetSubscriptionObservables: any = {};
+    public widgetSubscriptionObservable$: any = {};
 
     constructor(private iotService: IoTService, private appSyncService: AppSyncService) {
         super(iotService);
     }
 
     public widgets: any[];
-    public self: any;
+    public parent: any;
 
     ngOnInit() {
         const self = this;
@@ -41,35 +41,41 @@ export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
         self.appSyncService
             .getDeviceBlueprint(self.device.deviceBlueprintId)
             .then((deviceBlueprint: DeviceBlueprint) => {
-                if (deviceBlueprint) {
-                    self.getLastState(self.device.thingName).then(data => {
-                        const subscriptions = [];
+                if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('View')) {
+                    self.parent = self;
 
-                        if (deviceBlueprint && deviceBlueprint.spec.hasOwnProperty('View')) {
-                            self.self = self;
+                    self.iotService
+                        .getThingShadow({
+                            thingName: self.device.thingName
+                        })
+                        .then((shadow: any) => {
+                            self.shadow = shadow;
 
+                            const widgetSubscriptions = [];
                             const view = JSON.parse(
                                 JSON.stringify(deviceBlueprint.spec.View)
                                     .split('[CORE]')
                                     .join(self.device.thingName)
                                     .split('[THING_NAME]')
                                     .join(self.device.thingName)
+                                    .split('[DEVICE_NAME]')
+                                    .join(self.device.name)
                             );
 
-                            if (view.hasOwnProperty('widgets')) {
-                                self.widgets = view.widgets;
-                            }
                             if (view.hasOwnProperty('subscriptions')) {
                                 const subs = view.subscriptions;
                                 for (let ref in subs) {
                                     if (subs.hasOwnProperty(ref)) {
                                         const topic = subs[ref];
-                                        console.log('Subscription:', ref, topic);
+                                        // console.log('Subscription:', ref, topic);
                                         self.widgetSubscriptionSubjects[ref] = new Subject<any>();
-                                        self.widgetSubscriptionObservables[ref] = self.widgetSubscriptionSubjects[ref].asObservable();
-                                        subscriptions.push({
-                                            topic: subs[ref],
+                                        self.widgetSubscriptionObservable$[ref] = self.widgetSubscriptionSubjects[
+                                            ref
+                                        ].asObservable();
+                                        widgetSubscriptions.push({
+                                            topic: topic,
                                             onMessage: message => {
+                                                // console.log('onMessage:', topic, message);
                                                 self.widgetSubscriptionSubjects[ref].next(message.value);
                                             },
                                             onError: defaultErrorCallback
@@ -77,18 +83,13 @@ export class DefaultComponent extends IoTPubSuberComponent implements OnInit {
                                     }
                                 }
                             }
-                        }
 
-                        // subscriptions.push({
-                        //     topic: '$aws/things/' + self.device.thingName + '/shadow/update/accepted',
-                        //     onMessage: message => {
-                        //         self.updateIncomingShadow(message.value);
-                        //     },
-                        //     onError: defaultErrorCallback
-                        // });
+                            self.subscribe(widgetSubscriptions);
 
-                        self.subscribe(subscriptions);
-                    });
+                            if (view.hasOwnProperty('widgets')) {
+                                self.widgets = view.widgets;
+                            }
+                        });
                 }
             })
             .catch(defaultErrorCallback);
