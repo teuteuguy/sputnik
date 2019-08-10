@@ -13,6 +13,7 @@ import { _ } from 'underscore';
 import * as forge from 'node-forge';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+declare var appVariables: any;
 
 @Injectable()
 export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice {
@@ -128,12 +129,52 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
                             zip.file(shortCertName + '-private.key', cert.privateKey);
                             zip.file(shortCertName + '-public.key', cert.publicKey);
 
+                            const thingArnArray = cert.certificateArn.split('cert');
+                            thingArnArray.splice(thingArnArray.length - 1, 1, '/' + thingName);
+                            const thingArn = thingArnArray.join('thing');
+
+                            zip.file(
+                                'config.json',
+                                JSON.stringify({
+                                    coreThing: {
+                                        caPath: 'root.ca.pem',
+                                        certPath: shortCertName + '-cert.crt',
+                                        keyPath: shortCertName + '-private.key',
+                                        thingArn: thingArn,
+                                        iotHost: appVariables.IOT_ENDPOINT,
+                                        ggHost: 'greengrass-ats.iot.us-east-1.amazonaws.com',
+                                        keepAlive: 600
+                                    },
+                                    runtime: {
+                                        cgroup: {
+                                            useSystemd: 'yes'
+                                        }
+                                    },
+                                    managedRespawn: false,
+                                    crypto: {
+                                        principals: {
+                                            SecretsManager: {
+                                                privateKeyPath:
+                                                    'file:///greengrass/certs/' + shortCertName + '-private.key'
+                                            },
+                                            IoTCertificate: {
+                                                privateKeyPath:
+                                                    'file:///greengrass/certs/' + shortCertName + '-private.key',
+                                                certificatePath:
+                                                    'file:///greengrass/certs/' + shortCertName + '-cert.crt'
+                                            }
+                                        },
+                                        caPath: 'file:///greengrass/certs/root.ca.pem'
+                                    }
+                                })
+                            );
+
                             zip.generateAsync({
                                 type: 'blob'
                             }).then(
                                 (blob: any) => {
                                     // 1) generate the zip file
-                                    saveAs(blob, cert.certificateId + '.zip');
+                                    saveAs(blob, thingName + '.zip');
                                     resolve(cert);
                                 },
                                 (error: any) => {
