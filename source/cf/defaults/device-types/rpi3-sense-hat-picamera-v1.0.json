@@ -1,6 +1,6 @@
 {
-    "id": "rpi3-sense-hat-camera-v1.0",
-    "name": "Raspberry Pi 3 with Sense Hat and Camera v1.0",
+    "id": "rpi3-sense-hat-picamera-v1.0",
+    "name": "Raspberry Pi 3 with Sense Hat and PiCamera v1.0",
     "type": "GREENGRASS",
     "spec": {
         "CoreDefinitionVersion": {
@@ -84,14 +84,25 @@
                     }
                 }
             }, {
-                "Id": "video0",
-                "Name": "dev_video0_resource",
+                "Id": "picamera-vcsm",
+                "Name": "picamera-vcsm-resource",
                 "ResourceDataContainer": {
                     "LocalDeviceResourceData": {
                         "GroupOwnerSetting": {
                             "AutoAddGroupOwner": true
                         },
-                        "SourcePath": "/dev/video0"
+                        "SourcePath": "/dev/vcsm"
+                    }
+                }
+            }, {
+                "Id": "picamera-vchiq",
+                "Name": "picamera-vchiq-resource",
+                "ResourceDataContainer": {
+                    "LocalDeviceResourceData": {
+                        "GroupOwnerSetting": {
+                            "AutoAddGroupOwner": true
+                        },
+                        "SourcePath": "/dev/vchiq"
                     }
                 }
             }]

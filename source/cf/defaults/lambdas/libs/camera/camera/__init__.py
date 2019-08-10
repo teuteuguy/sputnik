@@ -3,9 +3,11 @@ Module camera provides the VideoStream class which
 offers a threaded interface to multiple types of cameras.
 '''
 from threading import Thread
+import io
 import os
 import platform
-import cv2 # pylint: disable=import-error
+import numpy as np
+import cv2  # pylint: disable=import-error
 
 class VideoStream:
     '''
@@ -41,6 +43,26 @@ class VideoStream:
             self.stream = awscam
             self.stream.read = self.stream.getLastFrame
             print("VideoStream: awscam opened")
+
+        elif self.camera_type == "picamera":
+
+            print("VideoStream: Opening picamera")
+            import picamera  # pylint: disable=import-error
+
+            def piCameraCapture(self):
+                _stream = io.BytesIO()
+                # time.sleep(2)
+                PICAMERA.capture(_stream, format='jpeg')
+                # Construct a numpy array from the _stream
+                data = np.fromstring(_stream.getvalue(), dtype=np.uint8)
+                # "Decode" the image from the array, preserving colour
+                return True, cv2.imdecode(data, 1)
+
+            picamera.PiCamera.read = piCameraCapture
+            PICAMERA = self.stream = picamera.PiCamera()
+            self.stream.resolution = (self.width, self.height)
+            self.stream.start_preview()
+            print("VideoStream: picamera opened")
 
         else:
             self.path_to_camera = "GStreamer"

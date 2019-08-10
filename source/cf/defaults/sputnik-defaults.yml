@@ -57,6 +57,7 @@ Resources:
 
     # Greengrass Role / Policy
 
+
     DefaultsGreengrassGroupPolicy:
         Type: 'AWS::IAM::ManagedPolicy'
         Properties:
@@ -184,7 +185,7 @@ Resources:
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'models', 'squeezenet.zip']]
             destS3Bucket: !Ref dataS3Bucket
-            destS3Key: !Join ['/', ['models', 'ml-demo-squeezenet-v1.0', 'squeezenet.zip']]
+            destS3Key: !Join ['/', ['Greengrass', 'models', 'ml-demo-squeezenet-v1.0', 'squeezenet.zip']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'
 

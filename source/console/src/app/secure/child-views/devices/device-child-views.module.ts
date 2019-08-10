@@ -12,7 +12,10 @@ import { MLDemoSqueezenetV10Module } from './ml-demo-squeezenet-v1.0/ml-demo-squ
     selector: 'app-device-child-view',
     template: `
         <div [ngSwitch]="device.deviceBlueprintId" *ngIf="device && device.deviceBlueprintId">
-            <app-ml-demo-squeezenet-v1-0 *ngSwitchCase="'ml-demo-squeezenet-v1.0'" [device]="device"></app-ml-demo-squeezenet-v1-0>
+            <app-ml-demo-squeezenet-v1-0
+                *ngSwitchCase="'ml-demo-squeezenet-v1.0'"
+                [device]="device"
+            ></app-ml-demo-squeezenet-v1-0>
             <app-default-device *ngSwitchDefault [device]="device"></app-default-device>
         </div>
     `

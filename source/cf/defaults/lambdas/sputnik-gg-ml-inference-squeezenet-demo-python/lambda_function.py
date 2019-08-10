@@ -24,7 +24,8 @@ PATH_TO_CAMERA = get_parameter("PATH_TO_CAMERA", "/dev/video0")
 PREFIX = 'sputnik'
 TOPIC_CAMERA = '{0}/{1}/camera'.format(PREFIX, THING_NAME)
 ML_MODEL_PATH = get_parameter('ML_MODEL_PATH', '')
-RESOLUTION = "858x480"
+# RESOLUTION = "858x480"
+RESOLUTION = "224x224"
 CAMERA = None
 
 def timeInMillis(): return int(round(time.time() * 1000))
