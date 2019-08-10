@@ -11,16 +11,18 @@ import { WidgetComponent } from './widget.component';
                 placeholder="Text to display"
                 aria-label="Text to display"
                 aria-describedby="basic-addon2"
-                [(ngModel)]="inputtext"
+                [(ngModel)]="inputText"
             />
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="submit()">Submit</button>
+                <button class="btn btn-outline-secondary" type="submit" (click)="submit()">Submit</button>
             </div>
         </div>
     `
 })
 export class InputTextWidgetComponent extends WidgetComponent {
-    get inputtext() {
+    private _inputtext = '';
+
+    get inputText() {
         if (typeof this.value === 'string') {
             return this.value;
         } else {
@@ -28,12 +30,11 @@ export class InputTextWidgetComponent extends WidgetComponent {
         }
     }
 
-    private _inputtext = '';
-    set inputtext(value) {
+    set inputText(value) {
         this._inputtext = value;
     }
 
-    public submit(val) {
+    public submit() {
         if (this._inputtext !== '') {
             this.setValue(this._inputtext);
         }

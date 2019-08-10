@@ -40,4 +40,3 @@ $template_dir/scripts/02-cf-custom-resource-lambda.sh $source_dir $dist_dir
 $template_dir/scripts/03-website.sh $source_dir $dist_dir
 $template_dir/scripts/04-services-lambda.sh $source_dir $dist_dir
 $template_dir/scripts/05-greengrass-lambdas.sh $source_dir $dist_dir
-# $template_dir/scripts/06-prepare-addons.sh $source_dir $dist_dir

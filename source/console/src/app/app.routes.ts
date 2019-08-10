@@ -17,7 +17,6 @@ import { NewPasswordComponent } from './public/auth/newpassword/new-password.com
 import { SecureHomeLayoutComponent } from './secure/secure-home-layout.component';
 import { SecureHomeComponent } from './secure/home/secure-home.component';
 
-// import { AddOnsComponent } from './secure/addons/addons.component';
 import { DeploymentsComponent } from './secure/deployments/deployments.component';
 import { DeviceComponent } from './secure/devices/device.component';
 import { DevicesComponent } from './secure/devices/devices.component';
@@ -67,7 +66,6 @@ const secureHomeRoutes: Routes = [
         canActivate: [UserLoginService],
         children: [
             { path: '', component: SecureHomeComponent },
-            // { path: 'addons', component: AddOnsComponent },
             { path: 'deployments', component: DeploymentsComponent },
             { path: 'devices', component: DevicesComponent },
             { path: 'devices/:thingId', component: DeviceComponent },

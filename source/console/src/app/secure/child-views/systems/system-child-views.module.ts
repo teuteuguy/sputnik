@@ -5,15 +5,14 @@ import { CommonModule } from '@angular/common';
 import { System } from '@models/system.model';
 
 // Systems
-import { ReInvent2018MCFV10Module } from './reinvent-2018-mcf-v1.0/reinvent-2018-mcf-v1-0.module';
+import { DefaultSystemModule } from './default-system/default-system.module';
 
 @Component({
     selector: 'app-system-child-view',
     template: `
-        <app-reinvent-2018-mcf-v1-0
-            *ngIf="system.systemBlueprintId === 'reinvent-2018-mcf-v1.0' || system.systemBlueprintId === 'ebc-mcf-2018-v1.0'"
-            [system]="system"
-        ></app-reinvent-2018-mcf-v1-0>
+        <div [ngSwitch]="system.systemBlueprintId" *ngIf="system && system.systemBlueprintId">
+            <app-default-system *ngSwitchDefault [system]="system"></app-default-system>
+        </div>
     `
 })
 export class SystemChildViewComponent {
@@ -24,6 +23,6 @@ export class SystemChildViewComponent {
 @NgModule({
     declarations: [SystemChildViewComponent],
     exports: [SystemChildViewComponent],
-    imports: [CommonModule, ReInvent2018MCFV10Module]
+    imports: [CommonModule, DefaultSystemModule]
 })
 export class SystemChildViewsModule {}

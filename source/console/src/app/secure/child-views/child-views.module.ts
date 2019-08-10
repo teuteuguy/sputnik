@@ -13,10 +13,8 @@ import { SystemChildViewsModule } from './systems/system-child-views.module';
     `
 })
 export class ChildViewComponent {
-    @Input()
-    data: any;
-    @Input()
-    type: string;
+    @Input() data: any;
+    @Input() type: string;
 }
 
 @NgModule({
