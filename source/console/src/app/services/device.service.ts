@@ -159,6 +159,7 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
         deviceBlueprintId: string = null,
         deviceTypeId: string = null
     ) {
+        console.log('createCertificate');
         return new Promise((resolve, reject) => {
             forge.pki.rsa.generateKeyPair(
                 {
@@ -208,7 +209,9 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
                                     }
                                 });
                             })
-                            .catch(error => reject);
+                            .catch(error => {
+                                reject(error);
+                            });
                     }
                 }
             );

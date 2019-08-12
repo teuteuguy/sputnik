@@ -9,6 +9,7 @@ export default gql`
             name
             deviceTypeId
             deviceBlueprintId
+            certificateArn
             connectionState {
                 state
                 at

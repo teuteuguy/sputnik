@@ -442,7 +442,7 @@ export class AppSyncService {
         });
     }
     public createCertificate(thingName: string, csr: string, attachToThing: boolean = false) {
-        console.log(thingName, csr, attachToThing);
+        // console.log(thingName, csr, attachToThing);
         return this.mutation(createCertificate, {
             thingName: thingName,
             csr: csr,

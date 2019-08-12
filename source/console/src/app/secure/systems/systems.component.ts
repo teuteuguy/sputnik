@@ -142,6 +142,7 @@ export class SystemsComponent implements OnInit {
 
         const submitSubject: Subject<any> = new Subject<any>();
         submitSubject.subscribe(result => {
+            self.handleCancelCreate();
             if (result.error) {
                 swal('Oops...', 'Something went wrong!', 'error');
                 self.logger.error('error occurred calling api, show message');
@@ -149,7 +150,6 @@ export class SystemsComponent implements OnInit {
             } else {
                 swal({ timer: 1000, title: 'Success', type: 'success', showConfirmButton: false }).then();
             }
-            self.handleCancelCreate();
             self.refreshData();
         });
 

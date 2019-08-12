@@ -150,7 +150,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
                 _self.deviceService
                     .deleteDevice(device.thingId)
                     .then((resp: any) => {
-                        console.log(resp);
+                        // console.log(resp);
                         _self.router.navigate(['/securehome/devices']);
                     })
                     .catch(err => {

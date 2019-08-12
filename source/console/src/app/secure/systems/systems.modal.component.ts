@@ -49,7 +49,7 @@ export class SystemsModalComponent {
 
     submit() {
         if (this.modalType === 'create' && this.element.systemBlueprintId !== undefined) {
-            this.blockUI.start(`Creating system...`);
+            this.blockUI.start(`Creating devices...`);
             console.log('element', this.element);
             this.systemBlueprintService
                 .get(this.element.systemBlueprintId)
@@ -75,6 +75,7 @@ export class SystemsModalComponent {
                     }
                 })
                 .then(deviceIds => {
+                    this.blockUI.start(`Creating system...`);
                     return this.systemService
                         .add(this.element.name, this.element.description, deviceIds, this.element.systemBlueprintId)
                         .then(system => {
