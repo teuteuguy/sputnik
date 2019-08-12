@@ -80,6 +80,79 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
             return r;
         });
     }
+    public createZip(
+        certs: {
+            thingName: string;
+            cert: {
+                certificateId: string;
+                certificateArn: string;
+                certificatePem: string;
+                privateKey: string;
+                publicKey: string;
+            };
+        }[]
+    ) {
+        if (certs.length >= 1) {
+            const zip = new JSZip();
+
+            certs.forEach(c => {
+                const cert = c.cert;
+                const thingName = c.thingName;
+                const shortCertName = cert.certificateId.substring(0, 11);
+                const thingArnArray = cert.certificateArn.split('cert');
+                thingArnArray.splice(thingArnArray.length - 1, 1, '/' + thingName);
+                const thingArn = thingArnArray.join('thing');
+
+                zip.folder(thingName).file(shortCertName + '-cert.crt', cert.certificatePem);
+                zip.folder(thingName).file(shortCertName + '-private.key', cert.privateKey);
+                zip.folder(thingName).file(shortCertName + '-public.key', cert.publicKey);
+                zip.folder(thingName).file(
+                    'config.json',
+                    JSON.stringify({
+                        coreThing: {
+                            caPath: 'root.ca.pem',
+                            certPath: shortCertName + '-cert.crt',
+                            keyPath: shortCertName + '-private.key',
+                            thingArn: thingArn,
+                            iotHost: appVariables.IOT_ENDPOINT,
+                            ggHost: 'greengrass-ats.iot.us-east-1.amazonaws.com',
+                            keepAlive: 600
+                        },
+                        runtime: {
+                            cgroup: {
+                                useSystemd: 'yes'
+                            }
+                        },
+                        managedRespawn: false,
+                        crypto: {
+                            principals: {
+                                SecretsManager: {
+                                    privateKeyPath: 'file:///greengrass/certs/' + shortCertName + '-private.key'
+                                },
+                                IoTCertificate: {
+                                    privateKeyPath: 'file:///greengrass/certs/' + shortCertName + '-private.key',
+                                    certificatePath: 'file:///greengrass/certs/' + shortCertName + '-cert.crt'
+                                }
+                            },
+                            caPath: 'file:///greengrass/certs/root.ca.pem'
+                        }
+                    })
+                );
+            });
+
+            zip.generateAsync({
+                type: 'blob'
+            }).then(
+                (blob: any) => {
+                    // 1) generate the zip file
+                    saveAs(blob, (certs.length === 1 ? certs[0].thingName : 'certs') + '.zip');
+                },
+                (error: any) => {
+                    console.error(error);
+                }
+            );
+        }
+    }
     public createCertificate(
         thingName: string,
         attachToThing: boolean = false,
@@ -112,76 +185,30 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
 
                         csr.sign(keypair.privateKey);
 
-                        let verified = csr.verify();
-                        console.log('createCertificate: Verified:', verified);
+                        const verified = csr.verify();
+                        // console.log('createCertificate: Verified:', verified);
 
-                        let pem = forge.pki.certificationRequestToPem(csr);
-                        console.log('createCertificate: CSR:', pem);
+                        const pem = forge.pki.certificationRequestToPem(csr);
+                        // console.log('createCertificate: CSR:', pem);
 
-                        this.appSyncService.createCertificate(thingName, pem, attachToThing).then(cert => {
-                            cert.privateKey = forge.pki.privateKeyToPem(keypair.privateKey);
-                            cert.publicKey = forge.pki.publicKeyToPem(keypair.publicKey);
-                            // resolve(cert);
+                        this.appSyncService
+                            .createCertificate(thingName, pem, attachToThing)
+                            .then(cert => {
+                                cert.privateKey = forge.pki.privateKeyToPem(keypair.privateKey);
+                                cert.publicKey = forge.pki.publicKeyToPem(keypair.publicKey);
 
-                            const shortCertName = cert.certificateId.substring(0, 11);
-                            const zip = new JSZip();
-                            zip.file(shortCertName + '-cert.crt', cert.certificatePem);
-                            zip.file(shortCertName + '-private.key', cert.privateKey);
-                            zip.file(shortCertName + '-public.key', cert.publicKey);
-
-                            const thingArnArray = cert.certificateArn.split('cert');
-                            thingArnArray.splice(thingArnArray.length - 1, 1, '/' + thingName);
-                            const thingArn = thingArnArray.join('thing');
-
-                            zip.file(
-                                'config.json',
-                                JSON.stringify({
-                                    coreThing: {
-                                        caPath: 'root.ca.pem',
-                                        certPath: shortCertName + '-cert.crt',
-                                        keyPath: shortCertName + '-private.key',
-                                        thingArn: thingArn,
-                                        iotHost: appVariables.IOT_ENDPOINT,
-                                        ggHost: 'greengrass-ats.iot.us-east-1.amazonaws.com',
-                                        keepAlive: 600
-                                    },
-                                    runtime: {
-                                        cgroup: {
-                                            useSystemd: 'yes'
-                                        }
-                                    },
-                                    managedRespawn: false,
-                                    crypto: {
-                                        principals: {
-                                            SecretsManager: {
-                                                privateKeyPath:
-                                                    'file:///greengrass/certs/' + shortCertName + '-private.key'
-                                            },
-                                            IoTCertificate: {
-                                                privateKeyPath:
-                                                    'file:///greengrass/certs/' + shortCertName + '-private.key',
-                                                certificatePath:
-                                                    'file:///greengrass/certs/' + shortCertName + '-cert.crt'
-                                            }
-                                        },
-                                        caPath: 'file:///greengrass/certs/root.ca.pem'
+                                resolve({
+                                    thingName: thingName,
+                                    cert: {
+                                        certificateId: cert.certificateId,
+                                        certificateArn: cert.certificateArn,
+                                        certificatePem: cert.certificatePem,
+                                        privateKey: cert.privateKey,
+                                        publicKey: cert.publicKey
                                     }
-                                })
-                            );
-
-                            zip.generateAsync({
-                                type: 'blob'
-                            }).then(
-                                (blob: any) => {
-                                    // 1) generate the zip file
-                                    saveAs(blob, thingName + '.zip');
-                                    resolve(cert);
-                                },
-                                (error: any) => {
-                                    reject(error);
-                                }
-                            );
-                        });
+                                });
+                            })
+                            .catch(error => reject);
                     }
                 }
             );

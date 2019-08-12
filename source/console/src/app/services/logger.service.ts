@@ -26,7 +26,7 @@ export class ConsoleLoggerService implements LoggerService {
 
   get info() {
     if (isDebugMode) {
-      return console.info.bind(console);
+      return console.log.bind(console);
     } else {
       return noop;
     }

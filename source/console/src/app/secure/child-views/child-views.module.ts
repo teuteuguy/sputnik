@@ -8,7 +8,7 @@ import { SystemChildViewsModule } from './systems/system-child-views.module';
 @Component({
     selector: 'app-child-view',
     template: `
-        <app-system-child-view *ngIf="type === 'system'" [system]="data"></app-system-child-view>
+        <app-system-child-view *ngIf="type === 'system'" [data]="data"></app-system-child-view>
         <app-device-child-view *ngIf="type === 'device'" [device]="data"></app-device-child-view>
     `
 })

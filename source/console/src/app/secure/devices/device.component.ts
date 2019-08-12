@@ -236,6 +236,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             .then((cert: any) => {
                 this.logger.info(cert);
                 this.blockUI.stop();
+                this.deviceService.createZip([cert]);
             })
             .catch(err => {
                 this.blockUI.stop();

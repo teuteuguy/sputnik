@@ -21,6 +21,7 @@ export class Device {
     lastDeploymentId: string;
     createdAt: string;
     updatedAt: string;
+    certificateArn: string;
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

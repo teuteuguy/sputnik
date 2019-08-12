@@ -15,6 +15,7 @@ type Device {
     greengrassGroupId: String!
     spec: AWSJSON
     lastDeploymentId: String
+    certificateArn: String
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }

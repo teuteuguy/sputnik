@@ -275,7 +275,6 @@ Resources:
     # Initialization - Init Settings
     initSettings:
         Type: 'Custom::LoadLambda'
-        DependsOn: initAppUUID
         Properties:
             ServiceToken: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
@@ -321,6 +320,7 @@ Resources:
                 sourceS3KeyPrefix: !FindInMap ['SourceCode', 'General', 'KeyPrefix']
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
+                systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
                 customResourceUtilsHelperArn: !GetAtt CFStackForLambda.Outputs.customResourceUtilsHelperArn
                 iamRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
                 dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket

@@ -167,7 +167,7 @@ module.exports = function (event, context) {
 
         if (_deviceType.type === 'GREENGRASS' && _deviceBlueprint.type === 'GREENGRASS') {
 
-            console.log('Device is a Greengrass device');
+            console.log('Device is a Greengrass device:', _device.greengrassGroupId);
 
             return gg.getGroup({
                 GroupId: _device.greengrassGroupId

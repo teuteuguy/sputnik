@@ -25,8 +25,8 @@
                         <input type="text" class="form-control form-control-line" name="description" id="description"
                             #description="ngModel" [(ngModel)]="element.description" ngModel>
                     </div>
-                    <div *ngFor="let dev of systemBlueprint.spec.devices; let i = index" class="form-group">
-                        <label for="type" class="form-control-label">Device blueprint
+                    <div *ngFor="let dev of systemBlueprint.spec.Devices; let i = index" class="form-group">
+                        <label for="type" class="form-control-label">Device {{i}} blueprint
                             (<span *ngFor="let dbid of dev.deviceBlueprintId">{{ dbid | deviceBlueprintNameFromId }},
                             </span>)</label>
                         <select class="custom-select col-12" name="device{{i}}" id="device{{i}}" #type="ngModel"

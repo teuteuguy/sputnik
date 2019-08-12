@@ -16,17 +16,36 @@ mkdir -p $2/greengrasslambda
 echo "05-greengrass-lambdas.sh--------------------------------------------------------------------------------"
 echo
 echo
-echo "sputnik-rpi-sense-hat-demo-python"
-cd $1/cf/defaults/lambdas/sputnik-rpi-sense-hat-demo-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
-echo
-echo
-echo "sputnik-gg-ml-inference-squeezenet-demo-python"
-cd $1/cf/defaults/lambdas/sputnik-gg-ml-inference-squeezenet-demo-python
-pip install -r requirements.txt -t . --upgrade
-zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
-echo
+
+cd $1/cf/defaults/lambdas/
+
+for PYTHON_LAMBDA in *-python/ ; do
+    echo "***"
+    echo $PYTHON_LAMBDA
+    cd $1/cf/defaults/lambdas/$PYTHON_LAMBDA
+    pip install -r requirements.txt -t . --upgrade
+    zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
+    echo "Done with $PYTHON_LAMBDA"
+done
+
+# exit 1
+# echo "sputnik-rpi-sense-hat-demo-python"
+# cd $1/cf/defaults/lambdas/sputnik-rpi-sense-hat-demo-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
+# echo
+# echo
+# echo "sputnik-gg-ml-inference-squeezenet-demo-python"
+# cd $1/cf/defaults/lambdas/sputnik-gg-ml-inference-squeezenet-demo-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
+# echo
+# echo
+# echo "sputnik-simple-greengrass-gateway-demo-python"
+# cd $1/cf/defaults/lambdas/sputnik-simple-greengrass-gateway-demo-python
+# pip install -r requirements.txt -t . --upgrade
+# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
+# echo
 
 echo
 echo "--------------------------------------------------------------------------------------------------------"

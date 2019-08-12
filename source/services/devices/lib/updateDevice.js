@@ -36,6 +36,7 @@ module.exports = function (event, context) {
                 thingId: event.thingId
             }
         }).promise().then(device => _device = device.Item).then(() => {
+
             return documentClient.get({
                 TableName: process.env.TABLE_DEVICE_TYPES,
                 Key: {

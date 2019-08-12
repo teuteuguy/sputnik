@@ -6,11 +6,12 @@ import { DefaultSystemComponent } from './default-system.component';
 
 // Modules
 import { DeviceChildViewsModule } from '../../devices/device-child-views.module';
+import { WidgetsModule } from '@app/widgets/widgets.module';
 
 @NgModule({
     declarations: [DefaultSystemComponent],
     exports: [DefaultSystemComponent],
-    imports: [CommonModule, DeviceChildViewsModule],
+    imports: [CommonModule, DeviceChildViewsModule, WidgetsModule],
     providers: [],
     schemas: []
 })

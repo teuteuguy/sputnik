@@ -123,15 +123,17 @@ function handler(event, context, callback) {
                 Key: {
                     thingId: _device.thingId
                 },
-                UpdateExpression: 'set #ua = :ua, #cS = :cS',
+                UpdateExpression: 'set #ua = :ua, #certArn = :certArn, #cS = :cS',
                 ExpressionAttributeNames: {
                     '#ua': 'updatedAt',
+                    '#certArn': 'certificateArn',
                     '#cS': 'connectionState'
                 },
                 ExpressionAttributeValues: {
                     ':ua': moment()
                         .utc()
                         .format(),
+                    ':certArn': _cert.certificateDescription.certificateArn,
                     ':cS': connectionState
                 }
             };
