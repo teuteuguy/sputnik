@@ -28,7 +28,7 @@
                                 "Timeout": 25
                             }
                         }, {
-                            "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-greengrass-device-demo-python:Prod",
+                            "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-simple-greengrass-device-demo-python:Prod",
                             "FunctionConfiguration": {
                                 "EncodingType": "json",
                                 "Environment": {
@@ -46,7 +46,7 @@
                     "SubscriptionDefinitionVersion": {
                         "Subscriptions": [{
                             "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-hello-world-python:Prod",
-                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-greengrass-device-demo-python:Prod",
+                            "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-simple-greengrass-device-demo-python:Prod",
                             "Subject": "hello/world"
                         }]
                     }
@@ -70,7 +70,7 @@
                     },
                     "FunctionDefinitionVersion": {
                         "Functions": [{
-                            "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-greengrass-gateway-demo-python:Prod",
+                            "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-simple-greengrass-gateway-demo-python:Prod",
                             "FunctionConfiguration": {
                                 "EncodingType": "json",
                                 "Environment": {
@@ -91,20 +91,20 @@
                     "SubscriptionDefinitionVersion": {
                         "Subscriptions": [{
                                 "Source": "GGShadowService",
-                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:thing:!GetAtt[DEVICE.thingName]",
+                                "Target": "arn:aws:iot:[AWS_REGION]:[AWS_ACCOUNT]:thing/!GetAtt[DEVICE.thingName]",
                                 "Subject": "$aws/things/!GetAtt[DEVICE.thingName]/#"
                             },
                             {
-                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:thing:!GetAtt[DEVICE.thingName]",
+                                "Source": "arn:aws:iot:[AWS_REGION]:[AWS_ACCOUNT]:thing/!GetAtt[DEVICE.thingName]",
                                 "Target": "GGShadowService",
                                 "Subject": "$aws/things/!GetAtt[DEVICE.thingName]/#"
                             },
                             {
-                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:thing:!GetAtt[DEVICE.thingName]",
-                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-greengrass-gateway-demo-python:Prod",
+                                "Source": "arn:aws:iot:[AWS_REGION]:[AWS_ACCOUNT]:thing/!GetAtt[DEVICE.thingName]",
+                                "Target": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-simple-greengrass-gateway-demo-python:Prod",
                                 "Subject": "#"
                             }, {
-                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-greengrass-gateway-demo-python:Prod",
+                                "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:sputnik-simple-greengrass-gateway-demo-python:Prod",
                                 "Target": "cloud",
                                 "Subject": "sputnik/[CORE]/#"
                             }
