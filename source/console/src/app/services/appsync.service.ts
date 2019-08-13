@@ -441,12 +441,10 @@ export class AppSyncService {
             return this.cleanIncomingDevice(d.data.updateDevice);
         });
     }
-    public createCertificate(thingName: string, csr: string, attachToThing: boolean = false) {
-        // console.log(thingName, csr, attachToThing);
+    public createCertificate(thingId: string, csr: string) {
         return this.mutation(createCertificate, {
-            thingName: thingName,
-            csr: csr,
-            attachToThing: attachToThing
+            thingId: thingId,
+            csr: csr
         }).then(r => {
             return r.data.createCertificate;
         });

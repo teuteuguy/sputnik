@@ -262,7 +262,7 @@ type Mutation {
         @aws_auth(cognito_groups: ["Administrators"])
     updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!, spec: AWSJSON!): Device!
         @aws_auth(cognito_groups: ["Administrators"])
-    createCertificate(csr: String!, thingName: String!, attachToThing: Boolean!): Certificate!
+    createCertificate(csr: String!, thingId: String!): Certificate!
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Device Blueprints

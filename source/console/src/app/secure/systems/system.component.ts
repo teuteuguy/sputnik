@@ -251,7 +251,7 @@ export class SystemComponent implements OnInit {
 
             Promise.all(
                 this.data.devices.map(device => {
-                    return this.deviceService.createCertificate(device.thingName, true);
+                    return this.deviceService.createCertificate(device);
                 })
             )
                 .then((certs: any) => {

@@ -232,7 +232,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
         this.blockUI.start('Generating certificate for device...');
 
         this.deviceService
-            .createCertificate(this.device.thingName, true)
+            .createCertificate(this.device)
             .then((cert: any) => {
                 this.logger.info(cert);
                 this.blockUI.stop();

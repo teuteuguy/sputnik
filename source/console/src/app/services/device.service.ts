@@ -153,13 +153,7 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
             );
         }
     }
-    public createCertificate(
-        thingName: string,
-        attachToThing: boolean = false,
-        deviceBlueprintId: string = null,
-        deviceTypeId: string = null
-    ) {
-        console.log('createCertificate');
+    public createCertificate(device: Device, deviceBlueprintId: string = null, deviceTypeId: string = null) {
         return new Promise((resolve, reject) => {
             forge.pki.rsa.generateKeyPair(
                 {
@@ -180,26 +174,23 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
                             },
                             {
                                 name: 'commonName',
-                                value: thingName
+                                value: device.thingName
                             }
                         ]);
 
                         csr.sign(keypair.privateKey);
 
                         const verified = csr.verify();
-                        // console.log('createCertificate: Verified:', verified);
-
                         const pem = forge.pki.certificationRequestToPem(csr);
-                        // console.log('createCertificate: CSR:', pem);
 
                         this.appSyncService
-                            .createCertificate(thingName, pem, attachToThing)
+                            .createCertificate(device.thingId, pem)
                             .then(cert => {
                                 cert.privateKey = forge.pki.privateKeyToPem(keypair.privateKey);
                                 cert.publicKey = forge.pki.publicKeyToPem(keypair.publicKey);
 
                                 resolve({
-                                    thingName: thingName,
+                                    thingName: device.thingName,
                                     cert: {
                                         certificateId: cert.certificateId,
                                         certificateArn: cert.certificateArn,

@@ -4,7 +4,6 @@
     "payload": {
         "cmd": "createCertificate",
         "csr": "$util.escapeJavaScript($context.arguments.csr)",
-        "thingName": "$context.arguments.thingName",
-        "attachToThing": $context.arguments.attachToThing
+        "thingId": "$context.arguments.thingId"
     }
 }
