@@ -18,6 +18,9 @@ function handler(event, context, callback) {
         case 'updateDevice':
             promise = libs.updateDevice;
             break;
+        case 'createCertificate':
+            promise = libs.createCertificate;
+            break;
         case 'test':
             promise = libs.test;
             break;

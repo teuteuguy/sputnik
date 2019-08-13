@@ -26,10 +26,10 @@ export class SettingsComponent implements OnInit {
     public appConfigError = true;
     public appConfigErrorMessage = '';
 
-    public thingAutoRegistrationConfig: Setting = new Setting();
-    public thingAutoRegistrationConfigError = true;
-    public thingAutoRegistrationConfigErrorMessage = '';
-    public thingAutoRegistrationState = false;
+    public justInTimeOnBoardingConfig: Setting = new Setting();
+    public justInTimeOnBoardingConfigError = true;
+    public justInTimeOnBoardingConfigErrorMessage = '';
+    public justInTimeOnBoardingState = false;
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -71,12 +71,12 @@ export class SettingsComponent implements OnInit {
                 .loadGeneralSettings()
                 .then(data => {
                     _self.logger.info('Loaded general settings:', _self.appConfig);
-                    return _self.loadThingAutoRegistrationSettings();
+                    return _self.loadJustInTimeOnBoardingSettings();
                 })
                 .then(data => {
                     _self.logger.info(
-                        'Loaded Thing Group Auto Registration Settings:',
-                        _self.thingAutoRegistrationState
+                        'Loaded Just In Time On Boarding Settings:',
+                        _self.justInTimeOnBoardingState
                     );
                     _self.blockUI.stop();
                 })
@@ -109,33 +109,33 @@ export class SettingsComponent implements OnInit {
             });
     }
 
-    loadThingAutoRegistrationSettings(): Promise<any> {
+    loadJustInTimeOnBoardingSettings(): Promise<any> {
         const _self = this;
 
         return _self.settingService
-            .getThingAutoRegistrationState()
+            .getJustInTimeOnBoardingState()
             .then(data => {
-                _self.thingAutoRegistrationState = data;
-                _self.thingAutoRegistrationConfigError = false;
+                _self.justInTimeOnBoardingState = data;
+                _self.justInTimeOnBoardingConfigError = false;
                 return data;
             })
             .catch(err => {
-                _self.thingAutoRegistrationConfigError = true;
-                _self.thingAutoRegistrationConfigErrorMessage =
-                    'Unable to load the Thing Group Auto Registration application settings.';
+                _self.justInTimeOnBoardingConfigError = true;
+                _self.justInTimeOnBoardingConfigErrorMessage =
+                    'Unable to load the Just In Time On Boarding application settings.';
                 throw err;
             });
     }
 
-    public toggleThingAutoRegistration() {
+    public toggleJustInTimeOnBoarding() {
         const _self = this;
         _self.settingService
-            .setThingAutoRegistrationState(!_self.thingAutoRegistrationState)
+            .setJustInTimeOnBoardingState(!_self.justInTimeOnBoardingState)
             .then(result => {
-                _self.thingAutoRegistrationState = result;
+                _self.justInTimeOnBoardingState = result;
             })
             .catch(err => {
-                _self.logger.error('Toggle of Thing Group Auto Registration Service failed:', err);
+                _self.logger.error('Toggle of Just In Time On Boarding Service failed:', err);
             });
     }
 

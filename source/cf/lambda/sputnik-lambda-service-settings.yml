@@ -7,9 +7,9 @@ Parameters:
     lambdaSourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for Lambda code.
-    iotThingAutoRegistrationTopicRuleName:
+    iotJustInTimeOnBoardingTopicRuleName:
         Type: String
-        Description: IoT Thing Group Auto Registration Topic Rule name
+        Description: IoT Just In Time On Boarding Topic Rule name
     settingsTable:
         Type: String
         Description: DynamoDB Table for storing the application settings
@@ -82,7 +82,7 @@ Resources:
             MemorySize: 256
             Environment:
                 Variables:
-                    IOT_THING_GROUP_AUTO_REGISTRATION_TOPIC_RULE: !Ref iotThingAutoRegistrationTopicRuleName
+                    IOT_JUST_IN_TIME_ON_BOARDING_TOPIC_RULE: !Ref iotJustInTimeOnBoardingTopicRuleName
                     LOGGING_LEVEL: 2
 
 

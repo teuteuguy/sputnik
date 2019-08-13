@@ -8,16 +8,6 @@ export class ConnectionState {
     }
 }
 
-export class DeviceCert {
-    url: string;
-    at: string;
-    certificateId: string;
-    certificateArn: string;
-    constructor(values: Object = {}) {
-        Object.assign(this, values);
-    }
-}
-
 export class Device {
     thingId: string;
     thingName: string;
@@ -28,10 +18,10 @@ export class Device {
     greengrassGroupId: string;
     spec: any = {};
     connectionState: ConnectionState = new ConnectionState();
-    cert: DeviceCert = new DeviceCert();
     lastDeploymentId: string;
     createdAt: string;
     updatedAt: string;
+    certificateArn: string;
 
     constructor(values: Object = {}) {
         Object.assign(this, values);

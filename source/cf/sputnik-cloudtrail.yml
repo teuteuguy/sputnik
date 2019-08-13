@@ -1,11 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'sputnik - CloudTrail - Version %%VERSION%%'
 
-Parameters:
-    certsBucketArn:
-        Type: String
-        Description: sputnik S3 certs bucket Arn.
-
 Resources:
 
     cloudtrailBucket:
@@ -44,16 +39,6 @@ Resources:
         Type: AWS::CloudTrail::Trail
         Properties:
             S3BucketName: !Ref cloudtrailBucket
-            EventSelectors:
-                -
-                    DataResources:
-                        -
-                            Type: AWS::S3::Object
-                            Values:
-                                -
-                                    !Join ['', [!Ref certsBucketArn, '/']]
-                    IncludeManagementEvents: true
-                    ReadWriteType: "WriteOnly"
             IsLogging: true
 
 Outputs:

@@ -7,22 +7,38 @@ import { CardModule } from '../common/modules/card/card.module';
 import { GraphLineModule } from '../common/modules/graph-line/graph-line.module';
 import { GaugeModule } from '../common/modules/gauge/gauge.module';
 
-
 // Widgets
-// import { WidgetDirective } from './widget.directive';
+import { WidgetComponent } from './widget.component';
 import { WidgetsComponent } from './widgets.component';
 import { CardWidgetComponent } from './card-widget.component';
+import { CheckboxWidgetComponent } from './checkbox-widget.component';
 import { ColorPickerWidgetComponent } from './color-picker-widget.component';
+import { GraphRealtimeWidgetComponent } from './graph-realtime-widget.component';
+import { InputTextWidgetComponent } from './input-text-widget.component';
 import { TextWidgetComponent } from './text-widget.component';
-
-// import { WidgetsService } from './widgets.service';
 
 // Pipes
 import { PipesModule } from '../pipes/pipes.module';
 
 @NgModule({
-    declarations: [WidgetsComponent, CardWidgetComponent, ColorPickerWidgetComponent, TextWidgetComponent],
-    entryComponents: [CardWidgetComponent, ColorPickerWidgetComponent, TextWidgetComponent],
+    declarations: [
+        WidgetComponent,
+        WidgetsComponent,
+        CardWidgetComponent,
+        CheckboxWidgetComponent,
+        ColorPickerWidgetComponent,
+        GraphRealtimeWidgetComponent,
+        InputTextWidgetComponent,
+        TextWidgetComponent
+    ],
+    entryComponents: [
+        CardWidgetComponent,
+        CheckboxWidgetComponent,
+        ColorPickerWidgetComponent,
+        GraphRealtimeWidgetComponent,
+        InputTextWidgetComponent,
+        TextWidgetComponent
+    ],
     exports: [WidgetsComponent],
     imports: [PipesModule, CommonModule, FormsModule, CardModule, ColorPickerModule, GaugeModule, GraphLineModule],
     // providers: [WidgetsService],

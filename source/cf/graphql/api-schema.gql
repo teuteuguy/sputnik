@@ -4,12 +4,6 @@ type ConnectionState {
     certificateArn: String!
     certificateId: String!
 }
-type Cert {
-    certificateId: String!
-    certificateArn: String!
-    at: AWSDateTime
-    url: String
-}
 type Device {
     thingId: String!
     thingName: String!
@@ -18,10 +12,10 @@ type Device {
     deviceTypeId: String!
     deviceBlueprintId: String!
     connectionState: ConnectionState
-    cert: Cert
     greengrassGroupId: String!
     spec: AWSJSON
     lastDeploymentId: String
+    certificateArn: String
     createdAt: AWSDateTime
     updatedAt: AWSDateTime
 }
@@ -29,6 +23,12 @@ type PaginatedDevices {
     devices: [Device]
     nextToken: String
 }
+type Certificate {
+    certificateArn: String!
+    certificateId: String!
+    certificatePem: String!
+}
+
 type Deployment {
     thingId: String!
     deploymentId: String!
@@ -238,7 +238,7 @@ type Query {
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Other
-    getThingAutoRegistrationState: Boolean
+    getJustInTimeOnBoardingState: Boolean
         @aws_auth(cognito_groups: ["Administrators"])
 
     describeEndpoint(endpointType: String): String
@@ -256,11 +256,13 @@ type Mutation {
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Devices
-    addDevice(thingName: String!, spec: AWSJSON, generateCert: Boolean!, deviceTypeId: String!, deviceBlueprintId: String!): Device!
+    addDevice(name: String!, deviceTypeId: String!, deviceBlueprintId: String!): Device!
         @aws_auth(cognito_groups: ["Administrators"])
     deleteDevice(thingId: String!): Device
         @aws_auth(cognito_groups: ["Administrators"])
     updateDevice(thingId: String!, name: String!, deviceTypeId: String!, deviceBlueprintId: String!, spec: AWSJSON!): Device!
+        @aws_auth(cognito_groups: ["Administrators"])
+    createCertificate(csr: String!, thingId: String!): Certificate!
         @aws_auth(cognito_groups: ["Administrators"])
 
     ## Device Blueprints
@@ -316,7 +318,7 @@ type Mutation {
     ## Other
     attachPrincipalPolicy(policyName: String!, principal: String!): Boolean
         @aws_auth(cognito_groups: ["Administrators", "Members"])
-    setThingAutoRegistrationState(enabled: Boolean!): Boolean
+    setJustInTimeOnBoardingState(enabled: Boolean!): Boolean
         @aws_auth(cognito_groups: ["Administrators"])
     updateThingShadow(params: AWSJSON!): ThingShadowResponse
         @aws_auth(cognito_groups: ["Administrators", "Members"])

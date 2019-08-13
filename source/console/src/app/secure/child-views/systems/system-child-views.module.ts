@@ -2,28 +2,30 @@ import { Component, Input, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // Models
+import { Device } from '@models/device.model';
 import { System } from '@models/system.model';
 
 // Systems
-import { ReInvent2018MCFV10Module } from './reinvent-2018-mcf-v1.0/reinvent-2018-mcf-v1-0.module';
+import { DefaultSystemModule } from './default-system/default-system.module';
 
 @Component({
     selector: 'app-system-child-view',
     template: `
-        <app-reinvent-2018-mcf-v1-0
-            *ngIf="system.systemBlueprintId === 'reinvent-2018-mcf-v1.0' || system.systemBlueprintId === 'ebc-mcf-2018-v1.0'"
-            [system]="system"
-        ></app-reinvent-2018-mcf-v1-0>
+        <div [ngSwitch]="data.system.systemBlueprintId" *ngIf="data && data.system && data.system.systemBlueprintId">
+            <app-default-system *ngSwitchDefault [system]="data.system" [devices]="data.devices"></app-default-system>
+        </div>
     `
 })
 export class SystemChildViewComponent {
-    @Input()
-    system: System = new System();
+    @Input() data: {
+        system: System,
+        devices: Device[]
+    };// System = new System();
 }
 
 @NgModule({
     declarations: [SystemChildViewComponent],
     exports: [SystemChildViewComponent],
-    imports: [CommonModule, ReInvent2018MCFV10Module]
+    imports: [CommonModule, DefaultSystemModule]
 })
 export class SystemChildViewsModule {}

@@ -43,8 +43,10 @@ export class SystemComponent implements OnInit {
     public pageTitle = 'System';
     public id: string;
 
-    public system: System;
-    public devices: Device[];
+    public data: {
+        system: System;
+        devices: Device[];
+    };
 
     @BlockUI()
     blockUI: NgBlockUI;
@@ -63,8 +65,10 @@ export class SystemComponent implements OnInit {
         private systemService: SystemService,
         private ngZone: NgZone
     ) {
-        this.system = new System();
-        this.devices = [];
+        this.data = {
+            system: new System(),
+            devices: []
+        };
     }
 
     ngOnInit() {
@@ -73,7 +77,7 @@ export class SystemComponent implements OnInit {
         self.blockUI.start('Loading system...');
 
         self.route.params.subscribe(params => {
-            self.system = new System({ id: params['id'] });
+            self.data.system = new System({ id: params['id'] });
 
             self.localStorage.getItem<ProfileInfo>('profile').subscribe((profile: ProfileInfo) => {
                 self.profile = new ProfileInfo(profile);
@@ -85,7 +89,7 @@ export class SystemComponent implements OnInit {
                         link: 'systems'
                     }),
                     new Crumb({
-                        title: self.system.id,
+                        title: self.data.system.id,
                         active: true
                     })
                 ]);
@@ -99,12 +103,21 @@ export class SystemComponent implements OnInit {
         const self = this;
 
         self.systemService
-            .get(self.system.id)
+            .get(self.data.system.id)
             .then((system: System) => {
-                self.system = system;
-                self.logger.info('Loaded system:', this.system);
-                self.devices = [];
+                self.data.system = system;
+                self.logger.info('Loaded system:', this.data.system.id);
                 self.blockUI.stop();
+                self.data.devices = [];
+                return Promise.all(
+                    this.data.system.deviceIds.map(thingId => {
+                        return self.deviceService.getDevice(thingId);
+                    })
+                );
+            })
+            .then(devices => {
+                self.logger.info('Loaded', devices.length, 'devices.');
+                self.data.devices = devices;
             })
             .catch(err => {
                 self.blockUI.stop();
@@ -146,7 +159,7 @@ export class SystemComponent implements OnInit {
                     type: 'success',
                     showConfirmButton: false
                 }).then(() => {
-                    this.systemService.refreshSystem(this.system.id);
+                    this.systemService.refreshSystem(this.data.system.id);
                 });
             }
             this.handleCancelEdit();
@@ -168,7 +181,7 @@ export class SystemComponent implements OnInit {
         componentRefInstance.cancelSubject = cancelSubject;
         componentRefInstance.submitSubject = submitSubject;
         componentRefInstance.deleteSubject = deleteSubject;
-        componentRefInstance.element = this.system;
+        componentRefInstance.element = this.data.system;
         $('#editSystemModal').modal('show');
     }
 
@@ -178,7 +191,7 @@ export class SystemComponent implements OnInit {
     }
 
     public deploy() {
-        console.log('Deploy', this.system.deviceIds);
+        console.log('Deploy', this.data.system.deviceIds);
         swal({
             title: 'Are you sure you want to deploy this system?',
             text: `This will overwrite whatever the device is doing!`,
@@ -189,21 +202,26 @@ export class SystemComponent implements OnInit {
             confirmButtonText: 'Yes, deploy it!'
         }).then(result => {
             if (result.value) {
-                this.blockUI.start('Deploying system...');
-                Promise.all(
-                    this.system.deviceIds.map(deviceId => {
-                        return this.deploymentService
-                            .addDeployment(deviceId)
-                            .then(deployment => {
-                                console.log(deployment);
-                                return deployment;
+                this.blockUI.start('First refreshing the device spec for the system...');
+                this.systemService
+                    .refreshSystem(this.data.system.id)
+                    .then(() => {
+                        this.blockUI.start('Deploying system...');
+                        return Promise.all(
+                            this.data.system.deviceIds.map(deviceId => {
+                                return this.deploymentService
+                                    .addDeployment(deviceId)
+                                    .then(deployment => {
+                                        console.log(deployment);
+                                        return deployment;
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        throw err;
+                                    });
                             })
-                            .catch(err => {
-                                console.error(err);
-                                throw err;
-                            });
+                        );
                     })
-                )
                     .then(results => {
                         this.blockUI.stop();
                         swal({
@@ -225,5 +243,27 @@ export class SystemComponent implements OnInit {
 
     public gotoDevice(device: Device) {
         this.router.navigate([['/securehome/devices', device.thingId].join('/')]);
+    }
+
+    public createCertificate() {
+        if (this.data.devices.length > 0) {
+            this.blockUI.start('Generating certificates for devices...');
+
+            Promise.all(
+                this.data.devices.map(device => {
+                    return this.deviceService.createCertificate(device);
+                })
+            )
+                .then((certs: any) => {
+                    this.blockUI.stop();
+                    this.deviceService.createZip(certs);
+                })
+                .catch(err => {
+                    this.blockUI.stop();
+                    swal('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
+                    this.logger.error('error occurred calling createCertificate api, show message');
+                    this.logger.error(err);
+                });
+        }
     }
 }

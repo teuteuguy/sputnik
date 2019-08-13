@@ -10,6 +10,10 @@ import { AppSyncService, AddedDevice, UpdatedDevice, DeletedDevice } from './app
 
 // Helpers
 import { _ } from 'underscore';
+import * as forge from 'node-forge';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+declare var appVariables: any;
 
 @Injectable()
 export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice {
@@ -70,19 +74,139 @@ export class DeviceService implements AddedDevice, UpdatedDevice, DeletedDevice 
             return r;
         });
     }
-    public addDevice(
-        thingName: string,
-        deviceTypeId: string = 'UNKNOWN',
-        deviceBlueprintId: string = 'UNKNOWN',
-        spec: any = {},
-        generateCert: boolean = true
+    public addDevice(name: string, deviceTypeId: string = 'UNKNOWN', deviceBlueprintId: string = 'UNKNOWN') {
+        return this.appSyncService.addDevice(name, deviceTypeId, deviceBlueprintId).then(r => {
+            this.onAddedDevice(r);
+            return r;
+        });
+    }
+    public createZip(
+        certs: {
+            thingName: string;
+            cert: {
+                certificateId: string;
+                certificateArn: string;
+                certificatePem: string;
+                privateKey: string;
+                publicKey: string;
+            };
+        }[]
     ) {
-        return this.appSyncService
-            .addDevice(thingName, deviceTypeId, deviceBlueprintId, spec, generateCert)
-            .then(r => {
-                this.onAddedDevice(r);
-                return r;
+        if (certs.length >= 1) {
+            const zip = new JSZip();
+
+            certs.forEach(c => {
+                const cert = c.cert;
+                const thingName = c.thingName;
+                const shortCertName = cert.certificateId.substring(0, 11);
+                const thingArnArray = cert.certificateArn.split('cert');
+                thingArnArray.splice(thingArnArray.length - 1, 1, '/' + thingName);
+                const thingArn = thingArnArray.join('thing');
+
+                zip.folder(thingName).file(shortCertName + '-cert.crt', cert.certificatePem);
+                zip.folder(thingName).file(shortCertName + '-private.key', cert.privateKey);
+                zip.folder(thingName).file(shortCertName + '-public.key', cert.publicKey);
+                zip.folder(thingName).file(
+                    'config.json',
+                    JSON.stringify({
+                        coreThing: {
+                            caPath: 'root.ca.pem',
+                            certPath: shortCertName + '-cert.crt',
+                            keyPath: shortCertName + '-private.key',
+                            thingArn: thingArn,
+                            iotHost: appVariables.IOT_ENDPOINT,
+                            ggHost: 'greengrass-ats.iot.us-east-1.amazonaws.com',
+                            keepAlive: 600
+                        },
+                        runtime: {
+                            cgroup: {
+                                useSystemd: 'yes'
+                            }
+                        },
+                        managedRespawn: false,
+                        crypto: {
+                            principals: {
+                                SecretsManager: {
+                                    privateKeyPath: 'file:///greengrass/certs/' + shortCertName + '-private.key'
+                                },
+                                IoTCertificate: {
+                                    privateKeyPath: 'file:///greengrass/certs/' + shortCertName + '-private.key',
+                                    certificatePath: 'file:///greengrass/certs/' + shortCertName + '-cert.crt'
+                                }
+                            },
+                            caPath: 'file:///greengrass/certs/root.ca.pem'
+                        }
+                    })
+                );
             });
+
+            zip.generateAsync({
+                type: 'blob'
+            }).then(
+                (blob: any) => {
+                    // 1) generate the zip file
+                    saveAs(blob, (certs.length === 1 ? certs[0].thingName : 'certs') + '.zip');
+                },
+                (error: any) => {
+                    console.error(error);
+                }
+            );
+        }
+    }
+    public createCertificate(device: Device, deviceBlueprintId: string = null, deviceTypeId: string = null) {
+        return new Promise((resolve, reject) => {
+            forge.pki.rsa.generateKeyPair(
+                {
+                    bits: 4096,
+                    workers: 2
+                },
+                (err, keypair) => {
+                    if (err) {
+                        console.error('createCertificate: error', err);
+                        return reject(err);
+                    } else {
+                        const csr = forge.pki.createCertificationRequest();
+                        csr.publicKey = keypair.publicKey;
+                        csr.setSubject([
+                            {
+                                name: 'organizationName',
+                                value: 'sputnik'
+                            },
+                            {
+                                name: 'commonName',
+                                value: device.thingName
+                            }
+                        ]);
+
+                        csr.sign(keypair.privateKey);
+
+                        const verified = csr.verify();
+                        const pem = forge.pki.certificationRequestToPem(csr);
+
+                        this.appSyncService
+                            .createCertificate(device.thingId, pem)
+                            .then(cert => {
+                                cert.privateKey = forge.pki.privateKeyToPem(keypair.privateKey);
+                                cert.publicKey = forge.pki.publicKeyToPem(keypair.publicKey);
+
+                                resolve({
+                                    thingName: device.thingName,
+                                    cert: {
+                                        certificateId: cert.certificateId,
+                                        certificateArn: cert.certificateArn,
+                                        certificatePem: cert.certificatePem,
+                                        privateKey: cert.privateKey,
+                                        publicKey: cert.publicKey
+                                    }
+                                });
+                            })
+                            .catch(error => {
+                                reject(error);
+                            });
+                    }
+                }
+            );
+        });
     }
 
     onAddedDevice(device: Device) {

@@ -66,7 +66,7 @@ export class SystemEditModalComponent implements OnInit {
             .then((systemBlueprint: SystemBlueprint) => {
                 _systemBlueprint = systemBlueprint;
                 return Promise.all(
-                    systemBlueprint.spec.devices.map((specDevice, index) => {
+                    systemBlueprint.spec.Devices.map((specDevice, index) => {
                         return Promise.all(
                             specDevice.deviceBlueprintId.map(deviceBlueprintId => {
                                 return this.deviceService.listRecursive(

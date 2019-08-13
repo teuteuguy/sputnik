@@ -3,10 +3,8 @@
     "operation" : "Invoke",
     "payload": {
         "cmd": "addDevice",
-        "thingName": "$context.arguments.thingName",
-        "generateCert": "$context.arguments.generateCert",
-        "spec": $util.toJson($context.arguments.spec),
+        "name": "$context.arguments.name",
         "deviceTypeId": "$context.arguments.deviceTypeId",
-        "deviceBlueprintId": "$context.arguments.deviceBlueprintId",
+        "deviceBlueprintId": "$context.arguments.deviceBlueprintId"
     }
 }

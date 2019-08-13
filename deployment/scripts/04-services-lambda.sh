@@ -28,9 +28,9 @@ yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
 echo
-echo "[Build] Services - Thing Auto Registration"
+echo "[Build] Services - Just In Time On Boarding"
 echo
-cd $1/services/thing-auto-registration
+cd $1/services/just-in-time-on-boarding
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 
@@ -52,13 +52,6 @@ echo
 echo "[Build] Services - Systems"
 echo
 cd $1/services/systems
-yarn run build
-cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
-
-echo
-echo "[Build] Services - Cert Deletor"
-echo
-cd $1/services/cert-deletor
 yarn run build
 cp ./dist/`jq -cr '.name' package.json`.zip $2/lambda/`jq -cr '.name' package.json`.zip
 

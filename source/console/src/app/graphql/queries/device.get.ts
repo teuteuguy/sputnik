@@ -9,15 +9,12 @@ export default gql`
             name
             deviceTypeId
             deviceBlueprintId
+            certificateArn
             connectionState {
                 state
                 at
                 certificateId
                 certificateArn
-            }
-            cert {
-                at
-                url
             }
             spec
             greengrassGroupId

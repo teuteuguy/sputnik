@@ -8,20 +8,20 @@ function handler(event, context, callback) {
     console.log('Event:', JSON.stringify(event, null, 2));
 
     switch (event.cmd) {
-        case 'getThingAutoRegistrationState':
+        case 'getJustInTimeOnBoardingState':
             iot.getTopicRule({
-                ruleName: process.env.IOT_THING_GROUP_AUTO_REGISTRATION_TOPIC_RULE
+                ruleName: process.env.IOT_JUST_IN_TIME_ON_BOARDING_TOPIC_RULE
             }).promise().then(data => {
                 console.log(data);
                 callback(null, !data.rule.ruleDisabled);
             }).catch(err => {
-                callback('Error getting the topic rule ' + process.env.IOT_THING_GROUP_AUTO_REGISTRATION_TOPIC_RULE + ' : ' + err, null);
+                callback('Error getting the topic rule ' + process.env.IOT_JUST_IN_TIME_ON_BOARDING_TOPIC_RULE + ' : ' + err, null);
             });
             break;
-        case 'setThingAutoRegistrationState':
-            console.log('setThingAutoRegistrationState called, with enabled =', event.enabled);
+        case 'setJustInTimeOnBoardingState':
+            console.log('setJustInTimeOnBoardingState called, with enabled =', event.enabled);
             const params = {
-                ruleName: process.env.IOT_THING_GROUP_AUTO_REGISTRATION_TOPIC_RULE
+                ruleName: process.env.IOT_JUST_IN_TIME_ON_BOARDING_TOPIC_RULE
             };
             let promise = null;
             if (event.enabled === false) {
@@ -33,10 +33,10 @@ function handler(event, context, callback) {
                 break;
             }
             promise.then(data => {
-                event.cmd = 'getThingAutoRegistrationState';
+                event.cmd = 'getJustInTimeOnBoardingState';
                 return handler(event, context, callback);
             }).catch(err => {
-                callback('Error enabling/disabling the topic rule ' + process.env.IOT_THING_GROUP_AUTO_REGISTRATION_TOPIC_RULE + ' : ' + err, null);
+                callback('Error enabling/disabling the topic rule ' + process.env.IOT_JUST_IN_TIME_ON_BOARDING_TOPIC_RULE + ' : ' + err, null);
             });
             break;
         default:

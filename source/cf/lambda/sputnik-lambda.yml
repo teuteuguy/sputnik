@@ -38,24 +38,21 @@ Parameters:
     systemBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the system blueprints
+    greengrassServiceRoleArn:
+        Type: String
+        Description: IAM Role Arn for Greengrass Service
     iamRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
     iotPolicyForGreengrassCores:
         Type: String
         Description: sputnik Greengrass IoT Policy
+    iotConnectPolicyForSputnikCertificates:
+        Type: String
+        Description: sputnik default connect IoT Policy for new certs
     userPoolId:
         Type: String
         Description: Cognito User Pool Id
-    certsBucket:
-        Type: String
-        Description: sputnik Certs Bucket
-    certsBucketArn:
-        Type: String
-        Description: sputnik Certs Bucket Arn
-    cfnStackId:
-        Type: String
-        Description: sputnik CFN stack id, used by addons
 
 Resources:
 
@@ -86,6 +83,7 @@ Resources:
                 deviceTypesTable: !Ref deviceTypesTable
                 systemsTable: !Ref systemsTable
                 systemBlueprintsTable: !Ref systemBlueprintsTable
+                greengrassServiceRoleArn: !Ref greengrassServiceRoleArn
 
     # Nested stack - Custom resource - UUID Helper
     CFStackForCustomResourceUUIDHelper:
@@ -131,8 +129,7 @@ Resources:
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
                 deviceTypesTable: !Ref deviceTypesTable
-                certsBucket: !Ref certsBucket
-                certsBucketArn: !Ref certsBucketArn
+                iotConnectPolicyForSputnikCertificates: !Ref iotConnectPolicyForSputnikCertificates
 
     # Nested stack - MicroService - Settings
     CFStackForSettingsService:
@@ -142,7 +139,7 @@ Resources:
             Parameters:
                 sourceBucket: !Ref sourceBucket
                 lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                iotThingAutoRegistrationTopicRuleName: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
+                iotJustInTimeOnBoardingTopicRuleName: !GetAtt CFStackForJustInTimeOnBoardingService.Outputs.iotJustInTimeOnBoardingTopicRuleName
                 settingsTable: !Ref settingsTable
 
     # Nested stack - MicroService - Systems
@@ -160,26 +157,16 @@ Resources:
                 systemBlueprintsTable: !Ref systemBlueprintsTable
                 systemsTable: !Ref systemsTable
 
-    # Nested stack - MicroService - Thing Auto Registration
-    CFStackForThingAutoRegistrationService:
+    # Nested stack - MicroService - Just In Time On Boarding
+    CFStackForJustInTimeOnBoardingService:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-thing-auto-registration.yml']]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-just-in-time-on-boarding.yml']]
             Parameters:
                 sourceBucket: !Ref sourceBucket
                 lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
                 settingsTable: !Ref settingsTable
                 devicesTable: !Ref devicesTable
-
-    # Nested stack - MicroService - Admin
-    CFStackForCertDeletorService:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-service-cert-deletor.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                certsBucket: !Ref certsBucket
 
 
 Outputs:
@@ -204,13 +191,9 @@ Outputs:
     lambdaServiceSystemsArn:
         Description: 'Systems Service ARN'
         Value: !GetAtt CFStackForSystemsService.Outputs.lambdaServiceSystemsArn
-    lambdaServiceThingAutoRegistrationArn:
-        Description: "Thing Auto Registration Service ARN"
-        Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.lambdaServiceThingAutoRegistrationArn
-    iotThingAutoRegistrationTopicRuleName:
-        Description: "ThingAutoRegistration Topic Rule Name"
-        Value: !GetAtt CFStackForThingAutoRegistrationService.Outputs.iotThingAutoRegistrationTopicRuleName
-    lambdaServiceCertDeletorArn:
-        Description: 'Cert Deletor Service ARN'
-        Value: !GetAtt CFStackForCertDeletorService.Outputs.lambdaServiceCertDeletorArn
-
+    lambdaServiceJustInTimeOnBoardingArn:
+        Description: "Just In Time On Boarding Service ARN"
+        Value: !GetAtt CFStackForJustInTimeOnBoardingService.Outputs.lambdaServiceJustInTimeOnBoardingArn
+    iotJustInTimeOnBoardingTopicRuleName:
+        Description: "JustInTimeOnBoarding Topic Rule Name"
+        Value: !GetAtt CFStackForJustInTimeOnBoardingService.Outputs.iotJustInTimeOnBoardingTopicRuleName

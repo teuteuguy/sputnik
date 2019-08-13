@@ -6,114 +6,49 @@ const documentClient = new AWS.DynamoDB.DocumentClient();
 const _ = require('underscore');
 const moment = require('moment');
 const UsageMetrics = require('usage-metrics');
+const shortid = require('shortid');
 
 const lib = 'addDevice';
 
-module.exports = function (event, context) {
-
+module.exports = function(event, context) {
     const usageMetrics = new UsageMetrics();
-
-    const tag = `addDevice(${event.thingName}):`;
+    if (event.thingName === undefined) {
+        event.thingName = `sputnik-${shortid.generate()}`;
+    }
+    const tag = `${lib}(${event.thingName}):`;
 
     console.log(tag, 'start');
 
     // Event needs to be:
     // event.deviceTypeId
     // event.deviceBlueprintId
-    // event.spec
-    // event.thingName
-    // event.generateCert
+    // event.name
 
-    // TODO: deal with creating a greengrass group if required.
-
-    return iot.describeThing({
+    return iot
+        .createThing({
             thingName: event.thingName
-        }).promise().then(thing => {
-            return thing;
         })
-        .catch(err => {
-            return iot.createThing({
-                thingName: event.thingName
-            }).promise();
-        })
+        .promise()
         .then(thing => {
-
-            console.log(tag, 'thing:', thing);
+            console.log(tag, 'Created thing:', thing);
+            event.thing = thing;
 
             // Create thing returns
             // {
-            //     "thingArn": "arn:aws:iot:us-east-1:accountnumber:thing/toto",
-            //     "thingName": "toto",
+            //     "thingArn": "arn:aws:iot:us-east-1:accountnumber:thing/foo",
+            //     "thingName": "foo",
             //     "thingId": "ef17a1237-eb50-4d64-a359-df4894ba90a0"
             // }
 
-            event.thing = thing;
-
-            // Check if thing already exists
-            return documentClient
-                .get({
-                    TableName: process.env.TABLE_DEVICES,
-                    Key: {
-                        thingId: event.thing.thingId
-                    }
-                })
-                .promise();
-        })
-        .then(result => {
-
-            if (!event.spec) {
-                event.spec = {};
-            }
-
-            if (result.Item) {
-                console.log(tag, 'thing is already in the DB. Exiting');
-                // Thing already in our DB
-                throw 'Thing is already in the DB';
-            } else {
-                // Lets prepare. Lets check what type of device we are trying to provision :)
-
-                // TODO: much better way of writing this bit of code.
-                if (event.deviceTypeId !== null && event.deviceTypeId !== undefined && event.deviceTypeId !== 'UNKNOWN') {
-                    return documentClient.get({
-                        TableName: process.env.TABLE_DEVICE_TYPES,
-                        Key: {
-                            id: event.deviceTypeId
-                        }
-                    }).promise().then(deviceType => {
-                        if (!deviceType.Item) {
-                            event.deviceTypeId = 'UNKNOWN';
-                            return 'NOT_A_GREENGRASS_DEVICE';
-                        } else {
-                            if (deviceType.Item.type !== 'GREENGRASS') {
-                                return 'NOT_A_GREENGRASS_DEVICE';
-                            } else {
-                                // Device is a Greengrass device => create the greengrass group!
-                                return gg.createGroup({
-                                    Name: event.thingName + '-gg-group'
-                                }).promise().then(group => {
-                                    return group.Id;
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    return 'NOT_A_GREENGRASS_DEVICE';
-                }
-
-            }
-        }).then(greengrassGroupId => {
-
-            console.log(tag, 'greengrassGroupId:', greengrassGroupId);
-
-            let params = {
+            const params = {
                 thingId: event.thing.thingId,
                 thingName: event.thing.thingName,
                 thingArn: event.thing.thingArn,
-                name: event.thing.thingName,
+                name: event.name,
                 deviceTypeId: event.deviceTypeId || 'UNKNOWN',
                 deviceBlueprintId: event.deviceBlueprintId || 'UNKNOWN',
-                greengrassGroupId: greengrassGroupId,
-                spec: event.spec,
+                greengrassGroupId: 'UNKNOWN',
+                spec: {},
                 lastDeploymentId: 'UNKNOWN',
                 createdAt: moment()
                     .utc()
@@ -121,79 +56,37 @@ module.exports = function (event, context) {
                 updatedAt: moment()
                     .utc()
                     .format(),
+                certificateArn: 'NOTSET',
                 connectionState: {
                     certificateId: 'NOTSET',
                     certificateArn: 'NOTSET',
                     state: 'created',
-                    at: moment()
+                    at: moment(0)
                         .utc()
                         .format()
                 }
             };
 
-            if (event.generateCert !== false) {
-
-                return iot.createKeysAndCertificate({
-                    setAsActive: true
-                }).promise().then(cert => {
-                    params.connectionState = {
-                        certificateId: cert.certificateId,
-                        certificateArn: cert.certificateArn,
-                        state: 'created',
-                        at: moment().utc().format()
-                    };
-
-                    params.cert = {
-                        certificateId: cert.certificateId,
-                        certificateArn: cert.certificateArn,
-                        at: moment().utc().format()
-                    };
-
-                    return s3.putObject({
-                        Body: JSON.stringify(cert),
-                        Bucket: process.env.S3_CERT_BUCKET,
-                        Key: cert.certificateId
-                    }).promise().then(() => {
-                        params.cert.url = s3.getSignedUrl('getObject', {
-                            Bucket: process.env.S3_CERT_BUCKET,
-                            Key: cert.certificateId,
-                            Expires: 300
-                        });
-                        return iot.attachThingPrincipal({
-                            principal: cert.certificateArn,
-                            thingName: event.thingName
-                        }).promise();
-                    });
-
-                }).then(() => {
-
-                    return params;
-
-                });
-
-            } else {
-
-                return params;
-
-            }
-
-        }).then(params => {
-            return Promise.all([params, documentClient
-                .put({
-                    TableName: process.env.TABLE_DEVICES,
-                    Item: params,
-                    ReturnValues: 'ALL_OLD'
-                })
-                .promise()
+            return Promise.all([
+                params,
+                documentClient
+                    .put({
+                        TableName: process.env.TABLE_DEVICES,
+                        Item: params,
+                        ReturnValues: 'ALL_OLD'
+                    })
+                    .promise()
             ]);
         })
         .then(results => {
-            console.log('addDevice: results:', JSON.stringify(results, null, 4));
-            return usageMetrics.sendAnonymousMetricIfCustomerEnabled({
-                metric: "newDevice",
-                value: event.thing.thingId
-            }).then(res => {
-                return results[0];
-            });
+            console.log(tag, 'Created Device:', JSON.stringify(results, null, 4));
+            return usageMetrics
+                .sendAnonymousMetricIfCustomerEnabled({
+                    metric: 'newDevice',
+                    value: event.thing.thingId
+                })
+                .then(res => {
+                    return results[0];
+                });
         });
 };
