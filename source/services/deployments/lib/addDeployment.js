@@ -35,7 +35,8 @@ module.exports = function (event, context) {
         AWS_REGION: null,
         AWS_ACCOUNT: null,
         DATA_BUCKET: null,
-        DATA_BUCKET_S3_URL: null
+        DATA_BUCKET_S3_URL: null,
+        IOT_ENDPOINT: null
     };
 
     // First lets get the device.
@@ -96,6 +97,7 @@ module.exports = function (event, context) {
         _substitutions.CORE_CERTIFICATE_ARN = _certificateArn;
         _substitutions.DATA_BUCKET = process.env.DATA_BUCKET;
         _substitutions.DATA_BUCKET_S3_URL = `https://${process.env.DATA_BUCKET}.s3.amazonaws.com`;
+        _substitutions.IOT_ENDPOINT = process.env.IOT_ENDPOINT;
 
         // Order is important
         // Merge Device into DeviceType into DeviceBlueprint

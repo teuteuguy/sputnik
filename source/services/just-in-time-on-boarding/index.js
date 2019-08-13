@@ -88,7 +88,13 @@ function handler(event, context, callback) {
                                 thingId: thing.thingId
                             }
                         })
-                        .promise();
+                        .promise().then(device => {
+                            if (!device.Item) {
+                                throw 'Device does not exist. Create it';
+                            } else {
+                                return device;
+                            }
+                        });
                 })
                 .catch(err => {
                     // Thing DOES NOT exist => This is the first connection for this cert.

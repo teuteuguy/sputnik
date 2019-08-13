@@ -24,7 +24,7 @@ yarn install
 yarn run build
 cp -r ./dist/** $2/console
 echo "[Custom building] Deleting appVariables.js"
-rm $2/console/assets/appVariables.js
+rm $2/console/assets/appVariables*.*
 
 echo
 echo "------------------------------------------------------------------------------"

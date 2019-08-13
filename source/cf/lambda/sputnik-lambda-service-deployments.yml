@@ -31,6 +31,9 @@ Parameters:
     iotPolicyForGreengrassCores:
         Type: String
         Description: sputnik Greengrass IoT Policy
+    iotEndpoint:
+        Type: String
+        Description: AWS IoT Core endpoint
 
 
 Resources:
@@ -122,6 +125,7 @@ Resources:
                     IAM_ROLE_ARN_FOR_GREENGRASS_GROUPS: !Ref iamRoleArnForGreengrassGroups
                     IOT_POLICY_GREENGRASS_CORE: !Ref iotPolicyForGreengrassCores
                     DATA_BUCKET: !Ref dataBucket
+                    IOT_ENDPOINT: !Ref iotEndpoint
                     LOGGING_LEVEL: 2
 
 

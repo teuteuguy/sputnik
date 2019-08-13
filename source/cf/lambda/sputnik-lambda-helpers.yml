@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sputnik - Lambda - Version %%VERSION%%'
+
+Parameters:
+    sourceBucket:
+        Type: String
+        Description: S3 Bucket for Lambda code.
+    sourceKeyPrefix:
+        Type: String
+        Description: S3 Bucket Key prefix for code.
+    destBucketArn:
+        Type: String
+        Description: ARN of the sputnik Website Bucket.
+    dataBucketArn:
+        Type: String
+        Description: ARN of the sputnik Data Bucket.
+    settingsTable:
+        Type: String
+        Description: DynamoDB Table for storing the application settings
+    devicesTable:
+        Type: String
+        Description: DynamoDB Table for storing the devices
+    deviceTypesTable:
+        Type: String
+        Description: DynamoDB Table for storing the device types
+    deviceBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the device blueprints
+    systemsTable:
+        Type: String
+        Description: DynamoDB Table for storing the systems
+    systemBlueprintsTable:
+        Type: String
+        Description: DynamoDB Table for storing the system blueprints
+    greengrassServiceRoleArn:
+        Type: String
+        Description: IAM Role Arn for Greengrass Service
+
+Resources:
+
+    # Nested stack - Custom resource - S3 Helper
+    CFStackForCustomResourceS3Helper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-s3.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
+                destBucketArn: !Ref destBucketArn
+                dataBucketArn: !Ref dataBucketArn
+
+    # Nested stack - Custom resource - Utils Helper
+    CFStackForCustomResourceUtilsHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-utils.yml']]
+            Parameters:
+                sourceBucket: !Ref sourceBucket
+                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
+                destBucketArn: !Ref destBucketArn
+                dataBucketArn: !Ref dataBucketArn
+                settingsTable: !Ref settingsTable
+                devicesTable: !Ref devicesTable
+                deviceBlueprintsTable: !Ref deviceBlueprintsTable
+                deviceTypesTable: !Ref deviceTypesTable
+                systemsTable: !Ref systemsTable
+                systemBlueprintsTable: !Ref systemBlueprintsTable
+                greengrassServiceRoleArn: !Ref greengrassServiceRoleArn
+
+    # Nested stack - Custom resource - UUID Helper
+    CFStackForCustomResourceUUIDHelper:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-uuid.yml']]
+
+
+Outputs:
+    customResourceS3HelperArn:
+        Description: 'Custom Resource S3 Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceS3Helper.Outputs.customResourceS3HelperArn
+    customResourceUtilsHelperArn:
+        Description: 'Custom Resource Utils Helper ARN'
+        Value: !GetAtt CFStackForCustomResourceUtilsHelper.Outputs.customResourceUtilsHelperArn

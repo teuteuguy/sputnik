@@ -8,15 +8,9 @@ Parameters:
     sourceKeyPrefix:
         Type: String
         Description: S3 Bucket Key prefix for code.
-    destBucketArn:
-        Type: String
-        Description: ARN of the sputnik Website Bucket.
     dataBucket:
         Type: String
         Description: sputnik Data Bucket
-    dataBucketArn:
-        Type: String
-        Description: ARN of the sputnik Data Bucket.
     settingsTable:
         Type: String
         Description: DynamoDB Table for storing the application settings
@@ -38,9 +32,6 @@ Parameters:
     systemBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the system blueprints
-    greengrassServiceRoleArn:
-        Type: String
-        Description: IAM Role Arn for Greengrass Service
     iamRoleArnForGreengrassGroups:
         Type: String
         Description: sputnik Greengrass group role ARN
@@ -53,43 +44,11 @@ Parameters:
     userPoolId:
         Type: String
         Description: Cognito User Pool Id
+    iotEndpoint:
+        Type: String
+        Description: AWS IoT Core endpoint
 
 Resources:
-
-    # Nested stack - Custom resource - S3 Helper
-    CFStackForCustomResourceS3Helper:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-s3.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                destBucketArn: !Ref destBucketArn
-                dataBucketArn: !Ref dataBucketArn
-
-    # Nested stack - Custom resource - Utils Helper
-    CFStackForCustomResourceUtilsHelper:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-utils.yml']]
-            Parameters:
-                sourceBucket: !Ref sourceBucket
-                lambdaSourceKeyPrefix: !Join ['/', [!Ref sourceKeyPrefix, 'lambda']]
-                destBucketArn: !Ref destBucketArn
-                dataBucketArn: !Ref dataBucketArn
-                settingsTable: !Ref settingsTable
-                devicesTable: !Ref devicesTable
-                deviceBlueprintsTable: !Ref deviceBlueprintsTable
-                deviceTypesTable: !Ref deviceTypesTable
-                systemsTable: !Ref systemsTable
-                systemBlueprintsTable: !Ref systemBlueprintsTable
-                greengrassServiceRoleArn: !Ref greengrassServiceRoleArn
-
-    # Nested stack - Custom resource - UUID Helper
-    CFStackForCustomResourceUUIDHelper:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Ref sourceKeyPrefix, 'cf/lambda/sputnik-lambda-helper-uuid.yml']]
 
     # Nested stack - MicroService - Admin
     CFStackForAdminService:
@@ -117,6 +76,7 @@ Resources:
                 dataBucket: !Ref dataBucket
                 iamRoleArnForGreengrassGroups: !Ref iamRoleArnForGreengrassGroups
                 iotPolicyForGreengrassCores: !Ref iotPolicyForGreengrassCores
+                iotEndpoint: !Ref iotEndpoint
 
     # Nested stack - MicroService - Devices
     CFStackForDevicesService:
@@ -170,12 +130,6 @@ Resources:
 
 
 Outputs:
-    customResourceS3HelperArn:
-        Description: 'Custom Resource S3 Helper ARN'
-        Value: !GetAtt CFStackForCustomResourceS3Helper.Outputs.customResourceS3HelperArn
-    customResourceUtilsHelperArn:
-        Description: 'Custom Resource Utils Helper ARN'
-        Value: !GetAtt CFStackForCustomResourceUtilsHelper.Outputs.customResourceUtilsHelperArn
     lambdaServiceDeploymentsArn:
         Description: 'Deployments Service ARN'
         Value: !GetAtt CFStackForDeploymentsService.Outputs.lambdaServiceDeploymentsArn
