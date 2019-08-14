@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 
 // Components
+import { ButtonWidgetComponent } from './button-widget.component';
 import { CardWidgetComponent } from './card-widget.component';
 import { CheckboxWidgetComponent } from './checkbox-widget.component';
 import { InputTextWidgetComponent } from './input-text-widget.component';
@@ -18,12 +19,13 @@ import { GraphRealtimeWidgetComponent } from './graph-realtime-widget.component'
 import { ColorPickerWidgetComponent } from './color-picker-widget.component';
 
 const widgetComponentTypes = {
-    'text': TextWidgetComponent,
+    'button': ButtonWidgetComponent,
     'card': CardWidgetComponent,
     'checkbox': CheckboxWidgetComponent,
     'color-picker': ColorPickerWidgetComponent,
+    'graph-realtime': GraphRealtimeWidgetComponent,
     'input-text': InputTextWidgetComponent,
-    'graph-realtime': GraphRealtimeWidgetComponent
+    'text': TextWidgetComponent
 };
 
 @Component({

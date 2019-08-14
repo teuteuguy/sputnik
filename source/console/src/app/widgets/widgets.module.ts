@@ -10,6 +10,7 @@ import { GaugeModule } from '../common/modules/gauge/gauge.module';
 // Widgets
 import { WidgetComponent } from './widget.component';
 import { WidgetsComponent } from './widgets.component';
+import { ButtonWidgetComponent } from './button-widget.component';
 import { CardWidgetComponent } from './card-widget.component';
 import { CheckboxWidgetComponent } from './checkbox-widget.component';
 import { ColorPickerWidgetComponent } from './color-picker-widget.component';
@@ -24,6 +25,7 @@ import { PipesModule } from '../pipes/pipes.module';
     declarations: [
         WidgetComponent,
         WidgetsComponent,
+        ButtonWidgetComponent,
         CardWidgetComponent,
         CheckboxWidgetComponent,
         ColorPickerWidgetComponent,
@@ -32,6 +34,7 @@ import { PipesModule } from '../pipes/pipes.module';
         TextWidgetComponent
     ],
     entryComponents: [
+        ButtonWidgetComponent,
         CardWidgetComponent,
         CheckboxWidgetComponent,
         ColorPickerWidgetComponent,
