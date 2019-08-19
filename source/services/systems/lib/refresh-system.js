@@ -8,60 +8,102 @@ const shortid = require('shortid');
 const lib = 'refreshSystem';
 
 function processDeviceList(deviceListSpec, deviceList) {
-    const tag = 'processDeviceList:';
+    const tag = `refreshSystem(processDeviceList):`;
 
-    return deviceListSpec.reduce((previousValue, currentValue, index, array) => {
-        return previousValue.then(chainResults => {
-            console.log(tag, 'CurrentValue:', index, JSON.stringify(currentValue));
-            console.log(tag, 'chainResults:', index, JSON.stringify(chainResults));
+    function deviceByRef(ref) {
+        return deviceList[
+            deviceListSpec.findIndex(device => {
+                return device.ref === ref;
+            })
+        ];
+    }
 
-            let occurencesOfGetAtt = JSON.stringify(currentValue).split('!GetAtt[');
+    return deviceListSpec.reduce((previousSystemDevice, currentSystemDevice, index, array) => {
+        return previousSystemDevice.then(reduceResultChain => {
+            console.log(tag, 'CurrentValue:', index, JSON.stringify(currentSystemDevice));
+            console.log(tag, 'reduceResultChain:', index, JSON.stringify(reduceResultChain));
 
-            if (occurencesOfGetAtt.length !== 1) {
+            let occurencesOfGetAtt = JSON.stringify(currentSystemDevice).split('!GetAtt[');
+
+            if (occurencesOfGetAtt.length > 1) {
                 // Found at least 1 occurence of !GetAtt in our spec.
-                console.log(tag, 'GetAtt:', JSON.stringify(occurencesOfGetAtt, null, 4));
+
+                console.log(tag, `Found ${occurencesOfGetAtt.length} GetAtts`);
+
                 occurencesOfGetAtt.forEach((occurence, i) => {
                     if (i !== 0) {
-                        console.log(tag, `GetAtt: occurencesOfGetAtt[${i}]:`, occurencesOfGetAtt[i]);
-                        let split = occurence.split(']');
-                        const attributes = split[0].split('.');
+                        // Skip first one (which is everything before 1st occurence)
+
+                        const split = occurence.split(']');
+                        const queryString = split[0];
+                        const attributes = queryString.split('.');
+
                         const value = attributes.reduce((pv, cv, j) => {
                             if (j === 0) {
-                                const indexOfDevice = _.findIndex(chainResults, item => {
-                                    return item.ref === cv;
-                                });
-                                if (indexOfDevice === -1) {
-                                    throw 'Invalid spec';
-                                } else {
-                                    return chainResults[indexOfDevice].device;
-                                }
+                                // This is the reference to the device
+                                return deviceByRef(cv);
                             } else {
                                 if (pv) {
-                                    return pv[cv];
+                                    return pv[cv]
+                                } else {
+                                    return null;
                                 }
                             }
+                            // if (j === 0) {
+                            //     const indexOfDevice = _.findIndex(reduceResultChain, item => {
+                            //         return item.ref === cv;
+                            //     });
+                            //     if (indexOfDevice === -1) {
+                            //         throw 'Invalid spec';
+                            //     } else {
+                            //         return reduceResultChain[indexOfDevice].device;
+                            //     }
+                            // } else {
+                            //     if (pv) {
+                            //         return pv[cv];
+                            //     }
+                            // }
                         }, '');
-                        console.log(tag, 'GetAtt: value:', value);
+
+                        // let split = occurence.split(']');
+                        // const attributes = split[0].split('.');
+                        // const value = attributes.reduce((pv, cv, j) => {
+                        //     if (j === 0) {
+                        //         const indexOfDevice = _.findIndex(reduceResultChain, item => {
+                        //             return item.ref === cv;
+                        //         });
+                        //         if (indexOfDevice === -1) {
+                        //             throw 'Invalid spec';
+                        //         } else {
+                        //             return reduceResultChain[indexOfDevice].device;
+                        //         }
+                        //     } else {
+                        //         if (pv) {
+                        //             return pv[cv];
+                        //         }
+                        //     }
+                        // }, '');
+
+                        console.log(tag, `!GetAtt[${queryString}]: ${value}`);
                         split.shift();
                         occurencesOfGetAtt[i] = '' + value + split.join(']');
-                        console.log(tag, 'GetAtt: occurencesOfGetAtt[i]:', i, occurencesOfGetAtt[i]);
+                        console.log(tag, `GetAtt: occurencesOfGetAtt[${i}]:`, occurencesOfGetAtt[i]);
                     }
                 });
             }
 
-            console.log(tag, 'GetAtt:', occurencesOfGetAtt.join(''));
-            currentValue = JSON.parse(occurencesOfGetAtt.join(''));
+            // console.log(tag, 'GetAtt:', occurencesOfGetAtt.join(''));
+            currentSystemDevice = JSON.parse(occurencesOfGetAtt.join(''));
+            currentSystemDevice.device = deviceList[index];
 
-            currentValue.device = deviceList[index];
+            console.log(tag, 'Updating device', currentSystemDevice.spec);
 
-            console.log(tag, 'Updating device', currentValue.spec);
-
-            if (currentValue.device) {
+            if (currentSystemDevice.device) {
                 return documentClient
                     .update({
                         TableName: process.env.TABLE_DEVICES,
                         Key: {
-                            thingId: currentValue.device.thingId
+                            thingId: currentSystemDevice.device.thingId
                         },
                         UpdateExpression: 'set #ua = :ua, #spec = :spec',
                         ExpressionAttributeNames: {
@@ -72,16 +114,16 @@ function processDeviceList(deviceListSpec, deviceList) {
                             ':ua': moment()
                                 .utc()
                                 .format(),
-                            ':spec': currentValue.spec || {}
+                            ':spec': currentSystemDevice.spec || {}
                         }
                     })
                     .promise()
                     .then(result => {
-                        currentValue.device.spec = currentValue.spec;
-                        return [...chainResults, currentValue];
+                        currentSystemDevice.device.spec = currentSystemDevice.spec;
+                        return [...reduceResultChain, currentSystemDevice];
                     });
             } else {
-                return [...chainResults, currentValue];
+                return [...reduceResultChain, currentSystemDevice];
             }
         });
     }, Promise.resolve([]).then(arrayOfResults => arrayOfResults));

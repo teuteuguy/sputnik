@@ -120,6 +120,15 @@ Resources:
                         Resource:
                             - !Join ['/', [!Join ['', [!Ref dataS3BucketArn, '*']], '*']]
                             - !Join ['', [!Ref dataS3BucketArn, '*']]
+                    -
+                        Effect: 'Allow'
+                        Action:
+                            - 'iot:GetThingShadow'
+                            - 'greengrass:GetConnectivityInfo'
+                            - 'greengrass:ListGroupCertificateAuthorities'
+                            - 'greengrass:GetGroupCertificateAuthority'
+                        Resource:
+                            - '*'
             Roles:
                 -
                     !Ref iamRoleForGreengrassGroups

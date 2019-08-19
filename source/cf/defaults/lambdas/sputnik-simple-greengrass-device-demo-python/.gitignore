@@ -1,6 +1,4 @@
-greengrasssdk
-greengrasssdk*
-__pycache__
+AWSIoTPythonSDK
 bin
 boto3
 botocore
@@ -9,5 +7,5 @@ docutils
 jmespath
 s3transfer
 urllib3
+__pycache__
 six.py
-

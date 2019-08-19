@@ -26,7 +26,7 @@
                     <div class="col-2">Devices:</div>
                     <div class="col-10">
                         <div *ngFor="let device of data.devices">
-                            <a routerLink="../../devices/{{device.thingId}}">{{device.name}}<i class="mdi mdi-link-variant"></i></a>
+                            <a *ngIf="device && device.thingId" routerLink="../../devices/{{device.thingId}}">{{device.name}}<i class="mdi mdi-link-variant"></i></a>
                         </div>
                     </div>
                 </div>

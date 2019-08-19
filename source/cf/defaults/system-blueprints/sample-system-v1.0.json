@@ -32,13 +32,17 @@
                             "FunctionConfiguration": {
                                 "EncodingType": "json",
                                 "Environment": {
-                                    "AccessSysfs": true,
-                                    "ResourceAccessPolicies": [],
-                                    "Variables": {}
-
+                                    "Variables": {
+                                        "IOT_ENDPOINT": "[IOT_ENDPOINT]",
+                                        "THING_NAME": "!GetAtt[DEVICE.thingName]",
+                                        "GATEWAY": "!GetAtt[GATEWAY.thingName]",
+                                        "GATEWAY_GG_GROUP_ID": "!GetAtt[GATEWAY.greengrassGroupId]"
+                                    },
+                                    "Execution": {
+                                        "IsolationMode": "NoContainer"
+                                    }
                                 },
-                                "MemorySize": 16384,
-                                "Pinned": false,
+                                "Pinned": true,
                                 "Timeout": 5
                             }
                         }]
@@ -50,7 +54,6 @@
                             "Subject": "hello/world"
                         }]
                     }
-
                 }
             },
             {

@@ -226,6 +226,11 @@ Resources:
                         Condition:
                             StringEquals:
                                 iot:Certificate.Subject.Organization: "sputnik"
+                    -
+                        Effect: "Allow"
+                        Action: "greengrass:Discover"
+                        Resource:
+                            - "*"
 
 
     # ##########################################################################
