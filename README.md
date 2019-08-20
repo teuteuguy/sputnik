@@ -21,20 +21,39 @@ The main goal of Sputnik is to make it **easier** for you to start generating bu
 
 For example: a Truck that you can track on a map, and check it's location and status, is a "business outcome driven device". Sputnik through blueprints will hide the devices that define the truck (ECU, sensors etc ...) and let your users manage Trucks.
 
+### Example
 
-#### First you create Device Types.####
+Lets say you want to pilot (or POC) the monitoring of an industrial equipment. A converyor belt for example.
+Your machine requires 1x gateway device running Greengrass, and 3 unique sensors. 
+
+Your machine becomes: 1 Gateway + 3 Sensors = 4 devices.
+
+Your users can then deploy as many machines. Lets say your pilot requires you to monitor 10x of these machines.
+
+In sputnik, very easy. 
+
+1. You'll first deploy sputnik into an AWS account
+2. You'll create a DeviceType template for your Gateway and Sensor (unless you want to use an already existing one available)
+3. You'll create a DeviceBlueprint for your Gateway's business logic (for example: a modbus converting lambda function)
+4. You'll create a DeviceBlueprint for your Sensor's business logic
+5. You'll create a SystemBlueprint that defines your machine as having 1 gateway device, and 3 sensor nodes
+6. You can then simply add as many machines as you want. Generate the certificates for your devices, and start seeing data flow into Sputnik
+
+### Steps
+
+#### First you create Device Types.
 A **DeviceType** is a physical electronic device (a Rapsberry Pi, a Deeplens). The DeviceType defines the unique specificicities of your electronic device. Information like specific hardware capabilities for example (GPU, Camera, GPIOs...)
 
 [Details on creating a DeviceType.](./docs/device-types.md)
 
-#### Second you create Device Blueprints.####
+#### Second you create Device Blueprints.
 A **DeviceBlueprint** defines the business logic that your Device runs. Example: a Raspberry Pi with a Camera is just a Rapsberry Pi with a Camera. A Raspberry Pi with a Camera that runs code to detect whether people are wearing safety hats, becomes a "Safety hat detecting Camera". The business logic of detecting whether or not someone is wearing a safety hat or not is defined by a DeviceBlueprint. And, in some cases, this business logic, or DeviceBlueprint, could run on multiple DeviceTypes. 
 
 Detecting whether or not someone is wearing their safety hat could run on a Deeplens, a Raspberry Pi with a camera, an Intel Up2 board with a webcam attached etc ...
 
 [Details on creating a DeviceBlueprint.](./docs/device-blueprints.md)
 
-#### Third you create System Blueprints.####
+#### Third you create System Blueprints.
 **SystemBlueprints** define how multiple Devices interact together to become a system. Example: a Truck is a system. Customers can deploy multiple trucks. A truck can consist of multiple devices (4 tire sensors, 1 central processing unit). 
 
 [Details on creating a SystemBlueprint.](./docs/system-blueprints.md)
@@ -77,6 +96,9 @@ Want to customize Sputnik, and want to fiddle around with the code? No problem.
 
 This repo is the work of 1 person only, and comes as is, non tested. **Use at your own risk**. Feedback is more than welcome.
 
-## This is completely UNTESTED code! Use at your own risk!!! I will not be held reliable if the spaceships you are tracking suddently disapear because of an alien invasion the app did not show.
+The main goal of Sputnik is to really help customers/partners get started on AWS IoT and start generating business value as fast as possible.
+
+### Reminder: This is untested code! Do use at your own risk!
+I will not be held reliable if the trucks, machines, spaceships you are tracking/monitoring suddently disappear because of an alien invasion the app did not account for.
 
 Kudos to the [IoT Device Simulator](https://aws.amazon.com/solutions/iot-device-simulator/) from which this project was inspired from, and completely rewritten on.

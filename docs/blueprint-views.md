@@ -6,7 +6,7 @@ For systems, sputnik, will combine the views of all the devices that make the sy
 
 Sputnik supports 2 types of visualizations for your devices.
 
-## Custom views
+## Type 1: Custom views
 Some of your devices will require specific visualization for which you are free to implement custom HTML/Javascript/CSS code.
 
 An example of this is provided for the ml-demo-squeezenet-v1.0 blueprint.
@@ -52,7 +52,7 @@ Modify device-child-views.module.ts to add your component and change the templat
 
 When sputnik loads your device, it will pass the device information to the child-views component that will present the appropriate view. In this case your custom view, if it matches your specific device blueprint.
 
-## "View" widgets in the spec
+## Type 2: "View" widgets in the spec
 
 Coding HTML/Javascript/CSS could be a hassle.
 
@@ -305,3 +305,173 @@ You name your subscriptions, and you provide the topic.
 ```
 
 Then, you reference your subscription within the "input" attribute of the given widget.
+
+### Button
+```
+...
+    {
+        "data": {
+            "output": "hello/world",
+            "value": {
+                "text": "My Hello Button",
+                "output": "my-attribute"
+            }
+        },
+        "type": "button",
+        "class": "col-6 pull-right"
+    }
+...
+```
+The provided spec will publish to the "hello/world" topic, the following object, when clicking the button:
+
+```
+{
+  "my-attribute": "click"
+}
+```
+
+### Card
+```
+...
+    {
+        "data": {
+            "text": [ARRAY OF WIDGETS],
+            "title": [ARRAY OF WIDGETS]
+        },
+        "type": "card",
+        "class": "[CSS CLASS TO USE]"
+    }
+...
+```
+
+
+### Checkbox
+```
+Example: rpi3-sense-hat-demo-v1.0
+...
+	{
+	    "data": {
+	        "output": "$aws/things/[THING_NAME]/shadow/update",
+	        "input": [
+	            "shadowGetAccepted",
+	            "shadowUpdateAccepted"
+	        ],
+	        "initWithShadow": true,
+	        "value": {
+	            "output": "state.desired.sendTelemetry",
+	            "input": "state.desired.sendTelemetry"
+	        }
+	    },
+	    "type": "checkbox",
+	    "class": "col-6 pull-right"
+	}
+...
+```
+For example, this spec will populate a checkbox item. The input, initialized by a Shadow document, will come from the state.desired.sendTelemetry field from the 2 topics shadowGetAccepted and shadowUpdateAccepted (defined by the subscription part of the spec).
+
+The ouptput of the widget, will be pushed to the $aws/things/[THING_NAME]/shadow/update topic, on the state.desired.sendTelemetry field.
+
+### Color Picker
+```
+Example: rpi3-sense-hat-demo-v1.0
+...
+	{
+        "data": {
+            "output": "sputnik/[THING_NAME]/screen",
+            "input": [
+                "shadowGetAccepted",
+                "shadowUpdateAccepted"
+            ],
+            "initWithShadow": true,
+            "value": {
+                "output": "screen",
+                "input": "state.reported.screen"
+            }
+        },
+        "type": "color-picker",
+        "class": "col-7"
+    }
+...
+```
+For example, this spec will populate a color picker item. The input, initialized by a Shadow document, will come from the state.reported.screen field from the 2 topics shadowGetAccepted and shadowUpdateAccepted (defined by the subscription part of the spec).
+
+The output of the widget will be published to the sputnik/[THING_NAME]/screen topic, on the screen field.
+
+### RealTime Graph
+```
+Example: rpi3-sense-hat-demo-v1.0
+...
+	{
+        "data": {
+            "input": [
+                "telemetry"
+            ],
+            "title": "Magnitude",
+            "value": "magnitude"
+        },
+        "type": "graph-realtime",
+        "class": "col-12"
+    }
+...
+```
+For example, this spec will populate a realtime graph. The input will come from the magnitude field of the telemetry topic (specified in the subscription part of the spec).
+
+### Input Text
+```
+Example: rpi3-sense-hat-demo-v1.0
+...
+	{
+        "data": {
+            "output": "sputnik/[THING_NAME]/screen",
+            "input": [
+                "shadowGetAccepted",
+                "shadowUpdateAccepted"
+            ],
+            "initWithShadow": true,
+            "value": {
+                "output": "screen",
+                "input": "state.reported.screen"
+            }
+        },
+        "type": "input-text",
+        "class": "col-7"
+    }
+...
+```
+For example, this spec will populate an input text box item. The input, initialized by a Shadow document, will come from the state.reported.screen field from the 2 topics shadowGetAccepted and shadowUpdateAccepted (defined by the subscription part of the spec).
+
+The output of the widget will be published to the sputnik/[THING_NAME]/screen topic, on the screen field.
+
+
+### Text
+```
+Example: rpi3-sense-hat-demo-v1.0
+...
+	{
+        "data": {
+            "input": [
+                "telemetry"
+            ],
+            "unit": "°C",
+            "value": "temperature"
+        },
+        "type": "text",
+        "class": "col-6"
+    }
+...
+```
+For example, this spec will populate a text widget. The input will come from the temperature field from the telemetry topic (defined by the subscription part of the spec).
+
+You can also use the Text widget to simply display text:
+
+```
+...
+	{
+        "data": {
+            "value": "[TEXT TO DISPLAY]"
+        },
+        "type": "text",
+        "class": "[CSS CLASS TO USE]"
+    }
+...
+```
