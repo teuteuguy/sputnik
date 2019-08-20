@@ -1,97 +1,84 @@
-# sputnik - The IoT Pilot Kickstart
+# sputnik - The IoT Pilot Kickstart Solution
 
-The IoT Pilot Kickstart solution has been designed to simplify getting started on AWS IoT, by providing you with a boilerplate, sample application to onboard and manage IoT devices with a minimum realtime data visualization capabilities.
-Project named Sputnik, after the first satellite, the goal of Sputnik, or the IoT Pilot Kickstart solution, is to help you get started and connecting your devices to AWS IoT and start generating business value from your use-case.
+The **IoT Pilot Kickstart solution** has been designed to simplify getting started on AWS IoT, by providing you with a boilerplate, sample application to onboard and manage IoT devices with minimalistic realtime data visualization capabilities.
 
-Sputnik removes notions of Things, Greengrass etc ... and refers to Devices and Systems.
+Project named *Sputnik*, after (one of?) the first satellites.
 
-As part of this first release, Sputnik can, in theory support all types of devices, however as part of this first release, Sputnik only has support for Raspberry Pi, Intel Up2, Deeplens and ESP32 devices.
-For now, deployment of blueprints is only supported on Greengrass based devices, for now!
+Sputnik's goal is to help you get started and connecting your IoT devices to AWS and start generating business value from your use-case.
+
+
+As part of this first release, Sputnik can, in theory, support all types of devices, however as part of this first release, for now, we have only included blueprints for the Raspberry Pi, Intel Up2, Deeplens and a dummy ESP32 device.
+We will be including more device blueprints as we go along, and hope the community and the AWS partner eco-system will participate in the creation of these blueprints.
+
+## What is the IoT Pilot Kickstart Solution
+
+
+TODO: Add architecture diagram and description here.
+
 
 ## How it works
 
-First you create Device Types. A device type is a physical electronic device (a Rapsberry Pi, a Deeplens). This describes what the unique specificities of your electronic device.
+The main goal of Sputnik is to make it **easier** for you to start generating business value from your IoT devices. For this, Sputnik has concepts of blueprints that describe a device's business outcome. You can then add and deploy as many of these "business outcome driven devices" as you want.
 
-Second you create Device Blueprints. A device blueprint defines the business logic that your Device runs. Example: a Raspberry Pi with a Camera is just a Rapsberry Pi with a Camera. A Raspberry Pi with a Camera that runs code to detect objects, becomes an "Object detecting Camera".
+For example: a Truck that you can track on a map, and check it's location and status, is a "business outcome driven device". Sputnik through blueprints will hide the devices that define the truck (ECU, sensors etc ...) and let your users manage Trucks.
 
-Third you create Solution Blueprints. A solution blueprint defines how multiple Devices interact together to become a solution. Example: a Truck in the context of "sputnik" is a solution. Customers can deploy multiple trucks. A truck can consist of multiple devices (4 tire sensors, 1 central processing unit).
 
-Fourth, you can then create specific angular modules and views for your blueprints. Those can be viewed in the ./source/src/app/secure/child-views folder.
+#### First you create Device Types.####
+A **DeviceType** is a physical electronic device (a Rapsberry Pi, a Deeplens). The DeviceType defines the unique specificicities of your electronic device. Information like specific hardware capabilities for example (GPU, Camera, GPIOs...)
 
-Example:
-The demo that is currently built into sputnik is a Connected Factory. The solution is a mini connected factory. You can deploy as many of these mini connected factories as you want. The mini connected factory consists of 2 devices. 1 Conveyor belt and 1 connected smart camera. The conveyor belt is based off of the [3D Printed Connected FreeRTOS conveyor belt](https://github.com/aws-samples/amazon-freertos-iot-conveyor-belt). The Smart Camera can run off of a Deeplens or the Intel Up2 (with a webcam).
+[Details on creating a DeviceType.](./docs/device-types.md)
 
-## Next steps
+#### Second you create Device Blueprints.####
+A **DeviceBlueprint** defines the business logic that your Device runs. Example: a Raspberry Pi with a Camera is just a Rapsberry Pi with a Camera. A Raspberry Pi with a Camera that runs code to detect whether people are wearing safety hats, becomes a "Safety hat detecting Camera". The business logic of detecting whether or not someone is wearing a safety hat or not is defined by a DeviceBlueprint. And, in some cases, this business logic, or DeviceBlueprint, could run on multiple DeviceTypes. 
 
-First big next step is to add a fleet tracker and fleet tracking widgets.
+Detecting whether or not someone is wearing their safety hat could run on a Deeplens, a Raspberry Pi with a camera, an Intel Up2 board with a webcam attached etc ...
+
+[Details on creating a DeviceBlueprint.](./docs/device-blueprints.md)
+
+#### Third you create System Blueprints.####
+**SystemBlueprints** define how multiple Devices interact together to become a system. Example: a Truck is a system. Customers can deploy multiple trucks. A truck can consist of multiple devices (4 tire sensors, 1 central processing unit). 
+
+[Details on creating a SystemBlueprint.](./docs/system-blueprints.md)
+
+
+## Known Limitations
+For now, deployment of blueprints is only supported on Greengrass based devices. Amazon FreeRTOS deployments via OTA to be implemented soon...
+
+
+## Next steps wish list
+
+* Add blueprints for the [3D Printed Connected FreeRTOS conveyor belt](https://github.com/aws-samples/amazon-freertos-iot-conveyor-belt)
+* Add mapping widgets
+* Support for Amazon FreeRTOS OTA deployments
+* Create a Developer Cloud9 environment for Sputnik 
 
 ## Notes
 
 Public access to the website has been disabled by default.
 In order to enable it, you need to un-comment the S3 policy in the s3bucket-website Cloudformation script: sputnik-s3bucket-website.yml
 
-# Deploy as is
+# Deploy Sputnik in your AWS account
 
-You can 1-click deploy this solution in your AWS Account in us-east-1 by clicking the following button:
+You can 1-click deploy this solution in your AWS Account by clicking the following button:
 
 Region | Launch Template
 ------------ | -------------
-**N. Virginia** (us-east-1) | [![Launch the sputnik Stack into Virginia with CloudFormation](/Images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.5/cf/sputnik.yml)
+**N. Virginia** (us-east-1) | [![Launch the Sputnik Stack into Virginia with CloudFormation](./images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.5/cf/sputnik.yml)
 
-# Customize your own and build for yourself
-First of all. You do not need to do this step. Only do this if you want to build and run a customized version of this solution for your needs.
+### Customize your own and build for yourself
+Want to customize Sputnik, and want to fiddle around with the code? No problem.
 
-* In the ./deployment folder you will find the build.sh script. Run that script
-
-```
-chmod +x build.sh
-./build.sh [S3 BUCKET NAME] [VERSION]
-```
-_Note 1:_ You would have to create an S3 bucket with the prefix 'my-bucket-name-<aws_region>'; aws_region is where you are testing the customized solution. Also, the assets in bucket should be publicly accessible.
-
-_Note 2:_ Specify a version for your build, example: "v1.0"
-
-* Deploy the distributable to an Amazon S3 bucket in your account. _Note:_ you must have the AWS Command Line Interface installed.
-
-```
-aws s3 cp ./dist/ s3://[S3 BUCKET NAME]/sputnik/[VERSION]/ --recursive --acl bucket-owner-full-control --profile aws-cred-profile-name
-```
-
-_Note 3:_ Dependencies:
-The deployment scripts require:
-* jq
-* yarn
-* uuidgen
+[Follow this guide.](./docs/developers.md)
 
 # Known issues
+* There seems to be an issue on session timeout of the cognito authentication creating an endless loop of angular re-routing. Help me fix it :)
 
-Help me find them. There's plenty !
-
-# Development TODO / WIP
-
-* check on the on-boarding just in time service
-* remove references to mtm
-* remove the factory reset service. Does not seem like there's a need for this anymore.
-* model trainer view has issues with the pictures
-* A:FreeRTOS. Need to add full management (deployment) of FreeRTOS devices via OTA. Taken into account in Blueprints etc ...
-* Maps: Create a location picker for solutions and devices
-* Regions: currently only us-east-1
-* Move the common lambda stuff to Lambda layers !
-* Attach cert function from UI
-* Attach policies
-* Attach IAM
-* Add things to groups => use Thing Groups to organize things
-* short id for group name ?
-* disable devices update ?
-* utils: find rogue stuff
-* For a given thing, check which solution they are part of.
-* See if we can add the pre-zipped versions of node_modules for the solutions for each architecutre ? => lambda layers may be the solution here
 
 
 # Disclaimer
 
-This repo is the work of 1 sole person, and comes as is, non tested. **Use at your own risk**. Feedback more than welcome.
-Project is a massive rewrite from clone/fork of the AWS IoT Device Simulator.
+This repo is the work of 1 person only, and comes as is, non tested. **Use at your own risk**. Feedback is more than welcome.
 
 ## This is completely UNTESTED code! Use at your own risk!!! I will not be held reliable if the spaceships you are tracking suddently disapear because of an alien invasion the app did not show.
 
+Kudos to the [IoT Device Simulator](https://aws.amazon.com/solutions/iot-device-simulator/) from which this project was inspired from, and completely rewritten on.
