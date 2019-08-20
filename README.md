@@ -13,8 +13,7 @@ We will be including more device blueprints as we go along, and hope the communi
 ## What is the IoT Pilot Kickstart Solution
 
 
-TODO: Add architecture diagram and description here.
-
+![High Level Architecture Diagram](./assets/high-level-architecture.png)
 
 ## How it works
 
@@ -63,11 +62,10 @@ You can 1-click deploy this solution in your AWS Account by clicking the followi
 
 Region | Launch Template
 ------------ | -------------
-**N. Virginia** (us-east-1) | [![Launch the Sputnik Stack into Virginia with CloudFormation](./Images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.5/cf/sputnik.yml)
+**N. Virginia** (us-east-1) | [![Launch the Sputnik Stack into Virginia with CloudFormation](./assets/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.5/cf/sputnik.yml)
 
 ### Customize your own and build for yourself
 Want to customize Sputnik, and want to fiddle around with the code? No problem.
-
 [Follow this guide.](./docs/developers.md)
 
 # Known issues
