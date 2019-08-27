@@ -29,6 +29,16 @@ module.exports = function(event, context) {
             thingName: event.thingName
         })
         .promise()
+        .catch(err => {
+            if (err.code === 'ResourceAlreadyExistsException') {
+                console.log(tag, 'Thing already exists.');
+                return iot.describeThing({
+                    thingName: event.thingName
+                }).promise();
+            } else {
+                throw err;
+            }
+        })
         .then(thing => {
             console.log(tag, 'Created thing:', thing);
             event.thing = thing;
