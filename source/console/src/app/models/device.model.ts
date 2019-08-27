@@ -1,8 +1,6 @@
 export class ConnectionState {
     state: string;
     at: string;
-    certificateId: string;
-    certificateArn: string;
     constructor(values: Object = {}) {
         Object.assign(this, values);
     }

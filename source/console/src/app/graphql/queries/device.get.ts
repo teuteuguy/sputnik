@@ -13,8 +13,6 @@ export default gql`
             connectionState {
                 state
                 at
-                certificateId
-                certificateArn
             }
             spec
             greengrassGroupId

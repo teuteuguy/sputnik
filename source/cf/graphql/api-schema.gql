@@ -1,8 +1,6 @@
 type ConnectionState {
     state: String!
     at: AWSDateTime!
-    certificateArn: String!
-    certificateId: String!
 }
 type Device {
     thingId: String!

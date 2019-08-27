@@ -8,7 +8,7 @@ const shortid = require('shortid');
 const lib = 'refreshSystem';
 
 function processDeviceList(deviceListSpec, deviceList) {
-    const tag = `refreshSystem(processDeviceList):`;
+    const tag = `${lib}(processDeviceList):`;
 
     function deviceByRef(ref) {
         return deviceList[
@@ -49,40 +49,7 @@ function processDeviceList(deviceListSpec, deviceList) {
                                     return null;
                                 }
                             }
-                            // if (j === 0) {
-                            //     const indexOfDevice = _.findIndex(reduceResultChain, item => {
-                            //         return item.ref === cv;
-                            //     });
-                            //     if (indexOfDevice === -1) {
-                            //         throw 'Invalid spec';
-                            //     } else {
-                            //         return reduceResultChain[indexOfDevice].device;
-                            //     }
-                            // } else {
-                            //     if (pv) {
-                            //         return pv[cv];
-                            //     }
-                            // }
                         }, '');
-
-                        // let split = occurence.split(']');
-                        // const attributes = split[0].split('.');
-                        // const value = attributes.reduce((pv, cv, j) => {
-                        //     if (j === 0) {
-                        //         const indexOfDevice = _.findIndex(reduceResultChain, item => {
-                        //             return item.ref === cv;
-                        //         });
-                        //         if (indexOfDevice === -1) {
-                        //             throw 'Invalid spec';
-                        //         } else {
-                        //             return reduceResultChain[indexOfDevice].device;
-                        //         }
-                        //     } else {
-                        //         if (pv) {
-                        //             return pv[cv];
-                        //         }
-                        //     }
-                        // }, '');
 
                         console.log(tag, `!GetAtt[${queryString}]: ${value}`);
                         split.shift();
@@ -92,7 +59,6 @@ function processDeviceList(deviceListSpec, deviceList) {
                 });
             }
 
-            // console.log(tag, 'GetAtt:', occurencesOfGetAtt.join(''));
             currentSystemDevice = JSON.parse(occurencesOfGetAtt.join(''));
             currentSystemDevice.device = deviceList[index];
 
@@ -130,6 +96,7 @@ function processDeviceList(deviceListSpec, deviceList) {
 }
 
 module.exports = function(event, context) {
+    const tag = `${lib}:`;
     // Event:
     // {
     //     "cmd": "refreshSystem",
@@ -152,7 +119,7 @@ module.exports = function(event, context) {
             if (!_system) {
                 throw 'System does not exist.';
             } else {
-                console.log('Found system');
+                console.log(tag, 'Found system');
                 return documentClient
                     .get({
                         TableName: process.env.TABLE_SYSTEM_BLUEPRINTS,
@@ -199,7 +166,7 @@ module.exports = function(event, context) {
             }
         })
         .then(devices => {
-            console.log(lib, 'end:', devices);
+            console.log(tag, 'end:', devices);
             return processDeviceList(_systemBlueprint.spec.Devices, devices);
         });
 };

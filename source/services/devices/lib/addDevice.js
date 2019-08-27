@@ -68,8 +68,6 @@ module.exports = function(event, context) {
                     .format(),
                 certificateArn: 'NOTSET',
                 connectionState: {
-                    certificateId: 'NOTSET',
-                    certificateArn: 'NOTSET',
                     state: 'created',
                     at: moment(0)
                         .utc()

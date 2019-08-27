@@ -25,16 +25,6 @@ function getSystemStatsRecursive(lastEvalKey) {
         let _stats = {
             total: results.Items.length
         };
-        // let _stats = _.countBy(results.Items, (system) => {
-        //     return system.connectionState.state;
-        // });
-        // if (!_stats.hasOwnProperty('connected')) {
-        //     _stats.connected = 0;
-        // }
-        // if (!_stats.hasOwnProperty('disconnected')) {
-        //     _stats.disconnected = 0;
-        // }
-        // _stats.total = results.Items.length;
 
         if (results.LastEvaluatedKey) {
             return getSystemStatsRecursive(result.LastEvaluatedKey).then(data => {
