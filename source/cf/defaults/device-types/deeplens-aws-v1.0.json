@@ -64,7 +64,7 @@
                     "Timeout": 1200
                 }
             }, {
-                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:3",
+                "FunctionArn": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
                 "FunctionConfiguration": {
                     "Environment": {
                         "AccessSysfs": true,
@@ -97,7 +97,11 @@
                                 "ResourceId": "sound_control"
                             }
                         ],
-                        "Variables": {}
+                        "Variables": {
+                            "DEEPLENS_ENDPOINT": "https://deeplens.us-east-1.amazonaws.com",
+                            "DEEPLENS_REGION": "us-east-1",
+                            "DEEPLENS_S3_BUCKET_MANAGED_RESOURCES": "deeplens-managed-resources-us-east-1-prod"
+                        }
                     },
                     "Executable": "das_mutter.function_handler",
                     "MemorySize": 524288,
@@ -229,7 +233,7 @@
         "SubscriptionDefinitionVersion": {
             "Subscriptions": [{
                     "Id": "dc_admin_das_mutter_update_sub",
-                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:3",
+                    "Source": "arn:aws:lambda:[AWS_REGION]:[AWS_ACCOUNT]:function:deeplens_admin_model_downloader:1",
                     "Subject": "$aws/things/deeplens_qBrYvrELRpOuce8msOzOyg/shadow/update",
                     "Target": "cloud"
                 },
