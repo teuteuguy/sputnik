@@ -6,8 +6,7 @@ from threading import Thread
 import io
 import os
 import platform
-import numpy as np
-import cv2  # pylint: disable=import-error
+import numpy as np  # pylint: disable=import-error
 
 class VideoStream:
     '''
@@ -26,6 +25,7 @@ class VideoStream:
 
             print("VideoStream: Opening webcam")
             self.path_to_camera = "Webcam"
+            import cv2  # pylint: disable=import-error
             self.stream = cv2.VideoCapture(0)
             self.stream.set(3, self.width)
             self.stream.set(4, self.height)
@@ -33,6 +33,7 @@ class VideoStream:
         elif self.camera_type == "video0":
 
             print("VideoStream: Opening {}".format(self.path_to_camera))
+            import cv2  # pylint: disable=import-error
             self.stream = cv2.VideoCapture(self.path_to_camera)
             print("VideoStream: Stream opened = {}".format(self.stream.isOpened()))
 
@@ -83,12 +84,16 @@ class VideoStream:
 
         self.stopped = False
         self.ret, self.frame = self.stream.read()
+        print("Videostream init done.")
 
     def get_height(self):
         return self.height
 
     def get_width(self):
         return self.width
+
+    def get_white_frame(self):
+        return 255*np.ones([self.width, self.height, 3])
 
     def start(self):
         '''start() starts the thread'''
