@@ -66,6 +66,15 @@
             "rpi3-picamera-v1.0": "null",
             "rpi3-sense-hat-picamera-v1.0": "null"
         }
+    }, {
+        "substitute": "MEMORY",
+        "value": {
+            "deeplens-sputnik-v1.0": 1572864,
+            "deeplens-aws-v1.0": 1572864,
+            "intel-up2-webcam-v1.0": 1572864,
+            "rpi3-picamera-v1.0": 98304,
+            "rpi3-sense-hat-picamera-v1.0": 98304
+        }
     }],
     "spec": {
         "FunctionDefinitionVersion": {
@@ -104,7 +113,7 @@
                             "MXNET_ENGINE_TYPE": "NaiveEngine"
                         }
                     },
-                    "MemorySize": 98304,
+                    "MemorySize": "[MEMORY]",
                     "Pinned": true,
                     "Timeout": 25
                 }
