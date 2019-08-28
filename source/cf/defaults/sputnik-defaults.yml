@@ -282,9 +282,9 @@ Resources:
             ServiceToken: !Ref customResourceUtilsHelperArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
-            sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'models', 'squeezenet.zip']]
+            sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'assets', 'models', 'squeezenet_v1.1.zip']]
             destS3Bucket: !Ref dataS3Bucket
-            destS3Key: !Join ['/', ['Greengrass', 'models', 'ml-demo-squeezenet-v1.0', 'squeezenet.zip']]
+            destS3Key: !Join ['/', ['Greengrass', 'models', 'ml-demo-squeezenet-v1.0', 'squeezenet_v1.1.zip']]
             uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'
 

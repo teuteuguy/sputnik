@@ -126,7 +126,7 @@
                     "ResourceDataContainer": {
                         "S3MachineLearningModelResourceData": {
                             "DestinationPath": "/greengrass-machine-learning/mxnet/squeezenet/",
-                            "S3Uri": "[DATA_BUCKET_S3_URL]/Greengrass/models/ml-demo-squeezenet-v1.0/squeezenet.zip"
+                            "S3Uri": "[DATA_BUCKET_S3_URL]/Greengrass/models/ml-demo-squeezenet-v1.0/squeezenet_v1.1.zip"
                         }
                     }
                 },
