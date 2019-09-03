@@ -28,25 +28,6 @@ for PYTHON_LAMBDA in *-python/ ; do
     echo "Done with $PYTHON_LAMBDA"
 done
 
-# exit 1
-# echo "sputnik-rpi-sense-hat-demo-python"
-# cd $1/cf/defaults/lambdas/sputnik-rpi-sense-hat-demo-python
-# pip install -r requirements.txt -t . --upgrade
-# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
-# echo
-# echo
-# echo "sputnik-gg-ml-inference-squeezenet-demo-python"
-# cd $1/cf/defaults/lambdas/sputnik-gg-ml-inference-squeezenet-demo-python
-# pip install -r requirements.txt -t . --upgrade
-# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
-# echo
-# echo
-# echo "sputnik-simple-greengrass-gateway-demo-python"
-# cd $1/cf/defaults/lambdas/sputnik-simple-greengrass-gateway-demo-python
-# pip install -r requirements.txt -t . --upgrade
-# zip -rq $2/greengrasslambda/`echo ${PWD##*/}`.zip .
-# echo
-
 echo
 echo "--------------------------------------------------------------------------------------------------------"
 echo

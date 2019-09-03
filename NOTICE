@@ -1,0 +1,39 @@
+IoT Kickstart (Sputnik)
+Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+**********************
+THIRD PARTY COMPONENTS
+**********************
+This software includes third party software subject to the following copyrights:
+
+@angular/animations@7.2.15 under the MIT license
+@angular/common@7.2.15 under the MIT license
+@angular/compiler@7.2.15 under the MIT license
+@angular/core@7.2.15 under the MIT license
+@angular/forms@7.2.15 under the MIT license
+@angular/http@7.2.15 under the MIT license
+@angular/platform-browser-dynamic@7.2.15 under the MIT license
+@angular/platform-browser@7.2.15 under the MIT license
+@angular/router@7.2.15 under the MIT license
+@ngx-pwa/local-storage@7.2.2 under the MIT license
+@toverux/ngx-sweetalert2@4.0.0 under the MIT license
+aws-amplify-angular@3.0.11 under the Apache-2.0 license
+aws-amplify@1.1.36 under the Apache-2.0 license
+chart.js@2.8.0 under the MIT license
+chartjs-plugin-annotation@0.5.7 under the MIT license
+chartjs-plugin-draggable@0.1.6 under the MIT license
+chartjs-plugin-streaming@1.8.0 under the MIT license
+file-saver@2.0.2 under the MIT license
+fs-extra@7.0.1 under the MIT license
+jszip@3.2.2 under the (MIT OR GPL-3.0) license
+moment@2.24.0 under the MIT license
+ngx-color-picker@7.5.0 under the MIT license
+node-forge@0.8.5 under the (BSD-3-Clause OR GPL-2.0) license
+shortid@2.2.14 under the MIT license
+stream@0.0.2 under the MIT license
+sweetalert2@7.33.1 under the MIT license
+systemjs@0.21.5 under the MIT license
+underscore-deep-extend@1.1.5 under the MIT license
+underscore@1.9.1 under the MIT license
+uuid@3.3.2 under the MIT license
+zone.js@0.8.29 under the MIT license
