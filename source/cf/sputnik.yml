@@ -1,3 +1,6 @@
+# Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 AWSTemplateFormatVersion: '2010-09-09'
 Description: '(SO0053) - IoT Pilot Kickstart: Kickstart your IoT project, define, manage and monitor your IoT devices - (codename: sputnik) - Main - Version %%VERSION%%'
 Parameters:
