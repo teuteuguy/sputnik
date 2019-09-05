@@ -99,7 +99,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to retrieve the device.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the device.', 'error');
                 _self.logger.error('error occurred calling getDevice api, show message');
                 _self.logger.error(err);
                 _self.router.navigate(['/securehome/devices']);
@@ -126,7 +126,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to update the device.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to update the device.', 'error');
                 _self.logger.error('error occurred calling updateDevice api, show message');
                 _self.logger.error(err);
                 _self.loadDevice();
@@ -135,7 +135,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
     deleteDevice(device: Device) {
         const _self = this;
-        swal({
+        swal.fire({
             title: 'Are you sure you want to delete this device?',
             text: `You won't be able to revert this!`,
             type: 'question',
@@ -155,7 +155,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
                     })
                     .catch(err => {
                         _self.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to delete the widget.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to delete the widget.', 'error');
                         _self.logger.error('error occurred calling deleteDevice api, show message');
                         _self.logger.error(err);
                         _self.loadDevice();
@@ -173,7 +173,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
     public deploy() {
         console.log('Deploy', this.device.thingId);
-        swal({
+        swal.fire({
             title: 'Are you sure you want to deploy this device?',
             text: `This will overwrite whatever the device is doing!`,
             type: 'question',
@@ -189,7 +189,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
                     .then(deployment => {
                         console.log(deployment);
                         this.blockUI.stop();
-                        swal({
+                        swal.fire({
                             timer: 1000,
                             title: 'Success',
                             type: 'success',
@@ -198,9 +198,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal(
+                        swal.fire(
                             'Oops...',
-                            'Unable to deploy the device. ' + JSON.stringify(err),
+                            'Unable to deploy the device. There could be an error in your blueprints.',
                             'error'
                         );
                         this.logger.error('error occurred calling addDeployment api, show message');
@@ -240,7 +240,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
             })
             .catch(err => {
                 this.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
                 this.logger.error('error occurred calling createCertificate api, show message');
                 this.logger.error(err);
             });

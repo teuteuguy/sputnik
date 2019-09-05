@@ -81,7 +81,7 @@ export class DeploymentsComponent implements OnInit {
                 _self.blockUI.stop();
             })
             .catch(err => {
-                swal('Oops...', 'Something went wrong! Unable to retrieve the deployments.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the deployments.', 'error');
                 _self.logger.error('error occurred calling getDeployments api, show message');
                 _self.logger.error('the requested type doesnt exist');
                 _self.router.navigate(['/securehome/deployments']);

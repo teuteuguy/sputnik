@@ -111,7 +111,7 @@ export class SystemsComponent implements OnInit {
                 self.blockUI.stop();
             })
             .catch(err => {
-                swal('Oops...', 'Something went wrong! Unable to retrieve the systems.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the systems.', 'error');
                 self.logger.error('error occurred calling listSystems api');
                 self.logger.error(err);
                 self.router.navigate(['/securehome/systems']);
@@ -144,11 +144,11 @@ export class SystemsComponent implements OnInit {
         submitSubject.subscribe(result => {
             self.handleCancelCreate();
             if (result.error) {
-                swal('Oops...', 'Something went wrong!', 'error');
+                swal.fire('Oops...', 'Something went wrong!', 'error');
                 self.logger.error('error occurred calling api, show message');
                 self.logger.error(result.error);
             } else {
-                swal({ timer: 1000, title: 'Success', type: 'success', showConfirmButton: false }).then();
+                swal.fire({ timer: 1000, title: 'Success', type: 'success', showConfirmButton: false }).then();
             }
             self.refreshData();
         });

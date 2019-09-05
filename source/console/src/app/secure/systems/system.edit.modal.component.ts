@@ -138,7 +138,7 @@ export class SystemEditModalComponent implements OnInit {
             .refreshSystem(this.element.id)
             .then(result => {
                 console.log(result);
-                swal({
+                swal.fire({
                     timer: 1000,
                     title: 'Success',
                     type: 'success',
@@ -149,12 +149,12 @@ export class SystemEditModalComponent implements OnInit {
             })
             .catch(err => {
                 console.error(err);
-                swal('Oops...', 'Something went wrong!', 'error');
+                swal.fire('Oops...', 'Something went wrong!', 'error');
             });
     }
 
     delete() {
-        swal({
+        swal.fire({
             title: 'Are you sure you want to delete this system?',
             text: `You won't be able to revert this!`,
             type: 'question',

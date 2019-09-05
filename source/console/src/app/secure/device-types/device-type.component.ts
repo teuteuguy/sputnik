@@ -103,7 +103,7 @@ export class DeviceTypeComponent implements OnInit {
             this.deviceTypeService
                 .add(this.deviceType)
                 .then(deviceType => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -114,14 +114,14 @@ export class DeviceTypeComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to create deviceType', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to create deviceType', 'error');
                     this.logger.error('Error creating deviceType:', err);
                 });
         } else {
             this.deviceTypeService
                 .update(this.deviceType)
                 .then(deviceType => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -132,14 +132,14 @@ export class DeviceTypeComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to update deviceType', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to update deviceType', 'error');
                     this.logger.error('Error creating deviceType:', err);
                 });
         }
     }
 
     delete() {
-        swal({
+        swal.fire({
             title: 'Are you sure you want to delete this device type?',
             text: `You won't be able to revert this!`,
             type: 'question',
@@ -158,7 +158,7 @@ export class DeviceTypeComponent implements OnInit {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to delete the device type.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to delete the device type.', 'error');
                         this.logger.error('error occurred calling deleteDeviceType api, show message');
                         this.logger.error(err);
                     });

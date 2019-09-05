@@ -81,7 +81,7 @@ export class UserComponent implements OnInit {
                             })
                             .catch(err => {
                                 _self.blockUI.stop();
-                                swal(
+                                swal.fire(
                                     'Oops...',
                                     `Something went wrong! Unable to retrieve the user ${_self.username}.`,
                                     'error'
@@ -90,7 +90,7 @@ export class UserComponent implements OnInit {
                     })
                     .catch(err => {
                         _self.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to retrieve the application groups.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to retrieve the application groups.', 'error');
                     });
             } else {
                 _self.blockUI.stop();
@@ -180,14 +180,14 @@ export class UserComponent implements OnInit {
                     })
                     .catch(err => {
                         _self.blockUI.stop();
-                        swal('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
+                        swal.fire('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
                         _self.logger.error('[error] Error occurred calling loadUserData API.');
                         _self.logger.error(err);
                     });
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', ['Something went wrong! Unable to disable the user ', _self.username, ' .'].join(''), 'error');
+                swal.fire('Oops...', ['Something went wrong! Unable to disable the user ', _self.username, ' .'].join(''), 'error');
                 _self.logger.error('[error] Error occurred calling diableUser API.');
                 _self.logger.error(err);
             });
@@ -206,13 +206,13 @@ export class UserComponent implements OnInit {
                     })
                     .catch(err => {
                         _self.blockUI.stop();
-                        swal('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
+                        swal.fire('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
                         _self.logger.error(err);
                     });
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', ['Something went wrong! Unable to enable the user ', _self.username, ' .'].join(''), 'error');
+                swal.fire('Oops...', ['Something went wrong! Unable to enable the user ', _self.username, ' .'].join(''), 'error');
                 _self.logger.error('[error] Error occurred calling enableUser API.');
                 _self.logger.error(err);
             });
@@ -229,7 +229,7 @@ export class UserComponent implements OnInit {
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', ['Something went wrong! Unable to delete the user ', _self.username, ' .'].join(''), 'error');
+                swal.fire('Oops...', ['Something went wrong! Unable to delete the user ', _self.username, ' .'].join(''), 'error');
                 _self.logger.error('[error] Error occurred calling diableUser API.');
                 _self.logger.error(err);
             });
@@ -245,17 +245,17 @@ export class UserComponent implements OnInit {
                     .loadUserData()
                     .then(() => {
                         _self.blockUI.stop();
-                        swal('Complete.', [_self.user.name, ' record was successfully updated..'].join(''), 'success');
+                        swal.fire('Complete.', [_self.user.name, ' record was successfully updated..'].join(''), 'success');
                     })
                     .catch(err => {
                         _self.blockUI.stop();
-                        swal('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
+                        swal.fire('Oops...', ['Something went wrong! Unable to retrieve the user ', _self.username, ' .'].join(''), 'error');
                         _self.logger.error(err);
                     });
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', ['Something went wrong! Unable to enable the user ', _self.username, ' .'].join(''), 'error');
+                swal.fire('Oops...', ['Something went wrong! Unable to enable the user ', _self.username, ' .'].join(''), 'error');
                 _self.logger.error('[error] Error occurred calling updateUser API.');
                 _self.logger.error(err);
             });

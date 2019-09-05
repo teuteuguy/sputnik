@@ -105,7 +105,7 @@ export class DeviceBlueprintComponent implements OnInit {
             this.deviceBlueprintService
                 .add(this.deviceBlueprint)
                 .then(deviceBlueprint => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -116,14 +116,14 @@ export class DeviceBlueprintComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to create deviceBlueprint', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to create deviceBlueprint', 'error');
                     this.logger.error('Error creating deviceBlueprint:', err);
                 });
         } else {
             this.deviceBlueprintService
                 .update(this.deviceBlueprint)
                 .then(deviceBlueprint => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -134,14 +134,14 @@ export class DeviceBlueprintComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to update deviceBlueprint', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to update deviceBlueprint', 'error');
                     this.logger.error('Error creating deviceBlueprint:', err);
                 });
         }
     }
 
     delete() {
-        swal({
+        swal.fire({
             title: 'Are you sure you want to delete this device blueprint?',
             text: `You won't be able to revert this!`,
             type: 'question',
@@ -160,7 +160,7 @@ export class DeviceBlueprintComponent implements OnInit {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to delete the device blueprint.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to delete the device blueprint.', 'error');
                         this.logger.error('error occurred calling deleteDeviceBlueprint api, show message');
                         this.logger.error(err);
                     });

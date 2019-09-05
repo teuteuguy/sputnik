@@ -1,6 +1,5 @@
 import mxnet as mx
 import numpy as np
-# import picamera # TODO: make this configurable to be used with RPi
 import io
 import cv2
 import os
@@ -17,7 +16,7 @@ class ImagenetModel(object):
     #and returns an MXNet graph that is ready for prediction
     def __init__(self, synset_path, network_prefix, params_url=None,
                  symbol_url=None, synset_url=None, context=mx.cpu(),
-                 label_names=['prob_label'], input_shapes=[('data', (1, 3, 336, 224))]):
+                 label_names=['prob_label'], input_shapes=[('data', (1, 3, 224, 224))]):
 
         # Download the symbol set and network if URLs are provided
         if params_url is not None:
@@ -45,14 +44,10 @@ class ImagenetModel(object):
         # Load the network into an MXNet module and bind the corresponding parameters
         self.mod = mx.mod.Module(symbol=sym, label_names=label_names, context=context)
         self.mod.bind(for_training=False, data_shapes=input_shapes)
-        self.mod.set_params(arg_params, aux_params, allow_missing=True)
+        self.mod.set_params(arg_params, aux_params)
         self.camera = None
-        self.start_time = None
-        self.elapsed1 = None
-        self.elapsed2 = None
-        self.elapsed3 = None
 
-    def predict_from_image(self, cvimage, reshape=(336, 224), N=5):
+    def predict_from_image(self, cvimage, reshape=(224, 224), N=5):
         topN = []
 
         # Switch RGB to BGR format (which ImageNet networks take)
@@ -61,7 +56,7 @@ class ImagenetModel(object):
             return topN
 
         # Resize image to fit network input
-        # img = cv2.resize(img, reshape) TIM
+        img = cv2.resize(img, reshape)
         img = np.swapaxes(img, 0, 2)
         img = np.swapaxes(img, 1, 2)
         img = img[np.newaxis, :]
@@ -75,24 +70,4 @@ class ImagenetModel(object):
         a = np.argsort(prob)[::-1]
         for i in a[0:N]:
             topN.append((prob[i], self.synsets[i]))
-
         return topN
-
-    #Captures an image from the PiCamera, then sends it for prediction
-    def predict_from_cam(self, capfile='cap.jpg', reshape=(336, 224), N=10):
-        if self.camera is None:
-            self.camera = picamera.PiCamera()
-            self.camera.hflip = False # True
-            self.camera.vflip = False # True
-            self.camera.resolution = reshape
-            self.camera.start_preview() # TIM
-
-        stream = io.BytesIO()
-        time.sleep(1)
-        # time.sleep(0.1)
-        self.camera.capture(stream, format='jpeg')
-        # Construct a numpy array from the stream
-        data = np.fromstring(stream.getvalue(), dtype=np.uint8)
-        # "Decode" the image from the array, preserving colour
-        image = cv2.imdecode(data, 1)
-        return self.predict_from_image(image, reshape, N)

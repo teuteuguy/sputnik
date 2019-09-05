@@ -109,7 +109,7 @@ export class DevicesComponent implements OnInit {
                 _self.blockUI.stop();
             })
             .catch(err => {
-                swal('Oops...', 'Something went wrong! Unable to retrieve the devices.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the devices.', 'error');
                 _self.logger.error('error occurred calling listDevices api, show message');
                 _self.logger.error(err);
                 _self.router.navigate(['/securehome/devices']);
@@ -166,7 +166,7 @@ export class DevicesComponent implements OnInit {
             })
             .catch(err => {
                 _self.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to update the device.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to update the device.', 'error');
                 _self.logger.error('error occurred calling updateDevice api, show message');
                 _self.logger.error(err);
                 _self.loadDevices();

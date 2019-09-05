@@ -106,7 +106,7 @@ export class UsersComponent implements OnInit {
             })
             .catch(err => {
                 this.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to retrieve the users.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the users.', 'error');
                 this.logger.error('error occurred calling api, show message');
                 this.logger.error(err);
             });
@@ -146,7 +146,7 @@ export class UsersComponent implements OnInit {
                 })
                 .catch(err => {
                     this.blockUI.stop();
-                    swal('Oops...', 'Something went wrong! Unable to invite the user.', 'error');
+                    swal.fire('Oops...', 'Something went wrong! Unable to invite the user.', 'error');
                     this.logger.error('[error] Error occurred calling inviteUser API.');
                     this.logger.error(err);
                 });

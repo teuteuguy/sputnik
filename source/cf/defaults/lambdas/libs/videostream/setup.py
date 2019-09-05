@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
-setup(name='camera',
+setup(name='videostream',
       version='0.1',
       description='camera code',
       author='teuteuguy',
       license='MIT',
-      packages = find_packages(),
+      packages=['videostream'],
       zip_safe=False)

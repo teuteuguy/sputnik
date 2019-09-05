@@ -103,7 +103,7 @@ export class SystemBlueprintComponent implements OnInit {
             this.systemBlueprintService
                 .add(this.systemBlueprint)
                 .then(systemBlueprint => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -114,14 +114,14 @@ export class SystemBlueprintComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to create systemBlueprint', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to create systemBlueprint', 'error');
                     this.logger.error('Error creating systemBlueprint:', err);
                 });
         } else {
             this.systemBlueprintService
                 .update(this.systemBlueprint)
                 .then(systemBlueprint => {
-                    swal({
+                    swal.fire({
                         timer: 1000,
                         title: 'Success',
                         type: 'success',
@@ -132,14 +132,14 @@ export class SystemBlueprintComponent implements OnInit {
                     });
                 })
                 .catch(err => {
-                    swal('Oops...', 'Something went wrong! In trying to update systemBlueprint', 'error');
+                    swal.fire('Oops...', 'Something went wrong! In trying to update systemBlueprint', 'error');
                     this.logger.error('Error creating systemBlueprint:', err);
                 });
         }
     }
 
     delete() {
-        swal({
+        swal.fire({
             title: 'Are you sure you want to delete this system blueprint?',
             text: `You won't be able to revert this!`,
             type: 'question',
@@ -158,7 +158,7 @@ export class SystemBlueprintComponent implements OnInit {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to delete the system blueprint.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to delete the system blueprint.', 'error');
                         this.logger.error('error occurred calling deleteSystemBlueprint api, show message');
                         this.logger.error(err);
                     });

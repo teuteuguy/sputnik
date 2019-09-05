@@ -121,7 +121,7 @@ export class SystemComponent implements OnInit {
             })
             .catch(err => {
                 self.blockUI.stop();
-                swal('Oops...', 'Something went wrong! Unable to retrieve the system.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to retrieve the system.', 'error');
                 self.logger.error('error occurred calling getSystem api, show message');
                 self.logger.error(err);
                 self.router.navigate(['/securehome/systems']);
@@ -149,11 +149,11 @@ export class SystemComponent implements OnInit {
         const submitSubject: Subject<any> = new Subject<any>();
         submitSubject.subscribe(result => {
             if (result.error) {
-                swal('Oops...', 'Something went wrong!', 'error');
+                swal.fire('Oops...', 'Something went wrong!', 'error');
                 this.logger.error('error occurred calling api, show message');
                 this.logger.error(result.error);
             } else {
-                swal({
+                swal.fire({
                     timer: 1000,
                     title: 'Success',
                     type: 'success',
@@ -169,7 +169,7 @@ export class SystemComponent implements OnInit {
         const deleteSubject: Subject<any> = new Subject<any>();
         deleteSubject.subscribe(result => {
             if (result.error) {
-                swal('Oops...', 'Something went wrong! Unable to delete the system.', 'error');
+                swal.fire('Oops...', 'Something went wrong! Unable to delete the system.', 'error');
                 this.logger.error('error occurred calling deleteSystem api, show message');
                 this.logger.error(result.error);
             } else {
@@ -192,7 +192,7 @@ export class SystemComponent implements OnInit {
 
     public deploy() {
         console.log('Deploy', this.data.system.deviceIds);
-        swal({
+        swal.fire({
             title: 'Are you sure you want to deploy this system?',
             text: `This will overwrite whatever the device is doing!`,
             type: 'question',
@@ -224,7 +224,7 @@ export class SystemComponent implements OnInit {
                     })
                     .then(results => {
                         this.blockUI.stop();
-                        swal({
+                        swal.fire({
                             timer: 1000,
                             title: 'Success',
                             type: 'success',
@@ -233,7 +233,7 @@ export class SystemComponent implements OnInit {
                     })
                     .catch(err => {
                         this.blockUI.stop();
-                        swal('Oops...', 'Something went wrong! Unable to deploy the system.', 'error');
+                        swal.fire('Oops...', 'Something went wrong! Unable to deploy the system.', 'error');
                         this.logger.error('error occurred calling addDeployment api, show message');
                         this.logger.error(err);
                     });
@@ -260,7 +260,7 @@ export class SystemComponent implements OnInit {
                 })
                 .catch(err => {
                     this.blockUI.stop();
-                    swal('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
+                    swal.fire('Oops...', 'Something went wrong! Unable to create the certificate.', 'error');
                     this.logger.error('error occurred calling createCertificate api, show message');
                     this.logger.error(err);
                 });

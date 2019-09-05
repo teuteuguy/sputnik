@@ -6,4 +6,7 @@ setup(name='ggiot',
       author='teuteuguy',
       license='MIT',
       packages=find_packages(),
+      install_requires=[
+          'greengrasssdk',
+      ],
       zip_safe=False)

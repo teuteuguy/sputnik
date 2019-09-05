@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
                 })
                 .catch(err => {
                     this.blockUI.stop();
-                    swal('Oops...', "Something went wrong! Unable to retrieve the user's profile.", 'error');
+                    swal.fire('Oops...', "Something went wrong! Unable to retrieve the user's profile.", 'error');
                 });
         });
     }
@@ -85,13 +85,13 @@ export class ProfileComponent implements OnInit {
 
     changePassword(form: NgForm) {
         this.userService.changePassword(form.value.oldpassword, form.value.newpassword).then((data: any) => {
-            swal(
+            swal.fire(
                 'Done...',
                 'Your password has been successfully updated.',
                 'success');
         }).catch((err) => {
             this.blockUI.stop();
-            swal(
+            swal.fire(
                 'Oops...',
                 'Something went wrong! Unable to change your password.',
                 'error');

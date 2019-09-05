@@ -1,31 +1,32 @@
-import platform
-import greengrasssdk
+# Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+import logging
 import json
 from inspect import currentframe
-
 
 class GGIoT:
 
     # Constructor
-    def __init__(self, thing='default', prefix='sputnik'):
+    def __init__(self, thing='default', prefix='sputnik', dummy=False):
         self.thing = thing
         self.prefix = prefix
         self.topicPrefix = self.prefix + '/' + self.thing + '/'
         self.topicLogger = self.topicPrefix + 'logger'
 
-        if platform.system() != 'Darwin':
-            GGC = greengrasssdk.client('iot-data')
+        if dummy == False:
+            import greengrasssdk
+            ggsdk = greengrasssdk.client('iot-data')
 
             def prepPublish(topic=self.topicLogger, payload={}):
-                GGC.publish(topic=topic, payload=json.dumps(payload))
+                ggsdk.publish(topic=topic, payload=json.dumps(payload))
 
             def prepUpdateShadow(thing=self.thing, payload={}):
-                GGC.update_thing_shadow(thingName=thing, payload=json.dumps(payload))
+                ggsdk.update_thing_shadow(thingName=thing, payload=json.dumps(payload))
 
             def prepGetShadow(thingName=self.thing):
-                response = GGC.get_thing_shadow(thingName=thingName)
+                response = ggsdk.get_thing_shadow(thingName=thingName)
                 payloadDict = json.loads(response['payload'])
-                # stateDict = payloadDict['state']
                 return payloadDict
 
             self.publish = prepPublish
@@ -33,16 +34,16 @@ class GGIoT:
             self.getThingShadow = prepGetShadow
 
         else:
-            print('Platform is Darwin (ie. could be a mac)')
+            logging.warn("Setting up GGSDK in dummy mode")
 
             def debug(topic=self.topicLogger, payload={}):
-                print(topic + ': ' + json.dumps(payload))
+                logging.debug(topic + ': ' + json.dumps(payload))
 
             def debugUpdateShadow(thing=self.thing, payload={}):
-                print("updateThingShadow: " + thing + ": " + json.dumps(payload))
+                logging.debug("ggsdk.updateThingShadow: " + thing + ": " + json.dumps(payload))
 
             def debugGetShadow(thing=self.thing, payload={}):
-                print("getThingShadow: " + thing + ": {}")
+                logging.debug("ggsdk.getThingShadow: " + thing + ": {}")
                 return {}
 
             self.publish = debug
