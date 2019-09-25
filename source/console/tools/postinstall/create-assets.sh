@@ -35,3 +35,4 @@ echo " - owl.carousel.css"
 cp node_modules/owl.carousel/dist/assets/owl.carousel.min.css src/assets/css/owl.carousel.min.css
 echo " - font-awesome.css"
 cp node_modules/font-awesome/css/font-awesome.min.css src/assets/css/font-awesome.min.css
+cp -R node_modules/font-awesome/fonts src/assets/fonts

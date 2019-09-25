@@ -36,13 +36,6 @@ export class LoginComponent implements OnInit, CognitoCallback { //, LoggedInCal
         this.logger.info(
             'LoginComponent.ngOnInit: Checking if the user is already authenticated. If so, then redirect to the secure site'
         );
-
-        $('.owl-carousel').owlCarousel({
-            slideSpeed: 300,
-            paginationSpeed: 400,
-            singleItem: !0,
-            autoPlay: !0
-        });
     }
 
     onLogin() {
