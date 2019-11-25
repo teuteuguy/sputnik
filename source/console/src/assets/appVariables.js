@@ -3,8 +3,6 @@
 const appVariables = {
 IOT_ENDPOINT: '',
 S3_DATA_BUCKET: '',
-DEPLOYMENT_UUID: '',
-ADDON_TEMPLATES_URL: '',
 VERSION: '',
 IDENTITY_POOL_ID: '',
 USER_POOL_ID: '',

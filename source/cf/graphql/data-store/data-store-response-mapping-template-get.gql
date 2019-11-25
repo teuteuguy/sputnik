@@ -1,3 +1,0 @@
-{
-    "Data": $util.toJson($ctx.result.items)
-}

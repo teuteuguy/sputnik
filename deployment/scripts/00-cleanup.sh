@@ -15,12 +15,6 @@ echo "rm -rf $1"
 rm -rf $1
 echo "mkdir -p $1"
 mkdir -p $1
-# echo
-# echo "[Init] Creating Console and Lambda dirs"
-# echo "mkdir -p $1/console"
-# mkdir -p $1/console
-# echo "mkdir -p $1/lambda"
-# mkdir -p $1/lambda
 echo "------------------------------------------------------------------------------"
 echo
 exit 0

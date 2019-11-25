@@ -18,6 +18,16 @@ Parameters:
         AllowedValues:
             - true
             - false
+    LoadDefaults:
+        Type: String
+        Description: Do you want to load the default blueprints into sputnik ?
+        Default: true
+        AllowedValues:
+            - true
+            - false
+
+Conditions:
+    LoadDefaultsOnInstall: !Equals [ !Ref LoadDefaults, true ]
 
 Mappings:
     Send:
@@ -78,7 +88,7 @@ Resources:
     CFStackForDynamoDB:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/dynamodb/sputnik-ddb-tables.yml']]]]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-ddb-tables.yml']]]]
 
 
     # ##########################################################################
@@ -89,7 +99,7 @@ Resources:
     CFStackForLambdaHelpers:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/lambda/sputnik-lambda-helpers.yml']]]]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-lambda-helpers.yml']]]]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !FindInMap ['SourceCode', 'General', 'KeyPrefix']
@@ -101,12 +111,12 @@ Resources:
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 systemsTable: !GetAtt CFStackForDynamoDB.Outputs.systemsTable
                 systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
-                greengrassServiceRoleArn: !GetAtt IAMGreengrassServiceRole.Arn
+                greengrassServiceRoleArn: !GetAtt greengrassServiceIAMRole.Arn
 
     CFStackForLambdaServices:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/lambda/sputnik-lambda-services.yml']]]]
+            TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-lambda-services.yml']]]]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
                 sourceKeyPrefix: !FindInMap ['SourceCode', 'General', 'KeyPrefix']
@@ -118,11 +128,12 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 systemsTable: !GetAtt CFStackForDynamoDB.Outputs.systemsTable
                 systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
-                iamRoleArnForGreengrassGroups: !GetAtt IAMRoleForGreengrassGroups.Arn
+                greengrassGroupsIAMRoleArn: !GetAtt greengrassGroupsIAMRole.Arn
                 iotPolicyForGreengrassCores: !Ref IoTPolicyForGreengrassCores
                 iotConnectPolicyForSputnikCertificates: !Ref IoTConnectPolicyForSputnikCertificates
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
                 iotEndpoint: !GetAtt iotEndpoint.endpointAddress
+                appUUID: !GetAtt initAppUUID.UUID
 
     # ##########################################################################
     #
@@ -135,7 +146,7 @@ Resources:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/sputnik-appsync.yml']]]]
             Parameters:
                 sourceBucket: !Join ['-', [!FindInMap ['SourceCode', 'General', 'S3Bucket'], Ref: 'AWS::Region']]
-                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], !Join ['-', ['cf/graphql', '%%DEPLOYMENT_UUID%%']] ]]
+                sourceKeyPrefix: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf' ]]
                 userPoolId: !GetAtt CFStackForCognito.Outputs.userPoolId
                 settingsTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
                 dataStoreTable: !GetAtt CFStackForDynamoDB.Outputs.dataStoreTable
@@ -145,12 +156,12 @@ Resources:
                 deploymentsTable: !GetAtt CFStackForDynamoDB.Outputs.deploymentsTable
                 systemsTable: !GetAtt CFStackForDynamoDB.Outputs.systemsTable
                 systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
-                lambdaServiceAdminArn: !GetAtt CFStackForLambdaServices.Outputs.lambdaServiceAdminArn
-                lambdaServiceDevicesArn: !GetAtt CFStackForLambdaServices.Outputs.lambdaServiceDevicesArn
-                lambdaServiceSettingsArn: !GetAtt CFStackForLambdaServices.Outputs.lambdaServiceSettingsArn
-                lambdaServiceDeploymentsArn: !GetAtt CFStackForLambdaServices.Outputs.lambdaServiceDeploymentsArn
-                lambdaServiceSystemsArn: !GetAtt CFStackForLambdaServices.Outputs.lambdaServiceSystemsArn
-                lambdaServiceUtilsArn: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
+                adminServiceLambdaFunctionArn: !GetAtt CFStackForLambdaServices.Outputs.adminServiceLambdaFunctionArn
+                devicesServiceLambdaFunctionArn: !GetAtt CFStackForLambdaServices.Outputs.devicesServiceLambdaFunctionArn
+                settingsServiceLambdaFunctionArn: !GetAtt CFStackForLambdaServices.Outputs.settingsServiceLambdaFunctionArn
+                deploymentsServiceLambdaFunctionArn: !GetAtt CFStackForLambdaServices.Outputs.deploymentsServiceLambdaFunctionArn
+                systemsServiceLambdaFunctionArn: !GetAtt CFStackForLambdaServices.Outputs.systemsServiceLambdaFunctionArn
+                utilsCustomResourceLambdaFunctionArn: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
 
 
     # ##########################################################################
@@ -165,7 +176,7 @@ Resources:
 
 
     # Greengrass Service Role
-    IAMGreengrassServiceRole:
+    greengrassServiceIAMRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -183,7 +194,7 @@ Resources:
 
     # Systems Greengrass group role
     # NOTE: This is placed here, because else it creates a circular dependency between the Lambda Stack and the Systems Stack.
-    IAMRoleForGreengrassGroups:
+    greengrassGroupsIAMRole:
         Type: 'AWS::IAM::Role'
         Properties:
             AssumeRolePolicyDocument:
@@ -245,7 +256,7 @@ Resources:
     iotEndpoint:
         Type: 'Custom::Lambda'
         Properties:
-            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
+            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             customAction: 'iotDescribeEndpoint'
             # endpointType: 'iot:Data'
@@ -254,7 +265,7 @@ Resources:
     greengrassAssociateServiceRoleToAccount:
         Type: 'Custom::Lambda'
         Properties:
-            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
+            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             customAction: 'greengrassAssociateServiceRoleToAccount'
 
@@ -268,8 +279,6 @@ Resources:
             sourceS3Key: !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'console']]
             destS3Bucket: !GetAtt CFStackForWebsite.Outputs.websiteBucket
             customAction: 'copyS3assets'
-            deploymentUUID: '%%DEPLOYMENT_UUID%%'
-
 
     websiteConfig:
         Type: 'Custom::LoadLambda'
@@ -289,16 +298,14 @@ Resources:
                 S3_DATA_BUCKET: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 APP_SYNC_GRAPHQL_ENDPOINT: !GetAtt CFStackForAppSync.Outputs.appSyncGraphQLUrl
                 IOT_ENDPOINT: !GetAtt iotEndpoint.endpointAddress
-                DEPLOYMENT_UUID: '%%DEPLOYMENT_UUID%%'
             customAction: 'putFile'
-            deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
 
     # Initialization - Init Settings
     initSettings:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
+            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             ddbTable: !GetAtt CFStackForDynamoDB.Outputs.settingsTable
             ddbItem:
@@ -314,19 +321,11 @@ Resources:
     initAppUUID:
         Type: "Custom::LoadLambda"
         Properties:
-            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
+            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             customAction: "createUUID"
-
-    initAnonymousMetric:
-        Type: "Custom::LoadLambda"
-        Properties:
-            ServiceToken: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
-            Region: !Ref 'AWS::Region'
-            UUID: !GetAtt initAppUUID.UUID
-            version: '%%VERSION%%'
             anonymousData: !FindInMap ["Send", "AnonymousUsage", "Data"]
-            customAction: "sendMetric"
+            version: '%%VERSION%%'
 
     # ##########################################################################
     #
@@ -335,6 +334,7 @@ Resources:
     # ##########################################################################
     CFStackForDefaults:
         Type: AWS::CloudFormation::Stack
+        Condition: LoadDefaultsOnInstall
         Properties:
             TemplateURL: !Join ['/', ['https://s3.amazonaws.com', !Join ['-', ['%%BUCKET_NAME%%', Ref: 'AWS::Region']], !Join ['/', [!FindInMap ['SourceCode', 'General', 'KeyPrefix'], 'cf/defaults/sputnik-defaults.yml']]]]
             Parameters:
@@ -343,11 +343,10 @@ Resources:
                 deviceTypesTable: !GetAtt CFStackForDynamoDB.Outputs.deviceTypesTable
                 deviceBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.deviceBlueprintsTable
                 systemBlueprintsTable: !GetAtt CFStackForDynamoDB.Outputs.systemBlueprintsTable
-                customResourceUtilsHelperArn: !GetAtt CFStackForLambdaHelpers.Outputs.customResourceUtilsHelperArn
-                iamRoleForGreengrassGroups: !Ref IAMRoleForGreengrassGroups
+                utilsCustomResourceLambdaFunctionArn: !GetAtt CFStackForLambdaHelpers.Outputs.utilsCustomResourceLambdaFunctionArn
+                greengrassGroupsIAMRole: !Ref greengrassGroupsIAMRole
                 dataS3Bucket: !GetAtt CFStackForDataBucket.Outputs.dataBucket
                 dataS3BucketArn: !GetAtt CFStackForDataBucket.Outputs.dataBucketArn
-                deploymentUUID: '%%DEPLOYMENT_UUID%%'
 
 Outputs:
     # UUID
@@ -378,9 +377,9 @@ Outputs:
     iotEndpoint:
         Description: "IoT Endpoint"
         Value: !GetAtt iotEndpoint.endpointAddress
-    iamRoleForGreengrassGroups:
+    greengrassGroupsIAMRole:
         Description: "IAM Role For Greengrass Groups to be used by Addons"
-        Value: !Ref IAMRoleForGreengrassGroups
+        Value: !Ref greengrassGroupsIAMRole
     # dataBucketAccessPolicy:
     #     Description: "IAM Policy to access the sputnik Data bucket"
     #     Value: !GetAtt CFStackForDataBucket.Outputs.dataBucketAccessPolicy

@@ -16,7 +16,7 @@ Parameters:
     systemBlueprintsTable:
         Type: String
         Description: DynamoDB Table for storing the system blueprints
-    customResourceUtilsHelperArn:
+    utilsCustomResourceLambdaFunctionArn:
         Type: String
         Description: Utils custom resource helper ARN
     dataS3Bucket:
@@ -25,12 +25,9 @@ Parameters:
     dataS3BucketArn:
         Type: String
         Description: sputnik Data S3 Bucket ARN
-    iamRoleForGreengrassGroups:
+    greengrassGroupsIAMRole:
         Type: String
         Description: Greengrass Group Role
-    deploymentUUID:
-        Type: String
-        Description: UUID of the deployment
 
 Resources:
 
@@ -39,35 +36,32 @@ Resources:
     DefaultsDeviceTypes:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !Ref customResourceUtilsHelperArn
+            ServiceToken: !Ref utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'device-types']]
             table: !Ref deviceTypesTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
-            uuid: !Ref deploymentUUID
 
     DefaultsDeviceBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !Ref customResourceUtilsHelperArn
+            ServiceToken: !Ref utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'device-blueprints']]
             table: !Ref deviceBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
-            uuid: !Ref deploymentUUID
 
     DefaultsSystemBlueprints:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !Ref customResourceUtilsHelperArn
+            ServiceToken: !Ref utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'cf', 'defaults', 'system-blueprints']]
             table: !Ref systemBlueprintsTable
             customAction: 'dynamodbPutObjectsFromS3Folder'
-            uuid: !Ref deploymentUUID
 
     # Greengrass Role / Policy
 
@@ -131,7 +125,7 @@ Resources:
                             - '*'
             Roles:
                 -
-                    !Ref iamRoleForGreengrassGroups
+                    !Ref greengrassGroupsIAMRole
 
     # Lambda functions
 
@@ -224,8 +218,6 @@ Resources:
             FunctionVersion: !GetAtt DefaultsSimpleGreengrassGatewayDemoLambdaVersion.Version
             Name: 'Prod'
 
-
-
     DefaultsRaspberryPiSenseHatDemoLambda:
         Type: 'AWS::Lambda::Function'
         Properties:
@@ -279,12 +271,11 @@ Resources:
     DefaultsSqueezenetModel:
         Type: 'Custom::LoadLambda'
         Properties:
-            ServiceToken: !Ref customResourceUtilsHelperArn
+            ServiceToken: !Ref utilsCustomResourceLambdaFunctionArn
             Region: !Ref 'AWS::Region'
             sourceS3Bucket: !Ref sourceS3Bucket
             sourceS3Key: !Join ['/', [!Ref sourceS3KeyPrefix, 'assets', 'models', 'squeezenet_v1.1.zip']]
             destS3Bucket: !Ref dataS3Bucket
             destS3Key: !Join ['/', ['Greengrass', 'models', 'ml-demo-squeezenet-v1.0', 'squeezenet_v1.1.zip']]
-            uuid: !Ref deploymentUUID
             customAction: 'copyFileFromS3ToS3'
 

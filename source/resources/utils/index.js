@@ -33,41 +33,38 @@ exports.handler = (event, context, callback) => {
     if (event.RequestType === 'Delete' || event.RequestType === 'Update' || event.RequestType === 'Create') {
 
         if (event.RequestType === 'Delete') {
-            if (event.ResourceProperties.customAction === 'sendMetric' && event.ResourceProperties.anonymousData === 'Yes') {
-                responseStatus = 'SUCCESS';
-
-                let _metric = {
-                    UUID: event.ResourceProperties.UUID,
-                    TimeStamp: moment().utc().format('YYYY-MM-DD HH:mm:ss.S'),
-                    Data: {
-                        Version: event.ResourceProperties.version,
-                        Deleted: moment().utc().format()
-                    }
-                };
-
-                usageMetrics.sendAnonymousMetric(_metric).then(data => {
-                    console.log(data);
-                    console.log('Annonymous metrics successfully sent.');
-                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-                }).catch((err) => {
-                    responseData = {
-                        Error: 'Sending anonymous delete metric failed'
-                    };
-                    console.log([responseData.Error, ':\n', err].join(''));
-                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-                });
-
-            } else {
-                sendResponse(event, callback, context.logStreamName, 'SUCCESS');
-            }
-
+            sendResponse(event, callback, context.logStreamName, 'SUCCESS');
         } else if (event.RequestType === 'Create' && event.ResourceProperties.customAction === 'createUUID') {
             responseStatus = 'SUCCESS';
             responseData = {
                 UUID: UUID.v4()
             };
-            console.log(responseData);
-            sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+
+            if (event.ResourceProperties.anonymousData === 'Yes') {
+
+                usageMetrics.sendAnonymousMetric({
+                    UUID: responseData.UUID,
+                    TimeStamp: moment()
+                        .utc()
+                        .format("YYYY-MM-DD HH:mm:ss.S"),
+                    Data: {
+                        Version: event.ResourceProperties.version,
+                        Event: 'Launch'
+                    }
+                }).then(data => {
+                    console.log("Annonymous metrics successfully sent.", data);
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                }).catch(err => {
+                    responseData = {
+                        Error: "Sending anonymous delete metric failed"
+                    };
+                    console.log([responseData.Error, ":\n", err].join(""));
+                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+                });
+
+            } else {
+                sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
+            }
         } else if (event.RequestType === 'Create' || event.RequestType === 'Update') {
             if (event.ResourceProperties.customAction === 'dynamodbPutObjectsFromS3Folder') {
                 ddbHelper.dynamodbPutObjectsFromS3Folder(event.ResourceProperties.sourceS3Bucket, event.ResourceProperties.sourceS3Key, event.ResourceProperties.table).then(data => {
@@ -133,33 +130,8 @@ exports.handler = (event, context, callback) => {
                     console.log([responseData.Error, ':\n', err].join(''));
                     sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
                 });
-            } else if (event.ResourceProperties.customAction === 'sendMetric' && event.ResourceProperties.anonymousData === 'Yes') {
-                responseStatus = 'SUCCESS';
-
-                let _metric = {
-                    UUID: event.ResourceProperties.UUID,
-                    TimeStamp: moment().utc().format('YYYY-MM-DD HH:mm:ss.S'),
-                    Data: {
-                        Version: event.ResourceProperties.version,
-                        Launch: moment().utc().format()
-                    }
-                };
-
-                usageMetrics.sendAnonymousMetric(_metric).then(data => {
-                    console.log(data);
-                    console.log('Annonymous metrics successfully sent.');
-                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-                }).catch((err) => {
-                    responseData = {
-                        Error: 'Sending anonymous delete metric failed'
-                    };
-                    console.log([responseData.Error, ':\n', err].join(''));
-                    sendResponse(event, callback, context.logStreamName, responseStatus, responseData);
-                });
-
-
             } else {
-                       sendResponse(event, callback, context.logStreamName, 'SUCCESS');
+                sendResponse(event, callback, context.logStreamName, 'SUCCESS');
             }
         }
 

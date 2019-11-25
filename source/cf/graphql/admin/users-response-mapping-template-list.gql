@@ -1,6 +1,0 @@
-{
-    "Users": $util.toJson($ctx.result.Users),
-    #if( ${ctx.result.PaginationToken} )
-        "PaginationToken": "${ctx.result.PaginationToken}",
-    #end
-}
