@@ -31,7 +31,7 @@ export class UserRegistrationService {
         }
       })
       .then(result => callback.cognitoCallback(null, result))
-      .catch(err => callback.cognitoCallback(err.message, null));
+      .catch(err => callback.cognitoCallback(err, null));
   }
 
   confirmRegistration(username: string, confirmationCode: string, callback: CognitoCallback): void {
@@ -42,7 +42,7 @@ export class UserRegistrationService {
         forceAliasCreation: true
       })
       .then(result => callback.cognitoCallback(null, result))
-      .catch(err => callback.cognitoCallback(err.message, null));
+      .catch(err => callback.cognitoCallback(err, null));
   }
 
   resendCode(username: string, callback: CognitoCallback): void {
@@ -51,7 +51,7 @@ export class UserRegistrationService {
       .auth()
       .resendSignUp(username)
       .then(result => callback.cognitoCallback(null, result))
-      .catch(err => callback.cognitoCallback(err.message, null));
+      .catch(err => callback.cognitoCallback(err, null));
   }
 
   newPassword(newPasswordUser: NewPasswordUser, callback: CognitoCallback): void {

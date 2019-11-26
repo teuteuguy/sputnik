@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 // Services
-import { UserLoginService, CognitoCallback } from '../../../services/user-login.service';
+import { UserLoginService, CognitoCallback, CognitoCallbackError } from '../../../services/user-login.service';
 import { LoggerService } from '../../../services/logger.service';
 
 // Helpers
@@ -38,13 +38,13 @@ export class ForgotPasswordStep1Component implements OnInit, CognitoCallback {
     this.userService.forgotPassword(this.email, this);
   }
 
-  cognitoCallback(message: string, result: any) {
-    if (message == null && result == null) {
+  cognitoCallback(error: CognitoCallbackError, result: any) {
+    if (error == null && result == null) {
       // error
       this.router.navigate(['/home/forgotPassword', this.email]);
     } else {
       // success
-      this.errorMessage = message;
+      this.errorMessage = error.message;
     }
   }
 }
@@ -93,10 +93,10 @@ export class ForgotPassword2Component implements OnInit, OnDestroy {
     this.userService.confirmNewPassword(this.email, this.verificationCode, this.password, this);
   }
 
-  cognitoCallback(message: string) {
-    if (message != null) {
+  cognitoCallback(error: CognitoCallbackError) {
+    if (error != null) {
       // error
-      this.errorMessage = message;
+      this.errorMessage = error.message;
       this.logger.error('result: ' + this.errorMessage);
     } else {
       // success

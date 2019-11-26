@@ -6,7 +6,7 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
-import { UserLoginService } from '@services/user-login.service';
+import { CognitoCallbackError, UserLoginService } from '@services/user-login.service';
 import { UserRegistrationService } from '@services/user-registration.service';
 
 declare var jquery: any;
@@ -63,10 +63,10 @@ export class RegistrationConfirmationComponent implements OnInit, OnDestroy {
     this.regService.confirmRegistration(this.email, this.confirmationCode, this);
   }
 
-  cognitoCallback(message: string, result: any) {
-    if (message != null) {
+  cognitoCallback(error: CognitoCallbackError, result: any) {
+    if (error != null) {
       // error
-      this.errorMessage = message;
+      this.errorMessage = error.message;
       console.log('message: ' + this.errorMessage);
     } else {
       // success, move to the next step

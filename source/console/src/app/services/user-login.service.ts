@@ -15,8 +15,14 @@ import { ProfileInfo } from '@models/profile-info.model';
 // Services
 import { LoggerService } from '@services/logger.service';
 
+export interface CognitoCallbackError {
+    message: string;
+    code?: string;
+    policy?: string;
+}
+
 export interface CognitoCallback {
-    cognitoCallback(message: string, result: any): void;
+    cognitoCallback(error: CognitoCallbackError, result: any): void;
 }
 
 export interface LoggedInCallback {
@@ -60,7 +66,9 @@ export class UserLoginService implements CanActivate {
 
                 if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
                     self.logger.warn('UserLoginService.authenticate: User needs to set password.');
-                    callback.cognitoCallback('User needs to set password.', null);
+                    callback.cognitoCallback({
+                        message: 'User needs to set password.'
+                    }, null);
                 } else {
                     self
                         .getUserInfo()
@@ -77,7 +85,7 @@ export class UserLoginService implements CanActivate {
             })
             .catch(err => {
                 self.logger.error(err);
-                callback.cognitoCallback(err.message, null);
+                callback.cognitoCallback(err, null);
             });
     }
 
@@ -93,7 +101,7 @@ export class UserLoginService implements CanActivate {
             })
             .catch(err => {
                 self.logger.info('UserLoginService.forgotPassword(', username, '): Error:', err);
-                callback.cognitoCallback(err.message, null);
+                callback.cognitoCallback(err, null);
             });
     }
 
@@ -116,7 +124,7 @@ export class UserLoginService implements CanActivate {
                     '): Errro:',
                     err
                 );
-                callback.cognitoCallback(err.message, null);
+                callback.cognitoCallback(err, null);
             });
     }
 
@@ -168,51 +176,6 @@ export class UserLoginService implements CanActivate {
             });
     }
 
-
-    // isAuthenticated(callback: LoggedInCallback, loadProfile: boolean) {
-    //     const self = this;
-    //     if (callback == null) {
-    //         throw new Error('UserLoginService.isAuthenticated: Callback in isAdminAuthenticated() cannot be null');
-    //     }
-
-    //     self.amplifyService
-    //         .auth()
-    //         .currentAuthenticatedUser()
-    //         .then(user => {
-    //             return self.amplifyService.auth().userSession(user);
-    //         })
-    //         .then(session => {
-    //             self.logger.info(
-    //                 'UserLoginService.isAuthenticated(' + loadProfile + '): Session is ' + session.isValid()
-    //             );
-    //             if (session.isValid() && loadProfile) {
-    //                 return self
-    //                     .getUserInfo()
-    //                     .then((data: ProfileInfo) => {
-    //                         self.logger.info(
-    //                             'UserLoginService.isAuthenticated(' + loadProfile + '): getUserInfo:',
-    //                             data
-    //                         );
-    //                         return callback.isLoggedIn(null, session.isValid(), data);
-    //                     })
-    //                     .catch(err => {
-    //                         self.logger.error('[Error] Error occurred retrieving user info to validate admin role.');
-    //                         self.logger.error(err);
-    //                     });
-    //             } else {
-    //                 callback.isLoggedIn(null, session.isValid(), null);
-    //             }
-    //         })
-    //         .catch(err => {
-    //             self.logger.warn(
-    //                 'UserLoginService.isAuthenticated(' +
-    //                     loadProfile +
-    //                     '): cant retrieve the current authenticated user',
-    //                 err
-    //             );
-    //             callback.isLoggedIn(err, false, null);
-    //         });
-    // }
 
     getUserInfo() {
         const self = this;

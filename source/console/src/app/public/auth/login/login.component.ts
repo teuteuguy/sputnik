@@ -8,7 +8,12 @@ import { ProfileInfo } from '@models/profile-info.model';
 
 // Services
 import { LoggerService } from '@services/logger.service';
-import { UserLoginService, CognitoCallback, LoggedInCallback } from '@services/user-login.service';
+import {
+    UserLoginService,
+    CognitoCallback,
+    LoggedInCallback,
+    CognitoCallbackError
+} from '@services/user-login.service';
 
 declare var appVariables: any;
 
@@ -47,10 +52,11 @@ export class LoginComponent implements OnInit, CognitoCallback { //, LoggedInCal
         this.userService.authenticate(this.email, this.password, this);
     }
 
-    cognitoCallback(message: string, result: any) {
-        if (message != null) {
+    cognitoCallback(error: CognitoCallbackError, result: any) {
+        if (error != null) {
             // error
-            this.errorMessage = message;
+            console.error(error);
+            this.errorMessage = error.message;
             this.logger.info('result: ' + this.errorMessage);
             if (this.errorMessage === 'User is not confirmed.') {
                 this.logger.error('redirecting');
@@ -64,14 +70,4 @@ export class LoginComponent implements OnInit, CognitoCallback { //, LoggedInCal
             this.router.navigate(['/securehome']);
         }
     }
-
-    // isLoggedIn(message: string, isLoggedIn: boolean, profile: ProfileInfo) {
-    //     console.log('isLoggedIn');
-    //     if (isLoggedIn) {
-    //         this.logger.info('LoginComponent.isLoggedIn: User logged in. Moving to securehome');
-    //         this.router.navigate(['/securehome']);
-    //     } else {
-    //         this.logger.info('LoginComponent.isLoggedIn: User NOT logged in');
-    //     }
-    // }
 }

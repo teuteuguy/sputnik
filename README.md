@@ -10,6 +10,8 @@ Sputnik's goal is to help you get started and connecting your IoT devices to AWS
 As part of this first release, Sputnik can, in theory, support all types of devices, however as part of this first release, for now, we have only included blueprints for the Raspberry Pi, Intel Up2, Deeplens and a dummy ESP32 device.
 We will be including more device blueprints as we go along, and hope the community and the AWS partner eco-system will participate in the creation of these blueprints.
 
+Also, as part of this first release, Sputnik only supports deployment to Greengrass based devices. Amazon FreeRTOS support currently is work in progress.
+
 ## What is the IoT Pilot Kickstart Solution
 
 
@@ -81,34 +83,38 @@ You can 1-click deploy this solution in your AWS Account by clicking the followi
 
 Region | Launch Template
 ------------ | -------------
-**N. Virginia** (us-east-1) | [![Launch the Sputnik Stack into Virginia with CloudFormation](./assets/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v0.9.7/cf/sputnik.yml)
+**N. Virginia** (us-east-1) | [![Launch the Sputnik Stack into Virginia with CloudFormation](./assets/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=sputnik&templateURL=https://s3.amazonaws.com/tims-solutions-us-east-1/sputnik/v1.0.0/cf/sputnik.yml)
 
 ### Customize your own and build for yourself
 Want to customize Sputnik, and want to fiddle around with the code? No problem.
 [Follow this guide.](./docs/developers.md)
 
-# Known issues
-* There seems to be an issue on session timeout of the cognito authentication creating an endless loop of angular re-routing. Help me fix it :)
-
 
 
 # Disclaimer
 
-This repo is the work of 1 person only, and comes as is, non tested. **Use at your own risk**. Feedback is more than welcome.
+This project was designed from the ground up with the hope to help customers and partners get started on AWS IoT. The main goal being to simplify connecting your first devices to AWS IoT and start generating business value as fast as possible.
 
-The main goal of Sputnik is to really help customers/partners get started on AWS IoT and start generating business value as fast as possible.
+The project is the work of **1** person only, and comes as is, non tested. **Use at your own risk**. Feedback is more than welcome.
 
-### Reminder: This is untested code! Do use at your own risk!
-I will not be held reliable if the trucks, machines, spaceships you are tracking/monitoring suddently disappear because of an alien invasion the app did not account for.
+### Reminder: The project does not have built in tests, do use at your own risk!
 
-Kudos to the [IoT Device Simulator](https://aws.amazon.com/solutions/iot-device-simulator/) from which this project was inspired from, and completely rewritten on.
+For simplicity, the front-end for the project re-uses the [IoT Device Simulator](https://aws.amazon.com/solutions/iot-device-simulator/) from which this project took a lot of inspiration from and was completely rewritten on.
 
+
+***
+***
 ***
 
 Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+Licensed under the Apache License, Version 2.0 (the "License").
+You may not use this file except in compliance with the License.
+A copy of the License is located at
 
-    http://aws.amazon.com/asl/
+    http://www.apache.org/licenses/LICENSE-2.0
 
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
+or in the "license" file accompanying this file. This file is distributed 
+on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+express or implied. See the License for the specific language governing 
+permissions and limitations under the License.

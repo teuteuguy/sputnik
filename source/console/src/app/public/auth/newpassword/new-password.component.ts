@@ -43,10 +43,11 @@ export class NewPasswordComponent implements CognitoCallback {
     this.userRegistration.newPassword(this.registrationUser, this);
   }
 
-  cognitoCallback(message: string, result: any) {
-    if (message != null) {
+  cognitoCallback(error: Error, result: any) {
+    if (error != null) {
       // error
-      this.errorMessage = message;
+      console.error(error);
+      this.errorMessage = error.message;
       this.logger.error('result: ' + this.errorMessage);
     } else {
       // success move to the next step

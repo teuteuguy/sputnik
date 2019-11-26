@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 // Services
-import { CognitoCallback } from '../../../services/user-login.service';
+import { CognitoCallback, CognitoCallbackError } from '../../../services/user-login.service';
 import { UserRegistrationService } from '../../../services/user-registration.service';
 import { LoggerService } from '../../../services/logger.service';
 
@@ -49,10 +49,10 @@ export class RegisterComponent implements OnInit, CognitoCallback {
     this.userRegistration.register(this.registrationUser, this);
   }
 
-  cognitoCallback(message: string, result: any) {
-    if (message != null) {
+  cognitoCallback(error: CognitoCallbackError, result: any) {
+    if (error != null) {
       // error
-      this.errorMessage = message;
+      this.errorMessage = error.message;
       this.logger.error('result: ' + this.errorMessage);
     } else {
       // success, move to the next step

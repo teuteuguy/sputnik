@@ -9,6 +9,11 @@ fi
 
 set -e
 
+function sed_file() {
+    echo "sed -i '' -e $1 $2"
+    sed -i '' -e $1 $2
+}
+
 echo "01-prepare-cf.sh--------------------------------------------------------------"
 echo "[Packing] Cloud formation template"
 echo
@@ -20,12 +25,12 @@ cp -R $1/cf $2
 
 echo "Updating code source bucket in templates with $3 and code source version in template with $4"
 replace="s/%%BUCKET_NAME%%/$3/g"
-echo "sed -i '' -e $replace $2/cf/*.yml"
-sed -i '' -e $replace $2/cf/*.yml
+sed_file $replace "${2}/cf/*.yml"
+sed_file $replace "${2}/cf/defaults/*.yml"
 
 replace="s/%%VERSION%%/$4/g"
-echo "sed -i '' -e $replace $2/cf/*.yml"
-sed -i '' -e $replace $2/cf/*.yml
+sed_file $replace "${2}/cf/*.yml"
+sed_file $replace "${2}/cf/defaults/*.yml"
 
 echo
 echo "------------------------------------------------------------------------------"

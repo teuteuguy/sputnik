@@ -10,7 +10,7 @@ cp node_modules/jquery-slimscroll/jquery.slimscroll.min.js src/assets/ui-js/jque
 echo " - jquery.blockUI.js"
 cp node_modules/jquery-blockui/jquery.blockUI.js  src/assets/ui-js/jquery.blockUI.js
 echo " - popper.js"
-cp node_modules/popper.js/dist/popper.min.js src/assets/ui-js/popper.min.js
+cp node_modules/popper.js/dist/umd/popper.min.js src/assets/ui-js/popper.min.js
 echo " - bootstrap.js"
 cp node_modules/bootstrap/dist/js/bootstrap.min.js src/assets/ui-js/bootstrap.min.js
 echo " - bootstrap.css"
