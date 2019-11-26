@@ -105,6 +105,9 @@ For simplicity, the front-end for the project re-uses the [IoT Device Simulator]
 ***
 ***
 ***
+## License
+
+This project is licensed under the Apache-2.0 License.
 
 Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 

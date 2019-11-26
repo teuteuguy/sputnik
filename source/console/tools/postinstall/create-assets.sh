@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Creating assets..."
+mkdir -p src/assets/ui-js
 echo " - underscore.js"
 cp node_modules/underscore/underscore-min.js src/assets/ui-js/underscore.min.js
 echo " - jquery.js"
